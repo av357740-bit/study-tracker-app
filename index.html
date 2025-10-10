@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- MODIFICATION: Title updated -->
     <title>Pravej Ahmad's Digital Study Tracker</title>
 
     <!-- PWA (Progressive Web App) Meta Tags - Essential for "Install App" feature -->
@@ -35,9 +34,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        /* MODIFICATION: New Color Theme Variables */
         :root {
-            --background-light: #f0f9ff; /* sky-50 */
+            --background-light: #f0f9ff;
             --background-dark: #0c1425;
             --card-light: #ffffff;
             --card-dark: #1e293b;
@@ -45,48 +43,64 @@
             --text-dark: #f1f5f9;
             --text-muted-light: #475569;
             --text-muted-dark: #94a3b8;
-            --primary: #0ea5e9; /* sky-500 */
-            --primary-hover: #0284c7; /* sky-600 */
-            --accent: #8b5cf6; /* violet-500 */
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+            --accent: #8b5cf6;
             --danger: #ef4444;
             --warning: #f59e0b;
-            /* MODIFICATION: Custom theme variables with fallbacks */
             --main-bg-start-light: #cffafe;
             --main-bg-end-light: #e0e7ff;
             --main-bg-start-dark: #164e63;
             --main-bg-end-dark: #312e81;
+            --border-light: #e5e7eb;
+            --border-dark: #374151;
         }
 
         /* Base styles */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-light);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
+        .dark body {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
         
-        /* NEW: Canvas background styling */
+        /* NEW: Pitch Black Mode for Dark Theme with Backgrounds */
+        html.dark.pitch-black {
+            --background-dark: #000000;
+            --card-dark: #111111;
+            --text-dark: #e5e5e5;
+            --text-muted-dark: #888888;
+            --border-dark: #333333;
+            --main-bg-start-dark: #000000;
+            --main-bg-end-dark: #000000;
+        }
+        html.dark.pitch-black #sidebar { box-shadow: 4px 0 20px -3px rgba(255, 255, 255, 0.05); }
+
         #particle-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Place it behind all other content */
-            display: none; /* Initially hidden */
+            z-index: -1;
+            display: none;
         }
 
         .app-header-title {
             font-family: 'Poppins', sans-serif;
-            color: #1e293b; /* slate-800 */
+            color: var(--text-light);
         }
         .dark .app-header-title {
-            color: #e2e8f0; /* slate-200 */
+            color: var(--text-dark);
         }
 
-        /* Hide scrollbar for a cleaner look */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Page transition animation */
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn {
@@ -94,7 +108,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* NEW: Animation for list items */
         .animate-list-item {
             animation: slideInUp 0.5s ease-out forwards;
             opacity: 0;
@@ -121,12 +134,12 @@
         }
         .task-list-item {
             transition: opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease;
-            max-height: 100px; /* Adjust as needed */
+            max-height: 100px;
         }
 
         .task-note-missed {
-            background-color: #ffedd5 !important; /* orange-100 */
-            border-left: 4px solid #f97316; /* orange-500 */
+            background-color: #ffedd5 !important;
+            border-left: 4px solid #f97316;
         }
         .dark .task-note-missed {
             background-color: #3f2715 !important;
@@ -137,8 +150,8 @@
             border-radius: 99px; margin-left: 8px; background-color: var(--primary);
             color: white; opacity: 0.8;
         }
-        .source-badge-book { background-color: #8b5cf6; } /* Purple for Book */
-        .source-badge-notes { background-color: #0891b2; } /* Cyan for Notes */
+        .source-badge-book { background-color: #8b5cf6; }
+        .source-badge-notes { background-color: #0891b2; }
         
         #undo-toast {
             position: fixed; bottom: 20px; left: 50%;
@@ -157,41 +170,32 @@
             background: linear-gradient(135deg, var(--main-bg-start-dark) 0%, var(--main-bg-end-dark) 100%);
         }
         
-        /* Make main background transparent when particles are active */
         body.particles-active main {
             background: transparent;
         }
         
         #sidebar { 
-            border-right: 1px solid #e5e7eb; 
+            border-right: 1px solid var(--border-light); 
             transition: all 0.3s ease-in-out; 
             box-shadow: 4px 0 15px -3px rgba(0, 0, 0, 0.07);
         }
         .dark #sidebar { 
-            border-color: #374151; 
+            border-color: var(--border-dark); 
             box-shadow: 4px 0 20px -3px rgba(0, 0, 0, 0.2);
         }
         
-        .sidebar-collapsed .nav-btn span, .sidebar-collapsed .app-header-title, .sidebar-collapsed #creator-credit span {
-            display: none;
-        }
-        .sidebar-collapsed .nav-btn, .sidebar-collapsed #sidebar-toggle-btn {
-            justify-content: center;
-        }
+        .sidebar-collapsed .nav-btn span, .sidebar-collapsed .app-header-title, .sidebar-collapsed #creator-credit span { display: none; }
+        .sidebar-collapsed .nav-btn, .sidebar-collapsed #sidebar-toggle-btn { justify-content: center; }
 
         button, .nav-btn, .chapter-item, .task-action-btn, .dashboard-card, .dpt-list-item {
             transition: transform 0.1s ease-in-out, box-shadow 0.2s ease, background-color 0.2s ease;
         }
-        button:active, .nav-btn:active, .chapter-item:active, .task-action-btn:active, .dpt-list-item:active {
-            transform: scale(0.97);
-        }
+        button:active, .nav-btn:active, .chapter-item:active, .task-action-btn:active, .dpt-list-item:active { transform: scale(0.97); }
         .dashboard-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-        .animated-progress-bar {
-            transition: width 0.8s ease-out;
-        }
+        .animated-progress-bar { transition: width 0.8s ease-out; }
 
         .btn-neon {
             background-color: transparent;
@@ -206,124 +210,52 @@
             background-color: var(--primary);
             box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary);
         }
-
         .dark .btn-neon {
-             color: var(--accent);
-             border-color: var(--accent);
+             color: var(--accent); border-color: var(--accent);
              box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent), inset 0 0 5px var(--accent);
         }
         .dark .btn-neon:hover {
-            color: var(--card-dark);
-            background-color: var(--accent);
+            color: var(--card-dark); background-color: var(--accent);
             box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 30px var(--accent);
         }
 
-        @keyframes neon-pulse {
-            50% {
-                box-shadow: 0 0 8px var(--primary), 0 0 15px var(--primary), inset 0 0 8px var(--primary), 0 0 20px var(--accent);
-            }
-        }
-        .dark @keyframes neon-pulse {
-             50% {
-                box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent), inset 0 0 8px var(--accent), 0 0 20px var(--primary);
-            }
-        }
+        @keyframes neon-pulse { 50% { box-shadow: 0 0 8px var(--primary), 0 0 15px var(--primary), inset 0 0 8px var(--primary), 0 0 20px var(--accent); } }
+        .dark @keyframes neon-pulse { 50% { box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent), inset 0 0 8px var(--accent), 0 0 20px var(--primary); } }
 
-        /* --- START: MOBILE BOTTOM NAV STYLES --- */
-        #mobile-bottom-nav {
-            display: none; /* Hidden by default */
-        }
-
+        #mobile-bottom-nav { display: none; }
         @media (max-width: 767px) {
-            /* Hide desktop sidebar and mobile menu button */
-            #sidebar, #mobile-menu-btn {
-                display: none;
-            }
-            
-            /* Adjust main content padding to not be hidden by the nav bar */
-            main {
-                padding-bottom: 80px !important;
-            }
-
-            #mobile-bottom-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: var(--card-light);
-                border-top: 1px solid #e5e7eb;
-                z-index: 50;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-            }
-            .dark #mobile-bottom-nav {
-                background-color: var(--card-dark);
-                border-top-color: #374151;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-            }
-
-            #mobile-nav-scroller {
-                display: flex;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                width: 100%;
-                padding: 4px 8px;
-            }
-
-            .mobile-nav-btn {
-                flex: 0 0 auto; /* Prevent shrinking */
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-width: 60px;
-                padding: 8px 12px;
-                color: var(--text-muted-light);
-                transition: color 0.2s ease-in-out;
-            }
-            .dark .mobile-nav-btn {
-                color: var(--text-muted-dark);
-            }
-            .mobile-nav-btn.active {
-                color: var(--primary);
-            }
-            .dark .mobile-nav-btn.active {
-                color: var(--primary);
-            }
-
-            .mobile-nav-btn i {
-                width: 24px;
-                height: 24px;
-            }
-        }
-        /* --- END: MOBILE BOTTOM NAV STYLES --- */
-        
-        .status-btn-group button.active {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-        .dark .status-btn-group button.active {
-             background-color: var(--primary-hover);
+            #sidebar, #mobile-menu-btn { display: none; }
+            main { padding-bottom: 80px !important; }
+            #mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-light); border-top: 1px solid var(--border-light); z-index: 50; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); }
+            .dark #mobile-bottom-nav { background-color: var(--card-dark); border-top-color: var(--border-dark); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2); }
+            #mobile-nav-scroller { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; padding: 4px 8px; }
+            .mobile-nav-btn { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 60px; padding: 8px 12px; color: var(--text-muted-light); transition: color 0.2s ease-in-out; }
+            .dark .mobile-nav-btn { color: var(--text-muted-dark); }
+            .mobile-nav-btn.active, .dark .mobile-nav-btn.active { color: var(--primary); }
+            .mobile-nav-btn i { width: 24px; height: 24px; }
         }
         
-        .subject-source-btn.active {
-            background-color: var(--primary);
-            color: white;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-        }
+        .status-btn-group button.active { background-color: var(--primary); color: white; font-weight: 600; }
+        .dark .status-btn-group button.active { background-color: var(--primary-hover); }
+        .subject-source-btn.active { background-color: var(--primary); color: white; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
         
+        /* Apply border colors generally */
+        header, .border-b, .border-t, .border, .border-l-4, .border-2 { border-color: var(--border-light); }
+        .dark header, .dark .border-b, .dark .border-t, .dark .border, .dark .border-l-4, .dark .border-2 { border-color: var(--border-dark); }
+        input, select, textarea { border-color: var(--border-light); }
+        .dark input, .dark select, .dark textarea { border-color: var(--border-dark); }
+        .border-primary\/20 { border-color: rgba(14, 165, 233, 0.2); }
+        .border-accent\/20 { border-color: rgba(139, 92, 246, 0.2); }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+<body class="text-text-light dark:text-text-dark">
     
-    <!-- NEW: Particle Canvas Background -->
     <canvas id="particle-canvas"></canvas>
 
-    <div class="flex h-screen bg-transparent"> <!-- MODIFICATION: bg-gray-50 removed for canvas -->
+    <div class="flex h-screen bg-transparent">
         <aside id="sidebar" class="flex flex-col w-64 bg-card-light dark:bg-card-dark relative">
-            <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 h-16">
+            <div class="flex items-center justify-between p-4 border-b h-16">
                 <h1 class="text-xl font-extrabold app-header-title" data-translate="study_tracker">Study Tracker</h1>
             </div>
             <nav class="flex-grow p-4 space-y-2 no-scrollbar overflow-y-auto">
@@ -337,7 +269,7 @@
                 <button data-page="report" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="clipboard-list" class="w-5 h-5"></i> <span data-translate="report">Report</span></button>
                 <button data-page="settings" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="settings" class="w-5 h-5"></i> <span data-translate="settings">Settings</span></button>
             </nav>
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            <div class="p-4 border-t space-y-2">
                 <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700">
                     <i data-lucide="sun" id="theme-icon-sun"></i>
                     <i data-lucide="moon" id="theme-icon-moon"></i>
@@ -352,29 +284,27 @@
         </aside>
 
         <div class="flex-1 flex flex-col h-screen max-h-screen">
-            <!-- MODIFICATION: Header updated to better center the title -->
-            <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-sm z-10">
+            <header class="flex items-center justify-between p-4 border-b sticky top-0 bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-sm z-10">
                 <button id="mobile-menu-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden">
                     <i data-lucide="menu"></i>
                 </button>
                 <div class="text-center flex-grow">
                     <h1 class="text-lg font-extrabold app-header-title">Study Tracker</h1>
-                    <p class="text-xs text-text-muted-light dark:text-muted-dark -mt-1">By Pravej Ahmad</p>
+                    <p class="text-xs text-text-muted-light dark:text-text-muted-dark -mt-1">By Pravej Ahmad</p>
                 </div>
-                <!-- MODIFICATION: Theme toggle button removed from here for mobile view -->
             </header>
 
             <main class="flex-grow overflow-y-auto p-4 md:p-8 pb-4 no-scrollbar">
                 <div id="page-home" class="page active">
-                     <h2 id="welcome-heading" class="text-3xl font-bold text-text-light dark:text-text-dark mb-2">Welcome, Pravej Ahmad!</h2>
+                     <h2 id="welcome-heading" class="text-3xl font-bold mb-2">Welcome, Pravej Ahmad!</h2>
                      <p class="text-text-muted-light dark:text-text-muted-dark mb-6" data-translate="welcome_subtitle">Here's your plan for today. Let's get it done!</p>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2 space-y-6">
-                            <div id="ai-insights-container" class="dashboard-card bg-violet-50 dark:bg-violet-900/30 border-2 border-accent/20 p-4 rounded-xl shadow-sm">
+                            <div id="ai-insights-container" class="dashboard-card bg-violet-50 dark:bg-violet-900/30 border-2 p-4 rounded-xl shadow-sm">
                             </div>
                             <div id="todays-dpt-container" class="dashboard-card bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900 p-4 rounded-xl shadow-sm min-h-[100px]">
                             </div>
-                            <div id="todays-plan-container" class="dashboard-card bg-sky-50 dark:bg-sky-900/30 border-2 border-primary/20 p-4 rounded-xl shadow-sm min-h-[180px]">
+                            <div id="todays-plan-container" class="dashboard-card bg-sky-50 dark:bg-sky-900/30 border-2 p-4 rounded-xl shadow-sm min-h-[180px]">
                             </div>
                             <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm">
                                 <h2 class="text-lg font-bold mb-3" data-translate="tomorrows_topics">Tomorrow's Topics</h2>
@@ -408,7 +338,7 @@
                                 <div class="flex flex-col items-center gap-4 mt-2">
                                     <div class="relative w-40 h-40"><canvas id="overall-progress-chart"></canvas><div id="overall-progress-text" class="absolute inset-0 flex items-center justify-center text-4xl font-bold"></div></div>
                                     <div class="text-center">
-                                        <p class="text-base text-text-muted-light dark:text-text-muted-dark"><span data-translate="chapters_completed">Chapters Completed</span>: <span id="chapters-completed-count" class="font-semibold text-text-light dark:text-text-dark">0 / 0</span></p>
+                                        <p class="text-base text-text-muted-light dark:text-text-muted-dark"><span data-translate="chapters_completed">Chapters Completed</span>: <span id="chapters-completed-count" class="font-semibold">0 / 0</span></p>
                                     </div>
                                 </div>
                              </div>
@@ -417,7 +347,7 @@
                                     <h2 id="subject-progress-title" class="text-lg font-bold text-center"></h2>
                                     <div class="relative">
                                         <button id="toggle-progress-view-btn" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><i data-lucide="chevron-down" class="w-5 h-5"></i></button>
-                                        <div id="progress-view-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-card-light dark:bg-card-dark rounded-md shadow-lg z-20 border border-gray-200 dark:border-gray-700">
+                                        <div id="progress-view-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-card-light dark:bg-card-dark rounded-md shadow-lg z-20 border">
                                             <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800" data-view="notes" data-translate="notes_progress">Notes Progress</a>
                                             <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800" data-view="book" data-translate="book_progress">Book Progress</a>
                                         </div>
@@ -442,7 +372,7 @@
                             <button id="add-new-subject-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon">
                                 <i data-lucide="plus" class="w-4 h-4"></i> <span data-translate="add_new_subject">Add New Subject</span>
                             </button>
-                            <input id="search-input" type="text" data-translate-placeholder="search_chapters" placeholder="Search chapters..." class="w-full md:w-auto px-3 py-1.5 text-sm bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                            <input id="search-input" type="text" data-translate-placeholder="search_chapters" placeholder="Search chapters..." class="w-full md:w-auto px-3 py-1.5 text-sm bg-card-light dark:bg-card-dark border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
                         </div>
                     </div>
                     <div id="subjects-list-container" class="space-y-3"></div>
@@ -451,7 +381,7 @@
                 <div id="page-dpt" class="page">
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                         <h2 class="text-2xl font-bold" data-translate="dpt_page_title">Daily Practice Tests (DPT)</h2>
-                        <select id="dpt-subject-filter" class="p-2 bg-card-light dark:bg-card-dark border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <select id="dpt-subject-filter" class="p-2 bg-card-light dark:bg-card-dark border rounded-lg">
                         </select>
                     </div>
                     
@@ -558,12 +488,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                             <label for="student-name-input" class="font-semibold" data-translate="student_name">Student Name</label>
-                            <input type="text" id="student-name-input" data-translate-placeholder="student_name_placeholder" placeholder="Enter your name..." class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-600 rounded-lg">
+                            <input type="text" id="student-name-input" data-translate-placeholder="student_name_placeholder" placeholder="Enter your name..." class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                         </div>
                         
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                             <label for="language-select" class="font-semibold" data-translate="app_language">Application Language</label>
-                            <select id="language-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-600 rounded-lg">
+                            <select id="language-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                                 <option value="en">English</option>
                                 <option value="hi">हिंदी (Hindi)</option>
                             </select>
@@ -571,7 +501,7 @@
                         
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                             <label for="background-style-select" class="font-semibold">Background Style</label>
-                            <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-600 rounded-lg">
+                            <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                                 <option value="default">Default Gradient</option>
                                 <option value="particles">Particle Network</option>
                                 <option value="starfield">Starfield</option>
@@ -579,19 +509,43 @@
                             </select>
                         </div>
                         
-                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
-                             <h3 class="font-semibold mb-3">Theme Customization</h3>
-                             <div class="grid grid-cols-2 gap-4 items-center">
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                             <h3 class="font-semibold">Gradient Theme</h3>
+                             <div class="grid grid-cols-2 gap-4 items-center mt-2">
                                  <div>
-                                     <label for="bg-color-start" class="text-sm font-medium">Gradient Start</label>
+                                     <label for="bg-color-start" class="text-sm font-medium">Start</label>
                                      <input type="color" id="bg-color-start" class="mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
                                  </div>
                                  <div>
-                                     <label for="bg-color-end" class="text-sm font-medium">Gradient End</label>
+                                     <label for="bg-color-end" class="text-sm font-medium">End</label>
                                      <input type="color" id="bg-color-end" class="mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
                                  </div>
                              </div>
                              <button id="reset-theme-btn" class="mt-3 w-full text-sm p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset to Default</button>
+                        </div>
+                        
+                        <!-- NEW: ADVANCED COLOR CUSTOMIZATION -->
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
+                            <h3 class="font-semibold mb-3">Advanced Color Customization</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
+                                <div>
+                                    <label for="color-text-light" class="text-sm font-medium">Light Mode Text</label>
+                                    <input type="color" id="color-text-light" data-color-type="textLight" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                                </div>
+                                <div>
+                                    <label for="color-border-light" class="text-sm font-medium">Light Mode Border</label>
+                                    <input type="color" id="color-border-light" data-color-type="borderLight" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                                </div>
+                                <div>
+                                    <label for="color-text-dark" class="text-sm font-medium">Dark Mode Text</label>
+                                    <input type="color" id="color-text-dark" data-color-type="textDark" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                                </div>
+                                <div>
+                                    <label for="color-border-dark" class="text-sm font-medium">Dark Mode Border</label>
+                                    <input type="color" id="color-border-dark" data-color-type="borderDark" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                                </div>
+                            </div>
+                            <button id="reset-advanced-colors-btn" class="mt-3 w-full text-sm p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset Advanced Colors</button>
                         </div>
 
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
@@ -604,9 +558,7 @@
                         </div>
                         
                         <div id="custom-cycle-plan-container" class="hidden md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                                <h3 class="font-semibold" data-translate="custom_study_plan">Custom Study Plan (2 Week Cycle)</h3>
-                            </div>
+                            <h3 class="font-semibold mb-4" data-translate="custom_study_plan">Custom Study Plan (2 Week Cycle)</h3>
                             <div id="custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                             <button id="save-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom Plan</button>
                         </div>
@@ -621,9 +573,7 @@
                         </div>
                         
                         <div id="custom-dpt-plan-container" class="hidden md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                                <h3 class="font-semibold" data-translate="custom_dpt_plan">Custom DPT Plan (2 Week Cycle)</h3>
-                            </div>
+                            <h3 class="font-semibold mb-4" data-translate="custom_dpt_plan">Custom DPT Plan (2 Week Cycle)</h3>
                             <div id="dpt-custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                             <button id="save-dpt-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom DPT Plan</button>
                         </div>
@@ -636,7 +586,6 @@
         </div>
     </div>
     
-    <!-- MODIFICATION: NEW MOBILE BOTTOM NAVIGATION BAR -->
     <nav id="mobile-bottom-nav">
         <div id="mobile-nav-scroller" class="no-scrollbar">
             <button data-page="home" class="mobile-nav-btn"><i data-lucide="home"></i></button>
@@ -648,7 +597,6 @@
             <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i></button>
             <button data-page="report" class="mobile-nav-btn"><i data-lucide="clipboard-list"></i></button>
             <button data-page="settings" class="mobile-nav-btn"><i data-lucide="settings"></i></button>
-            <!-- MODIFICATION: Theme toggle button moved here -->
             <button id="theme-toggle-btn-mobile" class="mobile-nav-btn">
                 <i data-lucide="sun" id="theme-icon-sun-mobile"></i>
                 <i data-lucide="moon" id="theme-icon-moon-mobile"></i>
@@ -657,8 +605,18 @@
     </nav>
 
     <input type="file" id="import-all-chapters-input" class="hidden" accept=".json">
+    
+    <!-- NEW: "What's New" Update Popup -->
+    <div id="update-popup-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto">
+            <button id="close-update-popup-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="sparkles" class="text-accent"></i> New Update!</h2>
+            <div id="update-popup-content" class="space-y-2 text-sm">
+                <!-- Update notes will be injected here -->
+            </div>
+        </div>
+    </div>
 
-    <!-- *** START: NEW MODAL FOR ADDING SUBJECT *** -->
     <div id="add-subject-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
             <button id="close-add-subject-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -666,7 +624,7 @@
             <form id="add-subject-form" class="space-y-4">
                 <div>
                     <label for="new-subject-name" class="block text-sm font-medium mb-1">Subject Name</label>
-                    <input type="text" id="new-subject-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg" required placeholder="e.g. Current Affairs">
+                    <input type="text" id="new-subject-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g. Current Affairs">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-2">Subject Source</label>
@@ -685,15 +643,11 @@
             </form>
         </div>
     </div>
-    <!-- *** END: NEW MODAL FOR ADDING SUBJECT *** -->
 
-    <!-- Add Chapter Modal -->
-    <div id="add-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative"><button id="close-add-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button><h2 class="text-xl font-bold mb-4" data-translate="add_new_chapter">Add New Chapter</h2><form id="add-chapter-form" class="space-y-4"><input type="hidden" id="add-chapter-subject-id"><input type="hidden" id="add-chapter-source-type"><div><label for="new-chapter-name" class="block text-sm font-medium mb-1" data-translate="chapter_name">Chapter Name</label><input type="text" id="new-chapter-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg" required></div><button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="add_chapter">Add Chapter</button></form></div></div>
+    <div id="add-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative"><button id="close-add-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button><h2 class="text-xl font-bold mb-4" data-translate="add_new_chapter">Add New Chapter</h2><form id="add-chapter-form" class="space-y-4"><input type="hidden" id="add-chapter-subject-id"><input type="hidden" id="add-chapter-source-type"><div><label for="new-chapter-name" class="block text-sm font-medium mb-1" data-translate="chapter_name">Chapter Name</label><input type="text" id="new-chapter-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required></div><button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="add_chapter">Add Chapter</button></form></div></div>
     
-    <!-- Confirmation Modal -->
     <div id="confirmation-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-6 text-center"><h2 id="confirmation-title" class="text-xl font-bold mb-2" data-translate="are_you_sure">Are you sure?</h2><p id="confirmation-message" class="text-text-muted-light dark:text-text-muted-dark mb-6" data-translate="action_cannot_be_undone">This action cannot be undone.</p><div class="flex justify-center gap-4"><button id="confirm-cancel" class="flex-1 p-3 font-semibold rounded-lg bg-gray-200 dark:bg-gray-700" data-translate="cancel">Cancel</button><button id="confirm-action" class="flex-1 p-3 font-semibold rounded-lg text-white bg-danger" data-translate="confirm">Confirm</button></div></div></div>
     
-    <!-- Chapter Details Modal -->
     <div id="chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto">
             <button id="close-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -708,7 +662,7 @@
                 </div>
                 <div>
                     <label for="chapter-notes-textarea" class="block text-sm font-medium mb-1" data-translate="study_notes">Study Notes</label>
-                    <textarea id="chapter-notes-textarea" rows="4" data-translate-placeholder="study_notes_placeholder" placeholder="e.g., This chapter is important for exams..." class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"></textarea>
+                    <textarea id="chapter-notes-textarea" rows="4" data-translate-placeholder="study_notes_placeholder" placeholder="e.g., This chapter is important for exams..." class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg text-sm"></textarea>
                 </div>
                 <div>
                     <label class="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/40 rounded-lg cursor-pointer">
@@ -722,7 +676,7 @@
                     <div id="scheduled-revisions-list" class="space-y-2 mb-3">
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="date" id="manual-revision-date" class="flex-grow p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm">
+                        <input type="date" id="manual-revision-date" class="flex-grow p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg text-sm">
                         <button id="add-manual-revision-btn" class="p-2 font-semibold rounded-lg bg-accent text-white hover:bg-violet-600">
                             <i data-lucide="plus"></i>
                         </button>
@@ -737,16 +691,13 @@
         </div>
     </div>
     
-    <!-- Achievement Badge Modal -->
     <div id="badge-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-8 text-center relative overflow-hidden"><button id="close-badge-modal-x" class="absolute top-4 right-4 text-text-muted-light dark:hover:text-text-light dark:text-text-dark z-10"><i data-lucide="x" class="w-6 h-6"></i></button><div class="absolute top-0 left-0 w-full h-full opacity-10 dark:opacity-20" style="background-image: radial-gradient(circle, var(--primary) 0%, transparent 70%);"></div><i data-lucide="award" class="w-16 h-16 text-amber-400 mx-auto mb-4 drop-shadow-lg"></i><h2 class="text-2xl font-bold mb-2" data-translate="achievement_unlocked">Achievement Unlocked!</h2><p id="badge-name" class="text-lg font-semibold text-primary dark:text-blue-300 mb-4"></p><p id="badge-description" class="text-text-muted-light dark:text-text-muted-dark mb-6"></p><button id="close-badge-modal" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="awesome">Awesome!</button></div></div>
     
-    <!-- Undo Toast -->
     <div id="undo-toast" class="p-3 rounded-lg shadow-lg bg-gray-800 text-white dark:bg-gray-200 dark:text-black flex items-center gap-4">
         <span id="undo-message"></span>
         <button id="undo-btn" class="font-bold" data-translate="undo">Undo</button>
     </div>
 
-    <!-- Add/Edit Exam Modal -->
     <div id="add-exam-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative overflow-y-auto max-h-[90vh]">
             <button id="close-add-exam-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -755,21 +706,21 @@
                 <input type="hidden" id="exam-id">
                 <div>
                     <label for="exam-name" class="block text-sm font-medium mb-1" data-translate="exam_name">Exam Name</label>
-                    <input type="text" id="exam-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg" required>
+                    <input type="text" id="exam-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="application-date" class="block text-sm font-medium mb-1" data-translate="application_date">Application Date</label>
-                        <input type="date" id="application-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <input type="date" id="application-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                     </div>
                     <div>
                         <label for="exam-date" class="block text-sm font-medium mb-1" data-translate="exam_date">Exam Date</label>
-                        <input type="date" id="exam-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <input type="date" id="exam-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                     </div>
                 </div>
                  <div>
                     <label for="exam-status" class="block text-sm font-medium mb-1" data-translate="status">Status</label>
-                    <select id="exam-status" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                    <select id="exam-status" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                         <option value="Applied" data-translate="status_applied">Applied</option>
                         <option value="Admit Card Out" data-translate="status_admit_card">Admit Card Out</option>
                         <option value="Exam Done" data-translate="status_exam_done">Exam Done</option>
@@ -778,7 +729,7 @@
                 </div>
                  <div>
                     <label for="exam-notes" class="block text-sm font-medium mb-1" data-translate="notes">Notes</label>
-                    <textarea id="exam-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg" data-translate-placeholder="notes_placeholder" placeholder="e.g., Registration no., website link..."></textarea>
+                    <textarea id="exam-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" data-translate-placeholder="notes_placeholder" placeholder="e.g., Registration no., website link..."></textarea>
                 </div>
                 <div>
                     <label for="exam-receipt" class="block text-sm font-medium mb-1" data-translate="application_receipt">Application Receipt</label>
@@ -790,7 +741,6 @@
         </div>
     </div>
 
-    <!-- Date Completion Modal -->
     <div id="date-completion-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
             <button id="close-date-completion-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -798,7 +748,7 @@
             <div class="space-y-4">
                 <div>
                     <label for="date-completion-subject-select" class="block text-sm font-medium mb-1">Select Subject</label>
-                    <select id="date-completion-subject-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                    <select id="date-completion-subject-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                         <option value="">-- Choose a Subject --</option>
                     </select>
                 </div>
@@ -810,7 +760,6 @@
         </div>
     </div>
     
-    <!-- DPT Details Submission Modal (UPDATED with Delete Button) -->
     <div id="dpt-details-popup-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
             <button id="close-dpt-details-popup-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -819,12 +768,12 @@
                 <input type="hidden" id="dpt-details-subject-id">
                 <input type="hidden" id="dpt-details-test-id">
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-                    <div><label for="dpt-total-q" class="font-medium" data-translate="dpt_total_q">Total Qs</label><input type="number" id="dpt-total-q" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
-                    <div><label for="dpt-total-time" class="font-medium" data-translate="dpt_total_time">Total Time</label><input type="number" id="dpt-total-time" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
-                    <div><label for="dpt-attempted" class="font-medium" data-translate="dpt_attempted">Attempted</label><input type="number" id="dpt-attempted" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
-                    <div><label for="dpt-correct" class="font-medium" data-translate="dpt_correct">Correct</label><input type="number" id="dpt-correct" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
-                    <div><label for="dpt-wrong" class="font-medium" data-translate="dpt_wrong">Wrong</label><input type="number" id="dpt-wrong" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
-                    <div><label for="dpt-time-taken" class="font-medium" data-translate="dpt_time_taken">Time Taken</label><input type="number" id="dpt-time-taken" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
+                    <div><label for="dpt-total-q" class="font-medium" data-translate="dpt_total_q">Total Qs</label><input type="number" id="dpt-total-q" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
+                    <div><label for="dpt-total-time" class="font-medium" data-translate="dpt_total_time">Total Time</label><input type="number" id="dpt-total-time" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
+                    <div><label for="dpt-attempted" class="font-medium" data-translate="dpt_attempted">Attempted</label><input type="number" id="dpt-attempted" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
+                    <div><label for="dpt-correct" class="font-medium" data-translate="dpt_correct">Correct</label><input type="number" id="dpt-correct" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
+                    <div><label for="dpt-wrong" class="font-medium" data-translate="dpt_wrong">Wrong</label><input type="number" id="dpt-wrong" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
+                    <div><label for="dpt-time-taken" class="font-medium" data-translate="dpt_time_taken">Time Taken</label><input type="number" id="dpt-time-taken" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" id="delete-dpt-btn" class="p-3 font-semibold rounded-lg bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300"><i data-lucide="trash-2"></i></button>
@@ -835,7 +784,6 @@
         </div>
     </div>
     
-    <!-- MODIFICATION: Manual Add Task Modal (UPDATED for dual purpose) -->
     <div id="manual-add-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
             <button id="close-manual-add-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -843,7 +791,7 @@
             <div class="space-y-4">
                 <div>
                     <label for="manual-add-subject-select" class="block text-sm font-medium mb-1">Select Subject</label>
-                    <select id="manual-add-subject-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                    <select id="manual-add-subject-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                         <option value="">-- Choose a Subject --</option>
                     </select>
                 </div>
@@ -851,11 +799,11 @@
                 <div id="manual-add-chapter-content">
                     <div>
                         <label for="manual-add-date" class="block text-sm font-medium mb-1">Date</label>
-                        <input type="date" id="manual-add-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <input type="date" id="manual-add-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                     </div>
                     <div>
                         <label for="manual-add-chapter-name" class="block text-sm font-medium mb-1">New Chapter Name</label>
-                        <input type="text" id="manual-add-chapter-name" placeholder="Enter chapter name to add..." class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <input type="text" id="manual-add-chapter-name" placeholder="Enter chapter name to add..." class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
                     </div>
                     <div>
                          <label class="block text-sm font-medium mb-2">Source</label>
@@ -880,7 +828,6 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(registration => {
@@ -890,18 +837,28 @@
                 });
             });
         }
+        
+        const CURRENT_APP_VERSION = "2.0";
+        const updateNotes = {
+            "2.0": [
+                "**Automatic Daily Reset:** The app now automatically resets the daily plan at midnight, even if it's left open.",
+                "**'Pitch Black' Night Mode:** When using animated backgrounds in dark mode, the theme now becomes a true black for better viewing.",
+                "**Advanced Color Customization:** You can now manually set text and border colors for both light and dark modes in the Settings page.",
+                "**Update Popup:** You're seeing it now! The app will notify you of new features after each update."
+            ]
+        };
 
         const DB_KEY = 'pravejStudyTracker';
         let lastAction = null;
         let undoTimeout = null;
         let dashboardProgressView = 'notes';
         let currentSubjectSourceView = 'notes';
-        // MODIFICATION: State for dashboard "See More" toggles
         let dashboardViewState = {
             missed: false,
             revisions: false,
             postponed: false
         };
+        let lastIntervalDateString = new Date().toISOString().split('T')[0];
         
         const translations = {
             en: {
@@ -971,7 +928,6 @@
                 "notes_placeholder": "e.g., Registration no., website link...", "delete_exam": "Delete Exam", "no_upcoming_exams": "No upcoming exams.", "edit_exam": "Edit Exam",
                 "application_receipt": "Application Receipt", "view_receipt": "View Current Receipt", "receipt_attached": "Receipt Attached",
                 "history_exams": "History", "no_history_exams": "No past exams found in your history.", "no_upcoming_exams_filter": "There are no upcoming exams scheduled.", "no_applied_forms_filter": "No forms currently in 'Applied' status.",
-                // DPT TRANSLATIONS
                 "dpt": "DPT", "dpt_page_title": "Daily Practice Tests (DPT)", "all_subjects": "All Subjects",
                 "add_dpt": "Add DPTs", "add_dpt_all": "Add DPTs to All", "no_dpt_for_subject": "No DPTs added for this subject yet.", "dpt_progress": "Test {completed} of {total} completed",
                 "todays_dpt": "Today's DPT", "mark_as_complete": "Mark as Complete", "no_dpt_scheduled": "No DPT scheduled for today.",
@@ -982,9 +938,8 @@
                 "avg_time_per_q": "Avg. Time / Q (s)", "add_new_subject": "Add New Subject",
                 "enter_subject_name": "Enter the new subject name:", "subject_exists": "A subject with this name already exists.",
                 "delete_all": "Delete All", "delete_all_chapters_confirm": "Are you sure you want to delete ALL chapters for this source? This cannot be undone.",
-                "custom_cycle": "Custom Cycle", "custom_study_plan": "Custom Study Plan", "cycle_length": "Cycle Length (days):",
-                "save_custom_plan": "Save Custom Plan", "day_d": "Day {day}",
-                "dpt_plan_mode": "Daily DPT Plan Mode", "dpt_plan_subtitle": "Choose how you want to generate your daily DPT schedule.", "dpt_auto_mode": "Automatic (Follows Study Plan)", "custom_dpt_plan": "Custom DPT Plan",
+                "custom_cycle": "Custom Cycle", "custom_study_plan": "Custom Study Plan (2 Week Cycle)", "save_custom_plan": "Save Custom Plan",
+                "dpt_plan_mode": "Daily DPT Plan Mode", "dpt_plan_subtitle": "Choose how you want to generate your daily DPT schedule.", "dpt_auto_mode": "Automatic (Follows Study Plan)", "custom_dpt_plan": "Custom DPT Plan (2 Week Cycle)",
                 "dpt_report_title": "DPT Summary", "dpt_subject_breakdown": "DPT Subject Breakdown", "no_dpt_data_report": "No DPT data logged yet.",
                 "sunday": "Sunday", "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "week_2_suffix": "(Week 2)",
                 "delete_subject": "Delete Subject", "delete_subject_confirm": "This will delete the subject '{subjectName}' and all its chapters and DPTs. This action cannot be undone.",
@@ -1058,7 +1013,6 @@
                 "notes_placeholder": "उदा., पंजीकरण संख्या, वेबसाइट लिंक...", "delete_exam": "परीक्षा हटाएं", "no_upcoming_exams": "कोई आगामी परीक्षा नहीं है।", "edit_exam": "परीक्षा संपादित करें",
                 "application_receipt": "आवेदन रसीद", "view_receipt": "वर्तमान रसीद देखें", "receipt_attached": "रसीद संलग्न है",
                 "history_exams": "इतिहास", "no_history_exams": "आपके इतिहास में कोई पिछली परीक्षा नहीं मिली।", "no_upcoming_exams_filter": "कोई आगामी परीक्षा निर्धारित नहीं है।", "no_applied_forms_filter": "'आवेदन किया गया' स्थिति में वर्तमान में कोई फॉर्म नहीं है।",
-                // DPT TRANSLATIONS
                 "dpt": "DPT", "dpt_page_title": "डेली प्रैक्टिस टेस्ट (DPT)", "all_subjects": "सभी विषय",
                 "add_dpt": "DPT जोड़ें", "add_dpt_all": "सभी में DPT जोड़ें", "no_dpt_for_subject": "इस विषय के लिए अभी तक कोई DPT नहीं जोड़ा गया है।", "dpt_progress": "{total} में से {completed} टेस्ट पूरे हुए",
                 "todays_dpt": "आज का DPT", "mark_as_complete": "पूर्ण के रूप में चिह्नित करें", "no_dpt_scheduled": "आज के लिए कोई DPT निर्धारित नहीं है।",
@@ -1069,9 +1023,8 @@
                 "avg_time_per_q": "औसत समय/प्रश्न (से)", "add_new_subject": "नया विषय जोड़ें",
                 "enter_subject_name": "नए विषय का नाम दर्ज करें:", "subject_exists": "इस नाम का विषय पहले से मौजूद है।",
                 "delete_all": "सभी हटाएं", "delete_all_chapters_confirm": "क्या आप वाकई इस स्रोत के सभी चैप्टर्स को हटाना चाहते हैं? यह क्रिया पूर्ववत् नहीं की जा सकती।",
-                "custom_cycle": "कस्टम साइकिल", "custom_study_plan": "कस्टम अध्ययन योजना", "cycle_length": "साइकिल की अवधि (दिन):",
-                "save_custom_plan": "कस्टम योजना सहेजें", "day_d": "दिन {day}",
-                "dpt_plan_mode": "दैनिक DPT योजना मोड", "dpt_plan_subtitle": "चुनें कि आप अपनी दैनिक DPT योजना कैसे बनाना चाहते हैं।", "dpt_auto_mode": "स्वचालित (अध्ययन योजना के अनुसार)", "custom_dpt_plan": "कस्टम DPT योजना",
+                "custom_cycle": "कस्टम साइकिल", "custom_study_plan": "कस्टम अध्ययन योजना (2 सप्ताह चक्र)", "save_custom_plan": "कस्टम योजना सहेजें",
+                "dpt_plan_mode": "दैनिक DPT योजना मोड", "dpt_plan_subtitle": "चुनें कि आप अपनी दैनिक DPT योजना कैसे बनाना चाहते हैं।", "dpt_auto_mode": "स्वचालित (अध्ययन योजना के अनुसार)", "custom_dpt_plan": "कस्टम DPT योजना (2 सप्ताह चक्र)",
                 "dpt_report_title": "DPT सारांश", "dpt_subject_breakdown": "DPT विषयवार विश्लेषण", "no_dpt_data_report": "अभी तक कोई DPT डेटा लॉग नहीं किया गया है।",
                 "sunday": "रविवार", "monday": "सोमवार", "tuesday": "मंगलवार", "wednesday": "बुधवार", "thursday": "गुरुवार", "friday": "शुक्रवार", "saturday": "शनिवार", "week_2_suffix": "(सप्ताह 2)",
                 "delete_subject": "विषय हटाएं", "delete_subject_confirm": "यह विषय '{subjectName}' और इसके सभी चैप्टर्स और DPTs को हटा देगा। यह कार्रवाई पूर्ववत नहीं की जा सकती।",
@@ -1104,9 +1057,12 @@
                 dptCyclePlan: Array(14).fill([]),
                 language: 'en', 
                 studentName: 'Pravej Ahmad',
-                customThemeColors: { start: null, end: null },
+                customThemeColors: { 
+                    start: null, end: null,
+                    textLight: null, borderLight: null, textDark: null, borderDark: null 
+                },
                 backgroundStyle: 'hexagon', 
-                sidebarStyle: 'subtle-shadow'
+                appVersion: "1.0"
             },
             gamification: { badges: [], completedHistory: [] },
             activityLog: [], appStartDate: new Date().toISOString().split('T')[0],
@@ -1129,8 +1085,8 @@
             data = JSON.parse(JSON.stringify(initialState));
         }
         
-        // --- DATA INTEGRITY AND MIGRATION ---
         data.settings = {...initialState.settings, ...data.settings};
+        data.settings.customThemeColors = {...initialState.settings.customThemeColors, ...data.settings.customThemeColors};
         
         data.postponedChapters = data.postponedChapters || [];
         data.missedChapters = data.missedChapters || [];
@@ -1157,10 +1113,8 @@
         delete data.settings.cycleLength; 
         delete data.settings.dptCycleLength; 
 
-
         (data.exams || []).forEach(exam => { if(typeof exam.receipt === 'undefined') exam.receipt = null; });
         
-        // Remove any old target data if it exists
         if (data.targets) delete data.targets;
         if (data.settings && data.settings.deadline) delete data.settings.deadline;
         
@@ -1211,22 +1165,20 @@
         };
         
         const dailyPattern = [
-            // Week 1
-            ["physics:notes", "history:notes", "math:notes", "static-gk:notes"], // Sunday
-            ["chemistry:notes", "history:notes", "math:notes", "संविधान-articles:notes"], // Monday
-            ["biology:notes", "history:notes", "math:notes", "maths-formulas:notes"], // Tuesday
-            ["physics:notes", "history:notes", "math:notes", "static-gk:notes"], // Wednesday
-            ["chemistry:notes", "history:notes", "math:notes", "संविधान-articles:notes"], // Thursday
-            ["biology:notes", "history:notes", "math:notes", "maths-formulas:notes"], // Friday
-            ["math:notes", "reasoning:notes", "fill-form:notes"], // Saturday
-            // Week 2
-            ["polity:notes", "history:notes", "math:notes", "static-gk:notes"],  // Sunday (Week 2)
-            ["hindi:notes", "history:notes", "math:notes", "संविधान-articles:notes"], // Monday (Week 2)
-            ["geography:notes", "history:notes", "math:notes", "maths-formulas:notes"], // Tuesday (Week 2)
-            ["economics:notes", "history:notes", "math:notes", "static-gk:notes"], // Wednesday (Week 2)
-            ["polity:notes", "history:notes", "math:notes", "संविधान-articles:notes"], // Thursday (Week 2)
-            ["geography:notes", "history:notes", "math:notes", "maths-formulas:notes"], // Friday (Week 2)
-            ["economics:notes", "math:notes", "reasoning:notes", "fill-form:notes"]  // Saturday (Week 2)
+            ["physics:notes", "history:notes", "math:notes", "static-gk:notes"],
+            ["chemistry:notes", "history:notes", "math:notes", "संविधान-articles:notes"],
+            ["biology:notes", "history:notes", "math:notes", "maths-formulas:notes"],
+            ["physics:notes", "history:notes", "math:notes", "static-gk:notes"],
+            ["chemistry:notes", "history:notes", "math:notes", "संविधान-articles:notes"],
+            ["biology:notes", "history:notes", "math:notes", "maths-formulas:notes"],
+            ["math:notes", "reasoning:notes", "fill-form:notes"],
+            ["polity:notes", "history:notes", "math:notes", "static-gk:notes"],
+            ["hindi:notes", "history:notes", "math:notes", "संविधान-articles:notes"],
+            ["geography:notes", "history:notes", "math:notes", "maths-formulas:notes"],
+            ["economics:notes", "history:notes", "math:notes", "static-gk:notes"],
+            ["polity:notes", "history:notes", "math:notes", "संविधान-articles:notes"],
+            ["geography:notes", "history:notes", "math:notes", "maths-formulas:notes"],
+            ["economics:notes", "math:notes", "reasoning:notes", "fill-form:notes"]
         ];
 
         let allCharts = {};
@@ -1250,38 +1202,45 @@
             applyTheme(data.settings.theme);
             applyBackgroundStyle();
             applyCustomTheme();
+            applyManualColors();
             lucide.createIcons();
             addEventListeners();
             applyTranslations();
             if ('Notification' in window && Notification.permission !== 'denied') {
                 Notification.requestPermission();
             }
-            scheduleDailyCheck(); // *** NEW: Start the automatic daily checker ***
+            setInterval(checkDateChange, 60000); // Check every minute
+            checkAppUpdate();
             navigateTo('home');
         };
 
-        // *** NEW: Automatic Daily Checker Function ***
-        const scheduleDailyCheck = () => {
-            const now = new Date();
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-            // We set it to 12:01 AM to be safe and avoid any race conditions at exactly midnight.
-            tomorrow.setHours(0, 1, 0, 0); 
-            
-            const msUntilMidnight = tomorrow.getTime() - now.getTime();
-
-            console.log(`Next automatic daily check scheduled in ${Math.round(msUntilMidnight / 1000 / 60)} minutes.`);
-
-            setTimeout(() => {
-                console.log("Midnight check triggered! Updating daily plan.");
+        const checkDateChange = () => {
+            const currentDateString = new Date().toISOString().split('T')[0];
+            if (currentDateString !== lastIntervalDateString) {
+                lastIntervalDateString = currentDateString;
                 handleNewDayLogic();
-                // If the user is currently on the home page, refresh it to show the new plan.
                 if (document.getElementById('page-home').classList.contains('active')) {
                     renderHomePage();
                 }
-                // Schedule the next check for the following day.
-                scheduleDailyCheck();
-            }, msUntilMidnight);
+            }
+        };
+        
+        const checkAppUpdate = () => {
+            const savedVersion = data.settings.appVersion || "1.0";
+            if (savedVersion !== CURRENT_APP_VERSION) {
+                showUpdatePopup();
+                data.settings.appVersion = CURRENT_APP_VERSION;
+                saveData();
+            }
+        };
+
+        const showUpdatePopup = () => {
+            const notes = updateNotes[CURRENT_APP_VERSION];
+            if (!notes) return;
+            const contentEl = document.getElementById('update-popup-content');
+            contentEl.innerHTML = notes.map(note => `<p class="flex items-start gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-500 mt-1 flex-shrink-0"></i><span>${note.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</span></p>`).join('');
+            showModal('update-popup-modal');
+            lucide.createIcons();
         };
         
         const showUndoToast = (message, onUndo) => {
@@ -1348,10 +1307,23 @@
             ['theme-icon-sun', 'theme-icon-sun-mobile'].forEach(id => document.getElementById(id).style.display = isDark ? 'none' : 'block');
             ['theme-icon-moon', 'theme-icon-moon-mobile'].forEach(id => document.getElementById(id).style.display = isDark ? 'block' : 'none');
             applyCustomTheme();
+            applyBackgroundStyle();
             if (document.getElementById('page-analytics').classList.contains('active')) renderAnalyticsPage();
-            if (data.settings.backgroundStyle !== 'default') {
-                stopAllBackgroundAnimations();
-                applyBackgroundStyle();
+        };
+        
+        const applyManualColors = () => {
+            const root = document.documentElement;
+            const colors = data.settings.customThemeColors;
+            const mapping = {
+                textLight: '--text-light', borderLight: '--border-light',
+                textDark: '--text-dark', borderDark: '--border-dark'
+            };
+            for (const [key, variable] of Object.entries(mapping)) {
+                if (colors[key]) {
+                    root.style.setProperty(variable, colors[key]);
+                } else {
+                    root.style.removeProperty(variable);
+                }
             }
         };
         
@@ -1431,7 +1403,6 @@
         };
 
         const renderHomePage = () => {
-            // *** MODIFICATION: Run the daily check every time home page is rendered as a backup ***
             handleNewDayLogic();
             document.getElementById('welcome-heading').innerHTML = `${_('welcome_pravej')}, <span class="text-primary">${data.settings.studentName || 'Student'}!</span>`;
             renderAIInsights();
@@ -1505,9 +1476,6 @@
                 data.postponedChapters.push({ subjectId, chapterId, sourceType, date: tomorrowStr });
                 logActivity('skip-forward', `Chapter postponed to tomorrow: "${chapter.name}"`);
                 markSubjectAsDoneForToday(`${subjectId}:${sourceType}`);
-                // BUG FIX: The following line was deleting the plan for tomorrow every time a chapter was postponed,
-                // causing only the last postponed chapter to be saved. It has been removed.
-                // delete data.dailyPlan[tomorrowStr];
             }, 500);
         };
         
@@ -1546,14 +1514,12 @@
                     const subject = getSubjectById(subjectId); if (!subject) return;
                     const availableChapters = (subject.chapters[sourceType] || []).filter(c => c.status !== 'Completed' && !chaptersAlreadyUsed.has(c.id));
                     
-                    // --- MODIFICATION START: Select a random chapter instead of the first one ---
                     if (availableChapters.length > 0) {
                         const randomIndex = Math.floor(Math.random() * availableChapters.length);
                         const chapter = availableChapters[randomIndex]; 
                         plan.tasks[pair] = { subjectId, chapterId: chapter.id, sourceType }; 
                         chaptersAlreadyUsed.add(chapter.id); 
                     }
-                    // --- MODIFICATION END ---
                 });
                 data.dailyPlan[dateStr] = plan;
                 data.dailyPlan[dateStr].planGeneratedForDay = true;
@@ -1622,7 +1588,7 @@
                         </div>`;
                     
                     return `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
-                        <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border-gray-300 flex-shrink-0" data-subject-id="${subjectObj.id}" data-chapter-id="${chapterObj.id}" data-source-type="${item.sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-source-pair="${subject.id}:${sourceType}"`}>
+                        <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subjectObj.id}" data-chapter-id="${chapterObj.id}" data-source-type="${item.sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-source-pair="${subject.id}:${sourceType}"`}>
                         <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${labelText}</p>${subText}</label>
                         ${actionButtons}</li>`;
                 };
@@ -1670,7 +1636,6 @@
             lucide.createIcons();
         };
 
-        // --- MODIFICATION START: Update render functions to use "See More" ---
         const renderMissedChapters = () => {
             const container = document.getElementById('missed-chapters-list');
             const allMissed = (data.missedChapters || []).sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1750,7 +1715,6 @@
             container.innerHTML = html;
             lucide.createIcons();
         };
-        // --- MODIFICATION END ---
         
         const renderOverallProgress = () => {
             const allChapters = (data.subjects || []).flatMap(s => [...(s.chapters.notes || []), ...(s.chapters.book || [])]);
@@ -1835,7 +1799,7 @@
                             <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
                         </div>
                     </summary>
-                    <div class="p-4 border-t border-gray-100 dark:border-gray-800">
+                    <div class="p-4 border-t">
                         <div>${renderChapterList(chapters, currentSubjectSourceView)}<button class="${buttonClasses}" data-subject-id="${subject.id}" data-source-type="${currentSubjectSourceView}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_chapter')}</button></div>
                     </div>
                  </details>`;
@@ -1871,7 +1835,6 @@
              container.querySelectorAll('[data-date]').forEach(el => { if (el.dataset.date < new Date().toISOString().split('T')[0]) { el.addEventListener('click', () => openDateCompletionModal(el.dataset.date)); } });
         };
         
-        // MODIFICATION: Added DPT Summary to the main report
         const renderReportPage = () => {
             const container = document.getElementById('report-content-container');
             const allChapters = (data.subjects || []).flatMap(s => [...(s.chapters.notes || []), ...(s.chapters.book || [])]);
@@ -1898,7 +1861,7 @@
                 const subCompleted = allSubChapters.filter(c => c.status === 'Completed').length; const subPercentage = allSubChapters.length > 0 ? Math.round((subCompleted / allSubChapters.length) * 100) : 0;
                 return `<div class="mb-4"><div class="flex justify-between items-center mb-1"><span class="font-semibold">${_(subject.id)}</span><span>${subCompleted}/${allSubChapters.length} (${subPercentage}%)</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5"><div class="bg-primary h-2.5 rounded-full" style="width: ${subPercentage}%"></div></div></div>`;
             }).join('');
-            let activityHtml = (data.activityLog || []).slice(0, 20).map(log => `<div class="flex items-start gap-3 py-2 border-b border-gray-200 dark:border-gray-700"><i data-lucide="${log.icon}" class="w-4 h-4 mt-1 text-primary"></i><div><p class="text-sm">${log.description}</p><p class="text-xs text-text-muted-light">${new Date(log.timestamp).toLocaleString()}</p></div></div>`).join('');
+            let activityHtml = (data.activityLog || []).slice(0, 20).map(log => `<div class="flex items-start gap-3 py-2 border-b"><i data-lucide="${log.icon}" class="w-4 h-4 mt-1 text-primary"></i><div><p class="text-sm">${log.description}</p><p class="text-xs text-text-muted-light">${new Date(log.timestamp).toLocaleString()}</p></div></div>`).join('');
             if((data.activityLog || []).length === 0) activityHtml = `<p class="text-center text-sm p-4">${_('no_activity_log_report')}</p>`;
             container.innerHTML = `<div id="report-content" class="p-6 bg-card-light dark:bg-card-dark rounded-xl shadow-sm"><div class="text-center mb-6 border-b pb-4"><h1 class="text-2xl font-bold">${_('study_report')}</h1><p>${data.settings.studentName || 'Student'} - ${new Date().toLocaleDateString()}</p></div><h2 class="text-xl font-bold mb-3">${_('overall_summary')}</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('total_subjects')}</p><p class="text-2xl font-bold">${(data.subjects || []).length}</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('total_chapters')}</p><p class="text-2xl font-bold">${total}</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('chapters_completed')}</p><p class="text-2xl font-bold">${completed}</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('progress')}</p><p class="text-2xl font-bold text-primary">${percentage}%</p></div></div><h2 class="text-xl font-bold mb-4 mt-8">${_('subject_breakdown')}</h2>${subjectBreakdownHtml}${generateDptReportHtml()}<h2 class="text-xl font-bold mb-4 mt-8">${_('recent_activity')}</h2>${activityHtml}</div>`;
             lucide.createIcons();
@@ -1914,7 +1877,6 @@
             const bestDayEntry = Object.entries(completionByDate).sort((a,b) => b[1] - a[1])[0];
             document.getElementById('metric-best-day').textContent = bestDayEntry ? `${bestDayEntry[1]}` : '-';
             
-            // DPT Analytics
             const allCompletedDpts = Object.values(data.dpts).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
             let totalCorrect = 0, totalAttempted = 0;
             allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; });
@@ -1923,28 +1885,25 @@
             document.getElementById('metric-dpt-accuracy').textContent = `${dptAccuracy}%`;
 
             const isDark = data.settings.theme === 'dark';
-            const textColor = isDark ? '#f1f5f9' : '#020617'; const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = getComputedStyle(document.body).getPropertyValue('color'); 
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
             
-            // Chart 1: Chapter Status
             const chart1Ctx = document.getElementById('chapter-status-chart').getContext('2d');
             const notStarted = allChapters.length - completedChapters.length;
             if(allCharts.status) allCharts.status.destroy();
             allCharts.status = new Chart(chart1Ctx, { type: 'doughnut', data: { labels: [_('completed'), _('not_started')], datasets: [{ data: [completedChapters.length, notStarted], backgroundColor: ['#0ea5e9', '#f59e0b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor } } } } });
             
-            // Chart 2: Weekly Productivity
             const chart2Ctx = document.getElementById('weekly-productivity-chart').getContext('2d');
             const last7Days = [...Array(7)].map((_, i) => new Date(Date.now() - i * 86400000).toISOString().split('T')[0]).reverse();
             const weeklyData = last7Days.map(day => completionByDate[day] || 0);
             if(allCharts.weekly) allCharts.weekly.destroy();
             allCharts.weekly = new Chart(chart2Ctx, { type: 'bar', data: { labels: last7Days.map(d => new Date(d).toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'short' })), datasets: [{ label: _('completed_chapters_chart'), data: weeklyData, backgroundColor: '#8b5cf6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
             
-            // Chart 3: Subject-wise Chapter Progress
             const chart3Ctx = document.getElementById('subject-progress-chart').getContext('2d');
             const subjectProgressData = (data.subjects || []).map(s => { const chapters = [...(s.chapters.notes || []), ...(s.chapters.book || [])]; return chapters.length > 0 ? (chapters.filter(c => c.status === 'Completed').length / chapters.length) * 100 : 0; });
             if(allCharts.subject) allCharts.subject.destroy();
             allCharts.subject = new Chart(chart3Ctx, { type: 'bar', data: { labels: data.subjects.map(s => _(s.id)), datasets: [{ label: _('progress')+' (%)', data: subjectProgressData, backgroundColor: '#0ea5e9' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100, ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { display: false } } } } });
 
-            // Chart 4: DPT Performance
             const dptChartCtx = document.getElementById('dpt-performance-chart').getContext('2d');
             const dptPerfLabels = [];
             const dptPerfData = [];
@@ -1968,6 +1927,13 @@
             document.getElementById('background-style-select').value = data.settings.backgroundStyle || 'hexagon';
             document.getElementById('bg-color-start').value = data.settings.customThemeColors.start || '#cffafe';
             document.getElementById('bg-color-end').value = data.settings.customThemeColors.end || '#e0e7ff';
+            
+            const colors = data.settings.customThemeColors;
+            document.getElementById('color-text-light').value = colors.textLight || '#020617';
+            document.getElementById('color-border-light').value = colors.borderLight || '#e5e7eb';
+            document.getElementById('color-text-dark').value = colors.textDark || '#f1f5f9';
+            document.getElementById('color-border-dark').value = colors.borderDark || '#374151';
+
             const planMode = data.settings.planMode || 'auto';
             document.querySelector(`input[name="plan-mode"][value="${planMode}"]`).checked = true;
             const customCycleContainer = document.getElementById('custom-cycle-plan-container');
@@ -1975,7 +1941,7 @@
                 customCycleContainer.classList.remove('hidden');
                 const cycleSelector = document.getElementById('custom-cycle-subject-selector');
                 const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), _('sunday') + ` ${_('week_2_suffix')}`, _('monday') + ` ${_('week_2_suffix')}`, _('tuesday') + ` ${_('week_2_suffix')}`, _('wednesday') + ` ${_('week_2_suffix')}`, _('thursday') + ` ${_('week_2_suffix')}`, _('friday') + ` ${_('week_2_suffix')}`, _('saturday') + ` ${_('week_2_suffix')}` ];
-                cycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2">${(data.subjects || []).map(s => `<details class="group bg-card-light dark:bg-card-dark rounded-md border border-gray-200 dark:border-gray-700"><summary class="flex items-center justify-between p-2 cursor-pointer list-none"><span class="font-semibold text-sm">${_(s.id)}</span><i data-lucide="chevron-right" class="w-4 h-4 transition-transform group-open:rotate-90"></i></summary><div class="p-2 border-t space-y-2"><label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}:notes" ${((data.settings.customCyclePlan?.[i] || []).includes(`${s.id}:notes`)) ? 'checked' : ''}><span data-translate="source_notes">${_('source_notes')}</span></label><label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-accent" data-day="${i}" value="${s.id}:book" ${((data.settings.customCyclePlan?.[i] || []).includes(`${s.id}:book`)) ? 'checked' : ''}><span data-translate="source_book">${_('source_book')}</span></label></div></details>`).join('')}</div></div>`).join('');
+                cycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2">${(data.subjects || []).map(s => `<details class="group bg-card-light dark:bg-card-dark rounded-md border"><summary class="flex items-center justify-between p-2 cursor-pointer list-none"><span class="font-semibold text-sm">${_(s.id)}</span><i data-lucide="chevron-right" class="w-4 h-4 transition-transform group-open:rotate-90"></i></summary><div class="p-2 border-t space-y-2"><label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}:notes" ${((data.settings.customCyclePlan?.[i] || []).includes(`${s.id}:notes`)) ? 'checked' : ''}><span data-translate="source_notes">${_('source_notes')}</span></label><label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-accent" data-day="${i}" value="${s.id}:book" ${((data.settings.customCyclePlan?.[i] || []).includes(`${s.id}:book`)) ? 'checked' : ''}><span data-translate="source_book">${_('source_book')}</span></label></div></details>`).join('')}</div></div>`).join('');
                 lucide.createIcons();
             } else { customCycleContainer.classList.add('hidden'); }
             const dptPlanMode = data.settings.dptPlanMode || 'auto';
@@ -2245,7 +2211,7 @@
             const hasPending = scheduledTests.some(({ subjectId, testId }) => { const test = data.dpts[subjectId]?.tests.find(t => t.id === testId); return test && test.status !== 'Completed'; });
             container.className = `dashboard-card p-4 rounded-xl shadow-sm min-h-[100px] bg-gradient-to-br ${ hasPending ? 'from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900' : 'from-teal-100 to-green-200 dark:from-teal-800 dark:to-green-900' }`;
             
-            let html = `<div class="flex items-center justify-between pb-3 border-b border-black/10 dark:border-white/10 mb-3">
+            let html = `<div class="flex items-center justify-between pb-3 border-b mb-3">
                 <div class="flex items-center gap-3"><i data-lucide="file-check" class="w-6 h-6"></i><h2 class="text-lg font-bold">${_('todays_dpt')}</h2></div>
                 <button id="manual-add-dpt-btn" class="p-1.5 rounded-full hover:bg-orange-200 dark:hover:bg-orange-800"><i data-lucide="plus-circle" class="w-5 h-5 text-orange-700 dark:text-orange-300"></i></button>
             </div>`;
@@ -2375,13 +2341,19 @@
         const applyBackgroundStyle = () => {
             stopAllBackgroundAnimations();
             const style = data.settings.backgroundStyle || 'hexagon';
+            
+            if (data.settings.theme === 'dark' && style !== 'default') {
+                document.documentElement.classList.add('pitch-black');
+            } else {
+                document.documentElement.classList.remove('pitch-black');
+            }
+
             if (style === 'default') { document.body.classList.remove('particles-active'); particleCanvas.style.display = 'none'; return; }
             document.body.classList.add('particles-active'); particleCanvas.style.display = 'block';
             const animationInitializers = { particles: initParticleNetwork, starfield: initStarfield, hexagon: initHexagons };
             if (animationInitializers[style]) { animationInitializers[style](); }
         };
         
-        // MODIFICATION: Helper function to convert hex to rgba
         const hexToRgba = (hex, alpha = 1) => {
             const r = parseInt(hex.slice(1, 3), 16);
             const g = parseInt(hex.slice(3, 5), 16);
@@ -2397,7 +2369,6 @@
                 this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; 
                 this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 1.5 - 0.75; 
                 this.speedY = Math.random() * 1.5 - 0.75; 
-                // MODIFICATION: Use CSS variables for theme-aware colors
                 const colorVar = data.settings.theme === 'dark' ? '--accent' : '--primary';
                 const color = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
                 this.color = hexToRgba(color, data.settings.theme === 'dark' ? 0.7 : 0.5);
@@ -2408,7 +2379,6 @@
         function animateParticleNetwork() { ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); for (let i = 0; i < backgroundElements.length; i++) { backgroundElements[i].update(); backgroundElements[i].draw(); } connectParticles(); animationFrameId = requestAnimationFrame(animateParticleNetwork); }
         function connectParticles() { 
             let opacityValue = 1; const connectDistance = 120; 
-            // MODIFICATION: Use CSS variables for theme-aware line colors
             const colorVar = data.settings.theme === 'dark' ? '--accent' : '--primary';
             const colorHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
             const lineColor = hexToRgba(colorHex, data.settings.theme === 'dark' ? 0.2 : 0.1);
@@ -2416,8 +2386,8 @@
             for (let a = 0; a < backgroundElements.length; a++) { for (let b = a; b < backgroundElements.length; b++) { let distance = Math.hypot(backgroundElements[a].x - backgroundElements[b].x, backgroundElements[a].y - backgroundElements[b].y); if (distance < connectDistance) { opacityValue = 1 - (distance / connectDistance); ctx.strokeStyle = lineColor.replace(/,\s*\d?\.?\d+\)$/, `, ${opacityValue})`); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(backgroundElements[a].x, backgroundElements[a].y); ctx.lineTo(backgroundElements[b].x, backgroundElements[b].y); ctx.stroke(); } } } 
         }
         function initStarfield() { initCanvas(); for (let i = 0; i < 400; i++) backgroundElements.push(new Star()); animateStarfield(); }
-        class Star { constructor() { this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; this.z = Math.random() * particleCanvas.width; this.color = data.settings.theme === 'dark' ? '#FFF' : '#020617';} update() { this.z -= 1.5; if (this.z < 1) { this.z = particleCanvas.width; this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; } } draw() { let x = (this.x - particleCanvas.width / 2) * (particleCanvas.width / this.z) + particleCanvas.width / 2; let y = (this.y - particleCanvas.height / 2) * (particleCanvas.width / this.z) + particleCanvas.height / 2; let r = (particleCanvas.width / this.z); ctx.beginPath(); ctx.fillStyle = this.color; ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); } }
-        function animateStarfield() { ctx.fillStyle = data.settings.theme === 'dark' ? 'rgba(12, 20, 37, 0.5)' : 'rgba(240, 249, 255, 0.5)'; ctx.fillRect(0, 0, particleCanvas.width, particleCanvas.height); backgroundElements.forEach(s => { s.update(); s.draw(); }); animationFrameId = requestAnimationFrame(animateStarfield); }
+        class Star { constructor() { this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; this.z = Math.random() * particleCanvas.width; this.color = document.documentElement.classList.contains('pitch-black') ? '#e5e5e5' : (data.settings.theme === 'dark' ? '#FFF' : '#020617');} update() { this.z -= 1.5; if (this.z < 1) { this.z = particleCanvas.width; this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; } } draw() { let x = (this.x - particleCanvas.width / 2) * (particleCanvas.width / this.z) + particleCanvas.width / 2; let y = (this.y - particleCanvas.height / 2) * (particleCanvas.width / this.z) + particleCanvas.height / 2; let r = (particleCanvas.width / this.z); ctx.beginPath(); ctx.fillStyle = this.color; ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); } }
+        function animateStarfield() { ctx.fillStyle = document.documentElement.classList.contains('pitch-black') ? 'rgba(0, 0, 0, 0.5)' : (data.settings.theme === 'dark' ? 'rgba(12, 20, 37, 0.5)' : 'rgba(240, 249, 255, 0.5)'); ctx.fillRect(0, 0, particleCanvas.width, particleCanvas.height); backgroundElements.forEach(s => { s.update(); s.draw(); }); animationFrameId = requestAnimationFrame(animateStarfield); }
         let hexSize = 30, hexes = [];
         function initHexagons() { initCanvas(); let hexWidth = hexSize * Math.sqrt(3); let hexHeight = hexSize * 2; for (let y = -hexHeight / 2; y < particleCanvas.height + hexHeight; y += hexHeight * 3 / 4) { for (let x = -hexWidth / 2; x < particleCanvas.width + hexWidth; x += hexWidth) { hexes.push([x + (y / (hexHeight * 3 / 4) % 2) * (hexWidth / 2), y]); } } animateHexagons(); }
         function drawHex(x, y, size, opacity) { ctx.strokeStyle = data.settings.theme === 'dark' ? `rgba(139, 92, 246, ${opacity})` : `rgba(2, 132, 199, ${opacity})`; ctx.lineWidth = 1; ctx.beginPath(); for (let i = 0; i < 6; i++) { ctx.lineTo(x + size * Math.cos(i * Math.PI / 3), y + size * Math.sin(i * Math.PI / 3)); } ctx.closePath(); ctx.stroke(); }
@@ -2429,8 +2399,6 @@
             setTimeout(() => { const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); revision.date = tomorrow.toISOString().split('T')[0]; logActivity('skip-forward', `Revision for "${chapter.name}" postponed to tomorrow.`); saveData(); renderHomePage(); }, 500);
         };
         
-        // --- MODIFICATION: NEW/UPDATED FUNCTIONS for Manual Add, DPT/Subject Deletion ---
-
         function openManualAddModal(type) {
             const modal = document.getElementById('manual-add-modal');
             const chapterContent = document.getElementById('manual-add-chapter-content');
@@ -2499,7 +2467,7 @@
                 if (document.getElementById('page-subjects').classList.contains('active')) { renderSubjectsPage(); }
 
             } else { // type === 'dpt'
-                const selectedRadio = document.querySelector('input[name="manual-add-item"]'); // No check needed, it's auto-selected or message shown
+                const selectedRadio = document.querySelector('input[name="manual-add-item"]');
                 if (!selectedRadio) { alert('No available DPT to add for this subject.'); return; }
                 const testId = parseInt(selectedRadio.value);
                 const todayStr = new Date().toISOString().split('T')[0];
@@ -2560,20 +2528,18 @@
 
 
         function addEventListeners() {
-            // Desktop and Mobile Nav
             navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
             document.getElementById('mobile-bottom-nav').addEventListener('click', e => {
                 const navBtn = e.target.closest('.mobile-nav-btn');
                 if (navBtn && navBtn.dataset.page) { navigateTo(navBtn.dataset.page); }
             });
-            // MODIFICATION: Add event listener for dashboard toggles
             document.getElementById('page-home').addEventListener('click', e => {
                 const toggleBtn = e.target.closest('.toggle-view-btn');
                 if (toggleBtn) {
                     const section = toggleBtn.dataset.section;
                     if (dashboardViewState.hasOwnProperty(section)) {
                         dashboardViewState[section] = !dashboardViewState[section];
-                        renderHomePage(); // Re-render the home page to reflect the change
+                        renderHomePage();
                     }
                 }
             });
@@ -2610,8 +2576,9 @@
                 const { subjectId, chapterId, sourceType, revisionDate } = postponeBtn?.dataset || skipBtn?.dataset || {};
                 if (!subjectId) return;
                 e.preventDefault();
-                if (revisionDate) { postponeRevision(subjectId, chapterId, sourceType, revisionDate); } 
-                else { 
+                if (revisionDate) { 
+                    postponeRevision(subjectId, chapterId, sourceType, revisionDate); 
+                } else { 
                     if (postponeBtn) { postponeChapter(subjectId, chapterId, sourceType); }
                     if (skipBtn) { skipChapter(subjectId, chapterId, sourceType); }
                 }
@@ -2653,7 +2620,7 @@
             document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value, document.getElementById('add-chapter-source-type').value); });
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
             document.getElementById('export-full-data-btn').addEventListener('click', exportData);
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
             document.getElementById('close-chapter-modal').addEventListener('click', () => hideModal('chapter-modal'));
@@ -2668,7 +2635,26 @@
             importFileInput.addEventListener('change', importAllChapters);
             document.getElementById('bg-color-start').addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; saveData(); applyCustomTheme(); });
             document.getElementById('bg-color-end').addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; saveData(); applyCustomTheme(); });
-            document.getElementById('reset-theme-btn').addEventListener('click', () => { data.settings.customThemeColors = { start: null, end: null }; saveData(); applyCustomTheme(); renderSettingsPage(); });
+            document.getElementById('reset-theme-btn').addEventListener('click', () => { data.settings.customThemeColors.start = null; data.settings.customThemeColors.end = null; saveData(); applyCustomTheme(); renderSettingsPage(); });
+            
+            document.querySelectorAll('.adv-color-picker').forEach(picker => {
+                picker.addEventListener('input', (e) => {
+                    const colorType = e.target.dataset.colorType;
+                    data.settings.customThemeColors[colorType] = e.target.value;
+                    saveData();
+                    applyManualColors();
+                });
+            });
+            document.getElementById('reset-advanced-colors-btn').addEventListener('click', () => {
+                data.settings.customThemeColors.textLight = null;
+                data.settings.customThemeColors.borderLight = null;
+                data.settings.customThemeColors.textDark = null;
+                data.settings.customThemeColors.borderDark = null;
+                saveData();
+                applyManualColors();
+                renderSettingsPage();
+            });
+
             document.getElementById('background-style-select').addEventListener('change', (e) => { data.settings.backgroundStyle = e.target.value; saveData(); applyBackgroundStyle(); });
             document.getElementById('page-settings').addEventListener('change', e => {
                 if (e.target.name === 'plan-mode') { data.settings.planMode = e.target.value; delete data.dailyPlan[new Date().toISOString().split('T')[0]]; saveData(); renderSettingsPage(); renderHomePage(); }
@@ -2735,7 +2721,7 @@
                     const num = parseInt(prompt(`How many DPTs to add to ALL subjects?`));
                     if (!isNaN(num) && num > 0) {
                         let subjectsUpdated = 0;
-                       (data.subjects || []).forEach(subject => { data.dpts[subject.id] = data.dpts[subject.id] || { tests: [], nextTestIndex: 0 }; const startId = data.dpts[subject.id].tests.length + 1; for (let i = 0; i < num; i++) { data.dpts[subject.id].tests.push({ id: startId + i, status: 'Pending' }); } subjectsUpdated++; });
+                        (data.subjects || []).forEach(subject => { data.dpts[subject.id] = data.dpts[subject.id] || { tests: [], nextTestIndex: 0 }; const startId = data.dpts[subject.id].tests.length + 1; for (let i = 0; i < num; i++) { data.dpts[subject.id].tests.push({ id: startId + i, status: 'Pending' }); } subjectsUpdated++; });
                         logActivity('plus-square', `Added ${num} DPTs to ${subjectsUpdated} subjects.`); saveData(); renderDptPage();
                     }
                 }
@@ -2763,7 +2749,6 @@
             document.getElementById('add-manual-revision-btn').addEventListener('click', e => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; const date = document.getElementById('manual-revision-date').value; addManualRevision(subjectId, chapterId, sourceType, date); });
             document.getElementById('chapter-modal').addEventListener('click', e => { const deleteBtn = e.target.closest('.delete-revision-btn'); if (deleteBtn) { const { subjectId, chapterId, sourceType, revisionDate } = deleteBtn.dataset; deleteRevision(subjectId, chapterId, sourceType, revisionDate); } });
             
-            // --- MODIFICATION: Event listeners for new/updated Manual Add feature ---
             document.getElementById('todays-plan-container').addEventListener('click', e => { if (e.target.closest('#manual-add-task-btn')) openManualAddModal('chapter'); });
             document.getElementById('todays-dpt-container').addEventListener('click', e => { if (e.target.closest('#manual-add-dpt-btn')) openManualAddModal('dpt'); });
             document.getElementById('manual-add-subject-select').addEventListener('change', (e) => {
