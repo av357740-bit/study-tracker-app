@@ -1256,7 +1256,32 @@
             if ('Notification' in window && Notification.permission !== 'denied') {
                 Notification.requestPermission();
             }
+            scheduleDailyCheck(); // *** NEW: Start the automatic daily checker ***
             navigateTo('home');
+        };
+
+        // *** NEW: Automatic Daily Checker Function ***
+        const scheduleDailyCheck = () => {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            // We set it to 12:01 AM to be safe and avoid any race conditions at exactly midnight.
+            tomorrow.setHours(0, 1, 0, 0); 
+            
+            const msUntilMidnight = tomorrow.getTime() - now.getTime();
+
+            console.log(`Next automatic daily check scheduled in ${Math.round(msUntilMidnight / 1000 / 60)} minutes.`);
+
+            setTimeout(() => {
+                console.log("Midnight check triggered! Updating daily plan.");
+                handleNewDayLogic();
+                // If the user is currently on the home page, refresh it to show the new plan.
+                if (document.getElementById('page-home').classList.contains('active')) {
+                    renderHomePage();
+                }
+                // Schedule the next check for the following day.
+                scheduleDailyCheck();
+            }, msUntilMidnight);
         };
         
         const showUndoToast = (message, onUndo) => {
@@ -1406,6 +1431,8 @@
         };
 
         const renderHomePage = () => {
+            // *** MODIFICATION: Run the daily check every time home page is rendered as a backup ***
+            handleNewDayLogic();
             document.getElementById('welcome-heading').innerHTML = `${_('welcome_pravej')}, <span class="text-primary">${data.settings.studentName || 'Student'}!</span>`;
             renderAIInsights();
             renderTodaysDpt(); 
@@ -2708,7 +2735,7 @@
                     const num = parseInt(prompt(`How many DPTs to add to ALL subjects?`));
                     if (!isNaN(num) && num > 0) {
                         let subjectsUpdated = 0;
-                        (data.subjects || []).forEach(subject => { data.dpts[subject.id] = data.dpts[subject.id] || { tests: [], nextTestIndex: 0 }; const startId = data.dpts[subject.id].tests.length + 1; for (let i = 0; i < num; i++) { data.dpts[subject.id].tests.push({ id: startId + i, status: 'Pending' }); } subjectsUpdated++; });
+                       (data.subjects || []).forEach(subject => { data.dpts[subject.id] = data.dpts[subject.id] || { tests: [], nextTestIndex: 0 }; const startId = data.dpts[subject.id].tests.length + 1; for (let i = 0; i < num; i++) { data.dpts[subject.id].tests.push({ id: startId + i, status: 'Pending' }); } subjectsUpdated++; });
                         logActivity('plus-square', `Added ${num} DPTs to ${subjectsUpdated} subjects.`); saveData(); renderDptPage();
                     }
                 }
