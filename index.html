@@ -115,6 +115,14 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        .insight-item {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .insight-item.active {
+            display: block;
+        }
 
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);
@@ -432,21 +440,37 @@
                     <h2 class="text-2xl font-bold mb-4" data-translate="import_export_data">Import & Export Data</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                            <h3 class="font-semibold mb-3 text-lg" data-translate="routine_export">Routine Export</h3>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="routine_export_desc">Export your 14-day study cycle as a JSON file for data purposes or as a printable PDF.</p>
-                            <div class="flex gap-2">
-                                <button id="export-routine-json-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900">
-                                    <i data-lucide="file-json" class="w-4 h-4"></i>
-                                    <span data-translate="export_json">Export as JSON</span>
+                            <h3 class="font-semibold mb-3 text-lg" data-translate="routine_management">Routine Management</h3>
+                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="routine_management_desc">Export your 14-day study cycle or import a new one from a JSON file.</p>
+                            <div class="flex flex-col gap-2">
+                                <button id="import-routine-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900">
+                                    <i data-lucide="upload" class="w-4 h-4"></i> <span data-translate="import_routine">Import Routine (JSON)</span>
                                 </button>
-                                <button id="export-routine-pdf-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900">
-                                    <i data-lucide="file-type" class="w-4 h-4"></i>
-                                    <span data-translate="export_pdf">Export as PDF</span>
-                                </button>
+                                <div class="flex gap-2">
+                                    <button id="export-routine-json-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900">
+                                        <i data-lucide="file-json" class="w-4 h-4"></i> <span data-translate="export_json">Export as JSON</span>
+                                    </button>
+                                    <button id="export-routine-pdf-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900">
+                                        <i data-lucide="file-type" class="w-4 h-4"></i> <span data-translate="export_pdf">Export as PDF</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                            <h3 class="font-semibold mb-3 text-lg" data-translate="exams_data_management">Exams Data Management</h3>
+                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="exams_data_management_desc">Import or export your list of exams. This is useful for backing up or transferring your exam schedule.</p>
+                            <div class="flex gap-2">
+                                <button id="import-exams-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-200 dark:hover:bg-cyan-900">
+                                    <i data-lucide="upload" class="w-4 h-4"></i> <span>Import Exams (JSON)</span>
+                                </button>
+                                <button id="export-exams-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 hover:bg-teal-200 dark:hover:bg-teal-900">
+                                    <i data-lucide="download" class="w-4 h-4"></i> <span>Export Exams (JSON)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                             <h3 class="font-semibold mb-3 text-lg" data-translate="full_app_backup">Full Application Backup</h3>
                             <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="full_app_backup_desc">Export all your data, including subjects, chapters, progress, settings, and activity log, into a single JSON file. Keep this file in a safe place as a backup.</p>
                             <button id="export-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900">
@@ -636,7 +660,7 @@
         </div>
     </nav>
 
-    <input type="file" id="import-all-chapters-input" class="hidden" accept=".json">
+    <input type="file" id="import-file-input" class="hidden" accept=".json">
     
     <div id="update-popup-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="w-full max-w-lg rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto update-modal-content">
@@ -887,15 +911,13 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "3.0";
+        const CURRENT_APP_VERSION = "3.1";
         const updateNotes = {
-            "3.0": [
-                { "title": "उन्नत AI इनसाइट्स ✨", "note": "होम पेज पर AI इनसाइट्स अब और भी स्मार्ट है! यह अब टाइपिंग एनीमेशन के साथ आपके छूटे हुए चैप्टर, DPT प्रदर्शन और अन्य महत्वपूर्ण सूचनाएं बारी-बारी से दिखाएगा।" },
-                { "title": "रूटीन एक्सपोर्ट (JSON/PDF)", "note": "अब आप अपनी 14-दिवसीय अध्ययन योजना को इम्पोर्ट/एक्सपोर्ट पेज से JSON या प्रिंट करने योग्य PDF के रूप में डाउनलोड कर सकते हैं।" },
-                { "title": "विस्तृत DPT रिपोर्ट", "note": "अब आप किसी भी पूरे किए गए DPT पर क्लिक करके उसकी विस्तृत जानकारी देख सकते हैं, जिसमें सही, गलत, प्रयास किए गए प्रश्न और सटीकता शामिल है।" },
-                { "title": "'Fill Form' विषय का क्रम", "note": "'Fill Form (संडे स्पेशल)' विषय अब क्रम से चैप्टर देगा, जिससे आपको अपनी प्रगति को ट्रैक करने में आसानी होगी।" },
-                { "title": "सिंक्रनाइज़्ड कार्य समापन", "note": "अब किसी विषय का चैप्टर कहीं से भी पूरा करने पर, वह डैशबोर्ड पर उस दिन के लिए अपने आप पूरा हो जाएगा।" },
-                { "title": "बेहतर प्रोग्रेस बार", "note": "डैशबोर्ड और रिपोर्ट में विषय-वार प्रगति दिखाने वाले बार अब प्रतिशत के साथ सही ढंग से भरते हुए दिखेंगे।" }
+            "3.1": [
+                 { "title": "उन्नत और तेज़ AI इनसाइट्स ✨", "note": "AI इनसाइट्स से टाइपिंग एनीमेशन हटा दिया गया है जिससे ऐप तेज़ हो गया है। अब यह आपकी प्रगति, आगामी परीक्षा की उलटी गिनती, DPT स्थिति और कमजोर विषयों जैसे कई नए आँकड़े दिखाता है।" },
+                 { "title": "रूटीन और परीक्षा का इंपोर्ट", "note": "अब आप अपनी 14-दिवसीय अध्ययन योजना और परीक्षा सूची को JSON फ़ाइल से सीधे इंपोर्ट कर सकते हैं। अब मैन्युअल रूप से सेट करने की आवश्यकता नहीं है!" },
+                 { "title": "बेहतर PDF एक्सपोर्ट", "note": "PDF एक्सपोर्ट में सुधार किया गया है। हिंदी जैसे यूनिकोड अक्षर अब ठीक से प्रदर्शित होने चाहिए, बशर्ते आपके डिवाइस में आवश्यक फॉन्ट हो।" },
+                 { "title": "स्थिरता और बग फिक्स", "note": "यह सुनिश्चित करने के लिए कि सभी पुराने और नए फीचर्स सुचारू रूप से काम करें, पूरे ऐप में कई छोटे-मोटे बग फिक्स और प्रदर्शन सुधार किए गए हैं।" }
             ]
         };
 
@@ -993,10 +1015,11 @@
                 "custom_cycle": "Custom Cycle", "custom_study_plan": "Custom Study Plan (2 Week Cycle)", "save_custom_plan": "Save Custom Plan",
                 "dpt_plan_mode": "Daily DPT Plan Mode", "dpt_plan_subtitle": "Choose how you want to generate your daily DPT schedule.", "dpt_auto_mode": "Automatic (Follows Study Plan)", "custom_dpt_plan": "Custom DPT Plan (2 Week Cycle)",
                 "dpt_report_title": "DPT Summary", "dpt_subject_breakdown": "DPT Subject Breakdown", "no_dpt_data_report": "No DPT data logged yet.",
-                "sunday": "Sunday", "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "week_2_suffix": "(Week 2)",
+                "sunday": "Sunday", "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "week": "Week",
                 "delete_subject": "Delete Subject", "delete_subject_confirm": "This will delete the subject '{subjectName}' and all its chapters and DPTs. This action cannot be undone.",
                 "delete_dpt": "Delete DPT", "delete_dpt_confirm": "Are you sure you want to delete {dptName}? This will remove its data permanently.",
-                "routine_export": "Routine Export", "routine_export_desc": "Export your 14-day study cycle as a JSON file for data purposes or as a printable PDF.", "export_json": "Export as JSON", "export_pdf": "Export as PDF"
+                "routine_management": "Routine Management", "routine_management_desc": "Export your 14-day study cycle or import a new one from a JSON file.", "import_routine": "Import Routine (JSON)", "export_json": "Export as JSON", "export_pdf": "Export as PDF",
+                "exams_data_management": "Exams Data Management", "exams_data_management_desc": "Import or export your list of exams. This is useful for backing up or transferring your exam schedule."
             },
             hi: {
                 "physics": "भौतिकी", "polity": "राजनीति", "chemistry": "रसायन विज्ञान", "hindi": "हिंदी",
@@ -1079,10 +1102,11 @@
                 "custom_cycle": "कस्टम साइकिल", "custom_study_plan": "कस्टम अध्ययन योजना (2 सप्ताह चक्र)", "save_custom_plan": "कस्टम योजना सहेजें",
                 "dpt_plan_mode": "दैनिक DPT योजना मोड", "dpt_plan_subtitle": "चुनें कि आप अपनी दैनिक DPT योजना कैसे बनाना चाहते हैं।", "dpt_auto_mode": "स्वचालित (अध्ययन योजना के अनुसार)", "custom_dpt_plan": "कस्टम DPT योजना (2 सप्ताह चक्र)",
                 "dpt_report_title": "DPT सारांश", "dpt_subject_breakdown": "DPT विषयवार विश्लेषण", "no_dpt_data_report": "अभी तक कोई DPT डेटा लॉग नहीं किया गया है।",
-                "sunday": "रविवार", "monday": "सोमवार", "tuesday": "मंगलवार", "wednesday": "बुधवार", "thursday": "गुरुवार", "friday": "शुक्रवार", "saturday": "शनिवार", "week_2_suffix": "(सप्ताह 2)",
+                "sunday": "रविवार", "monday": "सोमवार", "tuesday": "मंगलवार", "wednesday": "बुधवार", "thursday": "गुरुवार", "friday": "शुक्रवार", "saturday": "शनिवार", "week": "सप्ताह",
                 "delete_subject": "विषय हटाएं", "delete_subject_confirm": "यह विषय '{subjectName}' और इसके सभी चैप्टर्स और DPTs को हटा देगा। यह कार्रवाई पूर्ववत नहीं की जा सकती।",
                 "delete_dpt": "DPT हटाएं", "delete_dpt_confirm": "क्या आप वाकई {dptName} को हटाना चाहते हैं? इसका डेटा स्थायी रूप से हट जाएगा।",
-                "routine_export": "रूटीन एक्सपोर्ट", "routine_export_desc": "अपनी 14-दिवसीय अध्ययन योजना को डेटा उद्देश्यों के लिए JSON फ़ाइल या प्रिंट करने योग्य PDF के रूप में एक्सपोर्ट करें।", "export_json": "JSON एक्सपोर्ट करें", "export_pdf": "PDF एक्सपोर्ट करें"
+                "routine_management": "रूटीन प्रबंधन", "routine_management_desc": "अपनी 14-दिवसीय अध्ययन योजना को एक्सपोर्ट करें या JSON फ़ाइल से एक नई योजना इंपोर्ट करें।", "import_routine": "रूटीन इंपोर्ट करें (JSON)", "export_json": "JSON एक्सपोर्ट करें", "export_pdf": "PDF एक्सपोर्ट करें",
+                "exams_data_management": "परीक्षा डेटा प्रबंधन", "exams_data_management_desc": "अपनी परीक्षाओं की सूची इंपोर्ट या एक्सपोर्ट करें। यह आपके परीक्षा कार्यक्रम का बैकअप लेने या स्थानांतरित करने के लिए उपयोगी है।"
             }
         };
 
@@ -1334,11 +1358,9 @@
                     noteContainer.appendChild(noteEl);
                     contentEl.appendChild(noteContainer);
                     lucide.createIcons();
-
-                    typeWriter(noteEl, item.note, 20, () => {
-                        noteIndex++;
-                        setTimeout(showNextNote, 500);
-                    });
+                    noteEl.innerHTML = item.note; // Removed typewriter
+                    noteIndex++;
+                    setTimeout(showNextNote, 500); // Display notes sequentially
                 }
             }
             showNextNote();
@@ -1526,48 +1548,72 @@
 
         function gatherAllInsights() {
             let insights = [];
-            const twoDaysAgo = new Date();
-            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            // App Update
-            if (data.settings.appVersion === CURRENT_APP_VERSION) {
-                insights.push(`🎉 नया अपडेट v${CURRENT_APP_VERSION} स्थापित हो गया है! नई सुविधाओं का आनंद लें।`);
+            // Upcoming Exam
+            const upcomingExam = (data.exams || [])
+                .filter(exam => exam.examDate && new Date(exam.examDate) >= today)
+                .sort((a, b) => new Date(a.examDate) - new Date(b.examDate))[0];
+            if (upcomingExam) {
+                const daysLeft = Math.ceil((new Date(upcomingExam.examDate) - today) / (1000 * 60 * 60 * 24));
+                insights.push(`🗓️ आपकी अगली परीक्षा "${upcomingExam.name}" में केवल <strong>${daysLeft} दिन</strong> बचे हैं। तैयारी करते रहें!`);
             }
+
+            // DPT Status
+            const allDpts = Object.values(data.dpts).flatMap(d => d.tests);
+            const completedDpts = allDpts.filter(t => t.status === 'Completed').length;
+            if (allDpts.length > 0) {
+                insights.push(`🎯 आपने अब तक <strong>${allDpts.length} में से ${completedDpts} DPT</strong> पूरे कर लिए हैं। बहुत बढ़िया!`);
+            }
+
+            // Weakest Subject (based on DPT accuracy)
+            let subjectPerformances = {};
+            Object.keys(data.dpts).forEach(subjectId => {
+                const completedTests = data.dpts[subjectId].tests.filter(t => t.status === 'Completed' && t.details);
+                if (completedTests.length > 0) {
+                    let totalCorrect = 0, totalAttempted = 0;
+                    completedTests.forEach(t => { totalCorrect += t.details.correct; totalAttempted += t.details.attempted; });
+                    if (totalAttempted > 0) {
+                        subjectPerformances[subjectId] = (totalCorrect / totalAttempted) * 100;
+                    }
+                }
+            });
+            const weakestSubject = Object.entries(subjectPerformances).sort((a,b) => a[1] - b[1])[0];
+            if (weakestSubject && weakestSubject[1] < 75) {
+                insights.push(`📉 <strong>${_(weakestSubject[0])}</strong> में आपकी DPT सटीकता (${weakestSubject[1].toFixed(1)}%) कम है। इस विषय पर अधिक ध्यान दें।`);
+            }
+
+            // Study Streak
+            const completedDates = new Set((data.gamification.completedHistory || []));
+            let streak = 0;
+            if (completedDates.size > 0) {
+                let currentDate = new Date(today);
+                while (completedDates.has(currentDate.toISOString().split('T')[0])) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                }
+            }
+            if (streak > 1) {
+                insights.push(`🔥 आपकी <strong>${streak} दिनों</strong> की अध्ययन की स्ट्रीक चल रही है! इसे बनाए रखें।`);
+            }
+            
+            // Priority Revision
+            const priorityRevisionChapter = (data.subjects || []).flatMap(s => [...s.chapters.notes, ...s.chapters.book]).find(c => c.priorityRevision && c.status !== 'Completed');
+            if(priorityRevisionChapter) {
+                insights.push(`📌 प्राथमिकता रिवीजन: <strong>'${priorityRevisionChapter.name}'</strong> को दोहराना न भूलें।`);
+            }
+            
             // Missed Chapters
-            (data.missedChapters || []).slice(0, 3).forEach(missed => {
-                const chapter = getChapterByIds(missed.subjectId, missed.chapterId, missed.sourceType);
-                if (chapter) insights.push(`ध्यान दें: आपने '${chapter.name}' अध्याय छोड़ दिया है। इसे जल्द पूरा करें।`);
-            });
-            // Postponed Chapters
-            (data.postponedChapters || []).filter(p => new Date(p.date) >= twoDaysAgo).slice(0, 2).forEach(postponed => {
-                const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId, postponed.sourceType);
-                if (chapter) insights.push(`आपने हाल ही में '${chapter.name}' को स्थगित कर दिया था। इसे पूरा करना न भूलें।`);
-            });
-            // DPT Performance
-            const allCompletedDpts = Object.values(data.dpts).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
-            if (allCompletedDpts.length > 3) {
-                let totalCorrect = 0, totalAttempted = 0;
-                allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; });
-                const accuracy = totalAttempted > 0 ? (totalCorrect / totalAttempted) * 100 : 0;
-                if (accuracy < 60) insights.push(`आपका कुल DPT सटीकता ${accuracy.toFixed(1)}% है। कमजोर क्षेत्रों पर ध्यान केंद्रित करें।`);
+            if ((data.missedChapters || []).length > 0) {
+                const missedCount = data.missedChapters.length;
+                insights.push(`⚠️ आपके <strong>${missedCount} अध्याय</strong> छूट गए हैं। उन्हें जल्द से जल्द पूरा करने की कोशिश करें।`);
             }
-            // Upcoming Revisions
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            const upcoming = [];
-            (data.subjects || []).forEach(s => {
-                (s.chapters.notes || []).forEach(c => (c.revisions || []).forEach(r => { if (r.status === 'Pending' && new Date(r.date) >= today) upcoming.push({ ...r, chapter: c, subject: s }); }));
-                (s.chapters.book || []).forEach(c => (c.revisions || []).forEach(r => { if (r.status === 'Pending' && new Date(r.date) >= today) upcoming.push({ ...r, chapter: c, subject: s }); }));
-            });
-            if (upcoming.length > 0) {
-                const nextRevision = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
-                insights.push(`आगामी रिवीजन: '${nextRevision.chapter.name}' को ${new Date(nextRevision.date).toLocaleDateString('hi-IN')} को दोहराना है।`);
-            }
-            // General Progress
-            const allChapters = (data.subjects || []).flatMap(s => [...(s.chapters.notes || []), ...(s.chapters.book || [])]);
-            if(allChapters.length > 10) {
-                const completed = allChapters.filter(c => c.status === 'Completed').length;
-                const percentage = (completed / allChapters.length) * 100;
-                if(percentage < 25) insights.push(`आपकी कुल प्रगति ${percentage.toFixed(0)}% है। गति बनाए रखें और नियमित रूप से अध्ययन करें।`);
+
+            // Last activity
+            if((data.activityLog || []).length > 0) {
+                const lastLog = data.activityLog[0];
+                insights.push(`⚡ आपकी पिछली गतिविधि: "${lastLog.description}"`);
             }
 
             return insights.length > 0 ? insights : [_('ai_insight_start')];
@@ -1576,34 +1622,37 @@
         const renderAIInsights = () => {
             if (aiInsightInterval) clearInterval(aiInsightInterval);
             const container = document.getElementById('ai-insights-container');
-            container.innerHTML = `<div class="flex items-center gap-3 pb-3 border-b border-accent/20 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-accent"></i><h2 class="text-lg font-bold text-accent">${_('ai_insights')}</h2></div><div id="ai-insight-content" class="space-y-2 min-h-[60px]"></div>`;
+            container.innerHTML = `<div class="flex items-center gap-3 pb-3 border-b border-accent/20 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-accent"></i><h2 class="text-lg font-bold text-accent">${_('ai_insights')}</h2></div><div id="ai-insight-content" class="relative min-h-[40px]"></div>`;
             lucide.createIcons();
 
             const insightContent = document.getElementById('ai-insight-content');
             const allInsights = gatherAllInsights();
-            let currentIndex = 0;
-
-            function displayInsights() {
-                insightContent.innerHTML = '';
-                const insight1 = allInsights[currentIndex % allInsights.length];
-                const insight2 = allInsights[(currentIndex + 1) % allInsights.length];
-
-                const p1 = document.createElement('p');
-                p1.className = 'text-sm text-text-muted-light dark:text-text-muted-dark';
-                insightContent.appendChild(p1);
-                typeWriter(p1, insight1, 25);
-
-                if (allInsights.length > 1) {
-                    const p2 = document.createElement('p');
-                    p2.className = 'text-sm text-text-muted-light dark:text-text-muted-dark';
-                    insightContent.appendChild(p2);
-                    typeWriter(p2, insight2, 25);
-                }
-                currentIndex = (currentIndex + 2) % allInsights.length;
+            if (allInsights.length === 0) {
+                insightContent.innerHTML = `<p class="text-sm text-text-muted-light dark:text-text-muted-dark">${_('ai_insight_start')}</p>`;
+                return;
             }
 
-            displayInsights();
-            aiInsightInterval = setInterval(displayInsights, 8000);
+            let currentIndex = 0;
+            
+            function displayNextInsight() {
+                const currentP = insightContent.querySelector('.insight-item');
+                if (currentP) {
+                     currentP.classList.remove('active');
+                }
+
+                setTimeout(() => {
+                    insightContent.innerHTML = `<p class="insight-item text-sm text-text-muted-light dark:text-text-muted-dark">${allInsights[currentIndex]}</p>`;
+                    setTimeout(() => {
+                         const newP = insightContent.querySelector('.insight-item');
+                         if(newP) newP.classList.add('active');
+                    }, 50);
+                    
+                    currentIndex = (currentIndex + 1) % allInsights.length;
+                }, 500);
+            }
+            
+            displayNextInsight();
+            aiInsightInterval = setInterval(displayNextInsight, 6000);
         };
 
         const getSubjectsForDay = (date = new Date()) => {
@@ -2105,7 +2154,7 @@
             if (planMode === 'custom_cycle') {
                 customCycleContainer.classList.remove('hidden');
                 const cycleSelector = document.getElementById('custom-cycle-subject-selector');
-                const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), _('sunday') + ` ${_('week_2_suffix')}`, _('monday') + ` ${_('week_2_suffix')}`, _('tuesday') + ` ${_('week_2_suffix')}`, _('wednesday') + ` ${_('week_2_suffix')}`, _('thursday') + ` ${_('week_2_suffix')}`, _('friday') + ` ${_('week_2_suffix')}`, _('saturday') + ` ${_('week_2_suffix')}` ];
+                const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), `${_('sunday')} (${_('week')} 2)`, `${_('monday')} (${_('week')} 2)`, `${_('tuesday')} (${_('week')} 2)`, `${_('wednesday')} (${_('week')} 2)`, `${_('thursday')} (${_('week')} 2)`, `${_('friday')} (${_('week')} 2)`, `${_('saturday')} (${_('week')} 2)` ];
                 cycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2">${(data.subjects || []).map(s => `<details class="group bg-card-light dark:bg-card-dark rounded-md border"><summary class="flex items-center justify-between p-2 cursor-pointer list-none"><span class="font-semibold text-sm">${_(s.id)}</span><i data-lucide="chevron-right" class="w-4 h-4 transition-transform group-open:rotate-90"></i></summary><div class="p-2 border-t space-y-2"><label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}:notes" ${((data.settings.customCyclePlan?.[i] || []).includes(`${s.id}:notes`)) ? 'checked' : ''}><span data-translate="source_notes">${_('source_notes')}</span></label><label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-accent" data-day="${i}" value="${s.id}:book" ${((data.settings.customCyclePlan?.[i] || []).includes(`${s.id}:book`)) ? 'checked' : ''}><span data-translate="source_book">${_('source_book')}</span></label></div></details>`).join('')}</div></div>`).join('');
                 lucide.createIcons();
             } else { customCycleContainer.classList.add('hidden'); }
@@ -2115,7 +2164,7 @@
             if (dptPlanMode === 'custom_cycle') {
                 customDptContainer.classList.remove('hidden');
                 const dptCycleSelector = document.getElementById('dpt-custom-cycle-subject-selector');
-                const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), _('sunday') + ` ${_('week_2_suffix')}`, _('monday') + ` ${_('week_2_suffix')}`, _('tuesday') + ` ${_('week_2_suffix')}`, _('wednesday') + ` ${_('week_2_suffix')}`, _('thursday') + ` ${_('week_2_suffix')}`, _('friday') + ` ${_('week_2_suffix')}`, _('saturday') + ` ${_('week_2_suffix')}` ];
+                const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), `${_('sunday')} (${_('week')} 2)`, `${_('monday')} (${_('week')} 2)`, `${_('tuesday')} (${_('week')} 2)`, `${_('wednesday')} (${_('week')} 2)`, `${_('thursday')} (${_('week')} 2)`, `${_('friday')} (${_('week')} 2)`, `${_('saturday')} (${_('week')} 2)` ];
                 dptCycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2 max-h-60 overflow-y-auto">${(data.subjects || []).map(s => `<label class="flex items-center gap-2 text-sm cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-dpt-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}" ${((data.settings.dptCyclePlan?.[i] || []).includes(s.id)) ? 'checked' : ''}><span>${_(s.id)}</span></label>`).join('')}</div></div>`).join('');
             } else { customDptContainer.classList.add('hidden'); }
         };
@@ -2308,37 +2357,104 @@
         
         const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_data'), () => { localStorage.removeItem(DB_KEY); window.location.reload(); });
         
-        const exportData = () => {
-            const dataStr = JSON.stringify(data, null, 2);
+        const exportData = (dataType) => {
+            let dataToExport, fileName;
+            switch(dataType) {
+                case 'full':
+                    dataToExport = data;
+                    fileName = `study_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    break;
+                case 'exams':
+                    dataToExport = data.exams || [];
+                    fileName = `study_tracker_exams_${new Date().toISOString().split('T')[0]}.json`;
+                    break;
+            }
+            if(!dataToExport) return;
+            const dataStr = JSON.stringify(dataToExport, null, 2);
             const blob = new Blob([dataStr], {type: "application/json"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = `study_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.href = url; a.download = fileName;
             a.click(); URL.revokeObjectURL(url);
         };
         
-        const importAllChapters = (event) => {
-            const file = event.target.files[0]; const sourceType = event.target.dataset.sourceType;
-            if (!file || !sourceType) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedData = JSON.parse(e.target.result); let chaptersAdded = 0; let subjectsAdded = 0;
-                    Object.keys(importedData).forEach(subjectName => {
-                        const subjectId = subjectName.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '');
-                        let subject = data.subjects.find(s => s.id === subjectId);
-                        if (!subject) { subject = { id: subjectId, name: subjectName, chapters: { notes: [], book: [] } }; data.subjects.push(subject); if (!translations.en[subjectId]) { translations.en[subjectId] = subjectName; translations.hi[subjectId] = subjectName; } subjectsAdded++; }
-                        const chaptersToImport = importedData[subjectName];
-                        if (Array.isArray(chaptersToImport)) { chaptersToImport.forEach(chapterData => { if (chapterData.name && !subject.chapters[sourceType].some(c => c.name === chapterData.name)) { const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterData.name.trim(), status: 'Not Started', dateAdded: new Date().toISOString().split('T')[0], notes: '', priorityRevision: false, revisions: [] }; subject.chapters[sourceType].push(newChapter); chaptersAdded++; } }); }
-                    });
-                    logActivity('upload', `Imported ${chaptersAdded} chapters and ${subjectsAdded} new subjects.`);
-                    saveData(); alert(`Import successful!\n\nNew Subjects Added: ${subjectsAdded}\nNew Chapters Added: ${chaptersAdded}`);
-                    applyTranslations(); renderSubjectsPage(); 
-                } catch (error) { alert("Error reading or parsing the JSON file."); console.error("Import Error:", error); } 
-                finally { event.target.value = null; }
-            };
-            reader.readAsText(file);
+        const handleFileUpload = (event, importType) => {
+             const file = event.target.files[0];
+             if (!file) return;
+             const reader = new FileReader();
+             reader.onload = (e) => {
+                 try {
+                     const importedData = JSON.parse(e.target.result);
+                     switch(importType) {
+                        case 'chapters':
+                            importAllChapters(importedData, event.target.dataset.sourceType);
+                            break;
+                        case 'routine':
+                            importRoutine(importedData);
+                            break;
+                        case 'exams':
+                            importExams(importedData);
+                            break;
+                     }
+                 } catch (error) {
+                     alert("Error reading or parsing the JSON file.");
+                     console.error("Import Error:", error);
+                 } finally {
+                     event.target.value = null; // Reset file input
+                 }
+             };
+             reader.readAsText(file);
         };
+
+        const importAllChapters = (importedData, sourceType) => {
+            if (!sourceType) return;
+            let chaptersAdded = 0, subjectsAdded = 0;
+            Object.keys(importedData).forEach(subjectName => {
+                const subjectId = subjectName.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '');
+                let subject = data.subjects.find(s => s.id === subjectId);
+                if (!subject) { subject = { id: subjectId, name: subjectName, chapters: { notes: [], book: [] } }; data.subjects.push(subject); if (!translations.en[subjectId]) { translations.en[subjectId] = subjectName; translations.hi[subjectId] = subjectName; } subjectsAdded++; }
+                const chaptersToImport = importedData[subjectName];
+                if (Array.isArray(chaptersToImport)) { chaptersToImport.forEach(chapterData => { if (chapterData.name && !subject.chapters[sourceType].some(c => c.name === chapterData.name)) { const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterData.name.trim(), status: 'Not Started', dateAdded: new Date().toISOString().split('T')[0], notes: '', priorityRevision: false, revisions: [] }; subject.chapters[sourceType].push(newChapter); chaptersAdded++; } }); }
+            });
+            logActivity('upload', `Imported ${chaptersAdded} chapters and ${subjectsAdded} new subjects.`);
+            saveData(); alert(`Import successful!\n\nNew Subjects Added: ${subjectsAdded}\nNew Chapters Added: ${chaptersAdded}`);
+            applyTranslations(); renderSubjectsPage(); 
+        };
+
+        const importRoutine = (importedData) => {
+            if (!Array.isArray(importedData) || importedData.length !== 14) {
+                alert('Invalid routine file. It must be an array with 14 days of data.');
+                return;
+            }
+            data.settings.customCyclePlan = importedData;
+            data.settings.planMode = 'custom_cycle';
+            data.dailyPlan = {}; // Reset daily plan to use the new routine
+            saveData();
+            logActivity('upload', `Imported a new 14-day study routine.`);
+            alert('Study routine imported successfully! The plan mode has been set to "Custom Cycle".');
+            renderSettingsPage();
+            renderHomePage();
+        };
+
+        const importExams = (importedData) => {
+            if (!Array.isArray(importedData)) {
+                alert('Invalid exams file. It must be an array of exam objects.');
+                return;
+            }
+            // Basic validation
+            const isValid = importedData.every(exam => exam.name && exam.id);
+            if (!isValid) {
+                 alert('Exam data is malformed. Each exam must have at least a "name" and "id".');
+                 return;
+            }
+            data.exams = importedData;
+            saveData();
+            logActivity('upload', `Imported ${importedData.length} exams.`);
+            alert(`${importedData.length} exams imported successfully!`);
+            renderExamsPage();
+            renderHomePage();
+        };
+
         
         const BADGES = { 'first_step': { name: 'first_step', description: 'first_step_desc', icon: 'flag', color: 'text-green-500'}, 'first_completion': { name: 'winner', description: 'first_completion_desc', icon: 'check-circle-2', color: 'text-blue-500' }, 'ten_completed': { name: 'scholar', description: 'ten_completed_desc', icon: 'award', color: 'text-amber-500' }, 'subject_master': { name: 'subject_master', description: 'subject_master_desc', icon: 'graduation-cap', color: 'text-purple-500' }, };
         const unlockBadge = (badgeId) => {
@@ -2820,6 +2936,8 @@
                 btn.disabled = true; btn.querySelector('span').textContent = 'Generating...';
                 html2canvas(document.getElementById('report-content'), { scale: 2 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
+                    // PDF में हिंदी फॉन्ट के लिए आपको एक कस्टम फॉन्ट जोड़ना होगा
+                    // pdf.setFont('NotoSansDevanagari'); // उदाहरण
                     const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     pdf.save(`Study_Report_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -2830,18 +2948,24 @@
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
             ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
-            document.getElementById('export-full-data-btn').addEventListener('click', exportData);
+            document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
+            document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
             document.getElementById('close-chapter-modal').addEventListener('click', () => hideModal('chapter-modal'));
             document.getElementById('save-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; if (subjectId && chapterId) saveChapterDetails(subjectId, chapterId, sourceType); });
             document.getElementById('delete-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; if (subjectId && chapterId) confirmDeleteChapter(subjectId, chapterId, sourceType); });
             document.getElementById('chapter-status-buttons').addEventListener('click', (e) => { const clickedBtn = e.target.closest('button'); if (clickedBtn) { document.querySelectorAll('#chapter-status-buttons button').forEach(btn => btn.classList.remove('active')); clickedBtn.classList.add('active'); } });
-            const importFileInput = document.getElementById('import-all-chapters-input');
-            document.getElementById('import-all-notes-btn').addEventListener('click', () => { importFileInput.dataset.sourceType = 'notes'; importFileInput.click(); });
-            document.getElementById('import-all-books-btn').addEventListener('click', () => { importFileInput.dataset.sourceType = 'book'; importFileInput.click(); });
+            
+            const importFileInput = document.getElementById('import-file-input');
+            document.getElementById('import-all-notes-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.dataset.sourceType = 'notes'; importFileInput.click(); });
+            document.getElementById('import-all-books-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.dataset.sourceType = 'book'; importFileInput.click(); });
+            document.getElementById('import-routine-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'routine'; importFileInput.click(); });
+            document.getElementById('import-exams-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'exams'; importFileInput.click(); });
+            importFileInput.addEventListener('change', (e) => handleFileUpload(e, e.target.dataset.importType));
+
             document.getElementById('delete-all-notes-btn').addEventListener('click', () => deleteAllChaptersForSource('notes'));
             document.getElementById('delete-all-books-btn').addEventListener('click', () => deleteAllChaptersForSource('book'));
-            importFileInput.addEventListener('change', importAllChapters);
+            
             document.getElementById('bg-color-start').addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; saveData(); applyCustomTheme(); });
             document.getElementById('bg-color-end').addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; saveData(); applyCustomTheme(); });
             document.getElementById('reset-theme-btn').addEventListener('click', () => { data.settings.customThemeColors.start = null; data.settings.customThemeColors.end = null; saveData(); applyCustomTheme(); renderSettingsPage(); });
@@ -3059,7 +3183,7 @@
             });
 
             if (format === 'json') {
-                const dataStr = JSON.stringify(routineData, null, 2);
+                const dataStr = JSON.stringify(plan, null, 2); // Exporting the raw plan for import
                 const blob = new Blob([dataStr], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -3069,6 +3193,10 @@
             } else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
+                // IMPORTANT: Add custom font for Hindi here
+                // pdf.addFileToVFS('NotoSansDevanagari-Regular.ttf', fontFile);
+                // pdf.addFont('NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari', 'normal');
+                // pdf.setFont('NotoSansDevanagari');
                 pdf.setFont('helvetica', 'bold');
                 pdf.text("14-Day Study Routine", 105, 15, null, null, 'center');
                 pdf.setFont('helvetica', 'normal');
