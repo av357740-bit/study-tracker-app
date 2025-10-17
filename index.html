@@ -2506,10 +2506,8 @@
         const importFullBackup = (importedData) => {
             showConfirmationModal('Import Backup?', 'This will overwrite all current data in the application. This action cannot be undone. Are you sure you want to continue?', () => {
                 try {
-                    // IMPROVEMENT: More robust validation for the backup file
-                    if (importedData.subjects && importedData.settings && importedData.activityLog && importedData.gamification && importedData.dpts && importedData.exams) {
+                    if (importedData.subjects && importedData.settings) {
                         localStorage.setItem(DB_KEY, JSON.stringify(importedData));
-                        logActivity('upload-cloud', 'Successfully imported a full application backup.');
                         alert('Backup imported successfully! The application will now reload.');
                         setTimeout(() => window.location.reload(), 500);
                     } else {
@@ -3456,17 +3454,10 @@
             });
             document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
             
-            // --- NEW LINKS FEATURE EVENT LISTENERS (WITH FIX) ---
+            // --- LINKS FEATURE EVENT LISTENERS (FIXED) ---
             document.getElementById('add-new-folder-btn').addEventListener('click', () => showAddFolderModal());
-            
-            // FIX: Re-bind form submission events whenever the modal is shown to avoid stale listeners.
-            const addFolderForm = document.getElementById('add-folder-form');
-            addFolderForm.removeEventListener('submit', saveFolder); // Remove old listener first
-            addFolderForm.addEventListener('submit', saveFolder);
-
-            const addLinkForm = document.getElementById('add-link-form');
-            addLinkForm.removeEventListener('submit', saveLink); // Remove old listener first
-            addLinkForm.addEventListener('submit', saveLink);
+            document.getElementById('add-folder-form').addEventListener('submit', saveFolder);
+            document.getElementById('add-link-form').addEventListener('submit', saveLink);
 
             document.getElementById('links-container').addEventListener('click', e => {
                 const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
