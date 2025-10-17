@@ -947,7 +947,10 @@
     <div id="add-folder-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
             <button id="close-add-folder-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
-            <h2 id="folder-modal-title" class="text-xl font-bold mb-4" data-translate="add_new_folder">Add New Folder</h2>
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="folder-plus" class="w-6 h-6 text-primary"></i>
+                <h2 id="folder-modal-title" class="text-xl font-bold" data-translate="add_new_folder">Add New Folder</h2>
+            </div>
             <form id="add-folder-form" class="space-y-4">
                 <input type="hidden" id="folder-id">
                 <div>
@@ -962,7 +965,10 @@
     <div id="add-link-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
             <button id="close-add-link-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
-            <h2 id="link-modal-title" class="text-xl font-bold mb-4" data-translate="add_new_link">Add New Link</h2>
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="link" class="w-6 h-6 text-primary"></i>
+                <h2 id="link-modal-title" class="text-xl font-bold" data-translate="add_new_link">Add New Link</h2>
+            </div>
             <form id="add-link-form" class="space-y-4">
                 <input type="hidden" id="link-folder-id">
                 <input type="hidden" id="link-id">
@@ -993,8 +999,14 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "3.4"; // Version updated for new features
+        const CURRENT_APP_VERSION = "3.5"; // Version updated for new features
         const updateNotes = {
+            "3.5": [
+                { "title": "बेहतर डैशबोर्ड UI ✨", "note": "डैशबोर्ड पर 'विषय प्रगति' अब सही ढंग से एक हरी प्रगति पट्टी (green progress bar) के रूप में दिखाई देती है, जिससे आपको अपनी प्रगति का स्पष्ट विज़ुअल फीडबैक मिलता है।" },
+                { "title": "नया और बेहतर लिंक सेक्शन", "note": "'लिंक्स' सेक्शन में फ़ोल्डर जोड़ने वाली सुविधा जो काम नहीं कर रही थी, उसे पूरी तरह से एक नए और विश्वसनीय पॉप-अप से बदल दिया गया है। अब आप आसानी से फ़ोल्डर और लिंक जोड़ सकते हैं।" },
+                { "title": "एप्लिकेशन की स्थिरता", "note": "एप्लिकेशन को और अधिक स्थिर और मजबूत बनाने के लिए कोड में सुधार किए गए हैं। इससे बग्स की संभावना कम हो गई है और सभी सुविधाएँ पहले से बेहतर काम करेंगी।" },
+                { "title": "डेटा सुरक्षा", "note": "आपके डेटा को आकस्मिक रीसेट या हानि से बचाने के लिए अतिरिक्त सुरक्षा उपाय लागू किए गए हैं। अब आपका डेटा पहले से कहीं ज्यादा सुरक्षित है।" }
+            ],
             "3.4": [
                 { "title": "संपूर्ण डेटा सिंक ✨", "note": "अब आप 'Import/Export' पेज से अपने ऐप का पूरा डेटा (प्रगति, सेटिंग्स, DPT, आदि) एक क्लिक में एक्सपोर्ट और इम्पोर्ट कर सकते हैं। अपने फ़ोन और लैपटॉप के बीच डेटा सिंक करना अब बहुत आसान है।" },
                 { "title": "पूर्ण हुए अध्याय और DPT देखें", "note": "'Subjects' और 'DPT' पेज पर नए फिल्टर जोड़े गए हैं। अब आप आसानी से केवल पूरे हो चुके (Completed) आइटम्स को देख सकते हैं।" },
@@ -1273,6 +1285,7 @@
             data = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(initialState));
         } catch (error) {
             console.error("Error parsing saved data, resetting to initial state.", error);
+            alert("Could not read saved data. It might be corrupted. The application will start fresh.");
             data = JSON.parse(JSON.stringify(initialState));
         }
         
@@ -2002,7 +2015,15 @@
                 const chapters = subject.chapters[dashboardProgressView];
                 if (chapters && chapters.length > 0) {
                     const completed = chapters.filter(c => c.status === 'Completed').length; const percentage = Math.round((completed / chapters.length) * 100);
-                    content += `<div class="animate-list-item"><div class="flex justify-between items-center mb-1 text-sm"><span class="font-semibold">${_(subject.id)}</span><span class="text-text-muted-light">${percentage}%</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div class="h-2 rounded-full animated-progress-bar bg-primary" style="width: ${percentage}%"></div></div></div>`;
+                    content += `<div class="animate-list-item">
+                                    <div class="flex justify-between items-center mb-1 text-sm">
+                                        <span class="font-semibold">${_(subject.id)}</span>
+                                        <span class="text-text-muted-light dark:text-text-muted-dark">${percentage}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                        <div class="bg-green-500 h-2.5 rounded-full animated-progress-bar" style="width: ${percentage}%; display: block;"></div>
+                                    </div>
+                               </div>`;
                 }
             });
             container.innerHTML = content || `<p class="text-center text-xs py-2">${_('add_chapters_prompt')}</p>`;
