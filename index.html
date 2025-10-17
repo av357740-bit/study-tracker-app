@@ -303,7 +303,7 @@
                 <button data-page="subjects" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="book-open" class="w-5 h-5"></i> <span data-translate="subjects">Subjects</span></button>
                 <button data-page="dpt" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="clipboard-check" class="w-5 h-5"></i> <span data-translate="dpt">DPT</span></button>
                 <button data-page="exams" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="briefcase" class="w-5 h-5"></i> <span data-translate="exams">Exams</span></button>
-                <button data-page="links" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="link" class="w-5 h-5"></i> <span data-translate="links">Links</span></button>
+                <button data-page="url" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="globe" class="w-5 h-5"></i> <span>URL</span></button>
                 <button data-page="import-export" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="arrow-right-left" class="w-5 h-5"></i> <span data-translate="import_export">Import/Export</span></button>
                 <button data-page="calendar" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="calendar" class="w-5 h-5"></i> <span data-translate="calendar">Calendar</span></button>
                 <button data-page="analytics" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span data-translate="analytics">Analytics</span></button>
@@ -466,14 +466,14 @@
                     </div>
                 </div>
 
-                <div id="page-links" class="page">
+                <div id="page-url" class="page">
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
-                        <h2 class="text-2xl font-bold flex-shrink-0" data-translate="links_title">Saved Links</h2>
-                        <button id="add-new-folder-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon">
+                        <h2 class="text-2xl font-bold flex-shrink-0" data-translate="url_title">Saved URLs</h2>
+                        <button id="add-new-root-folder-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon">
                             <i data-lucide="folder-plus" class="w-4 h-4"></i> <span data-translate="add_new_folder">Add New Folder</span>
                         </button>
                     </div>
-                    <div id="links-container" class="space-y-3"></div>
+                    <div id="url-container" class="space-y-3"></div>
                 </div>
 
                 <div id="page-import-export" class="page">
@@ -694,7 +694,7 @@
             <button data-page="subjects" class="mobile-nav-btn"><i data-lucide="book-open"></i></button>
             <button data-page="dpt" class="mobile-nav-btn"><i data-lucide="clipboard-check"></i></button>
             <button data-page="exams" class="mobile-nav-btn"><i data-lucide="briefcase"></i></button>
-            <button data-page="links" class="mobile-nav-btn"><i data-lucide="link"></i></button>
+            <button data-page="url" class="mobile-nav-btn"><i data-lucide="globe"></i></button>
             <button data-page="import-export" class="mobile-nav-btn"><i data-lucide="arrow-right-left"></i></button>
             <button data-page="calendar" class="mobile-nav-btn"><i data-lucide="calendar"></i></button>
             <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i></button>
@@ -952,7 +952,8 @@
                 <h2 id="folder-modal-title" class="text-xl font-bold" data-translate="add_new_folder">Add New Folder</h2>
             </div>
             <form id="add-folder-form" class="space-y-4">
-                <input type="hidden" id="folder-id">
+                <input type="hidden" id="edit-folder-id">
+                <input type="hidden" id="parent-folder-id">
                 <div>
                     <label for="new-folder-name" class="block text-sm font-medium mb-1" data-translate="folder_name">Folder Name</label>
                     <input type="text" id="new-folder-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g. History Videos">
@@ -971,7 +972,7 @@
             </div>
             <form id="add-link-form" class="space-y-4">
                 <input type="hidden" id="link-folder-id">
-                <input type="hidden" id="link-id">
+                <input type="hidden" id="edit-link-id">
                 <div>
                     <label for="new-link-name" class="block text-sm font-medium mb-1" data-translate="link_name">Link Name</label>
                     <input type="text" id="new-link-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g. Ancient Rome Documentary">
@@ -1138,7 +1139,7 @@
                 "delete_all_dpts": "Delete All DPTs", "delete_all_dpts_confirm": "Are you sure you want to delete ALL DPTs for {subjectName}? This cannot be undone.",
                 "restudy_subject": "Re-study Subject", "restudy_subject_confirm": "This will reset all chapter progress for '{subjectName}' and mark it as completed once. Are you sure? This is great for revision!",
                 "completion_cycle": "Cycle {count}",
-                "links": "Links", "links_title": "Saved Links", "add_new_folder": "Add New Folder", "folder_name": "Folder Name", "add_new_link": "Add New Link", "link_name": "Link Name", "link_url": "URL", "save": "Save", "edit": "Edit", "delete": "Delete", "no_links_in_folder": "No links saved in this folder yet.", "no_folders_created": "No folders created yet. Add one to get started!", "delete_folder_confirm": "Are you sure you want to delete the folder '{folderName}' and all links inside it?", "delete_link_confirm": "Are you sure you want to delete the link '{linkName}'?"
+                "url_title": "Saved URLs", "add_new_folder": "Add New Folder", "folder_name": "Folder Name", "add_new_link": "Add New Link", "link_name": "Link Name", "link_url": "URL", "save": "Save", "edit": "Edit", "delete": "Delete", "no_links_in_folder": "No links saved in this folder yet.", "no_folders_created": "No folders created yet. Add one to get started!", "delete_folder_confirm": "Are you sure you want to delete the folder '{folderName}' and everything inside it?", "delete_link_confirm": "Are you sure you want to delete the link '{linkName}'?", "add_sub_folder": "Add Sub-folder"
             },
             hi: {
                 "physics": "भौतिकी", "polity": "राजनीति", "chemistry": "रसायन विज्ञान", "hindi": "हिंदी",
@@ -1230,7 +1231,7 @@
                 "delete_all_dpts": "सभी DPT हटाएं", "delete_all_dpts_confirm": "{subjectName} के सभी DPT को हटाने के लिए क्या आप निश्चित हैं? इसे पूर्ववत नहीं किया जा सकता।",
                 "restudy_subject": "विषय को दोबारा पढ़ें", "restudy_subject_confirm": "यह '{subjectName}' के सभी चैप्टर की प्रगति को रीसेट कर देगा और इसे एक बार पूरा हुआ चिह्नित करेगा। क्या आप निश्चित हैं? यह रिवीजन के लिए बहुत अच्छा है!",
                 "completion_cycle": "चक्र {count}",
-                "links": "लिंक", "links_title": "सहेजे गए लिंक", "add_new_folder": "नया फ़ोल्डर जोड़ें", "folder_name": "फ़ोल्डर का नाम", "add_new_link": "नया लिंक जोड़ें", "link_name": "लिंक का नाम", "link_url": "URL", "save": "सहेजें", "edit": "संपादित करें", "delete": "हटाएं", "no_links_in_folder": "इस फ़ोल्डर में अभी तक कोई लिंक नहीं सहेजा गया है।", "no_folders_created": "अभी तक कोई फ़ोल्डर नहीं बनाया गया है। आरंभ करने के लिए एक जोड़ें!", "delete_folder_confirm": "क्या आप वाकई फ़ोल्डर '{folderName}' और उसके अंदर के सभी लिंक हटाना चाहते हैं?", "delete_link_confirm": "क्या आप वाकई लिंक '{linkName}' हटाना चाहते हैं?"
+                "url_title": "सहेजे गए यूआरएल", "add_new_folder": "नया फ़ोल्डर जोड़ें", "folder_name": "फ़ोल्डर का नाम", "add_new_link": "नया लिंक जोड़ें", "link_name": "लिंक का नाम", "link_url": "यूआरएल", "save": "सहेजें", "edit": "संपादित करें", "delete": "हटाएं", "no_links_in_folder": "इस फ़ोल्डर में अभी तक कोई लिंक नहीं सहेजा गया है।", "no_folders_created": "अभी तक कोई फ़ोल्डर नहीं बनाया गया है। आरंभ करने के लिए एक जोड़ें!", "delete_folder_confirm": "क्या आप वाकई फ़ोल्डर '{folderName}' और उसके अंदर की सभी चीज़ें हटाना चाहते हैं?", "delete_link_confirm": "क्या आप वाकई लिंक '{linkName}' हटाना चाहते हैं?", "add_sub_folder": "सब-फ़ोल्डर जोड़ें"
             }
         };
 
@@ -1275,7 +1276,7 @@
             exams: [],
             dpts: {},
             dailyDptPlan: {},
-            links: []
+            urls: []
         };
 
         let data;
@@ -1299,7 +1300,8 @@
         data.exams = data.exams || [];
         data.dpts = data.dpts || {};
         data.dailyDptPlan = data.dailyDptPlan || {};
-        data.links = data.links || [];
+        data.urls = data.urls || [];
+        if (data.links) { delete data.links; } // Migration from old structure
         
         data.settings.backgroundStyle = data.settings.backgroundStyle || 'hexagon'; 
         
@@ -1533,7 +1535,7 @@
                 home: renderHomePage, subjects: renderSubjectsPage, dpt: renderDptPage,
                 analytics: renderAnalyticsPage, settings: renderSettingsPage, calendar: renderCalendarPage,
                 report: renderReportPage, 'import-export': renderImportExportPage,
-                exams: renderExamsPage, links: renderLinksPage
+                exams: renderExamsPage, url: renderUrlPage
             };
             if(activePageId && pageRenderFunctions[activePageId]) {
                  pageRenderFunctions[activePageId]();
@@ -1614,7 +1616,7 @@
                 settings: renderSettingsPage, report: renderReportPage,
                 'import-export': renderImportExportPage,
                 exams: renderExamsPage,
-                links: renderLinksPage,
+                url: renderUrlPage,
                 analytics: () => requestAnimationFrame(renderAnalyticsPage)
             };
             renderFunctions[pageId]?.();
@@ -3024,122 +3026,157 @@
             });
         }
 
-        // --- NEW LINKS FEATURE FUNCTIONS ---
+        // --- NEW URLS FEATURE FUNCTIONS ---
 
-        function renderLinksPage() {
-            const container = document.getElementById('links-container');
-            if (!data.links || data.links.length === 0) {
+        function renderUrlPage() {
+            const container = document.getElementById('url-container');
+            if (!data.urls || data.urls.length === 0) {
                 container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="folder-x" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${_('no_folders_created')}</h3></div>`;
                 lucide.createIcons();
                 return;
             }
-
-            container.innerHTML = data.links.map(folder => {
-                const linksHtml = folder.links.length > 0
-                    ? folder.links.map(link => `
-                        <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="font-medium hover:text-primary flex items-center gap-2">
-                                <i data-lucide="link-2" class="w-4 h-4"></i>
-                                <span>${link.name}</span>
-                            </a>
-                            <div class="flex items-center gap-1">
-                                <button class="edit-link-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${folder.id}" data-link-id="${link.id}" title="${_('edit')}"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                                <button class="delete-link-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-folder-id="${folder.id}" data-link-id="${link.id}" title="${_('delete')}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
-                            </div>
-                        </li>`).join('')
-                    : `<p class="text-center text-sm py-2">${_('no_links_in_folder')}</p>`;
-                
-                return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
-                    <summary class="flex items-center justify-between p-4 cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="folder" class="w-5 h-5 text-amber-500"></i>
-                            <h3 class="font-bold text-lg">${folder.name}</h3>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button class="edit-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${folder.id}" title="${_('edit')}"><i data-lucide="folder-edit" class="w-4 h-4"></i></button>
-                            <button class="delete-folder-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-folder-id="${folder.id}" title="${_('delete')}"><i data-lucide="folder-x" class="w-4 h-4 text-red-500"></i></button>
-                            <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
-                        </div>
-                    </summary>
-                    <div class="p-4 border-t">
-                        <ul class="space-y-2 mb-3">${linksHtml}</ul>
-                        <button class="add-link-to-folder-btn w-full flex items-center justify-center p-2 text-sm font-semibold text-green-600 dark:text-green-300 bg-green-100 dark:bg-green-900/50 rounded-lg hover:bg-green-200 dark:hover:bg-green-900" data-folder-id="${folder.id}">
-                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_new_link')}
-                        </button>
-                    </div>
-                </details>`;
-            }).join('');
+            container.innerHTML = renderFolderTree(data.urls);
             lucide.createIcons();
         }
 
-        function showAddFolderModal(folderId = null) {
+        function renderFolderTree(folders, level = 0) {
+            return folders.map(item => {
+                const isFolder = item.type === 'folder';
+                const marginLeft = `margin-left: ${level * 20}px;`;
+                if (isFolder) {
+                    const childrenHtml = item.children && item.children.length > 0 ? renderFolderTree(item.children, level + 1) : `<p style="${marginLeft} margin-left: ${ (level + 1) * 20}px;" class="text-sm text-gray-500 py-2">${_('no_links_in_folder')}</p>`;
+                    return `
+                        <details class="group bg-card-light dark:bg-card-dark rounded-lg shadow-sm overflow-hidden" style="${marginLeft}" open>
+                            <summary class="flex items-center justify-between p-3 cursor-pointer list-none">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="folder" class="w-5 h-5 text-amber-500"></i>
+                                    <h3 class="font-bold">${item.name}</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="add-sub-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${item.id}" title="${_('add_sub_folder')}"><i data-lucide="folder-plus" class="w-4 h-4 text-blue-500"></i></button>
+                                    <button class="add-link-to-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${item.id}" title="${_('add_new_link')}"><i data-lucide="plus" class="w-4 h-4 text-green-500"></i></button>
+                                    <button class="edit-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${item.id}" title="${_('edit')}"><i data-lucide="folder-edit" class="w-4 h-4"></i></button>
+                                    <button class="delete-folder-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-folder-id="${item.id}" title="${_('delete')}"><i data-lucide="folder-x" class="w-4 h-4 text-red-500"></i></button>
+                                    <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
+                                </div>
+                            </summary>
+                            <div class="px-3 pb-3 border-t">
+                                ${childrenHtml}
+                            </div>
+                        </details>
+                    `;
+                } else { // It's a link
+                    return `
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg" style="${marginLeft}">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="font-medium hover:text-primary flex items-center gap-2">
+                                <i data-lucide="link-2" class="w-4 h-4"></i>
+                                <span>${item.name}</span>
+                            </a>
+                            <div class="flex items-center gap-1">
+                                <button class="edit-link-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-link-id="${item.id}" title="${_('edit')}"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button class="delete-link-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-link-id="${item.id}" title="${_('delete')}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('<div class="my-2"></div>');
+        }
+
+        function findItem(items, id) {
+            for (const item of items) {
+                if (item.id === id) return { item, parent: items };
+                if (item.type === 'folder' && item.children) {
+                    const found = findItem(item.children, id);
+                    if (found) return found.item ? found : { item: found, parent: item.children };
+                }
+            }
+            return null;
+        }
+
+        function showAddFolderModal(editFolderId = null, parentId = null) {
             const form = document.getElementById('add-folder-form');
             form.reset();
             const modalTitle = document.getElementById('folder-modal-title');
-            const idInput = document.getElementById('folder-id');
-            if (folderId) {
-                const folder = data.links.find(f => f.id === folderId);
-                if (!folder) return;
-                modalTitle.textContent = `${_('edit')} ${_('folder_name')}`;
-                idInput.value = folder.id;
-                document.getElementById('new-folder-name').value = folder.name;
+            document.getElementById('edit-folder-id').value = editFolderId || '';
+            document.getElementById('parent-folder-id').value = parentId || '';
+
+            if (editFolderId) {
+                const result = findItem(data.urls, editFolderId);
+                if (result && result.item) {
+                    modalTitle.textContent = `${_('edit')} ${_('folder_name')}`;
+                    document.getElementById('new-folder-name').value = result.item.name;
+                }
             } else {
                 modalTitle.textContent = _('add_new_folder');
-                idInput.value = '';
             }
             showModal('add-folder-modal');
         }
 
         function saveFolder(e) {
             e.preventDefault();
-            const id = document.getElementById('folder-id').value;
+            const editId = document.getElementById('edit-folder-id').value;
+            const parentId = document.getElementById('parent-folder-id').value;
             const name = document.getElementById('new-folder-name').value.trim();
             if (!name) return;
-            if (id) {
-                const folder = data.links.find(f => f.id === id);
-                if (folder) {
-                    folder.name = name;
+
+            if (editId) {
+                const result = findItem(data.urls, editId);
+                if (result && result.item) {
+                    result.item.name = name;
                     logActivity('folder-edit', `Folder renamed to "${name}"`);
                 }
             } else {
-                const newFolder = { id: `folder-${Date.now()}`, name, links: [] };
-                data.links.push(newFolder);
+                const newFolder = { id: `folder-${Date.now()}`, type: 'folder', name, children: [] };
+                if (parentId) {
+                    const parentResult = findItem(data.urls, parentId);
+                    if (parentResult && parentResult.item && parentResult.item.type === 'folder') {
+                        parentResult.item.children.push(newFolder);
+                    }
+                } else {
+                    data.urls.push(newFolder);
+                }
                 logActivity('folder-plus', `New folder created: "${name}"`);
             }
             saveData();
-            renderLinksPage();
+            renderUrlPage();
             hideModal('add-folder-modal');
         }
+        
+        function deleteItem(itemId) {
+            const result = findItem(data.urls, itemId);
+            if (!result || !result.item) return;
 
-        function deleteFolder(folderId) {
-            const folder = data.links.find(f => f.id === folderId);
-            if (!folder) return;
-            showConfirmationModal(`${_('delete')} ${_('folder_name')}?`, _('delete_folder_confirm', {folderName: folder.name}), () => {
-                data.links = data.links.filter(f => f.id !== folderId);
-                logActivity('folder-x', `Folder deleted: "${folder.name}"`);
-                saveData();
-                renderLinksPage();
+            const isFolder = result.item.type === 'folder';
+            const confirmTitle = isFolder ? `${_('delete')} ${_('folder_name')}?` : `${_('delete')} ${_('link_name')}?`;
+            const confirmMessage = isFolder ? _('delete_folder_confirm', {folderName: result.item.name}) : _('delete_link_confirm', {linkName: result.item.name});
+
+            showConfirmationModal(confirmTitle, confirmMessage, () => {
+                const index = result.parent.findIndex(i => i.id === itemId);
+                if (index > -1) {
+                    result.parent.splice(index, 1);
+                    logActivity('trash-2', `${isFolder ? 'Folder' : 'Link'} deleted: "${result.item.name}"`);
+                    saveData();
+                    renderUrlPage();
+                }
             });
         }
-
-        function showAddLinkModal(folderId, linkId = null) {
+        
+        function showAddLinkModal(folderId, editLinkId = null) {
             const form = document.getElementById('add-link-form');
             form.reset();
             const modalTitle = document.getElementById('link-modal-title');
             document.getElementById('link-folder-id').value = folderId;
-            const idInput = document.getElementById('link-id');
+            document.getElementById('edit-link-id').value = editLinkId || '';
 
-            if (linkId) {
-                const folder = data.links.find(f => f.id === folderId);
-                const link = folder?.links.find(l => l.id === linkId);
-                if (!link) return;
-                modalTitle.textContent = `${_('edit')} ${_('links')}`;
-                idInput.value = link.id;
-                document.getElementById('new-link-name').value = link.name;
-                document.getElementById('new-link-url').value = link.url;
+            if (editLinkId) {
+                 const result = findItem(data.urls, editLinkId);
+                 if (result && result.item) {
+                    modalTitle.textContent = `${_('edit')} ${_('link_name')}`;
+                    document.getElementById('new-link-name').value = result.item.name;
+                    document.getElementById('new-link-url').value = result.item.url;
+                }
             } else {
                 modalTitle.textContent = _('add_new_link');
-                idInput.value = '';
             }
             showModal('add-link-modal');
         }
@@ -3147,7 +3184,7 @@
         function saveLink(e) {
             e.preventDefault();
             const folderId = document.getElementById('link-folder-id').value;
-            const linkId = document.getElementById('link-id').value;
+            const editId = document.getElementById('edit-link-id').value;
             const name = document.getElementById('new-link-name').value.trim();
             let url = document.getElementById('new-link-url').value.trim();
             if (!name || !url) return;
@@ -3155,40 +3192,28 @@
             if (!/^https?:\/\//i.test(url)) {
                 url = 'https://' + url;
             }
-
-            const folder = data.links.find(f => f.id === folderId);
-            if (!folder) return;
             
-            if (linkId) {
-                const link = folder.links.find(l => l.id === linkId);
-                if (link) {
-                    link.name = name;
-                    link.url = url;
-                    logActivity('edit-3', `Link updated: "${name}"`);
-                }
+            if (editId) {
+                 const result = findItem(data.urls, editId);
+                 if (result && result.item) {
+                     result.item.name = name;
+                     result.item.url = url;
+                     logActivity('edit-3', `Link updated: "${name}"`);
+                 }
             } else {
-                const newLink = { id: `link-${Date.now()}`, name, url };
-                folder.links.push(newLink);
-                logActivity('link', `New link added to "${folder.name}": "${name}"`);
+                const parentResult = findItem(data.urls, folderId);
+                if (parentResult && parentResult.item && parentResult.item.type === 'folder') {
+                    const newLink = { id: `link-${Date.now()}`, type: 'link', name, url };
+                    parentResult.item.children.push(newLink);
+                    logActivity('link', `New link added to "${parentResult.item.name}": "${name}"`);
+                }
             }
             saveData();
-            renderLinksPage();
+            renderUrlPage();
             hideModal('add-link-modal');
         }
         
-        function deleteLink(folderId, linkId) {
-            const folder = data.links.find(f => f.id === folderId);
-            const link = folder?.links.find(l => l.id === linkId);
-            if (!link) return;
-            showConfirmationModal(`${_('delete')} ${_('links')}?`, _('delete_link_confirm', {linkName: link.name}), () => {
-                folder.links = folder.links.filter(l => l.id !== linkId);
-                logActivity('trash-2', `Link deleted: "${link.name}"`);
-                saveData();
-                renderLinksPage();
-            });
-        }
-        
-        // --- END OF NEW LINKS FEATURE FUNCTIONS ---
+        // --- END OF NEW URLS FEATURE FUNCTIONS ---
 
         function addEventListeners() {
             navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
@@ -3475,24 +3500,27 @@
             });
             document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
             
-            // --- LINKS FEATURE EVENT LISTENERS (FIXED) ---
-            document.getElementById('add-new-folder-btn').addEventListener('click', () => showAddFolderModal());
+            // --- URLS FEATURE EVENT LISTENERS ---
+            document.getElementById('add-new-root-folder-btn').addEventListener('click', () => showAddFolderModal(null, null));
             document.getElementById('add-folder-form').addEventListener('submit', saveFolder);
             document.getElementById('add-link-form').addEventListener('submit', saveLink);
-
-            document.getElementById('links-container').addEventListener('click', e => {
+            
+            document.getElementById('url-container').addEventListener('click', e => {
+                const addSubFolderBtn = e.target.closest('.add-sub-folder-btn');
                 const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
                 const editFolderBtn = e.target.closest('.edit-folder-btn');
                 const deleteFolderBtn = e.target.closest('.delete-folder-btn');
                 const editLinkBtn = e.target.closest('.edit-link-btn');
                 const deleteLinkBtn = e.target.closest('.delete-link-btn');
 
-                if(addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
-                if(editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId);
-                if(deleteFolderBtn) deleteFolder(deleteFolderBtn.dataset.folderId);
-                if(editLinkBtn) showAddLinkModal(editLinkBtn.dataset.folderId, editLinkBtn.dataset.linkId);
-                if(deleteLinkBtn) deleteLink(deleteLinkBtn.dataset.folderId, deleteLinkBtn.dataset.linkId);
+                if (addSubFolderBtn) showAddFolderModal(null, addSubFolderBtn.dataset.folderId);
+                else if (addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
+                else if (editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId, null);
+                else if (deleteFolderBtn) deleteItem(deleteFolderBtn.dataset.folderId);
+                else if (editLinkBtn) showAddLinkModal(e.target.closest('[data-folder-id]')?.dataset.folderId, editLinkBtn.dataset.linkId);
+                else if (deleteLinkBtn) deleteItem(deleteLinkBtn.dataset.linkId);
             });
+
 
             window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
         }
