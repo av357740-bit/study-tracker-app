@@ -289,6 +289,7 @@
                 <button data-page="subjects" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="book-open" class="w-5 h-5"></i> <span data-translate="subjects">Subjects</span></button>
                 <button data-page="dpt" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="clipboard-check" class="w-5 h-5"></i> <span data-translate="dpt">DPT</span></button>
                 <button data-page="exams" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="briefcase" class="w-5 h-5"></i> <span data-translate="exams">Exams</span></button>
+                <button data-page="links" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="link" class="w-5 h-5"></i> <span data-translate="links">Links</span></button>
                 <button data-page="import-export" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="arrow-right-left" class="w-5 h-5"></i> <span data-translate="import_export">Import/Export</span></button>
                 <button data-page="calendar" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="calendar" class="w-5 h-5"></i> <span data-translate="calendar">Calendar</span></button>
                 <button data-page="analytics" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span data-translate="analytics">Analytics</span></button>
@@ -441,7 +442,21 @@
                     <div id="exams-list-container" class="space-y-4">
                     </div>
                 </div>
-
+                
+                <div id="page-links" class="page">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-bold" data-translate="saved_links">Saved Links</h2>
+                        <div class="flex items-center gap-2">
+                            <button id="add-folder-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <i data-lucide="folder-plus" class="w-4 h-4"></i> <span data-translate="add_folder">Add Folder</span>
+                            </button>
+                            <button id="add-link-btn" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg btn-neon">
+                                <i data-lucide="plus" class="w-4 h-4"></i> <span data-translate="add_new_link">Add New Link</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="links-container" class="space-y-4"></div>
+                </div>
 
                 <div id="page-import-export" class="page">
                     <h2 class="text-2xl font-bold mb-4" data-translate="import_export_data">Import & Export Data</h2>
@@ -477,13 +492,19 @@
                             </div>
                         </div>
 
-                        <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                            <h3 class="font-semibold mb-3 text-lg" data-translate="full_app_backup">Full Application Backup</h3>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="full_app_backup_desc">Export all your data, including subjects, chapters, progress, settings, and activity log, into a single JSON file. Keep this file in a safe place as a backup.</p>
-                            <button id="export-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900">
-                                <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                                <span data-translate="export_data">Export All Data (Backup)</span>
-                            </button>
+                        <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border-2 border-primary/50">
+                            <h3 class="font-semibold mb-3 text-lg text-primary" data-translate="full_app_backup_sync">Full App Backup & Sync</h3>
+                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="full_app_backup_sync_desc">Export all your app data into a single file from one device (like your phone) and import it on another (like your laptop) to keep them in sync. **Warning: Importing will overwrite all current data on the device.**</p>
+                            <div class="flex gap-2">
+                                <button id="import-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900">
+                                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                                    <span data-translate="import_full_backup">Import Full Backup</span>
+                                </button>
+                                <button id="export-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900">
+                                    <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                                    <span data-translate="export_data">Export All Data (Backup)</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                             <h3 class="font-semibold mb-3 text-lg" data-translate="chapters_data_management">Chapters Data Management</h3>
@@ -655,6 +676,7 @@
             <button data-page="subjects" class="mobile-nav-btn"><i data-lucide="book-open"></i></button>
             <button data-page="dpt" class="mobile-nav-btn"><i data-lucide="clipboard-check"></i></button>
             <button data-page="exams" class="mobile-nav-btn"><i data-lucide="briefcase"></i></button>
+            <button data-page="links" class="mobile-nav-btn"><i data-lucide="link"></i></button>
             <button data-page="import-export" class="mobile-nav-btn"><i data-lucide="arrow-right-left"></i></button>
             <button data-page="calendar" class="mobile-nav-btn"><i data-lucide="calendar"></i></button>
             <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i></button>
@@ -676,6 +698,32 @@
             </div>
             <div id="update-popup-content" class="space-y-3 text-sm">
             </div>
+        </div>
+    </div>
+    
+    <div id="link-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-link-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 id="link-modal-title" class="text-xl font-bold mb-4">Add New Link</h2>
+            <form id="link-form" class="space-y-4">
+                <input type="hidden" id="link-id">
+                <input type="hidden" id="link-parent-id" value="root">
+                <div>
+                    <label for="link-name" class="block text-sm font-medium mb-1" data-translate="link_name">Name</label>
+                    <input type="text" id="link-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
+                </div>
+                <div id="link-url-container">
+                    <label for="link-url" class="block text-sm font-medium mb-1" data-translate="link_url">URL</label>
+                    <input type="url" id="link-url" placeholder="https://example.com" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
+                </div>
+                <div>
+                    <label for="link-folder-select" class="block text-sm font-medium mb-1" data-translate="folder">Folder</label>
+                    <select id="link-folder-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
+                        <option value="root">Main (No Folder)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save</button>
+            </form>
         </div>
     </div>
 
@@ -918,8 +966,13 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "3.2"; // Version updated for new features
+        const CURRENT_APP_VERSION = "3.3"; // Version updated for new features
         const updateNotes = {
+            "3.3": [
+                { "title": "नया 'लिंक्स' पेज 🔗", "note": "अब आप ऐप में ही एक नया 'लिंक्स' पेज इस्तेमाल कर सकते हैं! यह क्रोम के बुकमार्क बार की तरह है। इसमें आप फ़ोल्डर बना सकते हैं और अपने सभी महत्वपूर्ण स्टडी लिंक्स को नाम के साथ सेव कर सकते हैं ताकि वे एक क्लिक में खुल जाएं।" },
+                { "title": "कम्प्लीट ऐप बैकअप और सिंक 🔄", "note": "इंपोर्ट/एक्सपोर्ट पेज पर अब 'Full App Backup & Sync' का एक नया और शक्तिशाली सेक्शन है। अब आप अपने फोन से सारा डेटा (प्रोग्रेस, सेटिंग्स, लिंक्स, आदि) एक .json फ़ाइल में एक्सपोर्ट कर सकते हैं और उसे अपने लैपटॉप में इम्पोर्ट करके दोनों डिवाइस को सिंक में रख सकते हैं।" },
+                { "title": "और भी बेहतर स्थिरता", "note": "नए फीचर्स को बहुत सावधानी से जोड़ा गया है ताकि ऐप पहले की तरह ही स्मूथ और विश्वसनीय बना रहे। डेटा इम्पोर्ट करते समय अब एक चेतावनी और कन्फर्मेशन पॉपअप आएगा ताकि गलती से आपका डेटा डिलीट न हो।" }
+            ],
             "3.2": [
                 { "title": "एडवांस और आकर्षक डैशबोर्ड ✨", "note": "डैशबोर्ड को पूरी तरह से नया रूप दिया गया है! अब यह अधिक प्रोफेशनल, मोबाइल-फ्रेंडली है और इसमें AI इनसाइट्स, परीक्षा काउंटडाउन, और आज के टास्क को प्राथमिकता दी गई है।" },
                 { "title": "गतिशील (Dynamic) विजेट्स", "note": "AI इनसाइट्स की तरह ही, अब 'आगामी रिवीज़न' और 'छूटे हुए चैप्टर्स' भी एक-एक करके दिखाई देंगे, जिससे डैशबोर्ड जीवंत लगता है।" },
@@ -1035,7 +1088,8 @@
                 "complete_yesterdays_task": "Complete Yesterday's Task", "complete_yesterdays_dpt": "Complete Yesterday's DPT",
                 "delete_all_dpts": "Delete All DPTs", "delete_all_dpts_confirm": "Are you sure you want to delete ALL DPTs for {subjectName}? This cannot be undone.",
                 "restudy_subject": "Re-study Subject", "restudy_subject_confirm": "This will reset all chapter progress for '{subjectName}' and mark it as completed once. Are you sure? This is great for revision!",
-                "completion_cycle": "Cycle {count}"
+                "completion_cycle": "Cycle {count}",
+                "links": "Links", "saved_links": "Saved Links", "add_new_link": "Add New Link", "add_folder": "Add Folder", "no_links_saved": "No links saved yet. Add a link or folder to get started!", "link_name": "Link Name", "link_url": "URL", "folder": "Folder", "edit_link": "Edit Link", "edit_folder": "Edit Folder", "delete_item": "Delete Item", "confirm_delete_item": "Are you sure you want to delete '{name}'?", "full_app_backup_sync": "Full App Backup & Sync", "full_app_backup_sync_desc": "Export all your app data into a single file from one device (like your phone) and import it on another (like your laptop) to keep them in sync. **Warning: Importing will overwrite all current data on the device.**", "import_full_backup": "Import Full Backup", "import_full_backup_confirm": "This will replace ALL current data in the application with the data from the backup file. This action cannot be undone. Are you sure you want to proceed?"
             },
             hi: {
                 "physics": "भौतिकी", "polity": "राजनीति", "chemistry": "रसायन विज्ञान", "hindi": "हिंदी",
@@ -1126,7 +1180,8 @@
                 "complete_yesterdays_task": "कल का टास्क पूरा करें", "complete_yesterdays_dpt": "कल का DPT पूरा करें",
                 "delete_all_dpts": "सभी DPT हटाएं", "delete_all_dpts_confirm": "{subjectName} के सभी DPT को हटाने के लिए क्या आप निश्चित हैं? इसे पूर्ववत नहीं किया जा सकता।",
                 "restudy_subject": "विषय को दोबारा पढ़ें", "restudy_subject_confirm": "यह '{subjectName}' के सभी चैप्टर की प्रगति को रीसेट कर देगा और इसे एक बार पूरा हुआ चिह्नित करेगा। क्या आप निश्चित हैं? यह रिवीजन के लिए बहुत अच्छा है!",
-                "completion_cycle": "चक्र {count}"
+                "completion_cycle": "चक्र {count}",
+                "links": "लिंक्स", "saved_links": "सेव किए गए लिंक्स", "add_new_link": "नया लिंक जोड़ें", "add_folder": "फ़ोल्डर जोड़ें", "no_links_saved": "अभी तक कोई लिंक सेव नहीं किया गया है। आरंभ करने के लिए एक लिंक या फ़ोल्डर जोड़ें!", "link_name": "लिंक का नाम", "link_url": "यूआरएल", "folder": "फ़ोल्डर", "edit_link": "लिंक संपादित करें", "edit_folder": "फ़ोल्डर संपादित करें", "delete_item": "आइटम हटाएं", "confirm_delete_item": "क्या आप वाकई '{name}' को हटाना चाहते हैं?", "full_app_backup_sync": "पूर्ण ऐप बैकअप और सिंक", "full_app_backup_sync_desc": "एक डिवाइस (जैसे आपके फोन) से अपने सभी ऐप डेटा को एक फ़ाइल में एक्सपोर्ट करें और उन्हें सिंक में रखने के लिए दूसरे डिवाइस (जैसे आपके लैपटॉप) पर इम्पोर्ट करें। **चेतावनी: इम्पोर्ट करने से डिवाइस पर मौजूद सभी वर्तमान डेटा ओवरराइट हो जाएगा।**", "import_full_backup": "पूरा बैकअप इम्पोर्ट करें", "import_full_backup_confirm": "यह एप्लिकेशन में मौजूद सभी वर्तमान डेटा को बैकअप फ़ाइल के डेटा से बदल देगा। यह कार्रवाई पूर्ववत नहीं की जा सकती। क्या आप वाकई आगे बढ़ना चाहते हैं?"
             }
         };
 
@@ -1171,6 +1226,7 @@
             exams: [],
             dpts: {},
             dailyDptPlan: {},
+            links: []
         };
 
         let data;
@@ -1193,6 +1249,7 @@
         data.exams = data.exams || [];
         data.dpts = data.dpts || {};
         data.dailyDptPlan = data.dailyDptPlan || {};
+        data.links = data.links || []; // Initialize links data
         
         data.settings.backgroundStyle = data.settings.backgroundStyle || 'hexagon'; 
         
@@ -1449,7 +1506,7 @@
                 home: renderHomePage, subjects: renderSubjectsPage, dpt: renderDptPage,
                 analytics: renderAnalyticsPage, settings: renderSettingsPage, calendar: renderCalendarPage,
                 report: renderReportPage, 'import-export': renderImportExportPage,
-                exams: renderExamsPage
+                exams: renderExamsPage, links: renderLinksPage
             };
             if(activePageId && pageRenderFunctions[activePageId]) {
                  pageRenderFunctions[activePageId]();
@@ -1530,6 +1587,7 @@
                 settings: renderSettingsPage, report: renderReportPage,
                 'import-export': renderImportExportPage,
                 exams: renderExamsPage,
+                links: renderLinksPage,
                 analytics: () => requestAnimationFrame(renderAnalyticsPage)
             };
             renderFunctions[pageId]?.();
@@ -2403,6 +2461,9 @@
                         case 'exams':
                             importExams(importedData);
                             break;
+                        case 'full':
+                            importFullBackup(importedData);
+                            break;
                      }
                  } catch (error) {
                      alert("Error reading or parsing the JSON file.");
@@ -2463,6 +2524,22 @@
             renderHomePage();
         };
 
+        const importFullBackup = (importedData) => {
+            if (typeof importedData !== 'object' || !importedData.subjects || !importedData.settings) {
+                alert("Invalid backup file. The file doesn't seem to contain valid app data.");
+                return;
+            }
+            showConfirmationModal(
+                _('import_full_backup'),
+                _('import_full_backup_confirm'),
+                () => {
+                    localStorage.setItem(DB_KEY, JSON.stringify(importedData));
+                    logActivity('upload-cloud', 'Restored application data from a full backup.');
+                    alert('Backup imported successfully! The application will now reload.');
+                    setTimeout(() => window.location.reload(), 500);
+                }
+            );
+        };
         
         const BADGES = { 'first_step': { name: 'first_step', description: 'first_step_desc', icon: 'flag', color: 'text-green-500'}, 'first_completion': { name: 'winner', description: 'first_completion_desc', icon: 'check-circle-2', color: 'text-blue-500' }, 'ten_completed': { name: 'scholar', description: 'ten_completed_desc', icon: 'award', color: 'text-amber-500' }, 'subject_master': { name: 'subject_master', description: 'subject_master_desc', icon: 'graduation-cap', color: 'text-purple-500' }, };
         const unlockBadge = (badgeId) => {
@@ -2879,6 +2956,165 @@
                 renderHomePage();
             });
         }
+        
+        function renderLinksPage() {
+            const container = document.getElementById('links-container');
+            const linksData = data.links || [];
+            
+            const folders = linksData.filter(item => item.type === 'folder');
+            const rootLinks = linksData.filter(item => item.type === 'link' && (item.parentId === 'root' || !item.parentId));
+
+            if (linksData.length === 0) {
+                container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="link-2-off" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${_('no_links_saved')}</h3></div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            let html = '';
+
+            const renderLink = (link) => {
+                return `<a href="${link.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 group">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="link" class="w-4 h-4 text-primary"></i>
+                        <span class="font-medium group-hover:underline">${link.name}</span>
+                    </div>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="edit-link-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" data-id="${link.id}"><i data-lucide="edit-3" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i></button>
+                        <button class="delete-link-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-800" data-id="${link.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
+                    </div>
+                </a>`;
+            };
+
+            // Render folders
+            folders.forEach(folder => {
+                const linksInFolder = linksData.filter(link => link.parentId === folder.id);
+                html += `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
+                    <summary class="flex items-center justify-between p-4 cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="folder" class="w-5 h-5 text-amber-500"></i>
+                            <h3 class="font-bold text-lg">${folder.name}</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                           <button class="edit-link-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" data-id="${folder.id}"><i data-lucide="edit-3" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i></button>
+                           <button class="delete-link-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-800" data-id="${folder.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
+                           <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
+                        </div>
+                    </summary>
+                    <div class="p-4 border-t space-y-2">
+                        ${linksInFolder.length > 0 ? linksInFolder.map(renderLink).join('') : `<p class="text-center text-sm text-text-muted-light dark:text-text-muted-dark py-2">This folder is empty.</p>`}
+                    </div>
+                 </details>`;
+            });
+
+            // Render links without a folder
+            if (rootLinks.length > 0) {
+                html += `<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm p-4 space-y-2">${rootLinks.map(renderLink).join('')}</div>`;
+            }
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function showLinkModal(type, id = null, parentId = 'root') {
+            const form = document.getElementById('link-form');
+            form.reset();
+            const modalTitle = document.getElementById('link-modal-title');
+            const urlContainer = document.getElementById('link-url-container');
+            const folderSelect = document.getElementById('link-folder-select');
+            
+            // Populate folder dropdown
+            folderSelect.innerHTML = '<option value="root">Main (No Folder)</option>' + data.links.filter(i => i.type === 'folder').map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+
+            document.getElementById('link-id').value = id || '';
+            
+            if (type === 'folder') {
+                const folder = id ? data.links.find(i => i.id === id) : null;
+                modalTitle.textContent = id ? _('edit_folder') : _('add_folder');
+                urlContainer.style.display = 'none';
+                document.getElementById('link-url').required = false;
+                document.getElementById('link-name').value = folder ? folder.name : '';
+                folderSelect.value = folder ? folder.parentId || 'root' : parentId;
+                // A folder cannot be inside itself
+                if(id) folderSelect.querySelector(`option[value="${id}"]`).disabled = true;
+
+            } else { // type === 'link'
+                const link = id ? data.links.find(i => i.id === id) : null;
+                modalTitle.textContent = id ? _('edit_link') : _('add_new_link');
+                urlContainer.style.display = 'block';
+                document.getElementById('link-url').required = true;
+                if (link) {
+                    document.getElementById('link-name').value = link.name;
+                    document.getElementById('link-url').value = link.url;
+                    folderSelect.value = link.parentId || 'root';
+                } else {
+                    folderSelect.value = parentId;
+                }
+            }
+            form.dataset.type = type;
+            showModal('link-modal');
+        }
+
+        function saveLinkItem(e) {
+            e.preventDefault();
+            const form = e.target;
+            const type = form.dataset.type;
+            const id = document.getElementById('link-id').value;
+            const name = document.getElementById('link-name').value.trim();
+            const parentId = document.getElementById('link-folder-select').value;
+            if (!name) return;
+
+            if (type === 'folder') {
+                if (id) { // Edit folder
+                    const index = data.links.findIndex(i => i.id === id);
+                    if (index !== -1) {
+                        data.links[index].name = name;
+                        data.links[index].parentId = parentId; // Allow moving folders
+                        logActivity('folder-edit', `Folder renamed: "${name}"`);
+                    }
+                } else { // Add new folder
+                    const newFolder = { id: `item-${Date.now()}`, type: 'folder', name, parentId };
+                    data.links.push(newFolder);
+                    logActivity('folder-plus', `Folder created: "${name}"`);
+                }
+            } else { // type === 'link'
+                const url = document.getElementById('link-url').value.trim();
+                if (!url) return;
+                if (id) { // Edit link
+                    const index = data.links.findIndex(i => i.id === id);
+                    if (index !== -1) {
+                        data.links[index].name = name;
+                        data.links[index].url = url;
+                        data.links[index].parentId = parentId;
+                        logActivity('link', `Link updated: "${name}"`);
+                    }
+                } else { // Add new link
+                    const newLink = { id: `item-${Date.now()}`, type: 'link', name, url, parentId };
+                    data.links.push(newLink);
+                    logActivity('link', `Link added: "${name}"`);
+                }
+            }
+            saveData();
+            renderLinksPage();
+            hideModal('link-modal');
+        }
+        
+        function deleteLinkItem(id) {
+            const item = data.links.find(i => i.id === id);
+            if (!item) return;
+
+            showConfirmationModal(_('delete_item'), _('confirm_delete_item', { name: item.name }), () => {
+                let itemsToDelete = [id];
+                // If it's a folder, also mark its contents for deletion
+                if (item.type === 'folder') {
+                    const children = data.links.filter(link => link.parentId === id);
+                    children.forEach(child => itemsToDelete.push(child.id));
+                }
+                data.links = data.links.filter(i => !itemsToDelete.includes(i.id));
+                logActivity('trash-2', `${item.type.charAt(0).toUpperCase() + item.type.slice(1)} deleted: "${item.name}"`);
+                saveData();
+                renderLinksPage();
+            });
+        }
 
 
         function addEventListeners() {
@@ -2982,8 +3218,6 @@
                 btn.disabled = true; btn.querySelector('span').textContent = 'Generating...';
                 html2canvas(document.getElementById('report-content'), { scale: 2 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-                    // PDF में हिंदी फॉन्ट के लिए आपको एक कस्टम फॉन्ट जोड़ना होगा
-                    // pdf.setFont('NotoSansDevanagari'); // उदाहरण
                     const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     pdf.save(`Study_Report_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -2993,7 +3227,7 @@
             document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value, document.getElementById('add-chapter-source-type').value); });
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            ['close-link-modal', 'close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
@@ -3007,6 +3241,7 @@
             document.getElementById('import-all-books-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.dataset.sourceType = 'book'; importFileInput.click(); });
             document.getElementById('import-routine-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'routine'; importFileInput.click(); });
             document.getElementById('import-exams-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'exams'; importFileInput.click(); });
+            document.getElementById('import-full-data-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'full'; importFileInput.click(); });
             importFileInput.addEventListener('change', (e) => handleFileUpload(e, e.target.dataset.importType));
 
             document.getElementById('delete-all-notes-btn').addEventListener('click', () => deleteAllChaptersForSource('notes'));
@@ -3155,6 +3390,22 @@
             });
             document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
             
+            // New Listeners for Links Page
+            document.getElementById('add-link-btn').addEventListener('click', () => showLinkModal('link'));
+            document.getElementById('add-folder-btn').addEventListener('click', () => showLinkModal('folder'));
+            document.getElementById('link-form').addEventListener('submit', saveLinkItem);
+            document.getElementById('links-container').addEventListener('click', e => {
+                const editBtn = e.target.closest('.edit-link-btn');
+                const deleteBtn = e.target.closest('.delete-link-btn');
+                if(editBtn) {
+                    const item = data.links.find(i => i.id === editBtn.dataset.id);
+                    if (item) showLinkModal(item.type, item.id);
+                }
+                if(deleteBtn) {
+                    deleteLinkItem(deleteBtn.dataset.id);
+                }
+            });
+
             window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
         }
         
@@ -3258,10 +3509,6 @@
             } else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
-                // IMPORTANT: Add custom font for Hindi here
-                // pdf.addFileToVFS('NotoSansDevanagari-Regular.ttf', fontFile);
-                // pdf.addFont('NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari', 'normal');
-                // pdf.setFont('NotoSansDevanagari');
                 pdf.setFont('helvetica', 'bold');
                 pdf.text("14-Day Study Routine", 105, 15, null, null, 'center');
                 pdf.setFont('helvetica', 'normal');
