@@ -244,7 +244,7 @@
         
         .status-btn-group button.active { background-color: var(--primary); color: white; font-weight: 600; }
         .dark .status-btn-group button.active { background-color: var(--primary-hover); }
-        .subject-source-btn.active { background-color: var(--primary); color: white; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+        .filter-btn.active { background-color: var(--primary); color: white; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
         
         header, .border-b, .border-t, .border, .border-l-4, .border-2 { border-color: var(--border-light); }
         .dark header, .dark .border-b, .dark .border-t, .dark .border, .dark .border-l-4, .dark .border-2 { border-color: var(--border-dark); }
@@ -252,26 +252,40 @@
         .dark input, .dark select, .dark textarea { border-color: var(--border-dark); }
         .border-primary\/20 { border-color: rgba(14, 165, 233, 0.2); }
         .border-accent\/20 { border-color: rgba(139, 92, 246, 0.2); }
-
-        /* Typing animation */
-        .typing-effect {
-            border-right: .15em solid var(--primary);
-            white-space: pre-wrap;
-            overflow: hidden;
-            animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
-        }
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--primary); } }
         
         /* Update popup styling */
         #update-popup-modal .update-modal-content {
             background: linear-gradient(145deg, #1e3a8a, #312e81);
             color: #e0e7ff;
+            border: 1px solid #4f46e5;
+            box-shadow: 0 0 15px #4f46e5, 0 0 30px #4f46e5, inset 0 0 10px #7c3aed;
+            position: relative;
+            overflow: hidden;
         }
         .dark #update-popup-modal .update-modal-content {
              background: linear-gradient(145deg, #0f172a, #111827);
              color: #dbeafe;
+             border: 1px solid #5b21b6;
+             box-shadow: 0 0 15px #5b21b6, 0 0 30px #5b21b6, inset 0 0 10px #7c3aed;
         }
+        #update-popup-modal .update-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(167, 139, 250, 0.3), transparent 30%);
+            animation: rotate 6s linear infinite;
+        }
+        #update-popup-modal .update-note-item {
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeInItem 0.6s ease-out forwards;
+        }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        @keyframes fadeInItem { to { opacity: 1; transform: translateY(0); } }
+
     </style>
 </head>
 
@@ -391,11 +405,16 @@
 
                 <div id="page-subjects" class="page">
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
-                        <div class="flex items-center gap-4">
+                         <div class="flex items-center gap-4 flex-wrap">
                             <h2 class="text-2xl font-bold flex-shrink-0" data-translate="subjects_chapters">Subjects & Chapters</h2>
                             <div id="subject-source-filter" class="flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                                <button data-source="notes" class="subject-source-btn px-3 py-1 text-sm font-semibold rounded-md" data-translate="notes_chapters">Notes Chapters</button>
-                                <button data-source="book" class="subject-source-btn px-3 py-1 text-sm font-semibold rounded-md" data-translate="book_chapters">Book Chapters</button>
+                                <button data-source="notes" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Notes</button>
+                                <button data-source="book" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Book</button>
+                                <button data-source="all" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">All</button>
+                            </div>
+                            <div id="subject-view-filter" class="flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                                <button data-view="all" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">All Chapters</button>
+                                <button data-view="completed" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Completed</button>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -412,6 +431,10 @@
                      <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                         <h2 class="text-2xl font-bold" data-translate="dpt_page_title">Daily Practice Tests (DPT)</h2>
                         <div class="flex items-center gap-3">
+                             <div id="dpt-view-filter" class="flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                                <button data-view="pending" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Pending</button>
+                                <button data-view="completed" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Completed</button>
+                            </div>
                             <select id="dpt-subject-filter" class="p-2 bg-card-light dark:bg-card-dark border rounded-lg"></select>
                             <button id="delete-all-dpts-subject-btn" class="hidden flex items-center justify-center gap-2 p-2 text-sm font-semibold rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i> <span data-translate="delete_all_dpts">Delete All DPTs</span>
@@ -442,20 +465,15 @@
                     <div id="exams-list-container" class="space-y-4">
                     </div>
                 </div>
-                
+
                 <div id="page-links" class="page">
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-2xl font-bold" data-translate="saved_links">Saved Links</h2>
-                        <div class="flex items-center gap-2">
-                            <button id="add-folder-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700">
-                                <i data-lucide="folder-plus" class="w-4 h-4"></i> <span data-translate="add_folder">Add Folder</span>
-                            </button>
-                            <button id="add-link-btn" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg btn-neon">
-                                <i data-lucide="plus" class="w-4 h-4"></i> <span data-translate="add_new_link">Add New Link</span>
-                            </button>
-                        </div>
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
+                        <h2 class="text-2xl font-bold flex-shrink-0" data-translate="links_title">Saved Links</h2>
+                        <button id="add-new-folder-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon">
+                            <i data-lucide="folder-plus" class="w-4 h-4"></i> <span data-translate="add_new_folder">Add New Folder</span>
+                        </button>
                     </div>
-                    <div id="links-container" class="space-y-4"></div>
+                    <div id="links-container" class="space-y-3"></div>
                 </div>
 
                 <div id="page-import-export" class="page">
@@ -492,15 +510,15 @@
                             </div>
                         </div>
 
-                        <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border-2 border-primary/50">
-                            <h3 class="font-semibold mb-3 text-lg text-primary" data-translate="full_app_backup_sync">Full App Backup & Sync</h3>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="full_app_backup_sync_desc">Export all your app data into a single file from one device (like your phone) and import it on another (like your laptop) to keep them in sync. **Warning: Importing will overwrite all current data on the device.**</p>
-                            <div class="flex gap-2">
-                                <button id="import-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900">
+                        <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                            <h3 class="font-semibold mb-3 text-lg" data-translate="full_app_backup">Full Application Backup</h3>
+                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="full_app_backup_desc">Export all your data, including subjects, chapters, progress, settings, and activity log, into a single JSON file. Keep this file in a safe place as a backup.</p>
+                             <div class="flex flex-col sm:flex-row gap-2">
+                                <button id="import-full-backup-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900">
                                     <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                                    <span data-translate="import_full_backup">Import Full Backup</span>
+                                    <span>Import from Backup (JSON)</span>
                                 </button>
-                                <button id="export-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900">
+                                <button id="export-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900">
                                     <i data-lucide="download-cloud" class="w-4 h-4"></i>
                                     <span data-translate="export_data">Export All Data (Backup)</span>
                                 </button>
@@ -693,37 +711,11 @@
     
     <div id="update-popup-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="w-full max-w-lg rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto update-modal-content">
-            <button id="close-update-popup-modal" class="absolute top-4 right-4 text-indigo-200 hover:text-white"><i data-lucide="x"></i></button>
-            <div id="update-popup-header" class="text-center border-b border-indigo-400/50 pb-3 mb-4">
+            <button id="close-update-popup-modal" class="absolute top-4 right-4 text-indigo-200 hover:text-white z-10"><i data-lucide="x"></i></button>
+            <div id="update-popup-header" class="text-center border-b border-indigo-400/50 pb-3 mb-4 relative">
             </div>
-            <div id="update-popup-content" class="space-y-3 text-sm">
+            <div id="update-popup-content" class="space-y-3 text-sm relative">
             </div>
-        </div>
-    </div>
-    
-    <div id="link-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
-        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
-            <button id="close-link-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
-            <h2 id="link-modal-title" class="text-xl font-bold mb-4">Add New Link</h2>
-            <form id="link-form" class="space-y-4">
-                <input type="hidden" id="link-id">
-                <input type="hidden" id="link-parent-id" value="root">
-                <div>
-                    <label for="link-name" class="block text-sm font-medium mb-1" data-translate="link_name">Name</label>
-                    <input type="text" id="link-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
-                </div>
-                <div id="link-url-container">
-                    <label for="link-url" class="block text-sm font-medium mb-1" data-translate="link_url">URL</label>
-                    <input type="url" id="link-url" placeholder="https://example.com" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
-                </div>
-                <div>
-                    <label for="link-folder-select" class="block text-sm font-medium mb-1" data-translate="folder">Folder</label>
-                    <select id="link-folder-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
-                        <option value="root">Main (No Folder)</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save</button>
-            </form>
         </div>
     </div>
 
@@ -951,6 +943,41 @@
             </div>
         </div>
     </div>
+    
+    <div id="add-folder-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-add-folder-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 id="folder-modal-title" class="text-xl font-bold mb-4" data-translate="add_new_folder">Add New Folder</h2>
+            <form id="add-folder-form" class="space-y-4">
+                <input type="hidden" id="folder-id">
+                <div>
+                    <label for="new-folder-name" class="block text-sm font-medium mb-1" data-translate="folder_name">Folder Name</label>
+                    <input type="text" id="new-folder-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g. History Videos">
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="save">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-link-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-add-link-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 id="link-modal-title" class="text-xl font-bold mb-4" data-translate="add_new_link">Add New Link</h2>
+            <form id="add-link-form" class="space-y-4">
+                <input type="hidden" id="link-folder-id">
+                <input type="hidden" id="link-id">
+                <div>
+                    <label for="new-link-name" class="block text-sm font-medium mb-1" data-translate="link_name">Link Name</label>
+                    <input type="text" id="new-link-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g. Ancient Rome Documentary">
+                </div>
+                <div>
+                    <label for="new-link-url" class="block text-sm font-medium mb-1" data-translate="link_url">URL</label>
+                    <input type="url" id="new-link-url" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="https://example.com">
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="save">Save</button>
+            </form>
+        </div>
+    </div>
 
 
     <script>
@@ -966,12 +993,20 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "3.3"; // Version updated for new features
+        const CURRENT_APP_VERSION = "3.4"; // Version updated for new features
         const updateNotes = {
+            "3.4": [
+                { "title": "संपूर्ण डेटा सिंक ✨", "note": "अब आप 'Import/Export' पेज से अपने ऐप का पूरा डेटा (प्रगति, सेटिंग्स, DPT, आदि) एक क्लिक में एक्सपोर्ट और इम्पोर्ट कर सकते हैं। अपने फ़ोन और लैपटॉप के बीच डेटा सिंक करना अब बहुत आसान है।" },
+                { "title": "पूर्ण हुए अध्याय और DPT देखें", "note": "'Subjects' और 'DPT' पेज पर नए फिल्टर जोड़े गए हैं। अब आप आसानी से केवल पूरे हो चुके (Completed) आइटम्स को देख सकते हैं।" },
+                { "title": "स्मार्ट AI स्टडी कोच", "note": "AI इनसाइट्स को बेहतर बनाया गया है। अब यह आपकी स्टडी स्ट्रीक, हाल की गतिविधि, और कमजोर विषयों के बारे में अधिक सटीक जानकारी और सुझाव देता है।" },
+                { "title": "प्रोफेशनल अपडेट पॉप-अप", "note": "ऐप अपडेट की सूचना देने वाले पॉप-अप को एक नया, आकर्षक और एनिमेटेड डिज़ाइन दिया गया है जो आपके अनुभव को बेहतर बनाता है।" },
+                { "title": "बग फिक्स और स्थिरता", "note": "'Links' सेक्शन में सेव न होने की समस्या को ठीक कर दिया गया है। ऐप को पहले से अधिक स्थिर और भरोसेमंद बनाने के लिए कई सुधार किए गए हैं।" }
+            ],
             "3.3": [
-                { "title": "नया 'लिंक्स' पेज 🔗", "note": "अब आप ऐप में ही एक नया 'लिंक्स' पेज इस्तेमाल कर सकते हैं! यह क्रोम के बुकमार्क बार की तरह है। इसमें आप फ़ोल्डर बना सकते हैं और अपने सभी महत्वपूर्ण स्टडी लिंक्स को नाम के साथ सेव कर सकते हैं ताकि वे एक क्लिक में खुल जाएं।" },
-                { "title": "कम्प्लीट ऐप बैकअप और सिंक 🔄", "note": "इंपोर्ट/एक्सपोर्ट पेज पर अब 'Full App Backup & Sync' का एक नया और शक्तिशाली सेक्शन है। अब आप अपने फोन से सारा डेटा (प्रोग्रेस, सेटिंग्स, लिंक्स, आदि) एक .json फ़ाइल में एक्सपोर्ट कर सकते हैं और उसे अपने लैपटॉप में इम्पोर्ट करके दोनों डिवाइस को सिंक में रख सकते हैं।" },
-                { "title": "और भी बेहतर स्थिरता", "note": "नए फीचर्स को बहुत सावधानी से जोड़ा गया है ताकि ऐप पहले की तरह ही स्मूथ और विश्वसनीय बना रहे। डेटा इम्पोर्ट करते समय अब एक चेतावनी और कन्फर्मेशन पॉपअप आएगा ताकि गलती से आपका डेटा डिलीट न हो।" }
+                { "title": "नया 'लिंक्स' सेक्शन ✨", "note": "अब आप एक समर्पित 'लिंक्स' पेज पर अपने सभी महत्वपूर्ण वेब लिंक्स को सहेज सकते हैं। यह आपके स्टडी मटेरियल को व्यवस्थित रखने के लिए एक बुकमार्क मैनेजर की तरह काम करता है।" },
+                { "title": "फ़ोल्डर बनाकर व्यवस्थित करें", "note": "लिंक्स पेज पर, आप विषयों या टॉपिक्स के अनुसार फ़ोल्डर बना सकते हैं। यह आपको अपने लिंक्स को आसानी से खोजने और प्रबंधित करने में मदद करेगा।" },
+                { "title": "आसान लिंक मैनेजमेंट", "note": "आप प्रत्येक फ़ोल्डर में नए लिंक जोड़ सकते हैं, उन्हें एक कस्टम नाम दे सकते हैं, और उन्हें सीधे ऐप से एक क्लिक में खोल सकते हैं। लिंक्स और फ़ोल्डर्स को संपादित करना और हटाना भी बहुत आसान है।" },
+                { "title": "स्थिरता और सुधार", "note": "इस नए फीचर को जोड़ने के साथ-साथ, हमने सुनिश्चित किया है कि ऐप पहले की तरह ही तेज़ और विश्वसनीय बना रहे। सभी मौजूदा सुविधाएँ बिना किसी समस्या के काम करेंगी।" }
             ],
             "3.2": [
                 { "title": "एडवांस और आकर्षक डैशबोर्ड ✨", "note": "डैशबोर्ड को पूरी तरह से नया रूप दिया गया है! अब यह अधिक प्रोफेशनल, मोबाइल-फ्रेंडली है और इसमें AI इनसाइट्स, परीक्षा काउंटडाउन, और आज के टास्क को प्राथमिकता दी गई है।" },
@@ -994,6 +1029,8 @@
         let undoTimeout = null;
         let dashboardProgressView = 'notes';
         let currentSubjectSourceView = 'notes';
+        let subjectPageViewMode = 'all'; // 'all' or 'completed'
+        let dptPageViewMode = 'pending'; // 'pending' or 'completed'
         
         let dynamicDisplayIntervals = {}; // To manage all rotating displays
 
@@ -1089,7 +1126,7 @@
                 "delete_all_dpts": "Delete All DPTs", "delete_all_dpts_confirm": "Are you sure you want to delete ALL DPTs for {subjectName}? This cannot be undone.",
                 "restudy_subject": "Re-study Subject", "restudy_subject_confirm": "This will reset all chapter progress for '{subjectName}' and mark it as completed once. Are you sure? This is great for revision!",
                 "completion_cycle": "Cycle {count}",
-                "links": "Links", "saved_links": "Saved Links", "add_new_link": "Add New Link", "add_folder": "Add Folder", "no_links_saved": "No links saved yet. Add a link or folder to get started!", "link_name": "Link Name", "link_url": "URL", "folder": "Folder", "edit_link": "Edit Link", "edit_folder": "Edit Folder", "delete_item": "Delete Item", "confirm_delete_item": "Are you sure you want to delete '{name}'?", "full_app_backup_sync": "Full App Backup & Sync", "full_app_backup_sync_desc": "Export all your app data into a single file from one device (like your phone) and import it on another (like your laptop) to keep them in sync. **Warning: Importing will overwrite all current data on the device.**", "import_full_backup": "Import Full Backup", "import_full_backup_confirm": "This will replace ALL current data in the application with the data from the backup file. This action cannot be undone. Are you sure you want to proceed?"
+                "links": "Links", "links_title": "Saved Links", "add_new_folder": "Add New Folder", "folder_name": "Folder Name", "add_new_link": "Add New Link", "link_name": "Link Name", "link_url": "URL", "save": "Save", "edit": "Edit", "delete": "Delete", "no_links_in_folder": "No links saved in this folder yet.", "no_folders_created": "No folders created yet. Add one to get started!", "delete_folder_confirm": "Are you sure you want to delete the folder '{folderName}' and all links inside it?", "delete_link_confirm": "Are you sure you want to delete the link '{linkName}'?"
             },
             hi: {
                 "physics": "भौतिकी", "polity": "राजनीति", "chemistry": "रसायन विज्ञान", "hindi": "हिंदी",
@@ -1181,7 +1218,7 @@
                 "delete_all_dpts": "सभी DPT हटाएं", "delete_all_dpts_confirm": "{subjectName} के सभी DPT को हटाने के लिए क्या आप निश्चित हैं? इसे पूर्ववत नहीं किया जा सकता।",
                 "restudy_subject": "विषय को दोबारा पढ़ें", "restudy_subject_confirm": "यह '{subjectName}' के सभी चैप्टर की प्रगति को रीसेट कर देगा और इसे एक बार पूरा हुआ चिह्नित करेगा। क्या आप निश्चित हैं? यह रिवीजन के लिए बहुत अच्छा है!",
                 "completion_cycle": "चक्र {count}",
-                "links": "लिंक्स", "saved_links": "सेव किए गए लिंक्स", "add_new_link": "नया लिंक जोड़ें", "add_folder": "फ़ोल्डर जोड़ें", "no_links_saved": "अभी तक कोई लिंक सेव नहीं किया गया है। आरंभ करने के लिए एक लिंक या फ़ोल्डर जोड़ें!", "link_name": "लिंक का नाम", "link_url": "यूआरएल", "folder": "फ़ोल्डर", "edit_link": "लिंक संपादित करें", "edit_folder": "फ़ोल्डर संपादित करें", "delete_item": "आइटम हटाएं", "confirm_delete_item": "क्या आप वाकई '{name}' को हटाना चाहते हैं?", "full_app_backup_sync": "पूर्ण ऐप बैकअप और सिंक", "full_app_backup_sync_desc": "एक डिवाइस (जैसे आपके फोन) से अपने सभी ऐप डेटा को एक फ़ाइल में एक्सपोर्ट करें और उन्हें सिंक में रखने के लिए दूसरे डिवाइस (जैसे आपके लैपटॉप) पर इम्पोर्ट करें। **चेतावनी: इम्पोर्ट करने से डिवाइस पर मौजूद सभी वर्तमान डेटा ओवरराइट हो जाएगा।**", "import_full_backup": "पूरा बैकअप इम्पोर्ट करें", "import_full_backup_confirm": "यह एप्लिकेशन में मौजूद सभी वर्तमान डेटा को बैकअप फ़ाइल के डेटा से बदल देगा। यह कार्रवाई पूर्ववत नहीं की जा सकती। क्या आप वाकई आगे बढ़ना चाहते हैं?"
+                "links": "लिंक", "links_title": "सहेजे गए लिंक", "add_new_folder": "नया फ़ोल्डर जोड़ें", "folder_name": "फ़ोल्डर का नाम", "add_new_link": "नया लिंक जोड़ें", "link_name": "लिंक का नाम", "link_url": "URL", "save": "सहेजें", "edit": "संपादित करें", "delete": "हटाएं", "no_links_in_folder": "इस फ़ोल्डर में अभी तक कोई लिंक नहीं सहेजा गया है।", "no_folders_created": "अभी तक कोई फ़ोल्डर नहीं बनाया गया है। आरंभ करने के लिए एक जोड़ें!", "delete_folder_confirm": "क्या आप वाकई फ़ोल्डर '{folderName}' और उसके अंदर के सभी लिंक हटाना चाहते हैं?", "delete_link_confirm": "क्या आप वाकई लिंक '{linkName}' हटाना चाहते हैं?"
             }
         };
 
@@ -1249,7 +1286,7 @@
         data.exams = data.exams || [];
         data.dpts = data.dpts || {};
         data.dailyDptPlan = data.dailyDptPlan || {};
-        data.links = data.links || []; // Initialize links data
+        data.links = data.links || [];
         
         data.settings.backgroundStyle = data.settings.backgroundStyle || 'hexagon'; 
         
@@ -1390,23 +1427,6 @@
             }
         };
         
-        const typeWriter = (element, text, speed = 50, callback) => {
-            let i = 0;
-            element.innerHTML = '';
-            element.classList.add('typing-effect');
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                } else {
-                    element.classList.remove('typing-effect');
-                    if (callback) callback();
-                }
-            }
-            type();
-        };
-        
         const showAnimatedUpdatePopup = () => {
             const notesForVersion = updateNotes[CURRENT_APP_VERSION];
             if (!notesForVersion) return;
@@ -1421,27 +1441,21 @@
             showModal('update-popup-modal');
             lucide.createIcons();
             
-            let noteIndex = 0;
-            function showNextNote() {
-                if (noteIndex < notesForVersion.length) {
-                    const item = notesForVersion[noteIndex];
-                    const noteContainer = document.createElement('div');
-                    noteContainer.className = 'p-3 bg-white/10 rounded-lg';
-                    const titleEl = document.createElement('h4');
-                    titleEl.className = 'font-bold text-amber-300 flex items-center gap-2 mb-1';
-                    titleEl.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> ${item.title}`;
-                    const noteEl = document.createElement('p');
-                    noteEl.className = 'ml-6 text-indigo-200';
-                    noteContainer.appendChild(titleEl);
-                    noteContainer.appendChild(noteEl);
-                    contentEl.appendChild(noteContainer);
-                    lucide.createIcons();
-                    noteEl.innerHTML = item.note; // Removed typewriter
-                    noteIndex++;
-                    setTimeout(showNextNote, 500); // Display notes sequentially
-                }
-            }
-            showNextNote();
+            notesForVersion.forEach((item, index) => {
+                const noteContainer = document.createElement('div');
+                noteContainer.className = 'p-3 bg-white/10 rounded-lg update-note-item';
+                noteContainer.style.animationDelay = `${index * 150}ms`;
+                const titleEl = document.createElement('h4');
+                titleEl.className = 'font-bold text-amber-300 flex items-center gap-2 mb-1';
+                titleEl.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> ${item.title}`;
+                const noteEl = document.createElement('p');
+                noteEl.className = 'ml-6 text-indigo-200 text-xs';
+                noteEl.innerHTML = item.note;
+                noteContainer.appendChild(titleEl);
+                noteContainer.appendChild(noteEl);
+                contentEl.appendChild(noteContainer);
+            });
+            lucide.createIcons();
         };
         
         const showUndoToast = (message, onUndo) => {
@@ -2037,36 +2051,48 @@
         const renderSubjectsPage = () => {
             const container = document.getElementById('subjects-list-container');
             const filter = document.getElementById('search-input').value.toLowerCase();
-            const sourceFilterBtns = document.querySelectorAll('.subject-source-btn');
-            sourceFilterBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.source === currentSubjectSourceView));
+            
+            document.querySelectorAll('#subject-source-filter .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.source === currentSubjectSourceView));
+            document.querySelectorAll('#subject-view-filter .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === subjectPageViewMode));
             
             container.innerHTML = (data.subjects || []).map(subject => {
-                 const chapters = subject.chapters[currentSubjectSourceView] || [];
+                 let chapters = [];
+                 if (currentSubjectSourceView === 'all') {
+                     chapters = [...(subject.chapters.notes || []).map(c => ({...c, effectiveSource: 'notes'})), ...(subject.chapters.book || []).map(c => ({...c, effectiveSource: 'book'}))];
+                 } else {
+                     chapters = (subject.chapters[currentSubjectSourceView] || []).map(c => ({...c, effectiveSource: currentSubjectSourceView}));
+                 }
+                 
+                 if (subjectPageViewMode === 'completed') {
+                     chapters = chapters.filter(c => c.status === 'Completed');
+                 }
+
                  const filteredChapters = chapters.filter(c => c.name.toLowerCase().includes(filter));
                  if (filter && filteredChapters.length === 0 && !_(subject.id).toLowerCase().includes(filter)) return '';
-                 const completed = chapters.filter(c => c.status === 'Completed').length;
-                 const percentage = chapters.length > 0 ? Math.round((completed / chapters.length) * 100) : 0;
                  
-                 const renderChapterList = (chapters, sourceType) => {
-                     const chaptersToShow = filter ? filteredChapters : chapters;
-                     if (chaptersToShow.length === 0) return `<p class="text-center text-sm py-2">${_('no_chapters_added')}</p>`;
-                     return `<ul class="space-y-2 mt-4 mb-3">${chaptersToShow.map(c => `<li data-subject-id="${subject.id}" data-chapter-id="${c.id}" data-source-type="${sourceType}" class="chapter-item flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md"><span class="font-medium">${c.name}</span><span class="text-xs px-2 py-1 rounded-full ${getStatusClass(c.status)}">${_(c.status.toLowerCase().replace(' ','_'))}</span></li>`).join('')}</ul>`;
+                 const totalChaptersInView = chapters.length;
+                 const completedInView = chapters.filter(c => c.status === 'Completed').length;
+                 const percentage = totalChaptersInView > 0 ? Math.round((completedInView / totalChaptersInView) * 100) : 0;
+                 
+                 const renderChapterList = (chaptersToRender) => {
+                     if (chaptersToRender.length === 0) {
+                         const message = subjectPageViewMode === 'completed' ? 'No completed chapters in this view.' : _('no_chapters_added');
+                         return `<p class="text-center text-sm py-2">${message}</p>`;
+                     }
+                     return `<ul class="space-y-2 mt-4 mb-3">${chaptersToRender.map(c => `<li data-subject-id="${subject.id}" data-chapter-id="${c.id}" data-source-type="${c.effectiveSource}" class="chapter-item flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md"><span class="font-medium">${c.name}</span><div class="flex items-center gap-2"><span class="source-badge ${c.effectiveSource === 'book' ? 'source-badge-book' : 'source-badge-notes'}">${c.effectiveSource === 'book' ? 'B' : 'N'}</span><span class="text-xs px-2 py-1 rounded-full ${getStatusClass(c.status)}">${_(c.status.toLowerCase().replace(' ','_'))}</span></div></li>`).join('')}</ul>`;
                  };
-                 const sourceTypeColor = currentSubjectSourceView === 'notes' ? 'cyan' : 'violet';
-                 const buttonClasses = `add-chapter-btn w-full flex items-center justify-center p-2 text-sm font-semibold text-${sourceTypeColor}-600 dark:text-${sourceTypeColor}-300 bg-${sourceTypeColor}-100 dark:bg-${sourceTypeColor}-900/50 rounded-lg hover:bg-${sourceTypeColor}-200 dark:hover:bg-${sourceTypeColor}-900`;
-                 const sourceLabel = currentSubjectSourceView === 'notes' ? _('source_notes') : _('source_book');
                  
-                 const restudyButton = (percentage === 100) ? `<button class="restudy-subject-btn p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-800/50" data-subject-id="${subject.id}" title="${_('restudy_subject')}"><i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i></button>` : '';
+                 const restudyButton = (percentage === 100 && subjectPageViewMode === 'all') ? `<button class="restudy-subject-btn p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-800/50" data-subject-id="${subject.id}" title="${_('restudy_subject')}"><i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i></button>` : '';
                  const completionCycle = subject.completionCount > 0 ? `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">${_('completion_cycle', {count: subject.completionCount})}</span>` : '';
 
                  return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
                     <summary class="flex items-center justify-between p-4 cursor-pointer">
                         <div>
                             <div class="flex items-center gap-2">
-                               <h3 class="font-bold text-lg">${_(subject.id)} <span class="text-base font-medium text-primary">(${sourceLabel})</span></h3>
+                               <h3 class="font-bold text-lg">${_(subject.id)}</h3>
                                ${completionCycle}
                             </div>
-                            <p class="text-sm text-text-muted-light">${_('chapters_done_of', {completed, total: chapters.length})}</p>
+                            <p class="text-sm text-text-muted-light">${_('chapters_done_of', {completed: completedInView, total: totalChaptersInView})}</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
@@ -2078,7 +2104,9 @@
                         </div>
                     </summary>
                     <div class="p-4 border-t">
-                        <div>${renderChapterList(chapters, currentSubjectSourceView)}<button class="${buttonClasses}" data-subject-id="${subject.id}" data-source-type="${currentSubjectSourceView}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_chapter')}</button></div>
+                        <div>${renderChapterList(filteredChapters)}
+                        ${subjectPageViewMode === 'all' ? `<div class="flex gap-2 mt-2"><button class="add-chapter-btn w-full flex items-center justify-center p-2 text-sm font-semibold text-cyan-600 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-900/50 rounded-lg hover:bg-cyan-200 dark:hover:bg-cyan-900" data-subject-id="${subject.id}" data-source-type="notes"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>Add to Notes</button><button class="add-chapter-btn w-full flex items-center justify-center p-2 text-sm font-semibold text-violet-600 dark:text-violet-300 bg-violet-100 dark:bg-violet-900/50 rounded-lg hover:bg-violet-200 dark:hover:bg-violet-900" data-subject-id="${subject.id}" data-source-type="book"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>Add to Book</button></div>` : ''}
+                        </div>
                     </div>
                  </details>`;
             }).join('');
@@ -2452,6 +2480,9 @@
                  try {
                      const importedData = JSON.parse(e.target.result);
                      switch(importType) {
+                        case 'full_backup':
+                            importFullBackup(importedData);
+                            break;
                         case 'chapters':
                             importAllChapters(importedData, event.target.dataset.sourceType);
                             break;
@@ -2460,9 +2491,6 @@
                             break;
                         case 'exams':
                             importExams(importedData);
-                            break;
-                        case 'full':
-                            importFullBackup(importedData);
                             break;
                      }
                  } catch (error) {
@@ -2473,6 +2501,25 @@
                  }
              };
              reader.readAsText(file);
+        };
+
+        const importFullBackup = (importedData) => {
+            showConfirmationModal('Import Backup?', 'This will overwrite all current data in the application. This action cannot be undone. Are you sure you want to continue?', () => {
+                try {
+                    // IMPROVEMENT: More robust validation for the backup file
+                    if (importedData.subjects && importedData.settings && importedData.activityLog && importedData.gamification && importedData.dpts && importedData.exams) {
+                        localStorage.setItem(DB_KEY, JSON.stringify(importedData));
+                        logActivity('upload-cloud', 'Successfully imported a full application backup.');
+                        alert('Backup imported successfully! The application will now reload.');
+                        setTimeout(() => window.location.reload(), 500);
+                    } else {
+                        alert('The selected file does not appear to be a valid backup file.');
+                    }
+                } catch (error) {
+                     alert('An error occurred while importing the backup.');
+                     console.error("Full Backup Import Error:", error);
+                }
+            });
         };
 
         const importAllChapters = (importedData, sourceType) => {
@@ -2524,22 +2571,6 @@
             renderHomePage();
         };
 
-        const importFullBackup = (importedData) => {
-            if (typeof importedData !== 'object' || !importedData.subjects || !importedData.settings) {
-                alert("Invalid backup file. The file doesn't seem to contain valid app data.");
-                return;
-            }
-            showConfirmationModal(
-                _('import_full_backup'),
-                _('import_full_backup_confirm'),
-                () => {
-                    localStorage.setItem(DB_KEY, JSON.stringify(importedData));
-                    logActivity('upload-cloud', 'Restored application data from a full backup.');
-                    alert('Backup imported successfully! The application will now reload.');
-                    setTimeout(() => window.location.reload(), 500);
-                }
-            );
-        };
         
         const BADGES = { 'first_step': { name: 'first_step', description: 'first_step_desc', icon: 'flag', color: 'text-green-500'}, 'first_completion': { name: 'winner', description: 'first_completion_desc', icon: 'check-circle-2', color: 'text-blue-500' }, 'ten_completed': { name: 'scholar', description: 'ten_completed_desc', icon: 'award', color: 'text-amber-500' }, 'subject_master': { name: 'subject_master', description: 'subject_master_desc', icon: 'graduation-cap', color: 'text-purple-500' }, };
         const unlockBadge = (badgeId) => {
@@ -2644,53 +2675,61 @@
         };
 
         const renderDptPage = () => {
+            document.querySelectorAll('#dpt-view-filter .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === dptPageViewMode));
+
             const filterDropdown = document.getElementById('dpt-subject-filter');
             const container = document.getElementById('dpt-list-container');
             const deleteAllBtn = document.getElementById('delete-all-dpts-subject-btn');
-
+            const summaryContainer = document.getElementById('dpt-summary-container');
+            
+            summaryContainer.style.display = 'grid'; // Always show summary
+            
             const subjectOptions = `<option value="all_subjects">${_('all_subjects')}</option>` + (data.subjects || []).map(s => `<option value="${s.id}">${_(s.id)}</option>`).join('');
             const currentSelection = filterDropdown.value || 'all_subjects';
             filterDropdown.innerHTML = subjectOptions;
             if (Array.from(filterDropdown.options).some(opt => opt.value === currentSelection)) { filterDropdown.value = currentSelection; } 
             else { filterDropdown.value = 'all_subjects'; }
-
             const selectedSubjectId = filterDropdown.value;
+
             deleteAllBtn.style.display = (selectedSubjectId !== 'all_subjects' && (data.dpts[selectedSubjectId]?.tests.length || 0) > 0) ? 'flex' : 'none';
             deleteAllBtn.dataset.subjectId = selectedSubjectId;
             let html = '';
 
-            if (selectedSubjectId === 'all_subjects') {
-                html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm mb-4"><div class="flex flex-col sm:flex-row justify-between items-center gap-3"><h3 class="font-bold text-xl">${_('all_subjects')}</h3><button id="add-dpt-all-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon"><i data-lucide="plus-circle" class="w-4 h-4"></i><span data-translate="add_dpt_all">${_('add_dpt_all')}</span></button></div></div>`;
-                const allDpts = [];
-                Object.keys(data.dpts).forEach(subjectId => { data.dpts[subjectId].tests.forEach(test => { allDpts.push({ subjectId, test }); }); });
-                if (allDpts.length === 0) { html += `<p class="text-center mt-6">${_('no_dpt_for_subject')}</p>`; } 
-                else {
-                    html += '<div class="space-y-2 mt-4">';
-                    allDpts.sort((a, b) => a.test.id - b.test.id).forEach(({ subjectId, test }) => {
-                        const statusClass = test.status === 'Completed' ? 'bg-green-100 dark:bg-green-900/50 border-green-400' : 'bg-gray-100 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600';
-                        const hue = (test.id * 30 + subjectId.charCodeAt(0)) % 360; const colorStyle = `border-left-color: hsl(${hue}, 60%, 50%);`;
-                        const dptName = `${_(subjectId)} DPT - #${test.id}`;
-                        html += `<button class="dpt-list-item w-full text-left p-3 rounded-lg border-l-4 ${statusClass}" style="${colorStyle}" data-subject-id="${subjectId}" data-test-id="${test.id}">${dptName}</button>`;
+            const subjectsToDisplay = selectedSubjectId === 'all_subjects' ? Object.keys(data.dpts) : [selectedSubjectId];
+            
+            let allDptsToDisplay = [];
+            subjectsToDisplay.forEach(subjectId => {
+                const dptData = data.dpts[subjectId];
+                if (dptData) {
+                    const filteredTests = dptData.tests.filter(test => {
+                        return dptPageViewMode === 'completed' ? test.status === 'Completed' : test.status !== 'Completed';
                     });
-                    html += '</div>';
+                    filteredTests.forEach(test => allDptsToDisplay.push({subjectId, test}));
                 }
-            } else {
+            });
+            
+            if (dptPageViewMode === 'pending' && selectedSubjectId !== 'all_subjects') {
                 const dptData = data.dpts[selectedSubjectId] || { tests: [], nextTestIndex: 0 };
                 const completedCount = dptData.tests.filter(t => t.status === 'Completed').length;
                 const totalCount = dptData.tests.length;
-                html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm"><div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4"><h3 class="font-bold text-xl">${_(selectedSubjectId)}</h3><div class="flex items-center gap-2"><span class="text-sm font-semibold">${_('dpt_progress', {completed: completedCount, total: totalCount})}</span><button class="add-dpt-btn flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon" data-subject-id="${selectedSubjectId}"><i data-lucide="plus" class="w-4 h-4"></i> ${_('add_dpt')}</button></div></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5"><div class="h-2.5 rounded-full animated-progress-bar bg-primary" style="width: ${totalCount > 0 ? (completedCount / totalCount) * 100 : 0}%"></div></div></div>`;
-                if (dptData.tests.length === 0) { html += `<p class="text-center mt-6">${_('no_dpt_for_subject')}</p>`; } 
-                else {
-                    html += '<div class="space-y-2 mt-4">';
-                    dptData.tests.forEach(test => {
-                        const statusClass = test.status === 'Completed' ? 'bg-green-100 dark:bg-green-900/50 border-green-400' : 'bg-gray-100 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600';
-                        const hue = (test.id * 30) % 360; const colorStyle = `border-left-color: hsl(${hue}, 60%, 50%);`;
-                        const dptName = `${_(selectedSubjectId)} DPT - #${test.id}`;
-                        html += `<button class="dpt-list-item w-full text-left p-3 rounded-lg border-l-4 ${statusClass}" style="${colorStyle}" data-subject-id="${selectedSubjectId}" data-test-id="${test.id}">${dptName}</button>`;
-                    });
-                    html += '</div>';
-                }
+                 html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm"><div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4"><h3 class="font-bold text-xl">${_(selectedSubjectId)}</h3><div class="flex items-center gap-2"><span class="text-sm font-semibold">${_('dpt_progress', {completed: completedCount, total: totalCount})}</span><button class="add-dpt-btn flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon" data-subject-id="${selectedSubjectId}"><i data-lucide="plus" class="w-4 h-4"></i> ${_('add_dpt')}</button></div></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5"><div class="h-2.5 rounded-full animated-progress-bar bg-primary" style="width: ${totalCount > 0 ? (completedCount / totalCount) * 100 : 0}%"></div></div></div>`;
+            } else if (dptPageViewMode === 'pending' && selectedSubjectId === 'all_subjects') {
+                 html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm mb-4"><div class="flex flex-col sm:flex-row justify-between items-center gap-3"><h3 class="font-bold text-xl">${_('all_subjects')}</h3><button id="add-dpt-all-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon"><i data-lucide="plus-circle" class="w-4 h-4"></i><span data-translate="add_dpt_all">${_('add_dpt_all')}</span></button></div></div>`;
             }
+
+            if (allDptsToDisplay.length === 0) {
+                 html += `<p class="text-center mt-6">No ${dptPageViewMode} DPTs found for this selection.</p>`;
+            } else {
+                 html += '<div class="space-y-2 mt-4">';
+                 allDptsToDisplay.sort((a,b) => a.test.id - b.test.id).forEach(({subjectId, test}) => {
+                     const statusClass = test.status === 'Completed' ? 'bg-green-100 dark:bg-green-900/50 border-green-400' : 'bg-gray-100 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600';
+                     const hue = (test.id * 30 + subjectId.charCodeAt(0)) % 360; const colorStyle = `border-left-color: hsl(${hue}, 60%, 50%);`;
+                     const dptName = `${_(subjectId)} DPT - #${test.id}`;
+                     html += `<button class="dpt-list-item w-full text-left p-3 rounded-lg border-l-4 ${statusClass}" style="${colorStyle}" data-subject-id="${subjectId}" data-test-id="${test.id}">${dptName}</button>`;
+                 });
+                 html += '</div>';
+            }
+
             container.innerHTML = html;
             renderDptSummary();
             lucide.createIcons();
@@ -2814,8 +2853,17 @@
             const colorHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
             const lineColor = hexToRgba(colorHex, data.settings.theme === 'dark' ? 0.2 : 0.1);
             
-            for (let a = 0; a < backgroundElements.length; a++) { for (let b = a; b < backgroundElements.length; b++) { let distance = Math.hypot(backgroundElements[a].x - backgroundElements[b].x, backgroundElements[a].y - backgroundElements[b].y); if (distance < connectDistance) { opacityValue = 1 - (distance / connectDistance); ctx.strokeStyle = lineColor.replace(/,\s*\d?\.?\d+\)$/, `, ${opacityValue})`); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(backgroundElements[a].x, backgroundElements[a].y); ctx.lineTo(backgroundElements[b].x, backgroundElements[b].y); ctx.stroke(); } } } 
+            for (let a = 0; a < backgroundElements.length; a++) { for (let b = a; b < backgroundElements.length; b++) { let distance = Math.hypot(backgroundElements[a].x - backgroundElements[b].x, backgroundElements[a].y - backgroundElements[b].y); if (distance < connectDistance) { opacityValue = 1 - (distance / connectDistance); ctx.strokeStyle = lineColor.replace(/,\s*\d?\.?\d+\)$/, `, ${opacityValue})`);
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(backgroundElements[a].x, backgroundElements[a].y);
+                        ctx.lineTo(backgroundElements[b].x, backgroundElements[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
         }
+        
         function initStarfield() { initCanvas(); for (let i = 0; i < 400; i++) backgroundElements.push(new Star()); animateStarfield(); }
         class Star { constructor() { this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; this.z = Math.random() * particleCanvas.width; this.color = document.documentElement.classList.contains('pitch-black') ? '#e5e5e5' : (data.settings.theme === 'dark' ? '#FFF' : '#020617');} update() { this.z -= 1.5; if (this.z < 1) { this.z = particleCanvas.width; this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; } } draw() { let x = (this.x - particleCanvas.width / 2) * (particleCanvas.width / this.z) + particleCanvas.width / 2; let y = (this.y - particleCanvas.height / 2) * (particleCanvas.width / this.z) + particleCanvas.height / 2; let r = (particleCanvas.width / this.z); ctx.beginPath(); ctx.fillStyle = this.color; ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); } }
         function animateStarfield() { ctx.fillStyle = document.documentElement.classList.contains('pitch-black') ? 'rgba(0, 0, 0, 0.5)' : (data.settings.theme === 'dark' ? 'rgba(12, 20, 37, 0.5)' : 'rgba(240, 249, 255, 0.5)'); ctx.fillRect(0, 0, particleCanvas.width, particleCanvas.height); backgroundElements.forEach(s => { s.update(); s.draw(); }); animationFrameId = requestAnimationFrame(animateStarfield); }
@@ -2956,166 +3004,172 @@
                 renderHomePage();
             });
         }
-        
+
+        // --- NEW LINKS FEATURE FUNCTIONS ---
+
         function renderLinksPage() {
             const container = document.getElementById('links-container');
-            const linksData = data.links || [];
-            
-            const folders = linksData.filter(item => item.type === 'folder');
-            const rootLinks = linksData.filter(item => item.type === 'link' && (item.parentId === 'root' || !item.parentId));
-
-            if (linksData.length === 0) {
-                container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="link-2-off" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${_('no_links_saved')}</h3></div>`;
+            if (!data.links || data.links.length === 0) {
+                container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="folder-x" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${_('no_folders_created')}</h3></div>`;
                 lucide.createIcons();
                 return;
             }
 
-            let html = '';
-
-            const renderLink = (link) => {
-                return `<a href="${link.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 group">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="link" class="w-4 h-4 text-primary"></i>
-                        <span class="font-medium group-hover:underline">${link.name}</span>
-                    </div>
-                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="edit-link-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" data-id="${link.id}"><i data-lucide="edit-3" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i></button>
-                        <button class="delete-link-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-800" data-id="${link.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
-                    </div>
-                </a>`;
-            };
-
-            // Render folders
-            folders.forEach(folder => {
-                const linksInFolder = linksData.filter(link => link.parentId === folder.id);
-                html += `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
+            container.innerHTML = data.links.map(folder => {
+                const linksHtml = folder.links.length > 0
+                    ? folder.links.map(link => `
+                        <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="font-medium hover:text-primary flex items-center gap-2">
+                                <i data-lucide="link-2" class="w-4 h-4"></i>
+                                <span>${link.name}</span>
+                            </a>
+                            <div class="flex items-center gap-1">
+                                <button class="edit-link-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${folder.id}" data-link-id="${link.id}" title="${_('edit')}"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button class="delete-link-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-folder-id="${folder.id}" data-link-id="${link.id}" title="${_('delete')}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
+                            </div>
+                        </li>`).join('')
+                    : `<p class="text-center text-sm py-2">${_('no_links_in_folder')}</p>`;
+                
+                return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
                     <summary class="flex items-center justify-between p-4 cursor-pointer">
                         <div class="flex items-center gap-3">
                             <i data-lucide="folder" class="w-5 h-5 text-amber-500"></i>
                             <h3 class="font-bold text-lg">${folder.name}</h3>
                         </div>
-                        <div class="flex items-center gap-2">
-                           <button class="edit-link-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" data-id="${folder.id}"><i data-lucide="edit-3" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i></button>
-                           <button class="delete-link-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-800" data-id="${folder.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
-                           <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
+                        <div class="flex items-center gap-3">
+                            <button class="edit-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${folder.id}" title="${_('edit')}"><i data-lucide="folder-edit" class="w-4 h-4"></i></button>
+                            <button class="delete-folder-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-folder-id="${folder.id}" title="${_('delete')}"><i data-lucide="folder-x" class="w-4 h-4 text-red-500"></i></button>
+                            <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
                         </div>
                     </summary>
-                    <div class="p-4 border-t space-y-2">
-                        ${linksInFolder.length > 0 ? linksInFolder.map(renderLink).join('') : `<p class="text-center text-sm text-text-muted-light dark:text-text-muted-dark py-2">This folder is empty.</p>`}
+                    <div class="p-4 border-t">
+                        <ul class="space-y-2 mb-3">${linksHtml}</ul>
+                        <button class="add-link-to-folder-btn w-full flex items-center justify-center p-2 text-sm font-semibold text-green-600 dark:text-green-300 bg-green-100 dark:bg-green-900/50 rounded-lg hover:bg-green-200 dark:hover:bg-green-900" data-folder-id="${folder.id}">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_new_link')}
+                        </button>
                     </div>
-                 </details>`;
-            });
-
-            // Render links without a folder
-            if (rootLinks.length > 0) {
-                html += `<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm p-4 space-y-2">${rootLinks.map(renderLink).join('')}</div>`;
-            }
-
-            container.innerHTML = html;
+                </details>`;
+            }).join('');
             lucide.createIcons();
         }
 
-        function showLinkModal(type, id = null, parentId = 'root') {
-            const form = document.getElementById('link-form');
+        function showAddFolderModal(folderId = null) {
+            const form = document.getElementById('add-folder-form');
             form.reset();
-            const modalTitle = document.getElementById('link-modal-title');
-            const urlContainer = document.getElementById('link-url-container');
-            const folderSelect = document.getElementById('link-folder-select');
-            
-            // Populate folder dropdown
-            folderSelect.innerHTML = '<option value="root">Main (No Folder)</option>' + data.links.filter(i => i.type === 'folder').map(f => `<option value="${f.id}">${f.name}</option>`).join('');
-
-            document.getElementById('link-id').value = id || '';
-            
-            if (type === 'folder') {
-                const folder = id ? data.links.find(i => i.id === id) : null;
-                modalTitle.textContent = id ? _('edit_folder') : _('add_folder');
-                urlContainer.style.display = 'none';
-                document.getElementById('link-url').required = false;
-                document.getElementById('link-name').value = folder ? folder.name : '';
-                folderSelect.value = folder ? folder.parentId || 'root' : parentId;
-                // A folder cannot be inside itself
-                if(id) folderSelect.querySelector(`option[value="${id}"]`).disabled = true;
-
-            } else { // type === 'link'
-                const link = id ? data.links.find(i => i.id === id) : null;
-                modalTitle.textContent = id ? _('edit_link') : _('add_new_link');
-                urlContainer.style.display = 'block';
-                document.getElementById('link-url').required = true;
-                if (link) {
-                    document.getElementById('link-name').value = link.name;
-                    document.getElementById('link-url').value = link.url;
-                    folderSelect.value = link.parentId || 'root';
-                } else {
-                    folderSelect.value = parentId;
-                }
+            const modalTitle = document.getElementById('folder-modal-title');
+            const idInput = document.getElementById('folder-id');
+            if (folderId) {
+                const folder = data.links.find(f => f.id === folderId);
+                if (!folder) return;
+                modalTitle.textContent = `${_('edit')} ${_('folder_name')}`;
+                idInput.value = folder.id;
+                document.getElementById('new-folder-name').value = folder.name;
+            } else {
+                modalTitle.textContent = _('add_new_folder');
+                idInput.value = '';
             }
-            form.dataset.type = type;
-            showModal('link-modal');
+            showModal('add-folder-modal');
         }
 
-        function saveLinkItem(e) {
+        function saveFolder(e) {
             e.preventDefault();
-            const form = e.target;
-            const type = form.dataset.type;
-            const id = document.getElementById('link-id').value;
-            const name = document.getElementById('link-name').value.trim();
-            const parentId = document.getElementById('link-folder-select').value;
+            const id = document.getElementById('folder-id').value;
+            const name = document.getElementById('new-folder-name').value.trim();
             if (!name) return;
-
-            if (type === 'folder') {
-                if (id) { // Edit folder
-                    const index = data.links.findIndex(i => i.id === id);
-                    if (index !== -1) {
-                        data.links[index].name = name;
-                        data.links[index].parentId = parentId; // Allow moving folders
-                        logActivity('folder-edit', `Folder renamed: "${name}"`);
-                    }
-                } else { // Add new folder
-                    const newFolder = { id: `item-${Date.now()}`, type: 'folder', name, parentId };
-                    data.links.push(newFolder);
-                    logActivity('folder-plus', `Folder created: "${name}"`);
+            if (id) {
+                const folder = data.links.find(f => f.id === id);
+                if (folder) {
+                    folder.name = name;
+                    logActivity('folder-edit', `Folder renamed to "${name}"`);
                 }
-            } else { // type === 'link'
-                const url = document.getElementById('link-url').value.trim();
-                if (!url) return;
-                if (id) { // Edit link
-                    const index = data.links.findIndex(i => i.id === id);
-                    if (index !== -1) {
-                        data.links[index].name = name;
-                        data.links[index].url = url;
-                        data.links[index].parentId = parentId;
-                        logActivity('link', `Link updated: "${name}"`);
-                    }
-                } else { // Add new link
-                    const newLink = { id: `item-${Date.now()}`, type: 'link', name, url, parentId };
-                    data.links.push(newLink);
-                    logActivity('link', `Link added: "${name}"`);
-                }
+            } else {
+                const newFolder = { id: `folder-${Date.now()}`, name, links: [] };
+                data.links.push(newFolder);
+                logActivity('folder-plus', `New folder created: "${name}"`);
             }
             saveData();
             renderLinksPage();
-            hideModal('link-modal');
+            hideModal('add-folder-modal');
         }
-        
-        function deleteLinkItem(id) {
-            const item = data.links.find(i => i.id === id);
-            if (!item) return;
 
-            showConfirmationModal(_('delete_item'), _('confirm_delete_item', { name: item.name }), () => {
-                let itemsToDelete = [id];
-                // If it's a folder, also mark its contents for deletion
-                if (item.type === 'folder') {
-                    const children = data.links.filter(link => link.parentId === id);
-                    children.forEach(child => itemsToDelete.push(child.id));
-                }
-                data.links = data.links.filter(i => !itemsToDelete.includes(i.id));
-                logActivity('trash-2', `${item.type.charAt(0).toUpperCase() + item.type.slice(1)} deleted: "${item.name}"`);
+        function deleteFolder(folderId) {
+            const folder = data.links.find(f => f.id === folderId);
+            if (!folder) return;
+            showConfirmationModal(`${_('delete')} ${_('folder_name')}?`, _('delete_folder_confirm', {folderName: folder.name}), () => {
+                data.links = data.links.filter(f => f.id !== folderId);
+                logActivity('folder-x', `Folder deleted: "${folder.name}"`);
                 saveData();
                 renderLinksPage();
             });
         }
 
+        function showAddLinkModal(folderId, linkId = null) {
+            const form = document.getElementById('add-link-form');
+            form.reset();
+            const modalTitle = document.getElementById('link-modal-title');
+            document.getElementById('link-folder-id').value = folderId;
+            const idInput = document.getElementById('link-id');
+
+            if (linkId) {
+                const folder = data.links.find(f => f.id === folderId);
+                const link = folder?.links.find(l => l.id === linkId);
+                if (!link) return;
+                modalTitle.textContent = `${_('edit')} ${_('links')}`;
+                idInput.value = link.id;
+                document.getElementById('new-link-name').value = link.name;
+                document.getElementById('new-link-url').value = link.url;
+            } else {
+                modalTitle.textContent = _('add_new_link');
+                idInput.value = '';
+            }
+            showModal('add-link-modal');
+        }
+
+        function saveLink(e) {
+            e.preventDefault();
+            const folderId = document.getElementById('link-folder-id').value;
+            const linkId = document.getElementById('link-id').value;
+            const name = document.getElementById('new-link-name').value.trim();
+            let url = document.getElementById('new-link-url').value.trim();
+            if (!name || !url) return;
+            
+            if (!/^https?:\/\//i.test(url)) {
+                url = 'https://' + url;
+            }
+
+            const folder = data.links.find(f => f.id === folderId);
+            if (!folder) return;
+            
+            if (linkId) {
+                const link = folder.links.find(l => l.id === linkId);
+                if (link) {
+                    link.name = name;
+                    link.url = url;
+                    logActivity('edit-3', `Link updated: "${name}"`);
+                }
+            } else {
+                const newLink = { id: `link-${Date.now()}`, name, url };
+                folder.links.push(newLink);
+                logActivity('link', `New link added to "${folder.name}": "${name}"`);
+            }
+            saveData();
+            renderLinksPage();
+            hideModal('add-link-modal');
+        }
+        
+        function deleteLink(folderId, linkId) {
+            const folder = data.links.find(f => f.id === folderId);
+            const link = folder?.links.find(l => l.id === linkId);
+            if (!link) return;
+            showConfirmationModal(`${_('delete')} ${_('links')}?`, _('delete_link_confirm', {linkName: link.name}), () => {
+                folder.links = folder.links.filter(l => l.id !== linkId);
+                logActivity('trash-2', `Link deleted: "${link.name}"`);
+                saveData();
+                renderLinksPage();
+            });
+        }
+        
+        // --- END OF NEW LINKS FEATURE FUNCTIONS ---
 
         function addEventListeners() {
             navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
@@ -3143,9 +3197,19 @@
             });
 
             document.getElementById('subject-source-filter').addEventListener('click', (e) => {
-                const sourceBtn = e.target.closest('.subject-source-btn');
+                const sourceBtn = e.target.closest('.filter-btn');
                 if(sourceBtn && sourceBtn.dataset.source) { currentSubjectSourceView = sourceBtn.dataset.source; renderSubjectsPage(); }
             });
+            document.getElementById('subject-view-filter').addEventListener('click', (e) => {
+                const viewBtn = e.target.closest('.filter-btn');
+                if(viewBtn && viewBtn.dataset.view) { subjectPageViewMode = viewBtn.dataset.view; renderSubjectsPage(); }
+            });
+
+            document.getElementById('dpt-view-filter').addEventListener('click', (e) => {
+                const viewBtn = e.target.closest('.filter-btn');
+                if(viewBtn && viewBtn.dataset.view) { dptPageViewMode = viewBtn.dataset.view; renderDptPage(); }
+            });
+
             document.getElementById('todays-plan-container').addEventListener('click', e => {
                 const postponeBtn = e.target.closest('.postpone-btn');
                 const skipBtn = e.target.closest('.skip-btn');
@@ -3218,6 +3282,8 @@
                 btn.disabled = true; btn.querySelector('span').textContent = 'Generating...';
                 html2canvas(document.getElementById('report-content'), { scale: 2 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
+                    // PDF में हिंदी फॉन्ट के लिए आपको एक कस्टम फॉन्ट जोड़ना होगा
+                    // pdf.setFont('NotoSansDevanagari'); // उदाहरण
                     const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     pdf.save(`Study_Report_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -3227,7 +3293,7 @@
             document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value, document.getElementById('add-chapter-source-type').value); });
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-link-modal', 'close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
@@ -3237,11 +3303,11 @@
             document.getElementById('chapter-status-buttons').addEventListener('click', (e) => { const clickedBtn = e.target.closest('button'); if (clickedBtn) { document.querySelectorAll('#chapter-status-buttons button').forEach(btn => btn.classList.remove('active')); clickedBtn.classList.add('active'); } });
             
             const importFileInput = document.getElementById('import-file-input');
+            document.getElementById('import-full-backup-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'full_backup'; importFileInput.click(); });
             document.getElementById('import-all-notes-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.dataset.sourceType = 'notes'; importFileInput.click(); });
             document.getElementById('import-all-books-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.dataset.sourceType = 'book'; importFileInput.click(); });
             document.getElementById('import-routine-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'routine'; importFileInput.click(); });
             document.getElementById('import-exams-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'exams'; importFileInput.click(); });
-            document.getElementById('import-full-data-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'full'; importFileInput.click(); });
             importFileInput.addEventListener('change', (e) => handleFileUpload(e, e.target.dataset.importType));
 
             document.getElementById('delete-all-notes-btn').addEventListener('click', () => deleteAllChaptersForSource('notes'));
@@ -3390,20 +3456,30 @@
             });
             document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
             
-            // New Listeners for Links Page
-            document.getElementById('add-link-btn').addEventListener('click', () => showLinkModal('link'));
-            document.getElementById('add-folder-btn').addEventListener('click', () => showLinkModal('folder'));
-            document.getElementById('link-form').addEventListener('submit', saveLinkItem);
+            // --- NEW LINKS FEATURE EVENT LISTENERS (WITH FIX) ---
+            document.getElementById('add-new-folder-btn').addEventListener('click', () => showAddFolderModal());
+            
+            // FIX: Re-bind form submission events whenever the modal is shown to avoid stale listeners.
+            const addFolderForm = document.getElementById('add-folder-form');
+            addFolderForm.removeEventListener('submit', saveFolder); // Remove old listener first
+            addFolderForm.addEventListener('submit', saveFolder);
+
+            const addLinkForm = document.getElementById('add-link-form');
+            addLinkForm.removeEventListener('submit', saveLink); // Remove old listener first
+            addLinkForm.addEventListener('submit', saveLink);
+
             document.getElementById('links-container').addEventListener('click', e => {
-                const editBtn = e.target.closest('.edit-link-btn');
-                const deleteBtn = e.target.closest('.delete-link-btn');
-                if(editBtn) {
-                    const item = data.links.find(i => i.id === editBtn.dataset.id);
-                    if (item) showLinkModal(item.type, item.id);
-                }
-                if(deleteBtn) {
-                    deleteLinkItem(deleteBtn.dataset.id);
-                }
+                const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
+                const editFolderBtn = e.target.closest('.edit-folder-btn');
+                const deleteFolderBtn = e.target.closest('.delete-folder-btn');
+                const editLinkBtn = e.target.closest('.edit-link-btn');
+                const deleteLinkBtn = e.target.closest('.delete-link-btn');
+
+                if(addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
+                if(editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId);
+                if(deleteFolderBtn) deleteFolder(deleteFolderBtn.dataset.folderId);
+                if(editLinkBtn) showAddLinkModal(editLinkBtn.dataset.folderId, editLinkBtn.dataset.linkId);
+                if(deleteLinkBtn) deleteLink(deleteLinkBtn.dataset.folderId, deleteLinkBtn.dataset.linkId);
             });
 
             window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
@@ -3509,6 +3585,10 @@
             } else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
+                // IMPORTANT: Add custom font for Hindi here
+                // pdf.addFileToVFS('NotoSansDevanagari-Regular.ttf', fontFile);
+                // pdf.addFont('NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari', 'normal');
+                // pdf.setFont('NotoSansDevanagari');
                 pdf.setFont('helvetica', 'bold');
                 pdf.text("14-Day Study Routine", 105, 15, null, null, 'center');
                 pdf.setFont('helvetica', 'normal');
