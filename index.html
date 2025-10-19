@@ -458,6 +458,8 @@
                             <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h2 class="text-lg font-bold mb-3 flex items-center gap-2"><i data-lucide="repeat" class="text-teal-500"></i><span data-translate="upcoming_revisions">Upcoming Revisions</span></h2><div id="revisions-container" class="space-y-2 text-sm text-text-muted-light dark:text-text-muted-dark min-h-[60px]"></div></div>
                            
                             <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-red-600 dark:text-red-400"><i data-lucide="alert-triangle"></i><span data-translate="missed_chapters">Missed Chapters</span></h2><div id="missed-chapters-list" class="space-y-2 text-sm text-text-muted-light dark:text-text-muted-dark min-h-[60px]"></div></div>
+                            
+                            <div id="missed-other-tasks-card" class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm hidden"><h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-gray-600 dark:text-gray-400"><i data-lucide="clipboard-x"></i><span>Missed Other Tasks</span></h2><div id="missed-other-tasks-list" class="space-y-2 text-sm text-text-muted-light dark:text-text-muted-dark min-h-[60px]"></div></div>
 
                             <div class="dashboard-card bg-orange-50 dark:bg-orange-900/50 p-4 rounded-xl shadow-sm"><h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-orange-600 dark:text-orange-400"><i data-lucide="history"></i><span>Missed Revisions</span></h2><div id="missed-revisions-list" class="space-y-2 text-sm text-text-muted-light dark:text-text-muted-dark min-h-[60px]"></div></div>
 
@@ -998,6 +1000,47 @@
         </div>
     </div>
     
+    <!-- MODAL FOR CHOOSING TASK TYPE -->
+    <div id="add-task-choice-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-6 relative">
+            <button id="close-add-task-choice-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 class="text-xl font-bold mb-6 text-center">Add a New Task</h2>
+            <div class="space-y-3">
+                <button id="choice-manual-chapter-btn" class="w-full flex items-center justify-center gap-3 p-4 font-semibold rounded-lg bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/50 dark:hover:bg-sky-900 text-sky-800 dark:text-sky-200">
+                    <i data-lucide="book-open"></i>
+                    <span>Add Chapter Task</span>
+                </button>
+                <button id="choice-other-task-btn" class="w-full flex items-center justify-center gap-3 p-4 font-semibold rounded-lg bg-violet-100 hover:bg-violet-200 dark:bg-violet-900/50 dark:hover:bg-violet-900 text-violet-800 dark:text-violet-200">
+                    <i data-lucide="clipboard-list"></i>
+                    <span>Add Other Task</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FOR ADDING 'OTHER' TASK -->
+    <div id="add-other-task-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-add-other-task-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 class="text-xl font-bold mb-4">Add Other Task</h2>
+            <form id="add-other-task-form" class="space-y-4">
+                <div>
+                    <label for="other-task-description" class="block text-sm font-medium mb-1">Task Description</label>
+                    <input type="text" id="other-task-description" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g., Buy new notebook">
+                </div>
+                <div>
+                    <label for="other-task-date" class="block text-sm font-medium mb-1">Date</label>
+                    <input type="date" id="other-task-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
+                </div>
+                <div>
+                    <label for="other-task-notes" class="block text-sm font-medium mb-1">Notes (Optional)</label>
+                    <textarea id="other-task-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" placeholder="Add any extra details..."></textarea>
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save Task</button>
+            </form>
+        </div>
+    </div>
+    
     <div id="manual-add-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
             <button id="close-manual-add-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -1097,9 +1140,9 @@
         const CURRENT_APP_VERSION = "4.0"; // Version updated for new features
         const updateNotes = {
             "4.0": [
-                { "title": "अत्यंत उन्नत AI स्टडी कोच ✨", "note": "AI कोच अब वास्तविक समय में आपकी प्रगति का विश्लेषण करता है। यह आपको आज के कार्यों, DPTs, आगामी परीक्षाओं, छूटे हुए अध्यायों और यहां तक कि आपके सबसे अच्छे प्रदर्शन वाले दिन के बारे में भी जानकारी देता है।" },
-                { "title": "प्रेरणादायक संदेश 🚀", "note": "AI कोच अब आपको प्रेरित रखने के लिए 50+ छोटे, प्रेरक और उत्साहजनक संदेश दिखाएगा। हर बार जब आप होम पेज पर आएंगे तो आपको एक नया संदेश मिलेगा!" },
-                { "title": "नया एडवांस्ड अचीवमेंट सिस्टम 🏆", "note": "अचीवमेंट सिस्टम को पूरी तरह से नया रूप दिया गया है! अब इसमें 10 से अधिक नए, स्टेप-बाय-स्टेप लेवल हैं। अपनी प्रगति को ट्रैक करें और सभी बैज अनलॉक करें। अचीवमेंट की प्रगति पट्टी अब एक आकर्षक बहुरंगी ग्रेडिएंट में भरती है।" },
+                { "title": "अत्यंत उन्नत AI स्टडी कोच ✨", "note": "AI कोच अब वास्तविक समय में आपकी प्रगति का विश्लेषण करता है और कभी भी पीछे नहीं रहता। यह आपको आज के कार्यों, DPTs, आगामी परीक्षाओं, छूटे हुए अध्यायों, उपलब्धियों और यहां तक कि आपके सबसे अच्छे प्रदर्शन वाले दिन के बारे में भी जानकारी देता है।" },
+                { "title": "प्रेरणादायक संदेश और 12+ नई जानकारियां 🚀", "note": "AI कोच अब आपको प्रेरित रखने के लिए 50+ छोटे, प्रेरक संदेश दिखाएगा और 12 से ज़्यादा तरह की नई जानकारियां देगा। हर बार जब आप होम पेज पर आएंगे तो आपको एक नया संदेश मिलेगा!" },
+                { "title": "विशेष 'अन्य कार्य' जोड़ने की सुविधा 📝", "note": "अब आप डैशबोर्ड से ऐसे कार्य भी जोड़ सकते हैं जिनका विषयों से कोई संबंध नहीं है, जैसे 'फॉर्म भरना'। इन कार्यों का रंग अलग है और इन्हें पूरा करने, टालने और हटाने की सुविधा भी है।" },
                 { "title": "बेहतर डैशबोर्ड और UI 🎨", "note": "'Today's Plan' में अब ब्रैकेट में वर्तमान दिन (जैसे सोमवार) दिखाई देता है। AI कोच पर एक सूक्ष्म, सुंदर लाइटिंग एनीमेशन जोड़ा गया है जो आपके अनुभव को बेहतर बनाता है।" },
                 { "title": "स्थिरता और मजबूती 🛡️", "note": "एप्लिकेशन के कोड को और अधिक मजबूत बनाया गया है ताकि यह सुनिश्चित हो सके कि नए फीचर्स जोड़ने से कोई पुराना फीचर प्रभावित न हो। ऐप अब पहले से 5 गुना ज्यादा स्थिर और स्मूथ है, जिससे डेटा हानि का कोई खतरा नहीं है।" }
             ],
@@ -1120,8 +1163,12 @@
         let dptPageViewMode = 'pending'; // 'pending' or 'completed'
         
         let dynamicDisplayIntervals = {}; // To manage all rotating displays
+        
+        const getLocalDateString = (date = new Date()) => {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        };
 
-        let lastIntervalDateString = new Date().toISOString().split('T')[0];
+        let lastIntervalDateString = getLocalDateString();
         
         const translations = {
             en: {
@@ -1342,7 +1389,7 @@
                 appVersion: "1.0"
             },
             gamification: { badges: [], completedHistory: [] },
-            activityLog: [], appStartDate: new Date().toISOString().split('T')[0],
+            activityLog: [], appStartDate: getLocalDateString(),
             postponedChapters: [],
             missedChapters: [],
             missedRevisions: [],
@@ -1351,7 +1398,10 @@
             exams: [],
             dpts: {},
             dailyDptPlan: {},
-            urls: []
+            urls: [],
+            otherTasks: [],
+            missedOtherTasks: [],
+            postponedOtherTasks: []
         };
 
         let data;
@@ -1372,11 +1422,14 @@
         data.missedChapters = data.missedChapters || [];
         data.missedRevisions = data.missedRevisions || [];
         data.dailyPlan = data.dailyPlan || {};
-        data.lastCheckedDate = data.lastCheckedDate || new Date().toISOString().split('T')[0];
+        data.lastCheckedDate = data.lastCheckedDate || getLocalDateString();
         data.exams = data.exams || [];
         data.dpts = data.dpts || {};
         data.dailyDptPlan = data.dailyDptPlan || {};
         data.urls = data.urls || [];
+        data.otherTasks = data.otherTasks || [];
+        data.missedOtherTasks = data.missedOtherTasks || [];
+        data.postponedOtherTasks = data.postponedOtherTasks || [];
         if (data.links) { delete data.links; } // Migration from old structure
         
         data.settings.backgroundStyle = data.settings.backgroundStyle || 'particles'; 
@@ -1499,7 +1552,7 @@
         };
 
         const checkDateChange = () => {
-            const currentDateString = new Date().toISOString().split('T')[0];
+            const currentDateString = getLocalDateString();
             if (currentDateString !== lastIntervalDateString) {
                 lastIntervalDateString = currentDateString;
                 handleNewDayLogic();
@@ -1571,10 +1624,12 @@
         };
 
         const handleNewDayLogic = () => {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalDateString();
             if (data.lastCheckedDate === todayStr) return;
 
-            const yesterdayStr = data.lastCheckedDate || new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = data.lastCheckedDate || getLocalDateString(yesterdayDate);
             
             // Handle Missed Chapters
             const yesterdayPlanData = data.dailyPlan[yesterdayStr];
@@ -1589,6 +1644,15 @@
                     }
                 });
             }
+
+             // Handle Missed "Other Tasks"
+            const missedOtherTasks = (data.otherTasks || []).filter(task => task.date === yesterdayStr && task.status === 'Pending');
+            missedOtherTasks.forEach(task => {
+                if (!data.missedOtherTasks.some(missed => missed.id === task.id)) {
+                    data.missedOtherTasks.push(task);
+                }
+            });
+
 
             // Handle Missed Revisions from yesterday
             data.missedRevisions = data.missedRevisions || [];
@@ -1757,6 +1821,7 @@
             renderTomorrowsPlan();
             renderYesterdaysActivity();
             renderMissedChapters();
+            renderMissedOtherTasks();
             renderMissedRevisions();
             renderUpcomingExamsOnDashboard();
             renderOverallProgress();
@@ -1857,49 +1922,95 @@
 
         function gatherAllInsights() {
             let insights = [];
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            const todayStr = today.toISOString().split('T')[0];
-            const yesterdayStr = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
-            
-            // 1. Credit and Version
-            insights.push(`यह स्टडी ट्रैकर प्रवेज अहमद द्वारा बनाया गया है। (संस्करण: ${CURRENT_APP_VERSION}) 🧑‍💻`);
+            const today = new Date();
+            const todayStr = getLocalDateString(today);
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = getLocalDateString(yesterdayDate);
 
-            // 2. Upcoming Exam
+            const allChapters = (data.subjects || []).flatMap(s => [...(s.chapters.notes || []), ...(s.chapters.book || [])]);
+
+            // 1. Upcoming Exam
             const upcomingExam = (data.exams || []).filter(exam => exam.examDate && new Date(exam.examDate) >= new Date(todayStr)).sort((a, b) => new Date(a.examDate) - new Date(b.examDate))[0];
             if (upcomingExam) { const daysLeft = Math.ceil((new Date(upcomingExam.examDate) - new Date(todayStr)) / (1000 * 60 * 60 * 24)); insights.push(`🗓️ आपकी अगली परीक्षा "<strong>${upcomingExam.name}</strong>" में केवल <strong>${daysLeft} दिन</strong> बचे हैं। तैयारी करते रहें!`); }
 
-            // 3. Today's Plan
+            // 2. Today's Plan
             const todaysPlan = getOrGenerateDailyPlan(todayStr);
             const tasksToStudy = Object.values(todaysPlan.tasks || {}).map(task => getChapterByIds(task.subjectId, task.chapterId, task.sourceType)?.name).filter(Boolean);
             if (tasksToStudy.length > 0) insights.push(`📚 आज की योजना: <strong>${tasksToStudy.join(', ')}</strong> पढ़ें।`);
 
-            // 4. Today's DPT
+            // 3. Today's DPT
             const todaysDpts = (data.dailyDptPlan[todayStr] || []).map(({subjectId, testId}) => `${_(subjectId)} DPT #${testId}`);
             if (todaysDpts.length > 0) insights.push(`🎯 आज के DPTs: <strong>${todaysDpts.join(', ')}</strong>। इन्हें पूरा करना न भूलें!`);
             
-            // 5. Missed Chapters
+            // 4. Missed Items
             if ((data.missedChapters || []).length > 0) insights.push(`😥 आपके <strong>${data.missedChapters.length} अध्याय</strong> छूट गए हैं। उन्हें जल्द ही पूरा करने का प्रयास करें।`);
-
-            // 6. Missed Revisions
+            if ((data.missedOtherTasks || []).length > 0) insights.push(`📋 आपके <strong>${data.missedOtherTasks.length} अन्य कार्य</strong> छूट गए हैं।`);
             if ((data.missedRevisions || []).length > 0) insights.push(`⏰ आपके <strong>${data.missedRevisions.length} रिवीजन</strong> छूट गए हैं। उन्हें आज पूरा करने का प्रयास करें।`);
 
-            // 7. Yesterday's Completed Chapters
-            const completedYesterday = (data.subjects || []).flatMap(s => [...(s.chapters.notes || []), ...(s.chapters.book || [])]).filter(c => c.dateCompleted === yesterdayStr);
+            // 5. Yesterday's Completed
+            const completedYesterday = allChapters.filter(c => c.dateCompleted === yesterdayStr);
             if(completedYesterday.length > 0) insights.push(`👍 कल आपने <strong>${completedYesterday.length} अध्याय</strong> पूरे किए थे। बहुत बढ़िया!`);
 
-            // 8. Performance Analysis
-            const completionByDate = (data.gamification.completedHistory || []).reduce((acc, date) => { acc[date] = (acc[date] || 0) + 1; return acc; }, {});
+            // 6. Performance Analysis
+            const completionByDate = allChapters.filter(c => c.dateCompleted).reduce((acc, c) => { acc[c.dateCompleted] = (acc[c.dateCompleted] || 0) + 1; return acc; }, {});
             const bestDayEntry = Object.entries(completionByDate).sort((a,b) => b[1] - a[1])[0];
             if(bestDayEntry) {
                 const bestDay = new Date(bestDayEntry[0]).toLocaleDateString('hi-IN', { weekday: 'long' });
                 insights.push(`🚀 आपका सबसे अच्छा प्रदर्शन <strong>${bestDay}</strong> को था, जब आपने <strong>${bestDayEntry[1]} अध्याय</strong> पूरे किए थे!`);
             }
 
-            // 9. Random Motivational Quote
-            insights.push(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+            // 7. Streak
+            const completedDates = new Set((data.gamification.completedHistory || []));
+            let streak = 0;
+            if (completedDates.size > 0) {
+                let currentDate = new Date();
+                while(completedDates.has(getLocalDateString(currentDate))) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                }
+            }
+            if(streak > 1) insights.push(`🔥 बहुत बढ़िया! आपने लगातार <strong>${streak} दिनों</strong> तक पढ़ाई की है। इसे जारी रखें!`);
 
-            return insights.length > 0 ? insights : [_('ai_insight_start')];
+            // 8. Overall Progress Milestone
+            const totalCompleted = allChapters.filter(c => c.status === 'Completed').length;
+            const totalChapters = allChapters.length;
+            if (totalChapters > 0) {
+                const percentage = Math.round((totalCompleted / totalChapters) * 100);
+                if (percentage > 25 && percentage < 30) insights.push(`📈 शानदार! आपने 25% से ज़्यादा सिलेबस पूरा कर लिया है।`);
+                if (percentage > 50 && percentage < 55) insights.push(`🎉 बधाई! आप आधा सफ़र तय कर चुके हैं, 50% सिलेबस पूरा हो गया है।`);
+                if (percentage > 75 && percentage < 80) insights.push(`🏁 आप मंज़िल के बहुत करीब हैं! 75% सिलेबस पूरा हो चुका है।`);
+            }
+            
+            // 9. DPT Stats
+            const allCompletedDpts = Object.values(data.dpts || {}).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
+            if(allCompletedDpts.length > 5) {
+                let totalCorrect = 0, totalAttempted = 0;
+                allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; });
+                const accuracy = totalAttempted > 0 ? ((totalCorrect / totalAttempted) * 100).toFixed(1) : '0.0';
+                insights.push(`🎯 आपने अब तक <strong>${allCompletedDpts.length} DPTs</strong> पूरे कर लिए हैं, जिसमें आपकी औसत सटीकता <strong>${accuracy}%</strong> है।`);
+            }
+
+            // 10. Achievement Unlocked
+            const latestActivity = (data.activityLog || [])[0];
+            if(latestActivity && latestActivity.icon === 'award') {
+                insights.push(`🏆 उपलब्धि अनलॉक! ${latestActivity.description}`);
+            }
+
+            // Shuffle insights to provide variety, but keep some important ones at the front
+            const priorityInsights = insights.filter(i => i.includes("परीक्षा") || i.includes("छूट गए"));
+            const otherInsights = insights.filter(i => !priorityInsights.includes(i));
+            const shuffledOthers = otherInsights.sort(() => 0.5 - Math.random());
+            
+            let finalInsights = [...priorityInsights, ...shuffledOthers];
+            
+            // Always add creator credit and a random quote
+            finalInsights.push(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+            finalInsights.unshift(`यह स्टडी ट्रैकर प्रवेज अहमद द्वारा बनाया गया है। (संस्करण: ${CURRENT_APP_VERSION}) 🧑‍💻`);
+
+            return finalInsights.length > 0 ? finalInsights : [_('ai_insight_start')];
         }
+
 
         const renderAIInsights = () => {
             const container = document.getElementById('ai-insights-container');
@@ -1915,7 +2026,7 @@
         };
         
         const markSubjectAsDoneForToday = (subjectSourcePair) => {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalDateString();
             const plan = data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [] };
             if (!plan.completedSubjects.includes(subjectSourcePair)) { plan.completedSubjects.push(subjectSourcePair); }
             saveData();
@@ -1927,7 +2038,7 @@
             document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item')?.classList.add('completed');
             setTimeout(() => {
                 const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                const tomorrowStr = getLocalDateString(tomorrow);
                 data.postponedChapters = data.postponedChapters.filter(p => p.chapterId !== chapterId);
                 data.postponedChapters.push({ subjectId, chapterId, sourceType, date: tomorrowStr });
                 logActivity('skip-forward', `Chapter postponed to tomorrow: "${chapter.name}"`);
@@ -1941,7 +2052,7 @@
             if (availableChapters.length > 1) {
                 const currentIndex = availableChapters.findIndex(c => c.id === chapterId);
                 const newChapter = availableChapters[(currentIndex + 1) % availableChapters.length];
-                const todayStr = new Date().toISOString().split('T')[0];
+                const todayStr = getLocalDateString();
                 const planKey = `${subjectId}:${sourceType}`;
                 if (data.dailyPlan[todayStr]?.tasks?.[planKey]) {
                     data.dailyPlan[todayStr].tasks[planKey].chapterId = newChapter.id;
@@ -1997,74 +2108,51 @@
 
         const renderTodaysPlan = () => {
             const container = document.getElementById('todays-plan-container');
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalDateString();
             const dailyPlanData = getOrGenerateDailyPlan(todayStr);
             const tasks = dailyPlanData.tasks || {};
             const manualTasks = dailyPlanData.manualTasks || [];
             const completedSubjects = dailyPlanData.completedSubjects || [];
             const dayName = new Date().toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'long' });
             
+            const otherTasksForToday = (data.otherTasks || [])
+                .concat(data.postponedOtherTasks || [])
+                .filter(task => task.date === todayStr && task.status === 'Pending');
+
             const chaptersToStudy = Object.entries(tasks).filter(([key]) => !completedSubjects.includes(key)).map(([, task]) => {
                 if (!task) return null;
                 const subject = getSubjectById(task.subjectId); const chapter = getChapterByIds(task.subjectId, task.chapterId, task.sourceType);
-                return (subject && chapter && chapter.status !== 'Completed') ? { subject, chapter, sourceType: task.sourceType } : null;
+                return (subject && chapter && chapter.status !== 'Completed') ? { type: 'chapter', subject, chapter, sourceType: task.sourceType } : null;
             }).filter(Boolean);
 
             const revisionsForToday = [];
             (data.subjects || []).forEach(s => {
-                const findRevisions = (chapters, sourceType) => (chapters || []).forEach(c => (c.revisions || []).forEach(r => { if(r.status === 'Pending' && r.date === todayStr) revisionsForToday.push({ subject: s, chapter: c, revision: r, sourceType }); }));
+                const findRevisions = (chapters, sourceType) => (chapters || []).forEach(c => (c.revisions || []).forEach(r => { if(r.status === 'Pending' && r.date === todayStr) revisionsForToday.push({ type: 'revision', subject: s, chapter: c, revision: r, sourceType }); }));
                 findRevisions(s.chapters.notes, 'notes'); findRevisions(s.chapters.book, 'book');
             });
+            
+            const manualChapterTasks = manualTasks.filter(task => {
+                const chapter = getChapterByIds(task.subjectId, task.chapterId, task.sourceType);
+                return chapter && chapter.status !== 'Completed';
+            }).map(task => ({ ...task, type: 'manual_chapter' }));
 
             let planHtml = `<div class="flex items-center justify-between pb-3 border-b border-primary/20 mb-4">
                 <div class="flex items-center gap-3"><i data-lucide="clipboard-list" class="w-6 h-6 text-primary"></i><h2 class="text-lg font-bold text-primary">${_('todays_plan')} (${dayName})</h2></div>
-                <button id="manual-add-task-btn" class="p-1.5 rounded-full hover:bg-sky-200 dark:hover:bg-sky-800"><i data-lucide="plus-circle" class="w-5 h-5 text-primary"></i></button>
+                <button id="add-task-choice-btn" class="p-1.5 rounded-full hover:bg-sky-200 dark:hover:bg-sky-800"><i data-lucide="plus-circle" class="w-5 h-5 text-primary"></i></button>
             </div>`;
             
             const allTasksForToday = [
                 ...chaptersToStudy, 
                 ...revisionsForToday,
-                ...(manualTasks.filter(task => {
-                    const chapter = getChapterByIds(task.subjectId, task.chapterId, task.sourceType);
-                    return chapter && chapter.status !== 'Completed';
-                }))
+                ...manualChapterTasks,
+                ...otherTasksForToday.map(t => ({...t, type: 'other'}))
             ];
 
             if (allTasksForToday.length > 0) {
                 planHtml += `<ul class="space-y-3">`;
-                const renderTask = (item, isRevision = false, isManual = false) => {
-                    const { subject, chapter, sourceType, revision } = item;
-                    const chapterObj = isManual ? getChapterByIds(item.subjectId, item.chapterId, item.sourceType) : chapter;
-                    const subjectObj = isManual ? getSubjectById(item.subjectId) : subject;
-                    if (!chapterObj || !subjectObj) return '';
-
-                    const uniqueId = isManual ? `manual-${item.id}` : (isRevision ? `revision-${subject.id}-${chapter.id}-${revision.date}` : `task-${subject.id}-${chapter.id}`);
-                    const sourceBadge = `<span class="source-badge ${item.sourceType === 'book' ? 'source-badge-book' : 'source-badge-notes'}">${_(item.sourceType === 'book' ? 'source_book' : 'source_notes')}</span>`;
-                    const bgColor = isManual ? 'bg-indigo-50 dark:bg-indigo-900/40' : (isRevision ? 'bg-amber-50 dark:bg-amber-900/40' : 'bg-card-light dark:bg-card-dark shadow-sm');
-                    const checkboxClass = isRevision ? 'revision-checkbox text-amber-500' : 'task-checkbox text-primary';
-                    const labelText = isRevision ? _('revision_task', {chapterName: chapter.name}) : chapterObj.name;
-                    
-                    let subText = `<p class="text-sm ${isRevision ? 'text-amber-600 dark:text-amber-300' : 'text-sky-600 dark:text-sky-300'} flex items-center gap-1.5">${isRevision ? '<i data-lucide="repeat" class="w-3 h-3"></i> ' : ''}${_(subjectObj.id)} ${sourceBadge}</p>`;
-                    if(isManual) subText = `<p class="text-sm text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5"><i data-lucide="hand" class="w-3 h-3"></i> ${_(subjectObj.id)} ${sourceBadge}</p>`;
-
-                    const actionButtons = isManual ? `
-                        <button class="manual-task-delete-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete Manual Task" data-manual-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
-                        ` : `
-                        <div class="flex gap-1">
-                            <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_tomorrow')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''}><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
-                            <button class="task-action-btn skip-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''}><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>
-                        </div>`;
-                    
-                    return `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
-                        <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subjectObj.id}" data-chapter-id="${chapterObj.id}" data-source-type="${item.sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-source-pair="${subject.id}:${sourceType}"`}>
-                        <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${labelText}</p>${subText}</label>
-                        ${actionButtons}</li>`;
-                };
-
-                chaptersToStudy.forEach(task => planHtml += renderTask(task));
-                revisionsForToday.forEach(task => planHtml += renderTask(task, true));
-                manualTasks.forEach(task => planHtml += renderTask(task, false, true));
-
+                allTasksForToday.forEach(item => {
+                    planHtml += renderTaskItemHTML(item);
+                });
                 planHtml += `</ul>`;
             } else {
                 planHtml += `<div class="text-center py-8 flex flex-col items-center justify-center text-text-muted-light dark:text-text-muted-dark"><i data-lucide="party-popper" class="w-12 h-12 text-accent mx-auto mb-4"></i><h3 class="text-lg font-bold">${_('congratulations')}</h3><p>${_('all_tasks_completed')}</p></div>`;
@@ -2072,10 +2160,67 @@
             container.innerHTML = planHtml;
             lucide.createIcons();
         };
+        
+        const renderTaskItemHTML = (item) => {
+            let html = '';
+            const { type } = item;
+            
+            if (type === 'chapter' || type === 'revision' || type === 'manual_chapter') {
+                const isRevision = type === 'revision';
+                const isManual = type === 'manual_chapter';
+                const subject = isManual ? getSubjectById(item.subjectId) : item.subject;
+                const chapter = isManual ? getChapterByIds(item.subjectId, item.chapterId, item.sourceType) : item.chapter;
+                const sourceType = item.sourceType;
+                const revision = item.revision;
+                
+                if (!subject || !chapter) return '';
+
+                const uniqueId = isManual ? `manual-${item.id}` : (isRevision ? `revision-${subject.id}-${chapter.id}-${revision.date}` : `task-${subject.id}-${chapter.id}`);
+                const sourceBadge = `<span class="source-badge ${sourceType === 'book' ? 'source-badge-book' : 'source-badge-notes'}">${_(sourceType === 'book' ? 'source_book' : 'source_notes')}</span>`;
+                const bgColor = isManual ? 'bg-indigo-50 dark:bg-indigo-900/40' : (isRevision ? 'bg-amber-50 dark:bg-amber-900/40' : 'bg-card-light dark:bg-card-dark shadow-sm');
+                const checkboxClass = isRevision ? 'revision-checkbox text-amber-500' : 'task-checkbox text-primary';
+                const labelText = isRevision ? _('revision_task', {chapterName: chapter.name}) : chapter.name;
+
+                let subText = `<p class="text-sm ${isRevision ? 'text-amber-600 dark:text-amber-300' : 'text-sky-600 dark:text-sky-300'} flex items-center gap-1.5">${isRevision ? '<i data-lucide="repeat" class="w-3 h-3"></i> ' : ''}${_(subject.id)} ${sourceBadge}</p>`;
+                if(isManual) subText = `<p class="text-sm text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5"><i data-lucide="hand" class="w-3 h-3"></i> ${_(subject.id)} ${sourceBadge}</p>`;
+                
+                const actionButtons = `
+                    <div class="flex gap-1">
+                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_tomorrow')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
+                        ${isManual ? 
+                            `<button class="task-action-btn delete-manual-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-manual-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>` :
+                            `<button class="task-action-btn skip-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>`
+                        }
+                    </div>`;
+
+                html = `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
+                    <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-source-pair="${subject.id}:${sourceType}"`} data-task-type="${type}">
+                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${labelText}</p>${subText}</label>
+                    ${actionButtons}</li>`;
+
+            } else if (type === 'other') {
+                const uniqueId = `other-task-${item.id}`;
+                const bgColor = 'bg-gray-100 dark:bg-slate-800';
+                const actionButtons = `
+                    <div class="flex gap-1">
+                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_tomorrow')}" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
+                        <button class="task-action-btn delete-other-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                    </div>`;
+
+                html = `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item">
+                    <input type="checkbox" id="${uniqueId}" class="task-checkbox text-gray-500 h-5 w-5 rounded border flex-shrink-0" data-task-id="${item.id}" data-task-type="${type}">
+                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${item.description}</p><p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><i data-lucide="user-check" class="w-3 h-3"></i> Other Task</p></label>
+                    ${actionButtons}</li>`;
+            }
+            return html;
+        };
 
         const renderTomorrowsPlan = () => {
             const container = document.getElementById('tomorrows-plan-container');
-            const tomorrowStr = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+            const tomorrowDate = new Date();
+            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+            const tomorrowStr = getLocalDateString(tomorrowDate);
+            
             const chaptersForTomorrow = Object.values(getOrGenerateDailyPlan(tomorrowStr).tasks || {}).map(task => {
                 const subject = getSubjectById(task.subjectId); const chapter = getChapterByIds(task.subjectId, task.chapterId, task.sourceType);
                 return (subject && chapter) ? { subject, chapter, sourceType: task.sourceType } : null;
@@ -2090,16 +2235,28 @@
 
         const renderYesterdaysActivity = () => {
             const container = document.getElementById('yesterdays-completed-container');
-            const yesterdayStr = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
-            const completedYesterday = [];
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = getLocalDateString(yesterdayDate);
+            
+            const completedYesterdayChapters = [];
             (data.subjects || []).forEach(subject => {
-                const findCompleted = (chapters, sourceType) => (chapters || []).forEach(chapter => { if (chapter.dateCompleted === yesterdayStr) completedYesterday.push({ subject, chapter, sourceType }); });
+                const findCompleted = (chapters, sourceType) => (chapters || []).forEach(chapter => { if (chapter.dateCompleted === yesterdayStr) completedYesterdayChapters.push({ subject, chapter, sourceType }); });
                 findCompleted(subject.chapters.notes, 'notes'); findCompleted(subject.chapters.book, 'book');
             });
-            if (completedYesterday.length === 0) { container.innerHTML = `<p class="text-center text-sm">${_('no_chapters_yesterday')}</p>`; return; }
-            container.innerHTML = completedYesterday.map(({ subject, chapter, sourceType }) => {
-                 const sourceBadge = `<span class="source-badge ${sourceType === 'book' ? 'source-badge-book' : 'source-badge-notes'}">${sourceType === 'book' ? 'B' : 'N'}</span>`;
-                 return `<div class="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/50 rounded-lg animate-list-item"><i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i><div><p class="font-semibold">${chapter.name} ${sourceBadge}</p><p class="text-xs">${_(subject.id)}</p></div></div>`;
+            
+            const completedYesterdayOther = (data.otherTasks || []).filter(task => task.completedDate === yesterdayStr);
+
+            const allCompleted = [...completedYesterdayChapters, ...completedYesterdayOther];
+
+            if (allCompleted.length === 0) { container.innerHTML = `<p class="text-center text-sm">${_('no_chapters_yesterday')}</p>`; return; }
+            container.innerHTML = allCompleted.map((item) => {
+                if(item.chapter) { // It's a chapter
+                     const sourceBadge = `<span class="source-badge ${item.sourceType === 'book' ? 'source-badge-book' : 'source-badge-notes'}">${item.sourceType === 'book' ? 'B' : 'N'}</span>`;
+                     return `<div class="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/50 rounded-lg animate-list-item"><i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i><div><p class="font-semibold">${item.chapter.name} ${sourceBadge}</p><p class="text-xs">${_(item.subject.id)}</p></div></div>`;
+                } else { // It's an "other" task
+                     return `<div class="flex items-center gap-3 p-3 bg-gray-100 dark:bg-slate-800/50 rounded-lg animate-list-item"><i data-lucide="check-square" class="w-5 h-5 text-gray-500"></i><div><p class="font-semibold">${item.description}</p><p class="text-xs">Other Task</p></div></div>`;
+                }
             }).join('');
             lucide.createIcons();
         };
@@ -2107,8 +2264,9 @@
         const renderMissedChapters = () => {
             const container = document.getElementById('missed-chapters-list');
             const twoDaysAgo = new Date(); twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-            const twoDaysAgoStr = twoDaysAgo.toISOString().split('T')[0];
-            const yesterdayStr = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
+            const twoDaysAgoStr = getLocalDateString(twoDaysAgo);
+            const yesterdayDate = new Date(); yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = getLocalDateString(yesterdayDate);
 
             const allMissed = (data.missedChapters || [])
                 .filter(item => item.date >= twoDaysAgoStr)
@@ -2136,6 +2294,33 @@
             };
             
             initRotatingDisplay('missed-chapters-list', allMissed, renderItem, _('no_missed_chapters'));
+        };
+
+        const renderMissedOtherTasks = () => {
+            const card = document.getElementById('missed-other-tasks-card');
+            const container = document.getElementById('missed-other-tasks-list');
+            const missed = data.missedOtherTasks || [];
+            
+            if(missed.length === 0) {
+                card.classList.add('hidden');
+                return;
+            }
+            card.classList.remove('hidden');
+
+            const renderItem = (item) => {
+                const missedDateFormatted = new Date(item.date).toLocaleDateString((data.settings.language === 'hi' ? 'hi-IN' : 'en-GB'), { weekday: 'short', day: 'numeric' });
+                return `<div class="p-3 bg-gray-100 dark:bg-slate-800 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-semibold">${item.description}</p>
+                            <p class="text-xs">Missed on: <span class="font-medium text-gray-700 dark:text-gray-300">${missedDateFormatted}</span></p>
+                        </div>
+                         <button class="add-missed-other-task-btn flex items-center gap-1.5 text-xs font-semibold px-2 py-1 bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-md" data-task-id="${item.id}"><i data-lucide="plus" class="w-3 h-3"></i><span>Add to Today</span></button>
+                    </div>
+                </div>`;
+            };
+            
+            initRotatingDisplay('missed-other-tasks-list', missed, renderItem, 'No missed tasks.');
         };
 
         const renderMissedRevisions = () => {
@@ -2335,7 +2520,7 @@
              for(let i=0; i < firstDay; i++) html += `<div></div>`;
              for(let day=1; day <= daysInMonth; day++) {
                 const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const isToday = today.toISOString().split('T')[0] === fullDate;
+                const isToday = getLocalDateString(today) === fullDate;
                 const dotHtml = events[fullDate] ? `<div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>` : '';
                 html += `<div class="h-12 flex flex-col items-center justify-center rounded-lg ${isToday ? 'bg-primary text-white font-bold' : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'} relative text-sm" data-date="${fullDate}"><span>${day}</span><div class="absolute bottom-1.5 flex gap-1">${dotHtml}</div></div>`;
              }
@@ -2344,7 +2529,7 @@
              lucide.createIcons();
              container.querySelector('#prev-month')?.addEventListener('click', () => renderCalendarPage(monthOffset - 1));
              container.querySelector('#next-month')?.addEventListener('click', () => renderCalendarPage(monthOffset + 1));
-             container.querySelectorAll('[data-date]').forEach(el => { if (el.dataset.date < new Date().toISOString().split('T')[0]) { el.addEventListener('click', () => openDateCompletionModal(el.dataset.date)); } });
+             container.querySelectorAll('[data-date]').forEach(el => { if (el.dataset.date < getLocalDateString(new Date())) { el.addEventListener('click', () => openDateCompletionModal(el.dataset.date)); } });
         };
         
         const renderReportPage = () => {
@@ -2407,7 +2592,7 @@
             allCharts.status = new Chart(chart1Ctx, { type: 'doughnut', data: { labels: [_('completed'), _('not_started')], datasets: [{ data: [completedChapters.length, notStarted], backgroundColor: ['#0ea5e9', '#f59e0b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor } } } } });
             
             const chart2Ctx = document.getElementById('weekly-productivity-chart').getContext('2d');
-            const last7Days = [...Array(7)].map((_, i) => new Date(Date.now() - i * 86400000).toISOString().split('T')[0]).reverse();
+            const last7Days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - i); return getLocalDateString(d); }).reverse();
             const weeklyData = last7Days.map(day => completionByDate[day] || 0);
             if(allCharts.weekly) allCharts.weekly.destroy();
             allCharts.weekly = new Chart(chart2Ctx, { type: 'bar', data: { labels: last7Days.map(d => new Date(d).toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'short' })), datasets: [{ label: _('completed_chapters_chart'), data: weeklyData, backgroundColor: '#8b5cf6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
@@ -2474,7 +2659,7 @@
 
         const renderExamsPage = () => {
             const container = document.getElementById('exams-list-container');
-            const today = new Date().toISOString().split('T')[0];
+            const today = getLocalDateString();
             let examsToRender = [...(data.exams || [])];
             let emptyMessage = _('no_exams_added');
             if (currentExamFilter === 'upcoming') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate >= today); emptyMessage = _('no_upcoming_exams_filter'); } 
@@ -2535,7 +2720,7 @@
 
         const renderUpcomingExamsOnDashboard = () => {
             const container = document.getElementById('dashboard-exams-container');
-            const today = new Date().toISOString().split('T')[0];
+            const today = getLocalDateString();
             const upcomingExam = (data.exams || []).filter(exam => exam.examDate && exam.examDate >= today).sort((a,b) => new Date(a.examDate) - new Date(b.date))[0];
             container.innerHTML = `<h2 class="text-lg font-bold text-center mb-2" data-translate="upcoming_exams">${_('upcoming_exams')}</h2>`;
 
@@ -2581,7 +2766,7 @@
             chapterName = chapterName.trim(); if (!subjectId || !chapterName || !sourceType) return;
             const subject = getSubjectById(subjectId);
             if (subject) {
-                const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterName, status: 'Not Started', dateAdded: new Date().toISOString().split('T')[0], notes: '', priorityRevision: false, revisions: [] };
+                const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterName, status: 'Not Started', dateAdded: getLocalDateString(), notes: '', priorityRevision: false, revisions: [] };
                 subject.chapters[sourceType].push(newChapter);
                 logActivity('plus-circle', `New chapter added to ${_(subject.id)}: "${chapterName}"`);
                 saveData(); renderSubjectsPage(); hideModal('add-chapter-modal');
@@ -2594,7 +2779,7 @@
             chapter.status = newStatus;
             
             if (newStatus === 'Completed') {
-                chapter.dateCompleted = completionDate || new Date().toISOString().split('T')[0];
+                chapter.dateCompleted = completionDate || getLocalDateString();
                 scheduleRevisions(chapter);
                 if (!isUndo) {
                     if (!data.gamification.completedHistory.includes(chapter.dateCompleted)) {
@@ -2605,7 +2790,7 @@
                     lastAction = { type: 'complete', data: { subjectId, chapterId, sourceType, oldStatus }, undo: () => updateChapterStatus(subjectId, chapterId, sourceType, oldStatus, true) };
                     showUndoToast(_('chapter_completed_msg'), lastAction.undo);
                     
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = getLocalDateString();
                     const dailyPlanData = data.dailyPlan[todayStr];
                     if (dailyPlanData) {
                         const subjectSourcePair = `${subjectId}:${sourceType}`;
@@ -2654,7 +2839,7 @@
             chapter.revisions = chapter.revisions.filter(r => r.type === 'manual');
             revisionDays.forEach(days => {
                 const revisionDate = new Date(chapter.dateCompleted); revisionDate.setDate(revisionDate.getDate() + days);
-                chapter.revisions.push({ date: revisionDate.toISOString().split('T')[0], status: 'Pending', type: 'auto' });
+                chapter.revisions.push({ date: getLocalDateString(revisionDate), status: 'Pending', type: 'auto' });
             });
         };
         
@@ -2665,15 +2850,15 @@
             switch(dataType) {
                 case 'full':
                     dataToExport = data;
-                    fileName = `study_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    fileName = `study_tracker_backup_${getLocalDateString()}.json`;
                     break;
                 case 'exams':
                     dataToExport = data.exams || [];
-                    fileName = `study_tracker_exams_${new Date().toISOString().split('T')[0]}.json`;
+                    fileName = `study_tracker_exams_${getLocalDateString()}.json`;
                     break;
                 case 'urls':
                     dataToExport = data.urls || [];
-                    fileName = `study_tracker_urls_${new Date().toISOString().split('T')[0]}.json`;
+                    fileName = `study_tracker_urls_${getLocalDateString()}.json`;
                     break;
             }
             if(!dataToExport) return;
@@ -2744,7 +2929,7 @@
                 let subject = data.subjects.find(s => s.id === subjectId);
                 if (!subject) { subject = { id: subjectId, name: subjectName, chapters: { notes: [], book: [] } }; data.subjects.push(subject); if (!translations.en[subjectId]) { translations.en[subjectId] = subjectName; translations.hi[subjectId] = subjectName; } subjectsAdded++; }
                 const chaptersToImport = importedData[subjectName];
-                if (Array.isArray(chaptersToImport)) { chaptersToImport.forEach(chapterData => { if (chapterData.name && !subject.chapters[sourceType].some(c => c.name === chapterData.name)) { const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterData.name.trim(), status: 'Not Started', dateAdded: new Date().toISOString().split('T')[0], notes: '', priorityRevision: false, revisions: [] }; subject.chapters[sourceType].push(newChapter); chaptersAdded++; } }); }
+                if (Array.isArray(chaptersToImport)) { chaptersToImport.forEach(chapterData => { if (chapterData.name && !subject.chapters[sourceType].some(c => c.name === chapterData.name)) { const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterData.name.trim(), status: 'Not Started', dateAdded: getLocalDateString(), notes: '', priorityRevision: false, revisions: [] }; subject.chapters[sourceType].push(newChapter); chaptersAdded++; } }); }
             });
             logActivity('upload', `Imported ${chaptersAdded} chapters and ${subjectsAdded} new subjects.`);
             saveData(); alert(`Import successful!\n\nNew Subjects Added: ${subjectsAdded}\nNew Chapters Added: ${chaptersAdded}`);
@@ -2825,8 +3010,7 @@
                     let streak = 0;
                     if (completedDates.size > 0) {
                         let currentDate = new Date();
-                        currentDate.setHours(0,0,0,0);
-                        while(completedDates.has(currentDate.toISOString().split('T')[0])) {
+                        while(completedDates.has(getLocalDateString(currentDate))) {
                             streak++;
                             currentDate.setDate(currentDate.getDate() - 1);
                         }
@@ -2870,9 +3054,10 @@
 
         const unlockBadge = (badgeId) => {
             if (!data.gamification.badges.includes(badgeId)) {
-                data.gamification.badges.push(badgeId);
                 const badgeInfo = BADGES[badgeId];
                 if (badgeInfo) {
+                    data.gamification.badges.push(badgeId);
+                    logActivity('award', `Achievement Unlocked: "${badgeInfo.name}"`);
                     document.getElementById('badge-name').textContent = badgeInfo.name;
                     document.getElementById('badge-description').textContent = badgeInfo.description;
                     document.getElementById('badge-icon').setAttribute('data-lucide', badgeInfo.icon);
@@ -2891,8 +3076,10 @@
 
         const renderTodaysDpt = () => {
             const container = document.getElementById('todays-dpt-container');
-            const todayStr = new Date().toISOString().split('T')[0];
-            const yesterdayStr = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
+            const todayStr = getLocalDateString();
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = getLocalDateString(yesterdayDate);
             
             data.dailyDptPlan = data.dailyDptPlan || {}; data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
             const subjectsForDptToday = getDptSubjectsForDay(new Date());
@@ -3162,7 +3349,7 @@
             const chapter = getChapterByIds(subjectId, chapterId, sourceType);
             const revision = chapter?.revisions.find(r => r.date === revisionDate); if (!revision) return;
             document.querySelector(`li [data-revision-date="${revisionDate}"]`)?.closest('.task-list-item')?.classList.add('completed');
-            setTimeout(() => { const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); revision.date = tomorrow.toISOString().split('T')[0]; logActivity('skip-forward', `Revision for "${chapter.name}" postponed to tomorrow.`); saveData(); renderHomePage(); }, 500);
+            setTimeout(() => { const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); revision.date = getLocalDateString(tomorrow); logActivity('skip-forward', `Revision for "${chapter.name}" postponed to tomorrow.`); saveData(); renderHomePage(); }, 500);
         };
         
         function openManualAddModal(type) {
@@ -3178,7 +3365,7 @@
                 modal.querySelector('h2').textContent = 'Add Manual Task';
                 chapterContent.style.display = 'block';
                 dptContent.style.display = 'none';
-                document.getElementById('manual-add-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('manual-add-date').value = getLocalDateString();
                 document.getElementById('manual-add-chapter-name').value = '';
             } else { // type === 'dpt'
                 modal.querySelector('h2').textContent = 'Add Manual DPT';
@@ -3218,7 +3405,7 @@
                 const chapterExists = subject.chapters[sourceType].some(c => c.name.toLowerCase() === chapterName.toLowerCase());
                 if(chapterExists) { alert(`A chapter named "${chapterName}" already exists in ${subject.name} (${sourceType}).`); return; }
 
-                const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterName, status: 'Not Started', dateAdded: new Date().toISOString().split('T')[0], notes: '', priorityRevision: false, revisions: [] };
+                const newChapter = { id: `ch-${Date.now()}-${Math.random()}`, name: chapterName, status: 'Not Started', dateAdded: getLocalDateString(), notes: '', priorityRevision: false, revisions: [] };
                 subject.chapters[sourceType].push(newChapter);
                 logActivity('plus-circle', `Manually added new chapter to ${_(subject.id)}: "${chapterName}"`);
 
@@ -3229,14 +3416,14 @@
 
                 saveData();
                 hideModal('manual-add-modal');
-                if (dateStr === new Date().toISOString().split('T')[0]) { renderHomePage(); }
+                if (dateStr === getLocalDateString()) { renderHomePage(); }
                 if (document.getElementById('page-subjects').classList.contains('active')) { renderSubjectsPage(); }
 
             } else { // type === 'dpt'
                 const selectedRadio = document.querySelector('input[name="manual-add-item"]');
                 if (!selectedRadio) { alert('No available DPT to add for this subject.'); return; }
                 const testId = parseInt(selectedRadio.value);
-                const todayStr = new Date().toISOString().split('T')[0];
+                const todayStr = getLocalDateString();
                 data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
                 if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.testId === testId)) {
                     data.dailyDptPlan[todayStr].push({ subjectId, testId, isManual: true, id: `manual-dpt-${Date.now()}` });
@@ -3523,17 +3710,33 @@
             document.getElementById('todays-plan-container').addEventListener('click', e => {
                 const postponeBtn = e.target.closest('.postpone-btn');
                 const skipBtn = e.target.closest('.skip-btn');
-                const deleteManualBtn = e.target.closest('.manual-task-delete-btn');
+                const deleteManualBtn = e.target.closest('.delete-manual-task-btn');
+                const deleteOtherTaskBtn = e.target.closest('.delete-other-task-btn');
+
                 if (deleteManualBtn) {
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = getLocalDateString();
                     const taskId = deleteManualBtn.dataset.manualId;
                     data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
                     saveData(); renderHomePage(); return;
                 }
-                const { subjectId, chapterId, sourceType, revisionDate } = postponeBtn?.dataset || skipBtn?.dataset || {};
-                if (!subjectId) return;
+                 if (deleteOtherTaskBtn) {
+                    const taskId = deleteOtherTaskBtn.dataset.taskId;
+                    showConfirmationModal('Delete Task?', 'Are you sure you want to permanently delete this task?', () => {
+                        data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
+                        data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
+                        saveData(); renderHomePage();
+                    });
+                    return;
+                }
+                
+                const { taskId, taskType, subjectId, chapterId, sourceType, revisionDate } = postponeBtn?.dataset || skipBtn?.dataset || {};
+                
+                if (!taskType) return;
                 e.preventDefault();
-                if (revisionDate) { 
+
+                if (taskType === 'other') {
+                    if (postponeBtn) postponeOtherTask(taskId);
+                } else if (taskType === 'revision') { 
                     postponeRevision(subjectId, chapterId, sourceType, revisionDate); 
                 } else { 
                     if (postponeBtn) { postponeChapter(subjectId, chapterId, sourceType); }
@@ -3542,24 +3745,30 @@
             });
 
             document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
-                const listItem = e.target.closest('.task-list-item');
-                const isManual = e.target.dataset.isManual === 'true';
-                if ((e.target.classList.contains('task-checkbox') || e.target.classList.contains('revision-checkbox')) && e.target.checked) {
-                    listItem?.classList.add('completed');
-                    setTimeout(() => {
-                        if (e.target.classList.contains('revision-checkbox')) {
-                             updateRevisionStatus(e.target.dataset.subjectId, e.target.dataset.chapterId, e.target.dataset.sourceType, e.target.dataset.revisionDate, true);
-                        } else {
-                            updateChapterStatus(e.target.dataset.subjectId, e.target.dataset.chapterId, e.target.dataset.sourceType, 'Completed'); 
-                            if (!isManual) { markSubjectAsDoneForToday(e.target.dataset.subjectSourcePair); }
-                            else {
-                                 const todayStr = new Date().toISOString().split('T')[0];
-                                 const taskId = listItem.dataset.manualId;
-                                 data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
-                                 saveData(); renderHomePage();
+                const checkbox = e.target;
+                const listItem = checkbox.closest('.task-list-item');
+                const taskType = checkbox.dataset.taskType;
+
+                if (checkbox.classList.contains('task-checkbox') || checkbox.classList.contains('revision-checkbox')) {
+                    if (checkbox.checked) {
+                        listItem?.classList.add('completed');
+                        setTimeout(() => {
+                           if (taskType === 'revision') {
+                                 updateRevisionStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.sourceType, checkbox.dataset.revisionDate, true);
+                            } else if (taskType === 'other') {
+                                updateOtherTaskStatus(checkbox.dataset.taskId, 'Completed');
+                            } else { // chapter or manual_chapter
+                                updateChapterStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.sourceType, 'Completed'); 
+                                if (taskType === 'chapter') { markSubjectAsDoneForToday(checkbox.dataset.subjectSourcePair); }
+                                else if (taskType === 'manual_chapter') {
+                                     const todayStr = getLocalDateString();
+                                     const taskId = listItem.dataset.manualId;
+                                     data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
+                                     saveData(); renderHomePage();
+                                }
                             }
-                        }
-                    }, 500);
+                        }, 500);
+                    }
                 }
             });
 
@@ -3567,7 +3776,7 @@
                 const completeBtn = e.target.closest('.complete-missed-chapter-btn');
                 if (completeBtn) {
                     const { subjectId, chapterId, sourceType } = completeBtn.dataset;
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = getLocalDateString();
                     data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [] };
                     data.dailyPlan[todayStr].manualTasks.push({ subjectId, chapterId, sourceType, id: `manual-${Date.now()}` });
                     data.missedChapters = data.missedChapters.filter(c => c.chapterId !== chapterId);
@@ -3575,6 +3784,23 @@
                     saveData(); renderHomePage();
                 }
             });
+            
+             document.getElementById('missed-other-tasks-list').addEventListener('click', e => {
+                const addBtn = e.target.closest('.add-missed-other-task-btn');
+                if (addBtn) {
+                    const taskId = addBtn.dataset.taskId;
+                    const task = data.missedOtherTasks.find(t => t.id === taskId);
+                    if (task) {
+                        task.date = getLocalDateString(); // Reschedule for today
+                        data.postponedOtherTasks.push(task);
+                        data.missedOtherTasks = data.missedOtherTasks.filter(t => t.id !== taskId);
+                        logActivity('plus', `Added missed task to today's plan: "${task.description}"`);
+                        saveData();
+                        renderHomePage();
+                    }
+                }
+            });
+
 
              document.getElementById('missed-revisions-list').addEventListener('click', e => {
                 const completeBtn = e.target.closest('.complete-missed-revision-btn');
@@ -3598,7 +3824,7 @@
             document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value, document.getElementById('add-chapter-source-type').value); });
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
@@ -3644,7 +3870,7 @@
 
             document.getElementById('background-style-select').addEventListener('change', (e) => { data.settings.backgroundStyle = e.target.value; saveData(); applyBackgroundStyle(); });
             document.getElementById('page-settings').addEventListener('change', e => {
-                if (e.target.name === 'plan-mode') { data.settings.planMode = e.target.value; delete data.dailyPlan[new Date().toISOString().split('T')[0]]; saveData(); renderSettingsPage(); renderHomePage(); }
+                if (e.target.name === 'plan-mode') { data.settings.planMode = e.target.value; delete data.dailyPlan[getLocalDateString()]; saveData(); renderSettingsPage(); renderHomePage(); }
                 if (e.target.name === 'dpt-plan-mode') { data.settings.dptPlanMode = e.target.value; saveData(); renderSettingsPage(); renderHomePage(); }
             });
             document.getElementById('save-custom-cycle-plan')?.addEventListener('click', () => {
@@ -3728,7 +3954,7 @@
                 if (viewBtn) { showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.testId); }
                  if (completeMissedBtn) {
                     const { subjectId, testId } = completeMissedBtn.dataset;
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = getLocalDateString();
                     data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
                     if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.testId === testId)) {
                         data.dailyDptPlan[todayStr].push({ subjectId, testId: parseInt(testId), isManual: true, id: `manual-dpt-${Date.now()}` });
@@ -3739,7 +3965,7 @@
                 }
                 const deleteManualBtn = e.target.closest('.manual-dpt-delete-btn');
                 if (deleteManualBtn) {
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = getLocalDateString();
                     const taskId = deleteManualBtn.dataset.manualId;
                     data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(t => t.id !== taskId);
                     saveData(); renderHomePage();
@@ -3755,7 +3981,11 @@
             document.getElementById('add-manual-revision-btn').addEventListener('click', e => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; const date = document.getElementById('manual-revision-date').value; addManualRevision(subjectId, chapterId, sourceType, date); });
             document.getElementById('chapter-modal').addEventListener('click', e => { const deleteBtn = e.target.closest('.delete-revision-btn'); if (deleteBtn) { const { subjectId, chapterId, sourceType, revisionDate } = deleteBtn.dataset; deleteRevision(subjectId, chapterId, sourceType, revisionDate); } });
             
-            document.getElementById('todays-plan-container').addEventListener('click', e => { if (e.target.closest('#manual-add-task-btn')) openManualAddModal('chapter'); });
+            document.getElementById('todays-plan-container').addEventListener('click', e => { if (e.target.closest('#add-task-choice-btn')) showModal('add-task-choice-modal'); });
+            document.getElementById('choice-manual-chapter-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); openManualAddModal('chapter'); });
+            document.getElementById('choice-other-task-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); showAddOtherTaskModal(); });
+            document.getElementById('add-other-task-form').addEventListener('submit', saveOtherTask);
+
             document.getElementById('todays-dpt-container').addEventListener('click', e => { if (e.target.closest('#manual-add-dpt-btn')) openManualAddModal('dpt'); });
             document.getElementById('manual-add-subject-select').addEventListener('change', (e) => {
                 const modal = document.getElementById('manual-add-modal');
@@ -3882,7 +4112,7 @@
                 const blob = new Blob([dataStr], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url; a.download = `study_routine_${new Date().toISOString().split('T')[0]}.json`;
+                a.href = url; a.download = `study_routine_${getLocalDateString()}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
             } else if (format === 'pdf') {
@@ -3912,7 +4142,7 @@
                     }
                     y += 4;
                 });
-                pdf.save(`study_routine_${new Date().toISOString().split('T')[0]}.pdf`);
+                pdf.save(`study_routine_${getLocalDateString()}.pdf`);
             }
         }
 
@@ -3978,6 +4208,75 @@
             mainContainer.style.overflowY = originalOverflow;
             page.classList.remove('printable');
         }
+
+        // --- NEW "OTHER TASK" FUNCTIONS ---
+
+        function showAddOtherTaskModal() {
+            const form = document.getElementById('add-other-task-form');
+            form.reset();
+            document.getElementById('other-task-date').value = getLocalDateString();
+            showModal('add-other-task-modal');
+        }
+
+        function saveOtherTask(e) {
+            e.preventDefault();
+            const description = document.getElementById('other-task-description').value.trim();
+            const date = document.getElementById('other-task-date').value;
+            const notes = document.getElementById('other-task-notes').value.trim();
+
+            if (!description || !date) {
+                alert('Please provide a task description and a date.');
+                return;
+            }
+
+            const newTask = {
+                id: `other-${Date.now()}`,
+                description,
+                date,
+                notes,
+                status: 'Pending',
+                completedDate: null
+            };
+
+            data.otherTasks.push(newTask);
+            logActivity('clipboard-list', `New other task added: "${description}"`);
+            saveData();
+            hideModal('add-other-task-modal');
+            renderHomePage();
+        }
+
+        function updateOtherTaskStatus(taskId, newStatus) {
+            const task = (data.otherTasks || []).find(t => t.id === taskId) || (data.postponedOtherTasks || []).find(t => t.id === taskId);
+            if (task) {
+                task.status = newStatus;
+                if (newStatus === 'Completed') {
+                    task.completedDate = getLocalDateString();
+                    logActivity('check-square', `Other task completed: "${task.description}"`);
+                }
+                saveData();
+                renderHomePage();
+            }
+        }
+
+        function postponeOtherTask(taskId) {
+            const task = (data.otherTasks || []).find(t => t.id === taskId) || (data.postponedOtherTasks || []).find(t => t.id === taskId);
+            if (task) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                task.date = getLocalDateString(tomorrow);
+                
+                // Move from main list to postponed list if not already there
+                if(!data.postponedOtherTasks.some(t => t.id === taskId)) {
+                    data.postponedOtherTasks.push(task);
+                    data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
+                }
+
+                logActivity('skip-forward', `Other task postponed: "${task.description}"`);
+                saveData();
+                renderHomePage();
+            }
+        }
+
 
         init();
     });
