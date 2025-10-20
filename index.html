@@ -312,49 +312,38 @@
 
         /* Print-specific styles */
         @media print {
-            body, html {
-                background: #fff !important;
-                color: #000 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            #sidebar, #mobile-bottom-nav, header, button, .no-print {
+            body.is-printing > *:not(.printable),
+            body.is-printing #sidebar,
+            body.is-printing #mobile-bottom-nav,
+            body.is-printing header,
+            body.is-printing button,
+            body.is-printing .no-print {
                 display: none !important;
             }
-            main {
+            body, html {
+                background: #fff !important; color: #000 !important;
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            }
+            body.is-printing main, body.is-printing .page.printable {
                 display: block !important;
                 height: auto !important;
                 overflow: visible !important;
-                padding: 0 !important;
+                padding: 0 !important; margin: 0 !important;
                 background: none !important;
-            }
-            .page {
-                display: none !important;
-            }
-            .page.printable {
-                display: block !important;
-                animation: none !important;
-            }
-            .dashboard-card, .bg-card-light {
-                box-shadow: none !important;
-                border: 1px solid #ccc !important;
-                page-break-inside: avoid;
-            }
-            .grid {
-                display: block !important;
-            }
-            .grid > * {
                 width: 100% !important;
             }
-            canvas {
-                max-width: 100% !important;
-                height: auto !important;
+            .page { display: none !important; }
+            .page.printable { display: block !important; animation: none !important; }
+            .dashboard-card, .bg-card-light {
+                box-shadow: none !important; border: 1px solid #ccc !important;
+                page-break-inside: avoid;
             }
+            .grid { display: block !important; }
+            .grid > * { width: 100% !important; }
+            canvas { max-width: 100% !important; height: auto !important; }
             .dark, .dark body {
-                 --background-dark: #ffffff;
-                 --card-dark: #ffffff;
-                 --text-dark: #000000;
-                 --text-muted-dark: #333333;
+                 --background-dark: #ffffff; --card-dark: #ffffff;
+                 --text-dark: #000000; --text-muted-dark: #333333;
                  --border-dark: #cccccc;
             }
         }
@@ -513,9 +502,6 @@
                                 <button data-view="completed" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Completed</button>
                             </div>
                             <select id="dpt-subject-filter" class="p-2 bg-card-light dark:bg-card-dark border rounded-lg"></select>
-                            <button id="delete-all-dpts-subject-btn" class="hidden flex items-center justify-center gap-2 p-2 text-sm font-semibold rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i> <span data-translate="delete_all_dpts">Delete All DPTs</span>
-                            </button>
                         </div>
                     </div>
                     
@@ -669,6 +655,7 @@
                             <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h3 class="font-semibold mb-2" data-translate="weekly_productivity">Weekly Productivity (Chapters Done)</h3><div class="relative h-80"><canvas id="weekly-productivity-chart"></canvas></div></div>
                             <div class="lg:col-span-2 bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h3 class="font-semibold mb-2" data-translate="subject_wise_progress">Subject-wise Progress (%)</h3><div class="relative h-96"><canvas id="subject-progress-chart"></canvas></div></div>
                             <div class="lg:col-span-2 bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h3 class="font-semibold mb-2">DPT Performance by Subject (Accuracy %)</h3><div class="relative h-80"><canvas id="dpt-performance-chart"></canvas></div></div>
+                            <div class="lg:col-span-2 bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h3 class="font-semibold mb-2">DPT Practice Count by Chapter</h3><div class="relative h-96"><canvas id="dpt-chapter-chart"></canvas></div></div>
                         </div>
                     </div>
                 </div>
@@ -965,6 +952,7 @@
             <div id="dpt-entry-view">
                 <form id="dpt-details-form" class="space-y-3">
                     <input type="hidden" id="dpt-details-subject-id">
+                    <input type="hidden" id="dpt-details-chapter-id">
                     <input type="hidden" id="dpt-details-test-id">
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                         <div><label for="dpt-total-q" class="font-medium" data-translate="dpt_total_q">Total Qs</label><input type="number" id="dpt-total-q" class="w-full mt-1 p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg"></div>
@@ -1123,6 +1111,42 @@
         </div>
     </div>
 
+    <!-- NEW MODAL FOR ADDING DPT TO A CHAPTER -->
+    <div id="add-chapter-dpt-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-add-chapter-dpt-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 class="text-xl font-bold mb-4">Add DPTs to Chapter</h2>
+            <form id="add-chapter-dpt-form" class="space-y-4">
+                <input type="hidden" id="dpt-add-subject-id">
+                <div>
+                    <label for="dpt-add-chapter-select" class="block text-sm font-medium mb-1">Chapter</label>
+                    <select id="dpt-add-chapter-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required></select>
+                </div>
+                <div>
+                    <label for="dpt-add-quantity" class="block text-sm font-medium mb-1">Number of Tests to Add</label>
+                    <input type="number" id="dpt-add-quantity" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required min="1" value="1">
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Add DPTs</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- NEW MODAL FOR ADDING DPT TO ALL CHAPTERS -->
+    <div id="add-all-chapters-dpt-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-add-all-chapters-dpt-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 id="add-all-dpt-modal-title" class="text-xl font-bold mb-4">Add DPTs to All Chapters</h2>
+            <form id="add-all-chapters-dpt-form" class="space-y-4">
+                <input type="hidden" id="dpt-add-all-subject-id">
+                <div>
+                    <label for="dpt-add-all-quantity" class="block text-sm font-medium mb-1">Number of Tests per Chapter</label>
+                    <input type="number" id="dpt-add-all-quantity" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required min="1" value="1">
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Add DPTs to All</button>
+            </form>
+        </div>
+    </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -1137,8 +1161,16 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "4.0"; // Version updated for new features
+        const CURRENT_APP_VERSION = "4.1"; // Version updated for DPT overhaul
+        const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
         const updateNotes = {
+            "4.1": [
+                { "title": "अध्याय-आधारित DPT सिस्टम ✨", "note": "DPT सिस्टम को पूरी तरह से नया रूप दिया गया है! अब आप हर विषय के विशिष्ट अध्यायों के लिए DPT जोड़ सकते हैं, जैसे 'Physics DPT - तरंग (Waves) - 1'। इससे आप हर अध्याय की प्रैक्टिस को ट्रैक कर सकते हैं।" },
+                { "title": "बेहतर DPT ट्रैकिंग और विश्लेषण 📊", "note": "अब आप देख सकते हैं कि आपने किस अध्याय का कितनी बार DPT दिया है। एनालिटिक्स पेज पर एक नया चार्ट जोड़ा गया है जो दिखाता है कि हर अध्याय का कितनी बार प्रैक्टिस किया गया है, जिससे आपको अपनी कमजोरियों और ताकतों का पता चलता है।" },
+                { "title": "एक साथ कई DPT जोड़ें 🚀", "note": "अब आप एक ही बार में किसी भी अध्याय के लिए कई DPT जोड़ सकते हैं। DPT पेज पर जाएं, विषय चुनें, और किसी भी अध्याय के आगे 'Add DPTs' बटन पर क्लिक करें। विषय के नाम के आगे 'Add to All Chapters' बटन से आप सभी चैप्टर्स में एक साथ DPT जोड़ सकते हैं।" },
+                { "title": "एंड्रॉयड पर बेहतर प्रिंटिंग 📱", "note": "रिपोर्ट और एनालिसिस पेज को एंड्रॉयड डिवाइस पर प्रिंट करने में आ रही समस्या को ठीक कर दिया गया है। अब आप मोबाइल पर भी आसानी से अपनी प्रगति का प्रिंट ले सकते हैं।" },
+                { "title": "पहले से 5 गुना ज़्यादा स्थिर 🛡️", "note": "एप्लिकेशन के कोर में महत्वपूर्ण सुधार किए गए हैं ताकि यह सुनिश्चित हो सके कि नए बदलावों से कोई पुराना फीचर प्रभावित न हो। ऐप अब पहले से कहीं ज़्यादा स्थिर, तेज़ और विश्वसनीय है।" }
+            ],
             "4.0": [
                 { "title": "अत्यंत उन्नत AI स्टडी कोच ✨", "note": "AI कोच अब वास्तविक समय में आपकी प्रगति का विश्लेषण करता है और कभी भी पीछे नहीं रहता। यह आपको आज के कार्यों, DPTs, आगामी परीक्षाओं, छूटे हुए अध्यायों, उपलब्धियों और यहां तक कि आपके सबसे अच्छे प्रदर्शन वाले दिन के बारे में भी जानकारी देता है।" },
                 { "title": "प्रेरणादायक संदेश और 12+ नई जानकारियां 🚀", "note": "AI कोच अब आपको प्रेरित रखने के लिए 50+ छोटे, प्रेरक संदेश दिखाएगा और 12 से ज़्यादा तरह की नई जानकारियां देगा। हर बार जब आप होम पेज पर आएंगे तो आपको एक नया संदेश मिलेगा!" },
@@ -1239,7 +1271,7 @@
                 "application_receipt": "Application Receipt", "view_receipt": "View Current Receipt", "receipt_attached": "Receipt Attached",
                 "history_exams": "History", "no_history_exams": "No past exams found in your history.", "no_upcoming_exams_filter": "There are no upcoming exams scheduled.", "no_applied_forms_filter": "No forms currently in 'Applied' status.",
                 "dpt": "DPT", "dpt_page_title": "Daily Practice Tests (DPT)", "all_subjects": "All Subjects",
-                "add_dpt": "Add DPTs", "add_dpt_all": "Add DPTs to All", "no_dpt_for_subject": "No DPTs added for this subject yet.", "dpt_progress": "Test {completed} of {total} completed",
+                "add_dpt": "Add DPTs", "add_dpt_all": "Add to All Chapters", "no_dpt_for_subject": "No DPTs added for this subject yet.", "dpt_progress": "Test {completed} of {total} completed",
                 "todays_dpt": "Today's DPT", "mark_as_complete": "Mark as Complete", "no_dpt_scheduled": "No DPT scheduled for today.",
                 "all_dpt_completed": "All DPTs for today completed! Great job!",
                 "enter_dpt_details": "Enter DPT Details", "dpt_total_q": "Total Qs", "dpt_total_time": "Total Time", "dpt_attempted": "Attempted",
@@ -1331,7 +1363,7 @@
                 "application_receipt": "आवेदन रसीद", "view_receipt": "वर्तमान रसीद देखें", "receipt_attached": "रसीद संलग्न है",
                 "history_exams": "इतिहास", "no_history_exams": "आपके इतिहास में कोई पिछली परीक्षा नहीं मिली।", "no_upcoming_exams_filter": "कोई आगामी परीक्षा निर्धारित नहीं है।", "no_applied_forms_filter": "'आवेदन किया गया' स्थिति में वर्तमान में कोई फॉर्म नहीं है।",
                 "dpt": "DPT", "dpt_page_title": "डेली प्रैक्टिस टेस्ट (DPT)", "all_subjects": "सभी विषय",
-                "add_dpt": "DPT जोड़ें", "add_dpt_all": "सभी में DPT जोड़ें", "no_dpt_for_subject": "इस विषय के लिए अभी तक कोई DPT नहीं जोड़ा गया है।", "dpt_progress": "{total} में से {completed} टेस्ट पूरे हुए",
+                "add_dpt": "DPT जोड़ें", "add_dpt_all": "सभी चैप्टर्स में जोड़ें", "no_dpt_for_subject": "इस विषय के लिए अभी तक कोई DPT नहीं जोड़ा गया है।", "dpt_progress": "{total} में से {completed} टेस्ट पूरे हुए",
                 "todays_dpt": "आज का DPT", "mark_as_complete": "पूर्ण के रूप में चिह्नित करें", "no_dpt_scheduled": "आज के लिए कोई DPT निर्धारित नहीं है।",
                 "all_dpt_completed": "आज के सभी DPT पूरे हो गए! बहुत बढ़िया!",
                 "enter_dpt_details": "DPT विवरण दर्ज करें", "dpt_total_q": "कुल प्रश्न", "dpt_total_time": "कुल समय", "dpt_attempted": "प्रयास किए",
@@ -1344,7 +1376,7 @@
                 "dpt_plan_mode": "दैनिक DPT योजना मोड", "dpt_plan_subtitle": "चुनें कि आप अपनी दैनिक DPT योजना कैसे बनाना चाहते हैं।", "dpt_auto_mode": "स्वचालित (अध्ययन योजना के अनुसार)", "custom_dpt_plan": "कस्टम DPT योजना (2 सप्ताह चक्र)",
                 "dpt_report_title": "DPT सारांश", "dpt_subject_breakdown": "DPT विषयवार विश्लेषण", "no_dpt_data_report": "अभी तक कोई DPT डेटा लॉग नहीं किया गया है।",
                 "sunday": "रविवार", "monday": "सोमवार", "tuesday": "मंगलवार", "wednesday": "बुधवार", "thursday": "गुरुवार", "friday": "शुक्रवार", "saturday": "शनिवार", "week": "सप्ताह",
-                "delete_subject": "विषय हटाएं", "delete_subject_confirm": "यह विषय '{subjectName}' और इसके सभी चैप्टर्स और DPTs को हटा देगा। यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+                "delete_subject": "विषय हटाएं", "delete_subject_confirm": "यह विषय '{subjectName}' और इसके सभी चैप्टर्स और DPTs को हटा देगा। यह कार्रवाई पूर्ववत् नहीं की जा सकती।",
                 "delete_dpt": "DPT हटाएं", "delete_dpt_confirm": "क्या आप वाकई {dptName} को हटाना चाहते हैं? इसका डेटा स्थायी रूप से हट जाएगा।",
                 "routine_management": "रूटीन प्रबंधन", "routine_management_desc": "अपनी 14-दिवसीय अध्ययन योजना को एक्सपोर्ट करें या JSON फ़ाइल से एक नई योजना इंपोर्ट करें।", "import_routine": "रूटीन इंपोर्ट करें (JSON)", "export_json": "JSON एक्सपोर्ट करें", "export_pdf": "PDF एक्सपोर्ट करें",
                 "exams_data_management": "परीक्षा डेटा प्रबंधन", "exams_data_management_desc": "अपनी परीक्षाओं की सूची इंपोर्ट या एक्सपोर्ट करें। यह आपके परीक्षा कार्यक्रम का बैकअप लेने या स्थानांतरित करने के लिए उपयोगी है।",
@@ -1471,8 +1503,29 @@
             s.chapters.book.forEach(migrateChapter);
         });
 
+        // DPT Data Structure Migration from flat tests to chapter-based
+        let dptDataMigrated = false;
+        Object.keys(data.dpts || {}).forEach(subjectId => {
+            if (data.dpts[subjectId].tests) { // Old structure detected
+                dptDataMigrated = true;
+                delete data.dpts[subjectId]; // Remove old, non-migratable data
+            }
+        });
+        if (dptDataMigrated) {
+            console.log('Old DPT data structure detected and cleared for new system.');
+            // This will be announced in the update popup.
+        }
+
+
         const saveData = () => {
             try {
+                // Defensive check to prevent saving corrupted DPT data
+                Object.keys(data.dpts || {}).forEach(subjectId => {
+                    if (data.dpts[subjectId].tests) {
+                        console.error(`Attempted to save old DPT format for subject: ${subjectId}. Preventing save.`);
+                        return; // Stop the save
+                    }
+                });
                 localStorage.setItem(DB_KEY, JSON.stringify(data));
             } catch (error) {
                 console.error("Failed to save data to localStorage:", error);
@@ -1672,8 +1725,8 @@
             // Handle Missed DPTs
             const yesterdayDptPlan = data.dailyDptPlan[yesterdayStr];
             if (yesterdayDptPlan) {
-                yesterdayDptPlan.forEach(({ subjectId, testId }) => {
-                    const test = data.dpts[subjectId]?.tests.find(t => t.id === testId);
+                yesterdayDptPlan.forEach(({ subjectId, chapterId, testId }) => {
+                    const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
                     if (test && test.status !== 'Completed') {
                         // We don't need a separate missed DPT list, the logic on dashboard will handle it
                     }
@@ -1797,7 +1850,13 @@
         const getSubjectById = (id) => (data.subjects || []).find(s => s.id === id);
         const getChapterByIds = (subjectId, chapterId, sourceType) => {
             const subject = getSubjectById(subjectId);
-            return subject?.chapters?.[sourceType]?.find(c => c.id === chapterId) || null;
+            if (!subject || !chapterId) return null;
+            // If sourceType is provided, search only there. Otherwise, search both.
+            if (sourceType) {
+                return subject.chapters[sourceType]?.find(c => c.id === chapterId) || null;
+            }
+            const allChapters = [...(subject.chapters.notes || []), ...(subject.chapters.book || [])];
+            return allChapters.find(c => c.id === chapterId) || null;
         };
 
         const logActivity = (icon, description) => {
@@ -1940,7 +1999,10 @@
             if (tasksToStudy.length > 0) insights.push(`📚 आज की योजना: <strong>${tasksToStudy.join(', ')}</strong> पढ़ें।`);
 
             // 3. Today's DPT
-            const todaysDpts = (data.dailyDptPlan[todayStr] || []).map(({subjectId, testId}) => `${_(subjectId)} DPT #${testId}`);
+            const todaysDpts = (data.dailyDptPlan[todayStr] || []).map(({subjectId, chapterId, testId}) => {
+                const chapter = getChapterByIds(subjectId, chapterId);
+                return `${_(subjectId)} - ${chapter ? chapter.name : ''} DPT #${testId}`;
+            });
             if (todaysDpts.length > 0) insights.push(`🎯 आज के DPTs: <strong>${todaysDpts.join(', ')}</strong>। इन्हें पूरा करना न भूलें!`);
             
             // 4. Missed Items
@@ -1983,7 +2045,7 @@
             }
             
             // 9. DPT Stats
-            const allCompletedDpts = Object.values(data.dpts || {}).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
+            const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
             if(allCompletedDpts.length > 5) {
                 let totalCorrect = 0, totalAttempted = 0;
                 allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; });
@@ -2538,21 +2600,31 @@
             const total = allChapters.length; const completed = allChapters.filter(c => c.status === 'Completed').length; const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
             
             const generateDptReportHtml = () => {
-                const allCompletedDpts = Object.values(data.dpts || {}).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
+                const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
                 if (allCompletedDpts.length === 0) { return `<h2 class="text-xl font-bold mb-4 mt-8">${_('dpt_report_title')}</h2><p class="text-center text-sm p-4">${_('no_dpt_data_report')}</p>`; }
                 let totalCorrect = 0, totalAttempted = 0, totalTimeTaken = 0, totalQuestions = 0;
-                allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; totalTimeTaken += (dpt.details.timeTaken || 0) * 60; totalQuestions += dpt.details.attempted || 0; });
+                allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; totalTimeTaken += (dpt.details.timeTaken || 0) * 60; totalQuestions += dpt.details.totalQ || 0; });
                 const accuracy = totalAttempted > 0 ? ((totalCorrect / totalAttempted) * 100).toFixed(1) : '0.0';
-                const avgTimePerQ = totalQuestions > 0 ? (totalTimeTaken / totalQuestions).toFixed(1) : '0.0';
-                let subjectBreakdownDptHtml = Object.keys(data.dpts).map(subjectId => {
-                    const subjectDpts = data.dpts[subjectId].tests.filter(t => t.status === 'Completed' && t.details); if (subjectDpts.length === 0) return '';
-                    let subCorrect = 0, subAttempted = 0;
-                    subjectDpts.forEach(d => { subCorrect += d.details.correct || 0; subAttempted += d.details.attempted || 0; });
-                    const subAccuracy = subAttempted > 0 ? ((subCorrect / subAttempted) * 100).toFixed(1) : '0.0';
-                    return `<div class="mb-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><div class="flex justify-between items-center text-sm"><span class="font-semibold">${_(subjectId)}</span><div><span>${_('overall_accuracy')}: <strong class="text-accent">${subAccuracy}%</strong></span><span class="ml-4">${_('total_dpt_completed')}: <strong>${subjectDpts.length}</strong></span></div></div></div>`;
+                const avgTimePerQ = totalAttempted > 0 ? (totalTimeTaken / totalAttempted).toFixed(1) : '0.0';
+                
+                let subjectBreakdownDptHtml = (data.subjects || []).map(subject => {
+                    if (DPT_EXCLUDED_SUBJECTS.includes(subject.id)) return '';
+                    const subjectDpts = Object.values(data.dpts[subject.id]?.chapters || {}).flat().filter(t => t.status === 'Completed');
+                    if(subjectDpts.length === 0) return '';
+                    
+                    let chapterDptHtml = Object.keys(data.dpts[subject.id].chapters).map(chapterId => {
+                        const chapterDpts = data.dpts[subject.id].chapters[chapterId].filter(t => t.status === 'Completed');
+                        if(chapterDpts.length === 0) return '';
+                        const chapter = getChapterByIds(subject.id, chapterId);
+                        return `<li class="ml-4 text-sm">- ${chapter ? chapter.name : 'Unknown Chapter'}: <strong>${chapterDpts.length} times</strong></li>`;
+                    }).join('');
+
+                    return `<div class="mb-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><p class="font-semibold">${_(subject.id)}</p><ul class="list-disc pl-5">${chapterDptHtml}</ul></div>`;
                 }).join('');
+
                 return `<h2 class="text-xl font-bold mb-4 mt-8">${_('dpt_report_title')}</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('total_dpt_completed')}</p><p class="text-2xl font-bold">${allCompletedDpts.length}</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('overall_accuracy')}</p><p class="text-2xl font-bold text-accent">${accuracy}%</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('avg_time_per_q')}</p><p class="text-2xl font-bold text-warning">${avgTimePerQ}s</p></div></div><h3 class="text-lg font-bold mb-3 mt-6">${_('dpt_subject_breakdown')}</h3>${subjectBreakdownDptHtml}`;
             };
+
             let subjectBreakdownHtml = (data.subjects || []).map(subject => {
                 const allSubChapters = [...(subject.chapters.notes || []), ...(subject.chapters.book || [])]; if (allSubChapters.length === 0) return '';
                 const subCompleted = allSubChapters.filter(c => c.status === 'Completed').length; const subPercentage = allSubChapters.length > 0 ? Math.round((subCompleted / allSubChapters.length) * 100) : 0;
@@ -2575,7 +2647,7 @@
             const bestDayEntry = Object.entries(completionByDate).sort((a,b) => b[1] - a[1])[0];
             document.getElementById('metric-best-day').textContent = bestDayEntry ? `${bestDayEntry[1]}` : '-';
             
-            const allCompletedDpts = Object.values(data.dpts).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
+            const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
             let totalCorrect = 0, totalAttempted = 0;
             allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; });
             const dptAccuracy = totalAttempted > 0 ? ((totalCorrect / totalAttempted) * 100).toFixed(1) : '0.0';
@@ -2603,20 +2675,60 @@
             allCharts.subject = new Chart(chart3Ctx, { type: 'bar', data: { labels: data.subjects.map(s => _(s.id)), datasets: [{ label: _('progress')+' (%)', data: subjectProgressData, backgroundColor: '#0ea5e9', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100, ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { display: false } } } } });
 
             const dptChartCtx = document.getElementById('dpt-performance-chart').getContext('2d');
-            const dptPerfLabels = [];
-            const dptPerfData = [];
-            Object.keys(data.dpts).forEach(subjectId => {
-                const subjectDpts = data.dpts[subjectId].tests.filter(t => t.status === 'Completed' && t.details);
+            const dptPerfLabels = []; const dptPerfData = [];
+            (data.subjects || []).forEach(subject => {
+                if(DPT_EXCLUDED_SUBJECTS.includes(subject.id)) return;
+                const subjectDpts = Object.values(data.dpts[subject.id]?.chapters || {}).flat().filter(t => t.status === 'Completed' && t.details);
                 if (subjectDpts.length > 0) {
                     let subCorrect = 0, subAttempted = 0;
                     subjectDpts.forEach(d => { subCorrect += d.details.correct || 0; subAttempted += d.details.attempted || 0; });
                     const subAccuracy = subAttempted > 0 ? ((subCorrect / subAttempted) * 100) : 0;
-                    dptPerfLabels.push(_(subjectId));
+                    dptPerfLabels.push(_(subject.id));
                     dptPerfData.push(subAccuracy.toFixed(1));
                 }
             });
             if(allCharts.dptPerf) allCharts.dptPerf.destroy();
             allCharts.dptPerf = new Chart(dptChartCtx, { type: 'bar', data: { labels: dptPerfLabels, datasets: [{ label: 'Accuracy (%)', data: dptPerfData, backgroundColor: '#10b981', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
+            
+            // New DPT Chapter Count Chart
+            const dptChapterCtx = document.getElementById('dpt-chapter-chart').getContext('2d');
+            const chapterDptData = {};
+            (data.subjects || []).forEach(subject => {
+                if(DPT_EXCLUDED_SUBJECTS.includes(subject.id)) return;
+                const completedChapterDpts = Object.entries(data.dpts[subject.id]?.chapters || {}).map(([chapterId, tests]) => ({ chapterId, count: tests.filter(t => t.status === 'Completed').length })).filter(item => item.count > 0);
+                if(completedChapterDpts.length > 0) {
+                    chapterDptData[subject.id] = completedChapterDpts;
+                }
+            });
+
+            const chartLabels = [];
+            const chartDatasets = (data.subjects || []).filter(s => chapterDptData[s.id]).map((subject, index) => {
+                const hue = (index * 60) % 360;
+                const color = `hsl(${hue}, 70%, 50%)`;
+                const subjectChapterData = chapterDptData[subject.id];
+                const data = [];
+                subjectChapterData.forEach(item => {
+                    const chapter = getChapterByIds(subject.id, item.chapterId);
+                    const label = `${_(subject.id)} - ${chapter ? chapter.name : 'Unknown'}`;
+                    if(!chartLabels.includes(label)) chartLabels.push(label);
+                    data[chartLabels.indexOf(label)] = item.count;
+                });
+                return { label: _(subject.id), data, backgroundColor: color, borderRadius: 4 };
+            });
+
+            if(allCharts.dptChapter) allCharts.dptChapter.destroy();
+            allCharts.dptChapter = new Chart(dptChapterCtx, {
+                type: 'bar',
+                data: { labels: chartLabels, datasets: chartDatasets },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { color: textColor } } },
+                    scales: {
+                        x: { beginAtZero: true, stacked: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } },
+                        y: { stacked: true, ticks: { color: textColor }, grid: { display: false } }
+                    }
+                }
+            });
         };
 
         const renderSettingsPage = () => {
@@ -2649,7 +2761,7 @@
                 customDptContainer.classList.remove('hidden');
                 const dptCycleSelector = document.getElementById('dpt-custom-cycle-subject-selector');
                 const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), `${_('sunday')} (${_('week')} 2)`, `${_('monday')} (${_('week')} 2)`, `${_('tuesday')} (${_('week')} 2)`, `${_('wednesday')} (${_('week')} 2)`, `${_('thursday')} (${_('week')} 2)`, `${_('friday')} (${_('week')} 2)`, `${_('saturday')} (${_('week')} 2)` ];
-                dptCycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2 max-h-60 overflow-y-auto">${(data.subjects || []).map(s => `<label class="flex items-center gap-2 text-sm cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-dpt-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}" ${((data.settings.dptCyclePlan?.[i] || []).includes(s.id)) ? 'checked' : ''}><span>${_(s.id)}</span></label>`).join('')}</div></div>`).join('');
+                dptCycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2 max-h-60 overflow-y-auto">${(data.subjects || []).filter(s => !DPT_EXCLUDED_SUBJECTS.includes(s.id)).map(s => `<label class="flex items-center gap-2 text-sm cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-dpt-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}" ${((data.settings.dptCyclePlan?.[i] || []).includes(s.id)) ? 'checked' : ''}><span>${_(s.id)}</span></label>`).join('')}</div></div>`).join('');
             } else { customDptContainer.classList.add('hidden'); }
         };
 
@@ -3029,8 +3141,8 @@
                     const maxInADay = Object.values(completionByDate).reduce((max, count) => Math.max(max, count), 0);
                     return { current: maxInADay, goal: badge.goal };
                 case 'total_dpt':
-                     const allCompletedDpts = Object.values(data.dpts).flatMap(d => d.tests).filter(t => t.status === 'Completed');
-                     return { current: allCompletedDpts.length, goal: badge.goal };
+                    const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed');
+                    return { current: allCompletedDpts.length, goal: badge.goal };
                 case 'subject_mastered':
                      const masteredSubjects = (data.subjects || []).filter(s => {
                          const allChapters = [...(s.chapters.notes || []), ...(s.chapters.book || [])];
@@ -3071,7 +3183,7 @@
         const getDptSubjectsForDay = (date = new Date()) => {
             const dayIndex = getCycleDayIndex(date);
             if (data.settings.dptPlanMode === 'custom_cycle') { return (data.settings.dptCyclePlan || [])[dayIndex] || []; }
-            return [...new Set(getSubjectsForDay(date).map(s => s.split(':')[0]))];
+            return [...new Set(getSubjectsForDay(date).map(s => s.split(':')[0]))].filter(id => !DPT_EXCLUDED_SUBJECTS.includes(id));
         };
 
         const renderTodaysDpt = () => {
@@ -3081,32 +3193,32 @@
             yesterdayDate.setDate(yesterdayDate.getDate() - 1);
             const yesterdayStr = getLocalDateString(yesterdayDate);
             
-            data.dailyDptPlan = data.dailyDptPlan || {}; data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
+            data.dailyDptPlan = data.dailyDptPlan || {};
+            data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
+
             const subjectsForDptToday = getDptSubjectsForDay(new Date());
             let planUpdated = false;
 
             subjectsForDptToday.forEach(subjectId => {
                 const alreadyScheduled = data.dailyDptPlan[todayStr].some(dpt => dpt.subjectId === subjectId && !dpt.isManual);
                 if (!alreadyScheduled) {
-                    const dptData = data.dpts[subjectId];
-                    if (dptData && dptData.nextTestIndex < dptData.tests.length) {
-                        const nextTest = dptData.tests[dptData.nextTestIndex];
-                        data.dailyDptPlan[todayStr].push({ subjectId: subjectId, testId: nextTest.id });
+                    const nextDpt = findNextPendingDptForSubject(subjectId);
+                    if (nextDpt) {
+                        data.dailyDptPlan[todayStr].push({ subjectId: subjectId, chapterId: nextDpt.chapterId, testId: nextDpt.testId });
                         planUpdated = true;
                     }
                 }
             });
-            if (planUpdated) { saveData(); }
+            if (planUpdated) saveData();
 
-            // Find missed DPTs from yesterday
             const yesterdayDptPlan = data.dailyDptPlan[yesterdayStr] || [];
-            const missedYesterdayDPTs = yesterdayDptPlan.filter(({ subjectId, testId }) => {
-                const test = data.dpts[subjectId]?.tests.find(t => t.id === testId);
+            const missedYesterdayDPTs = yesterdayDptPlan.filter(({ subjectId, chapterId, testId }) => {
+                const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
                 return test && test.status !== 'Completed';
             });
             
             const scheduledTests = data.dailyDptPlan[todayStr] || [];
-            const hasPending = scheduledTests.some(({ subjectId, testId }) => { const test = data.dpts[subjectId]?.tests.find(t => t.id === testId); return test && test.status !== 'Completed'; });
+            const hasPending = scheduledTests.some(({ subjectId, chapterId, testId }) => { const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); return test && test.status !== 'Completed'; });
             container.className = `dashboard-card p-4 rounded-xl shadow-sm min-h-[100px] bg-gradient-to-br ${ hasPending ? 'from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900' : 'from-teal-100 to-green-200 dark:from-teal-800 dark:to-green-900' }`;
             
             let html = `<div class="flex items-center justify-between pb-3 border-b mb-3">
@@ -3117,31 +3229,30 @@
             if (scheduledTests.length === 0 && missedYesterdayDPTs.length === 0) { html += `<div class="text-center py-4"><p>${_('no_dpt_scheduled')}</p></div>`; } 
             else {
                 html += '<ul class="space-y-3">';
-                // Render today's DPTs
-                scheduledTests.forEach(({ subjectId, testId, isManual, id }) => {
-                    const test = data.dpts[subjectId]?.tests.find(t => t.id === testId); if (!test) return;
-                    const subjectName = _(subjectId);
-                    const dptTitle = `${subjectName} ${_('dpt')} #${test.id}`;
+                scheduledTests.forEach(({ subjectId, chapterId, testId, isManual, id }) => {
+                    const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); if (!test) return;
+                    const chapter = getChapterByIds(subjectId, chapterId);
+                    const dptTitle = `${_(subjectId)} - ${chapter ? chapter.name : ''} #${testId}`;
                     const deleteButton = isManual ? `<button class="manual-dpt-delete-btn p-1.5" data-manual-id="${id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>` : '';
 
                     if (test.status === 'Completed') {
-                        html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-green-500/20"><p class="font-bold text-green-800 dark:text-green-200">${dptTitle}</p><button class="view-dpt-details-btn flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg bg-green-500 text-white" data-subject-id="${subjectId}" data-test-id="${test.id}"><i data-lucide="eye" class="w-4 h-4"></i><span>View</span></button></li>`;
+                        html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-green-500/20"><p class="font-bold text-green-800 dark:text-green-200">${dptTitle}</p><button class="view-dpt-details-btn flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg bg-green-500 text-white" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${testId}"><i data-lucide="eye" class="w-4 h-4"></i><span>View</span></button></li>`;
                     } else {
                         html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/30 dark:bg-black/20">
                             <p class="font-bold flex items-center gap-2">${isManual ? `<i data-lucide="hand" class="w-4 h-4 text-indigo-500"></i>`: ''}${dptTitle}</p>
                             <div class="flex items-center gap-1">
-                                <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subjectId}" data-test-id="${test.id}"><i data-lucide="check-circle" class="w-4 h-4"></i><span>${_('mark_as_complete')}</span></button>
+                                <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${testId}"><i data-lucide="check-circle" class="w-4 h-4"></i><span>${_('mark_as_complete')}</span></button>
                                 ${deleteButton}
                             </div>
                         </li>`;
                     }
                 });
-                // Render yesterday's missed DPTs
-                missedYesterdayDPTs.forEach(({ subjectId, testId }) => {
-                    const test = data.dpts[subjectId]?.tests.find(t => t.id === testId); if (!test) return;
+                missedYesterdayDPTs.forEach(({ subjectId, chapterId, testId }) => {
+                    const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); if (!test) return;
+                    const chapter = getChapterByIds(subjectId, chapterId);
                      html += `<li class="p-2 rounded-lg bg-red-100 dark:bg-red-900/50 flex flex-col items-start gap-2">
-                        <p class="font-semibold text-sm text-red-800 dark:text-red-200">Missed Yesterday: ${_(subjectId)} DPT #${test.id}</p>
-                        <button class="complete-missed-dpt-btn w-full text-xs font-semibold p-1.5 bg-red-500 text-white rounded-md" data-subject-id="${subjectId}" data-test-id="${test.id}">${_('complete_yesterdays_dpt')}</button>
+                        <p class="font-semibold text-sm text-red-800 dark:text-red-200">Missed Yesterday: ${_(subjectId)} - ${chapter ? chapter.name : ''} #${testId}</p>
+                        <button class="complete-missed-dpt-btn w-full text-xs font-semibold p-1.5 bg-red-500 text-white rounded-md" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${testId}">${_('complete_yesterdays_dpt')}</button>
                     </li>`;
                 });
 
@@ -3157,65 +3268,96 @@
 
             const filterDropdown = document.getElementById('dpt-subject-filter');
             const container = document.getElementById('dpt-list-container');
-            const deleteAllBtn = document.getElementById('delete-all-dpts-subject-btn');
-            const summaryContainer = document.getElementById('dpt-summary-container');
             
-            summaryContainer.style.display = 'grid'; // Always show summary
+            const subjectOptions = `<option value="all_subjects">${_('all_subjects')}</option>` + 
+                (data.subjects || []).filter(s => !DPT_EXCLUDED_SUBJECTS.includes(s.id)).map(s => `<option value="${s.id}">${_(s.id)}</option>`).join('');
             
-            const subjectOptions = `<option value="all_subjects">${_('all_subjects')}</option>` + (data.subjects || []).map(s => `<option value="${s.id}">${_(s.id)}</option>`).join('');
             const currentSelection = filterDropdown.value || 'all_subjects';
             filterDropdown.innerHTML = subjectOptions;
             if (Array.from(filterDropdown.options).some(opt => opt.value === currentSelection)) { filterDropdown.value = currentSelection; } 
             else { filterDropdown.value = 'all_subjects'; }
             const selectedSubjectId = filterDropdown.value;
 
-            deleteAllBtn.style.display = (selectedSubjectId !== 'all_subjects' && (data.dpts[selectedSubjectId]?.tests.length || 0) > 0) ? 'flex' : 'none';
-            deleteAllBtn.dataset.subjectId = selectedSubjectId;
             let html = '';
 
-            const subjectsToDisplay = selectedSubjectId === 'all_subjects' ? Object.keys(data.dpts) : [selectedSubjectId];
-            
-            let allDptsToDisplay = [];
-            subjectsToDisplay.forEach(subjectId => {
-                const dptData = data.dpts[subjectId];
-                if (dptData) {
-                    const filteredTests = dptData.tests.filter(test => {
-                        return dptPageViewMode === 'completed' ? test.status === 'Completed' : test.status !== 'Completed';
-                    });
-                    filteredTests.forEach(test => allDptsToDisplay.push({subjectId, test}));
-                }
-            });
-            
-            if (dptPageViewMode === 'pending' && selectedSubjectId !== 'all_subjects') {
-                const dptData = data.dpts[selectedSubjectId] || { tests: [], nextTestIndex: 0 };
-                const completedCount = dptData.tests.filter(t => t.status === 'Completed').length;
-                const totalCount = dptData.tests.length;
-                 html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm"><div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4"><h3 class="font-bold text-xl">${_(selectedSubjectId)}</h3><div class="flex items-center gap-2"><span class="text-sm font-semibold">${_('dpt_progress', {completed: completedCount, total: totalCount})}</span><button class="add-dpt-btn flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon" data-subject-id="${selectedSubjectId}"><i data-lucide="plus" class="w-4 h-4"></i> ${_('add_dpt')}</button></div></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5"><div class="h-2.5 rounded-full animated-progress-bar bg-primary" style="width: ${totalCount > 0 ? (completedCount / totalCount) * 100 : 0}%"></div></div></div>`;
-            } else if (dptPageViewMode === 'pending' && selectedSubjectId === 'all_subjects') {
-                 html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm mb-4"><div class="flex flex-col sm:flex-row justify-between items-center gap-3"><h3 class="font-bold text-xl">${_('all_subjects')}</h3><button id="add-dpt-all-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon"><i data-lucide="plus-circle" class="w-4 h-4"></i><span data-translate="add_dpt_all">${_('add_dpt_all')}</span></button></div></div>`;
+            if (selectedSubjectId === 'all_subjects') {
+                container.innerHTML = '<p class="text-center p-4">Please select a subject to view and add DPTs.</p>';
+                renderDptSummary();
+                return;
             }
 
-            if (allDptsToDisplay.length === 0) {
-                 html += `<p class="text-center mt-6">No ${dptPageViewMode} DPTs found for this selection.</p>`;
-            } else {
-                 html += '<div class="space-y-2 mt-4">';
-                 allDptsToDisplay.sort((a,b) => a.test.id - b.test.id).forEach(({subjectId, test}) => {
-                     const statusClass = test.status === 'Completed' ? 'bg-green-100 dark:bg-green-900/50 border-green-400' : 'bg-gray-100 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600';
-                     const hue = (test.id * 30 + subjectId.charCodeAt(0)) % 360; const colorStyle = `border-left-color: hsl(${hue}, 60%, 50%);`;
-                     const dptName = `${_(subjectId)} DPT - #${test.id}`;
-                     html += `<button class="dpt-list-item w-full text-left p-3 rounded-lg border-l-4 ${statusClass}" style="${colorStyle}" data-subject-id="${subjectId}" data-test-id="${test.id}">${dptName}</button>`;
-                 });
-                 html += '</div>';
-            }
+            const subject = getSubjectById(selectedSubjectId);
+            const chapters = [...(subject.chapters.notes || []), ...(subject.chapters.book || [])];
+            
+             // Add a header for the selected subject with a button to add DPTs to all chapters
+            html += `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm mb-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <h3 class="font-bold text-xl">${_(subject.id)}</h3>
+                    <button class="add-dpt-to-all-chapters-btn flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon" data-subject-id="${subject.id}">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i><span data-translate="add_dpt_all">${_('add_dpt_all')}</span>
+                    </button>
+                </div>
+            </div>`;
 
-            container.innerHTML = html;
+            html += chapters.map(chapter => {
+                const dptDataForChapter = data.dpts[subject.id]?.chapters?.[chapter.id] || [];
+                const completedCount = dptDataForChapter.filter(t => t.status === 'Completed').length;
+                const totalCount = dptDataForChapter.length;
+                const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
+                const testsToDisplay = dptDataForChapter.filter(test => {
+                    return dptPageViewMode === 'completed' ? test.status === 'Completed' : test.status !== 'Completed';
+                }).map(test => {
+                    const statusClass = test.status === 'Completed' ? 'bg-green-100 dark:bg-green-900/50 border-green-400' : 'bg-gray-100 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600';
+                    const dptName = `${chapter.name} - #${test.id}`;
+                    return `<button class="dpt-list-item w-full text-left p-3 rounded-lg border-l-4 ${statusClass}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}">${dptName}</button>`;
+                }).join('');
+
+                return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden mb-3" open>
+                    <summary class="flex items-center justify-between p-4 cursor-pointer list-none">
+                        <div>
+                            <h4 class="font-bold">${chapter.name}</h4>
+                            <p class="text-sm text-text-muted-light">${completedCount} / ${totalCount} DPTs completed</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button class="add-dpt-to-chapter-btn flex items-center justify-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-200" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}"><i data-lucide="plus" class="w-3 h-3"></i> Add</button>
+                            <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
+                        </div>
+                    </summary>
+                    <div class="px-4 pb-4 border-t">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 my-3">
+                            <div class="h-2 rounded-full animated-progress-bar bg-primary" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="space-y-2">${testsToDisplay || `<p class='text-center text-sm p-2'>No ${dptPageViewMode} DPTs for this chapter.</p>`}</div>
+                    </div>
+                </details>`;
+            }).join('');
+
+            container.innerHTML = html || '<p class="text-center p-4">No chapters or DPTs to display for this subject.</p>';
             renderDptSummary();
             lucide.createIcons();
         };
-        
+
+        const findNextPendingDptForSubject = (subjectId) => {
+            const subject = getSubjectById(subjectId);
+            if (!subject || !data.dpts[subjectId]) return null;
+            
+            const allChapters = [...(subject.chapters.notes || []), ...(subject.chapters.book || [])];
+            for (const chapter of allChapters) {
+                const tests = data.dpts[subjectId].chapters?.[chapter.id];
+                if (tests) {
+                    const pendingTest = tests.find(t => t.status !== 'Completed');
+                    if (pendingTest) {
+                        return { subjectId, chapterId: chapter.id, testId: pendingTest.id };
+                    }
+                }
+            }
+            return null;
+        };
+
         const renderDptSummary = () => {
             const container = document.getElementById('dpt-summary-container');
-            const allCompletedDpts = Object.values(data.dpts).flatMap(d => d.tests).filter(t => t.status === 'Completed' && t.details);
+            const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
             const totalCompleted = allCompletedDpts.length;
             let totalCorrect = 0, totalAttempted = 0, totalTimeTaken = 0, totalQuestions = 0;
             allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; totalTimeTaken += (dpt.details.timeTaken || 0) * 60; totalQuestions += dpt.details.totalQ || 0; });
@@ -3224,15 +3366,16 @@
             container.innerHTML = `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm text-center"><h3 class="text-sm" data-translate="total_dpt_completed">Total DPTs Completed</h3><p class="text-3xl font-bold text-primary">${totalCompleted}</p></div><div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm text-center"><h3 class="text-sm" data-translate="overall_accuracy">Overall Accuracy</h3><p class="text-3xl font-bold text-accent">${accuracy}%</p></div><div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm text-center"><h3 class="text-sm" data-translate="avg_time_per_q">Avg. Time / Q (s)</h3><p class="text-3xl font-bold text-warning">${avgTimePerQ}</p></div>`;
         };
 
-        const showDptDetailsModal = (subjectId, testId) => {
-            const dptData = data.dpts[subjectId]; if (!dptData) return;
-            const test = dptData.tests.find(t => t.id == testId); if (!test) return;
+        const showDptDetailsModal = (subjectId, chapterId, testId) => {
+            const dptChapterData = data.dpts[subjectId]?.chapters?.[chapterId]; if (!dptChapterData) return;
+            const test = dptChapterData.find(t => t.id == testId); if (!test) return;
+            const chapter = getChapterByIds(subjectId, chapterId);
 
             const modal = document.getElementById('dpt-details-popup-modal');
             const titleEl = document.getElementById('dpt-modal-title');
             const entryView = document.getElementById('dpt-entry-view');
             const displayView = document.getElementById('dpt-display-view');
-            titleEl.textContent = `${_(subjectId)} DPT #${testId}`;
+            titleEl.textContent = `${_(subjectId)} - ${chapter ? chapter.name : '...'} #${testId}`;
 
             if (test.status === 'Completed' && test.details) {
                 entryView.classList.add('hidden');
@@ -3246,16 +3389,21 @@
                 const accuracy = details.attempted > 0 ? `${((details.correct / details.attempted) * 100).toFixed(1)}%` : 'N/A';
                 document.getElementById('dpt-display-accuracy').textContent = accuracy;
                 document.getElementById('dpt-display-time-taken').textContent = details.timeTaken ? `${details.timeTaken} min` : 'N/A';
-                document.getElementById('delete-dpt-display-btn').dataset.subjectId = subjectId;
-                document.getElementById('delete-dpt-display-btn').dataset.testId = testId;
+                const deleteBtn = document.getElementById('delete-dpt-display-btn');
+                deleteBtn.dataset.subjectId = subjectId;
+                deleteBtn.dataset.chapterId = chapterId;
+                deleteBtn.dataset.testId = testId;
             } else {
                 displayView.classList.add('hidden');
                 entryView.classList.remove('hidden');
                 const form = document.getElementById('dpt-details-form'); form.reset();
                 form.querySelector('#dpt-details-subject-id').value = subjectId;
+                form.querySelector('#dpt-details-chapter-id').value = chapterId;
                 form.querySelector('#dpt-details-test-id').value = testId;
-                document.getElementById('delete-dpt-btn').dataset.subjectId = subjectId;
-                document.getElementById('delete-dpt-btn').dataset.testId = testId;
+                const deleteBtn = document.getElementById('delete-dpt-btn');
+                deleteBtn.dataset.subjectId = subjectId;
+                deleteBtn.dataset.chapterId = chapterId;
+                deleteBtn.dataset.testId = testId;
             }
             showModal('dpt-details-popup-modal');
         };
@@ -3266,9 +3414,15 @@
             e.preventDefault();
             const form = e.target;
             const subjectId = form.querySelector('#dpt-details-subject-id').value;
+            const chapterId = form.querySelector('#dpt-details-chapter-id').value;
             const testId = parseInt(form.querySelector('#dpt-details-test-id').value);
-            const dptData = data.dpts[subjectId]; if (!dptData) return;
-            const testIndex = dptData.tests.findIndex(t => t.id === testId); if(testIndex === -1) return;
+            
+            const dptChapterData = data.dpts[subjectId]?.chapters?.[chapterId];
+            if (!dptChapterData) return;
+            
+            const testIndex = dptChapterData.findIndex(t => t.id === testId);
+            if(testIndex === -1) return;
+
             const details = { 
                 totalQ: parseInt(form.querySelector('#dpt-total-q').value) || null, 
                 totalTime: parseInt(form.querySelector('#dpt-total-time').value) || null, 
@@ -3278,10 +3432,11 @@
                 timeTaken: parseInt(form.querySelector('#dpt-time-taken').value) || null,
                 completedDate: new Date().toISOString()
             };
-            dptData.tests[testIndex].status = 'Completed';
-            dptData.tests[testIndex].details = details;
-            if (dptData.nextTestIndex === testIndex) { dptData.nextTestIndex++; }
-            logActivity('check-square', `Completed DPT #${testId} for ${_(subjectId)}.`);
+            dptChapterData[testIndex].status = 'Completed';
+            dptChapterData[testIndex].details = details;
+
+            const chapter = getChapterByIds(subjectId, chapterId);
+            logActivity('check-square', `Completed DPT #${testId} for ${_(subjectId)} - ${chapter ? chapter.name : ''}.`);
             saveData(); 
             checkAllGamification(); // Check for DPT badges
             hideDptDetailsModal(); 
@@ -3378,15 +3533,15 @@
 
         function populateManualItemList(subjectId, type) {
             if (type === 'dpt') {
-                 const itemList = document.getElementById('manual-add-item-list');
+                const itemList = document.getElementById('manual-add-item-list');
                 if (!subjectId) { itemList.innerHTML = `<p class="text-center text-sm">Please select a subject first.</p>`; return; }
-                const dptData = data.dpts[subjectId];
-                const nextTestIndex = dptData ? dptData.nextTestIndex : 0;
-                const nextTest = dptData ? dptData.tests[nextTestIndex] : null;
-                if (!nextTest || nextTest.status === 'Completed') { itemList.innerHTML = `<p class="text-center text-sm">No upcoming DPTs for this subject.</p>`; return; }
-                itemList.innerHTML = `<label class="flex items-center gap-2 p-2 rounded-md"><input type="radio" name="manual-add-item" value="${nextTest.id}" checked class="form-radio text-primary"><span>DPT #${nextTest.id} (Next Available)</span></label>`;
+                const nextDpt = findNextPendingDptForSubject(subjectId);
+                if (!nextDpt) { itemList.innerHTML = `<p class="text-center text-sm">No upcoming DPTs for this subject.</p>`; return; }
+                const chapter = getChapterByIds(subjectId, nextDpt.chapterId);
+                itemList.innerHTML = `<label class="flex items-center gap-2 p-2 rounded-md"><input type="radio" name="manual-add-item" value="${nextDpt.chapterId}:${nextDpt.testId}" checked class="form-radio text-primary"><span>${chapter.name} - DPT #${nextDpt.testId} (Next Available)</span></label>`;
             }
         }
+
 
         function saveManualTask() {
             const type = document.getElementById('manual-add-modal').dataset.type;
@@ -3422,12 +3577,15 @@
             } else { // type === 'dpt'
                 const selectedRadio = document.querySelector('input[name="manual-add-item"]');
                 if (!selectedRadio) { alert('No available DPT to add for this subject.'); return; }
-                const testId = parseInt(selectedRadio.value);
+                const [chapterId, testIdStr] = selectedRadio.value.split(':');
+                const testId = parseInt(testIdStr);
+
                 const todayStr = getLocalDateString();
                 data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
-                if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.testId === testId)) {
-                    data.dailyDptPlan[todayStr].push({ subjectId, testId, isManual: true, id: `manual-dpt-${Date.now()}` });
-                    logActivity('hand', `Manually added DPT for today: ${_(subjectId)} DPT #${testId}`);
+                if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.chapterId === chapterId && d.testId === testId)) {
+                    data.dailyDptPlan[todayStr].push({ subjectId, chapterId, testId, isManual: true, id: `manual-dpt-${Date.now()}` });
+                    const chapter = getChapterByIds(subjectId, chapterId);
+                    logActivity('hand', `Manually added DPT for today: ${_(subjectId)} - ${chapter ? chapter.name : ''} #${testId}`);
                 }
                 saveData();
                 hideModal('manual-add-modal');
@@ -3454,21 +3612,25 @@
             });
         }
         
-        function deleteDpt(subjectId, testId) {
-            const dptData = data.dpts[subjectId];
-            if (!dptData) return;
-            
-            const dptName = `${_(subjectId)} DPT #${testId}`;
+        function deleteDpt(subjectId, chapterId, testId) {
+            const dptChapterData = data.dpts[subjectId]?.chapters?.[chapterId];
+            if (!dptChapterData) return;
+            const chapter = getChapterByIds(subjectId, chapterId);
+            const dptName = `${_(subjectId)} - ${chapter ? chapter.name : '...'} #${testId}`;
+
             showConfirmationModal(_('delete_dpt'), _('delete_dpt_confirm', {dptName}), () => {
-                const testIndex = dptData.tests.findIndex(t => t.id === testId);
+                const testIndex = dptChapterData.findIndex(t => t.id === testId);
                 if (testIndex === -1) return;
-                dptData.tests.splice(testIndex, 1);
-                dptData.tests.forEach((test, index) => { test.id = index + 1; });
-                if (testIndex < dptData.nextTestIndex) {
-                    dptData.nextTestIndex--;
+                
+                dptChapterData.splice(testIndex, 1);
+                
+                // Re-number subsequent tests for this chapter
+                for(let i = testIndex; i < dptChapterData.length; i++) {
+                    dptChapterData[i].id--;
                 }
+
                 Object.keys(data.dailyDptPlan).forEach(date => {
-                    data.dailyDptPlan[date] = data.dailyDptPlan[date].filter(planItem => !(planItem.subjectId === subjectId && planItem.testId === testId));
+                    data.dailyDptPlan[date] = data.dailyDptPlan[date].filter(planItem => !(planItem.subjectId === subjectId && planItem.chapterId === chapterId && planItem.testId === testId));
                 });
                 logActivity('trash-2', `Deleted DPT: ${dptName}`);
                 saveData();
@@ -3824,7 +3986,7 @@
             document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value, document.getElementById('add-chapter-source-type').value); });
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal', 'close-add-chapter-dpt-modal', 'close-add-all-chapters-dpt-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
@@ -3919,45 +4081,30 @@
             document.getElementById('toggle-progress-view-btn').addEventListener('click', () => progressDropdown.classList.toggle('hidden'));
             progressDropdown.addEventListener('click', (e) => { e.preventDefault(); const link = e.target.closest('a'); if (link?.dataset.view) { dashboardProgressView = link.dataset.view; renderSubjectWiseProgressDashboard(); progressDropdown.classList.add('hidden'); } });
             document.addEventListener('click', (e) => { if (!e.target.closest('#toggle-progress-view-btn') && !e.target.closest('#progress-view-dropdown')) progressDropdown.classList.add('hidden'); });
+            
+            // DPT Page Listeners
             document.getElementById('dpt-subject-filter').addEventListener('change', renderDptPage);
             document.getElementById('page-dpt').addEventListener('click', (e) => {
-                const addBtn = e.target.closest('.add-dpt-btn'); 
                 const dptItem = e.target.closest('.dpt-list-item'); 
-                const addAllBtn = e.target.closest('#add-dpt-all-btn');
-                const deleteAllSubjectBtn = e.target.closest('#delete-all-dpts-subject-btn');
-                
-                if (addBtn) {
-                    const subjectId = addBtn.dataset.subjectId; const num = parseInt(prompt(`How many DPTs to add for ${_(subjectId)}?`));
-                    if (!isNaN(num) && num > 0) {
-                        data.dpts[subjectId] = data.dpts[subjectId] || { tests: [], nextTestIndex: 0 }; const startId = data.dpts[subjectId].tests.length + 1;
-                        for (let i = 0; i < num; i++) { data.dpts[subjectId].tests.push({ id: startId + i, status: 'Pending' }); }
-                        logActivity('plus-square', `Added ${num} DPTs for ${_(subjectId)}.`); saveData(); renderDptPage();
-                    }
-                } else if (dptItem) { showDptDetailsModal(dptItem.dataset.subjectId, dptItem.dataset.testId);
-                } else if (addAllBtn) {
-                    const num = parseInt(prompt(`How many DPTs to add to ALL subjects?`));
-                    if (!isNaN(num) && num > 0) {
-                        let subjectsUpdated = 0;
-                        (data.subjects || []).forEach(subject => { data.dpts[subject.id] = data.dpts[subject.id] || { tests: [], nextTestIndex: 0 }; const startId = data.dpts[subject.id].tests.length + 1; for (let i = 0; i < num; i++) { data.dpts[subject.id].tests.push({ id: startId + i, status: 'Pending' }); } subjectsUpdated++; });
-                        logActivity('plus-square', `Added ${num} DPTs to ${subjectsUpdated} subjects.`); saveData(); renderDptPage();
-                    }
-                } else if (deleteAllSubjectBtn) {
-                    const subjectId = deleteAllSubjectBtn.dataset.subjectId;
-                    if(subjectId) confirmDeleteAllDptsForSubject(subjectId);
-                }
+                const addBtn = e.target.closest('.add-dpt-to-chapter-btn');
+                const addAllBtn = e.target.closest('.add-dpt-to-all-chapters-btn');
+                if (dptItem) { showDptDetailsModal(dptItem.dataset.subjectId, dptItem.dataset.chapterId, dptItem.dataset.testId); }
+                if (addBtn) { showAddChapterDptModal(addBtn.dataset.subjectId, addBtn.dataset.chapterId); }
+                if (addAllBtn) { showAddAllChaptersDptModal(addAllBtn.dataset.subjectId); }
             });
+
             document.getElementById('todays-dpt-container').addEventListener('click', (e) => {
                 const completeBtn = e.target.closest('.mark-dpt-complete-btn');
                 const viewBtn = e.target.closest('.view-dpt-details-btn');
                 const completeMissedBtn = e.target.closest('.complete-missed-dpt-btn');
-                if (completeBtn) { showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.testId); }
-                if (viewBtn) { showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.testId); }
-                 if (completeMissedBtn) {
-                    const { subjectId, testId } = completeMissedBtn.dataset;
+                if (completeBtn) { showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.chapterId, completeBtn.dataset.testId); }
+                if (viewBtn) { showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, viewBtn.dataset.testId); }
+                if (completeMissedBtn) {
+                    const { subjectId, chapterId, testId } = completeMissedBtn.dataset;
                     const todayStr = getLocalDateString();
                     data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
-                    if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.testId === testId)) {
-                        data.dailyDptPlan[todayStr].push({ subjectId, testId: parseInt(testId), isManual: true, id: `manual-dpt-${Date.now()}` });
+                    if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.chapterId === chapterId && d.testId === testId)) {
+                        data.dailyDptPlan[todayStr].push({ subjectId, chapterId, testId: parseInt(testId), isManual: true, id: `manual-dpt-${Date.now()}` });
                         logActivity('plus', `Added yesterday's missed DPT to today's plan.`);
                         saveData();
                         renderHomePage();
@@ -3973,10 +4120,13 @@
             });
 
             document.getElementById('dpt-details-form').addEventListener('submit', submitDptDetails);
-            document.getElementById('delete-dpt-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, parseInt(e.currentTarget.dataset.testId)); });
-            document.getElementById('delete-dpt-display-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, parseInt(e.currentTarget.dataset.testId)); });
+            document.getElementById('delete-dpt-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId, parseInt(e.currentTarget.dataset.testId)); });
+            document.getElementById('delete-dpt-display-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId, parseInt(e.currentTarget.dataset.testId)); });
             document.getElementById('close-dpt-display-btn').addEventListener('click', hideDptDetailsModal);
             document.getElementById('close-dpt-details-popup-modal').addEventListener('click', hideDptDetailsModal);
+            document.getElementById('add-chapter-dpt-form').addEventListener('submit', handleAddDptToChapter);
+            document.getElementById('add-all-chapters-dpt-form').addEventListener('submit', handleAddDptToAllChapters);
+
 
             document.getElementById('add-manual-revision-btn').addEventListener('click', e => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; const date = document.getElementById('manual-revision-date').value; addManualRevision(subjectId, chapterId, sourceType, date); });
             document.getElementById('chapter-modal').addEventListener('click', e => { const deleteBtn = e.target.closest('.delete-revision-btn'); if (deleteBtn) { const { subjectId, chapterId, sourceType, revisionDate } = deleteBtn.dataset; deleteRevision(subjectId, chapterId, sourceType, revisionDate); } });
@@ -4192,21 +4342,16 @@
         function printElement(elementId) {
             const element = document.getElementById(elementId);
             if (!element) return;
-            
-            // Add a printable class to the target page and its content
             const page = element.closest('.page');
-            page.classList.add('printable');
+            
+            document.body.classList.add('is-printing');
+            if(page) page.classList.add('printable');
 
-            // Temporarily disable scroll on main container to print full content
-            const mainContainer = document.querySelector('main');
-            const originalOverflow = mainContainer.style.overflowY;
-            mainContainer.style.overflowY = 'visible';
-
-            window.print();
-
-            // Clean up after printing
-            mainContainer.style.overflowY = originalOverflow;
-            page.classList.remove('printable');
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove('is-printing');
+                if(page) page.classList.remove('printable');
+            }, 100);
         }
 
         // --- NEW "OTHER TASK" FUNCTIONS ---
@@ -4277,6 +4422,86 @@
             }
         }
 
+        function showAddChapterDptModal(subjectId, chapterId) {
+            const modal = document.getElementById('add-chapter-dpt-modal');
+            const form = document.getElementById('add-chapter-dpt-form');
+            form.reset();
+            document.getElementById('dpt-add-subject-id').value = subjectId;
+            
+            const chapterSelect = document.getElementById('dpt-add-chapter-select');
+            const subject = getSubjectById(subjectId);
+            const chapters = [...(subject.chapters.notes || []), ...(subject.chapters.book || [])];
+            chapterSelect.innerHTML = chapters.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            chapterSelect.value = chapterId; // Pre-select the chapter
+            
+            showModal('add-chapter-dpt-modal');
+        }
+        
+        function showAddAllChaptersDptModal(subjectId) {
+            const modal = document.getElementById('add-all-chapters-dpt-modal');
+            const form = document.getElementById('add-all-chapters-dpt-form');
+            form.reset();
+            document.getElementById('dpt-add-all-subject-id').value = subjectId;
+            document.getElementById('add-all-dpt-modal-title').textContent = `Add DPTs to all chapters in ${_(subjectId)}`;
+            showModal('add-all-chapters-dpt-modal');
+        }
+
+        function handleAddDptToChapter(e) {
+            e.preventDefault();
+            const subjectId = document.getElementById('dpt-add-subject-id').value;
+            const chapterId = document.getElementById('dpt-add-chapter-select').value;
+            const quantity = parseInt(document.getElementById('dpt-add-quantity').value);
+
+            if (!subjectId || !chapterId || isNaN(quantity) || quantity < 1) {
+                alert('Please ensure all fields are correct.');
+                return;
+            }
+
+            data.dpts[subjectId] = data.dpts[subjectId] || { chapters: {} };
+            data.dpts[subjectId].chapters[chapterId] = data.dpts[subjectId].chapters[chapterId] || [];
+            
+            const startId = data.dpts[subjectId].chapters[chapterId].length + 1;
+            for (let i = 0; i < quantity; i++) {
+                data.dpts[subjectId].chapters[chapterId].push({ id: startId + i, status: 'Pending', details: null });
+            }
+            
+            const chapter = getChapterByIds(subjectId, chapterId);
+            logActivity('plus-square', `Added ${quantity} DPTs for ${_(subjectId)} - ${chapter ? chapter.name : ''}`);
+            saveData();
+            hideModal('add-chapter-dpt-modal');
+            renderDptPage();
+        }
+        
+        function handleAddDptToAllChapters(e) {
+            e.preventDefault();
+            const subjectId = document.getElementById('dpt-add-all-subject-id').value;
+            const quantity = parseInt(document.getElementById('dpt-add-all-quantity').value);
+            
+            if (!subjectId || isNaN(quantity) || quantity < 1) {
+                alert('Please ensure all fields are correct.');
+                return;
+            }
+            
+            const subject = getSubjectById(subjectId);
+            const chapters = [...(subject.chapters.notes || []), ...(subject.chapters.book || [])];
+            let totalAdded = 0;
+
+            chapters.forEach(chapter => {
+                data.dpts[subjectId] = data.dpts[subjectId] || { chapters: {} };
+                data.dpts[subjectId].chapters[chapter.id] = data.dpts[subjectId].chapters[chapter.id] || [];
+                
+                const startId = data.dpts[subjectId].chapters[chapter.id].length + 1;
+                for (let i = 0; i < quantity; i++) {
+                    data.dpts[subjectId].chapters[chapter.id].push({ id: startId + i, status: 'Pending', details: null });
+                }
+                totalAdded += quantity;
+            });
+
+            logActivity('plus-square', `Added ${quantity} DPT(s) to ${chapters.length} chapters in ${_(subjectId)}.`);
+            saveData();
+            hideModal('add-all-chapters-dpt-modal');
+            renderDptPage();
+        }
 
         init();
     });
