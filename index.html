@@ -177,7 +177,7 @@
             background: linear-gradient(135deg, var(--main-bg-start-dark) 0%, var(--main-bg-end-dark) 100%);
         }
         
-        body.particles-active main, body.matrix-active main {
+        body.particles-active main, body.constellation-active main {
             background: transparent;
         }
         
@@ -712,7 +712,7 @@
                             <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                                 <option value="default">Default Gradient</option>
                                 <option value="particles">Particle Network</option>
-                                <option value="matrix">Cyber Rain</option>
+                                <option value="constellation">Cyber Constellation</option>
                             </select>
                         </div>
                         
@@ -783,8 +783,13 @@
                             <div id="dpt-custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                             <button id="save-dpt-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom DPT Plan</button>
                         </div>
+
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                            <h3 class="font-semibold mb-3">Study Day Counter</h3>
+                            <button id="reset-study-date-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900"><i data-lucide="calendar-x" class="w-4 h-4"></i> <span>Reset Study Start Date</span></button>
+                        </div>
                         
-                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2"><h3 class="font-semibold mb-3" data-translate="reset_app">Reset Application</h3><button id="reset-app-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900"><i data-lucide="trash-2" class="w-4 h-4"></i> <span data-translate="reset_all_data">Reset All Data</span></button></div>
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm"><h3 class="font-semibold mb-3" data-translate="reset_app">Reset Application</h3><button id="reset-app-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900"><i data-lucide="trash-2" class="w-4 h-4"></i> <span data-translate="reset_all_data">Reset All Data</span></button></div>
                     </div>
                 </div>
 
@@ -861,9 +866,10 @@
             <div class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium mb-2" data-translate="status">Status</label>
-                    <div id="chapter-status-buttons" class="status-btn-group grid grid-cols-2 gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <div id="chapter-status-buttons" class="status-btn-group grid grid-cols-3 gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
                         <button data-status="Not Started" class="p-2 text-sm rounded-md transition-colors duration-200"><span data-translate="not_started">Not Started</span></button>
                         <button data-status="Completed" class="p-2 text-sm rounded-md transition-colors duration-200"><span data-translate="completed">Completed</span></button>
+                        <button data-status="Postpone" class="p-2 text-sm rounded-md transition-colors duration-200 bg-yellow-500/20 text-yellow-800 dark:text-yellow-200"><span data-translate="postpone_task">Postpone</span></button>
                     </div>
                 </div>
                 <div>
@@ -1197,43 +1203,23 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "5.0"; // Major update version
+        const CURRENT_APP_VERSION = "5.2"; // Incremented version for new features
         const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
         const updateNotes = {
+            "5.2": [
+                { "title": "नया 'साइबर कॉन्स्टेलेशन' बैकग्राउंड ✨", "note": "'साइबर रेन' बैकग्राउंड को एक नए, स्मूथ और स्लो-मोशन वाले 'साइबर कॉन्स्टेलेशन' से बदल दिया गया है, जो एक बेहतर और आकर्षक स्टडी माहौल देता है।" },
+                { "title": "स्टडी-डे काउंटर रीसेट 🔄", "note": "अब आप सेटिंग्स में जाकर 'स्टडी-डे' काउंटर को रीसेट कर सकते हैं। यह आपको अपनी पढ़ाई की शुरुआत की तारीख को बदलने की सुविधा देता है।" },
+                { "title": "5 गुना ज़्यादा मज़बूत और स्थिर 🛡️", "note": "ऐप के कोर सिस्टम में बड़े सुधार किए गए हैं। यह अब पहले से कहीं ज़्यादा तेज़, स्मूथ और भरोसेमंद है, जिससे आपका डेटा हमेशा सुरक्षित रहता है और ऐप क्रैश नहीं होता।" }
+            ],
+            "5.1": [
+                { "title": "उन्नत चैप्टर पॉप-अप ✨", "note": "अब आप चैप्टर विवरण पॉप-अप से ही किसी चैप्टर को सीधे 'पोस्टपोन' कर सकते हैं। यह डैशबोर्ड वाले फीचर की तरह ही काम करता है, जिसमें आप एक नोट भी जोड़ सकते हैं।" },
+                { "title": "स्मार्ट DPT सिंकिंग 🎯", "note": "अब 'Today’s DPT' हमेशा 'Today’s Task' के साथ सिंक रहता है। जैसे ही आप कोई चैप्टर पूरा करते हैं, उसका DPT तुरंत प्रैक्टिस के लिए डैशबोर्ड पर आ जाएगा, चाहे आपने उसे कहीं से भी पूरा किया हो।" },
+                { "title": "DPT के लिए 'स्किप' बटन 🚀", "note": "डैशबोर्ड पर 'Today’s DPT' में अब एक 'स्किप' बटन जोड़ दिया गया है, जिससे आप उस विषय के अगले उपलब्ध DPT पर जा सकते हैं।" }
+            ],
             "5.0": [
                 { "title": "स्मार्ट 'पोस्टपोन' फीचर ✨", "note": "अब किसी चैप्टर को पोस्टपोन करने पर वह अगले दिन आने के बजाय, स्टडी साइकिल में जब उस विषय का दिन आएगा, तब सबसे पहले दिखेगा। पोस्टपोन करते समय आप यह नोट भी लिख सकते हैं कि आपने चैप्टर कहाँ तक पढ़ा है, ताकि आप वहीं से शुरू कर सकें।" },
                 { "title": "स्टडी-डे काउंटर 🔥", "note": "डैशबोर्ड पर अब एक आकर्षक, एनिमेटेड काउंटर है जो यह बताता है कि आपको पढ़ते हुए कितने दिन हो गए हैं। यह जानकारी अब AI इनसाइट्स में भी दिखाई देगी!" },
-                { "title": "नया 'साइबर रेन' बैकग्राउंड 🌌", "note": "सेटिंग्स में 'Particle Network' के अलावा एक नया 'Cyber Rain' एनिमेटेड बैकग्राउंड जोड़ा गया है, जो आपको एक साइबरपंक और futuristic स्टडी माहौल देता है।" },
-                { "title": "5 गुना ज़्यादा मज़बूत और स्थिर 🛡️", "note": "ऐप के कोर सिस्टम में बड़े सुधार किए गए हैं। यह अब पहले से कहीं ज़्यादा तेज़, स्मूथ और भरोसेमंद है, जिससे आपका डेटा हमेशा सुरक्षित रहता है और ऐप क्रैश नहीं होता।" }
-            ],
-            "4.3": [
-                { "title": "स्मार्ट DPT सिंक्रोनाइज़ेशन ✨", "note": "अब 'Today’s DPT' सीधे 'Today’s Task' से जुड़ा है। जिस चैप्टर को आप पढ़ रहे हैं, उसी का DPT प्रैक्टिस के लिए अपने आप आ जाएगा, चाहे वह नया चैप्टर हो या रिवीजन।" },
-                { "title": "बेहतर टास्क लॉजिक 🧠", "note": "जब आप किसी चैप्टर को पूरा करते हैं, तो उसका DPT डैशबोर्ड पर बना रहेगा ताकि आप पढ़ाई के तुरंत बाद प्रैक्टिस कर सकें। अब कोई भी DPT मिस नहीं होगा!" },
-                { "title": "त्रुटि-मुक्त अनुभव 🐛", "note": "छोटे-मोटे बग्स को ठीक कर दिया गया है और परफॉरमेंस को ऑप्टिमाइज़ किया गया है ताकि आपको एक सहज और बेहतरीन स्टडी अनुभव मिले।" }
-            ],
-            "4.2": [
-                { "title": "बेहतर DPT डैशबोर्ड ✨", "note": "DPT अब डैशबोर्ड पर सही ढंग से दिखाई दे रहे हैं। अब आपकी दैनिक योजना के अनुसार निर्धारित विषयों के लिए लंबित DPT स्वचालित रूप से आपके डैशबोर्ड पर आ जाएंगे।" },
-                { "title": "DPT पेज पर 'सभी विषय' व्यू 📊", "note": "DPT पेज पर 'All Subjects' चुनने पर अब सभी विषयों के DPT एक ही स्थान पर दिखाई देंगे। इससे पूरी प्रगति को ट्रैक करना आसान हो गया है।" },
-                { "title": "एक साथ सभी DPT हटाएं 🚀", "note": "DPT पेज पर 'All Subjects' व्यू में अब एक 'Delete All DPTs' बटन जोड़ा गया है, जिससे आप एक ही बार में सभी DPTs को हटा सकते हैं। साथ ही, हर विषय के लिए भी सभी DPT को एक साथ हटाने का विकल्प दिया गया है।" },
-                { "title": "पूर्ण हुए कार्यों की रिपोर्ट 📝", "note": "रिपोर्ट पेज पर अब एक नया सेक्शन जोड़ा गया है जो पिछले 30 दिनों में पूरे किए गए 'Other Tasks' को दिखाता है। अब आप अपने सभी छोटे-बड़े कार्यों को ट्रैक कर सकते हैं।" }
-            ],
-            "4.1": [
-                { "title": "अध्याय-आधारित DPT सिस्टम ✨", "note": "DPT सिस्टम को पूरी तरह से नया रूप दिया गया है! अब आप हर विषय के विशिष्ट अध्यायों के लिए DPT जोड़ सकते हैं, जैसे 'Physics DPT - तरंग (Waves) - 1'। इससे आप हर अध्याय की प्रैक्टिस को ट्रैक कर सकते हैं।" },
-                { "title": "बेहतर DPT ट्रैकिंग और विश्लेषण 📊", "note": "अब आप देख सकते हैं कि आपने किस अध्याय का कितनी बार DPT दिया है। एनालिटिक्स पेज पर एक नया चार्ट जोड़ा गया है जो दिखाता है कि हर अध्याय का कितनी बार प्रैक्टिस किया गया है, जिससे आपको अपनी कमजोरियों और ताकतों का पता चलता है।" },
-                { "title": "एक साथ कई DPT जोड़ें 🚀", "note": "अब आप एक ही बार में किसी भी अध्याय के लिए कई DPT जोड़ सकते हैं। DPT पेज पर जाएं, विषय चुनें, और किसी भी अध्याय के आगे 'Add DPTs' बटन पर क्लिक करें। विषय के नाम के आगे 'Add to All Chapters' बटन से आप सभी चैप्टर्स में एक साथ DPT जोड़ सकते हैं।" },
-                { "title": "एंड्रॉयड पर बेहतर प्रिंटिंग 📱", "note": "रिपोर्ट और एनालिसिस पेज को एंड्रॉयड डिवाइस पर प्रिंट करने में आ रही समस्या को ठीक कर दिया गया है। अब आप मोबाइल पर भी आसानी से अपनी प्रगति का प्रिंट ले सकते हैं।" }
-            ],
-            "4.0": [
-                { "title": "अत्यंत उन्नत AI स्टडी कोच ✨", "note": "AI कोच अब वास्तविक समय में आपकी प्रगति का विश्लेषण करता है और कभी भी पीछे नहीं रहता। यह आपको आज के कार्यों, DPTs, आगामी परीक्षाओं, छूटे हुए अध्यायों, उपलब्धियों और यहां तक कि आपके सबसे अच्छे प्रदर्शन वाले दिन के बारे में भी जानकारी देता है।" },
-                { "title": "प्रेरणादायक संदेश और 12+ नई जानकारियां 🚀", "note": "AI कोच अब आपको प्रेरित रखने के लिए 50+ छोटे, प्रेरक संदेश दिखाएगा और 12 से ज़्यादा तरह की नई जानकारियां देगा। हर बार जब आप होम पेज पर आएंगे तो आपको एक नया संदेश मिलेगा!" },
-                { "title": "विशेष 'अन्य कार्य' जोड़ने की सुविधा 📝", "note": "अब आप डैशबोर्ड से ऐसे कार्य भी जोड़ सकते हैं जिनका विषयों से कोई संबंध नहीं है, जैसे 'फॉर्म भरना'। इन कार्यों का रंग अलग है और इन्हें पूरा करने, टालने और हटाने की सुविधा भी है।" },
-                { "title": "बेहतर डैशबोर्ड और UI 🎨", "note": "'Today's Plan' में अब ब्रैकेट में वर्तमान दिन (जैसे सोमवार) दिखाई देता है। AI कोच पर एक सूक्ष्म, सुंदर लाइटिंग एनीमेशन जोड़ा गया है जो आपके अनुभव को बेहतर बनाता है।" }
-            ],
-            "3.5": [
-                { "title": "बेहतर डैशबोर्ड UI ✨", "note": "डैशबोर्ड पर 'विषय प्रगति' अब सही ढंग से एक हरी प्रगति पट्टी (green progress bar) के रूप में दिखाई देती है, जिससे आपको अपनी प्रगति का स्पष्ट विज़ुअल फीडबैक मिलता है।" },
-                { "title": "नया और बेहतर लिंक सेक्शन", "note": "'लिंक्स' सेक्शन में फ़ोल्डर जोड़ने वाली सुविधा जो काम नहीं कर रही थी, उसे पूरी तरह से एक नए और विश्वसनीय पॉप-अप से बदल दिया गया है। अब आप आसानी से फ़ोल्डर और लिंक जोड़ सकते हैं।" },
-                { "title": "एप्लिकेशन की स्थिरता", "note": "एप्लिकेशन को और अधिक स्थिर और मजबूत बनाने के लिए कोड में सुधार किए गए हैं। इससे बग्स की संभावना कम हो गई है और सभी सुविधाएँ पहले से बेहतर काम करेंगी।" },
-                { "title": "डेटा सुरक्षा", "note": "आपके डेटा को आकस्मिक रीसेट या हानि से बचाने के लिए अतिरिक्त सुरक्षा उपाय लागू किए गए हैं। अब आपका डेटा पहले से कहीं ज्यादा सुरक्षित है।" }
+                { "title": "नया 'साइबर रेन' बैकग्राउंड 🌌", "note": "सेटिंग्स में 'Particle Network' के अलावा एक नया 'Cyber Rain' एनिमेटेड बैकग्राउंड जोड़ा गया है, जो आपको एक साइबरपंक और futuristic स्टडी माहौल देता है।" }
             ]
         };
 
@@ -1471,7 +1457,7 @@
                     start: null, end: null,
                     textLight: null, borderLight: null, textDark: null, borderDark: null 
                 },
-                backgroundStyle: 'matrix', 
+                backgroundStyle: 'constellation', 
                 appVersion: "1.0"
             },
             gamification: { badges: [], completedHistory: [] },
@@ -1501,11 +1487,12 @@
             data = JSON.parse(JSON.stringify(initialState));
         }
         
+        data.subjects = data.subjects || initialState.subjects;
         data.settings = {...initialState.settings, ...data.settings};
         data.settings.customThemeColors = {...initialState.settings.customThemeColors, ...data.settings.customThemeColors};
         
         // Postponed chapter data structure migration
-        if (data.postponedChapters && data.postponedChapters.length > 0 && data.postponedChapters[0].date) {
+        if (data.postponedChapters && data.postponedChapters.length > 0 && typeof data.postponedChapters[0] !== 'object') {
             data.postponedChapters = []; // Clear old format
         } else {
             data.postponedChapters = data.postponedChapters || [];
@@ -1524,7 +1511,7 @@
         data.postponedOtherTasks = data.postponedOtherTasks || [];
         if (data.links) { delete data.links; } // Migration from old structure
         
-        data.settings.backgroundStyle = data.settings.backgroundStyle || 'matrix'; 
+        data.settings.backgroundStyle = data.settings.backgroundStyle || 'constellation'; 
         
         if(data.settings.weeklyPlan) {
             data.settings.customCyclePlan = [...Object.values(data.settings.weeklyPlan), ...Array(7).fill([])];
@@ -1633,6 +1620,7 @@
 
         let allCharts = {};
         let currentExamFilter = 'all';
+        let animationFrameId;
 
         const pages = document.querySelectorAll('.page');
         const navBtns = document.querySelectorAll('.nav-btn');
@@ -1642,11 +1630,9 @@
         const undoToast = document.getElementById('undo-toast');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 
-        let animationFrameId;
         const particleCanvas = document.getElementById('particle-canvas');
         const ctx = particleCanvas.getContext('2d');
         let backgroundElements = [];
-        let matrixDrops = [];
 
         const init = () => {
             handleNewDayLogic();
@@ -1912,7 +1898,6 @@
         const getChapterByIds = (subjectId, chapterId, sourceType) => {
             const subject = getSubjectById(subjectId);
             if (!subject || !chapterId) return null;
-            // If sourceType is provided, search only there. Otherwise, search both.
             if (sourceType) {
                 return subject.chapters[sourceType]?.find(c => c.id === chapterId) || null;
             }
@@ -1934,11 +1919,9 @@
             const studyDay = Math.floor((new Date() - new Date(data.appStartDate)) / (1000 * 60 * 60 * 24)) + 1;
             document.getElementById('study-day-text').textContent = `Day ${studyDay}`;
 
-            // Clear old intervals before re-rendering
             Object.values(dynamicDisplayIntervals).forEach(clearInterval);
             dynamicDisplayIntervals = {};
             
-            // Generate plans first, as they are dependent on each other
             getOrGenerateDailyPlan(getLocalDateString());
             getOrGenerateDailyDptPlan(getLocalDateString());
 
@@ -1955,10 +1938,9 @@
             renderUpcomingRevisions();
             renderBadges();
             renderSubjectWiseProgressDashboard();
-            lucide.createIcons(); // Final call to ensure all icons are rendered
+            lucide.createIcons();
         };
         
-        // New generic function for rotating content
         const initRotatingDisplay = (containerId, items, renderFunction, emptyMessage) => {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -1976,7 +1958,6 @@
                 const item = items[currentIndex];
                 container.innerHTML = `<div class="dynamic-content-item">${renderFunction(item)}</div>`;
                 
-                // Trigger fade-in animation
                 setTimeout(() => {
                     const dynamicItem = container.querySelector('.dynamic-content-item');
                     if(dynamicItem) dynamicItem.classList.add('active');
@@ -2184,12 +2165,17 @@
             const note = document.getElementById('postpone-note-textarea').value.trim();
             const chapter = getChapterByIds(subjectId, chapterId, sourceType);
 
-            document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item')?.classList.add('completed');
+            const activeTaskItem = document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item');
+            if (activeTaskItem) {
+                activeTaskItem.classList.add('completed');
+            }
+            
             setTimeout(() => {
                 data.postponedChapters.push({ subjectId, chapterId, sourceType, note });
                 logActivity('skip-forward', `Chapter postponed with note: "${chapter.name}"`);
                 markSubjectAsDoneForToday(`${subjectId}:${sourceType}`);
                 hideModal('postpone-chapter-modal');
+                hideModal('chapter-modal'); // Also hide chapter modal if it was the source
             }, 500);
         };
         
@@ -2217,7 +2203,7 @@
                 
                 subjectsForToday.forEach(pair => {
                     const [subjectId, sourceType] = pair.split(':');
-                    const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
+                    const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId && p.sourceType === sourceType);
                     if (postponedIndex > -1) {
                         const postponed = data.postponedChapters[postponedIndex];
                         const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId, postponed.sourceType);
@@ -2848,7 +2834,7 @@
         const renderSettingsPage = () => {
             document.getElementById('student-name-input').value = data.settings.studentName || '';
             document.getElementById('language-select').value = data.settings.language || 'hi';
-            document.getElementById('background-style-select').value = data.settings.backgroundStyle || 'matrix';
+            document.getElementById('background-style-select').value = data.settings.backgroundStyle || 'constellation';
             document.getElementById('bg-color-start').value = data.settings.customThemeColors.start || '#cffafe';
             document.getElementById('bg-color-end').value = data.settings.customThemeColors.end || '#e0e7ff';
             
@@ -2889,7 +2875,7 @@
             let examsToRender = [...(data.exams || [])];
             let emptyMessage = _('no_exams_added');
             if (currentExamFilter === 'upcoming') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate >= today); emptyMessage = _('no_upcoming_exams_filter'); } 
-            else if (currentExamFilter === 'applied') { examsToRender = examsToRender.filter(exam => exam.status === 'Applied'); emptyMessage = _('no_applied_forms_filter'); } 
+            else if (currentExamFilter === 'applied') { examsToRender = examsToRender.filter(exam => exam.status === 'Applied'); emptyMessage = _('no_applied_filter'); } 
             else if (currentExamFilter === 'history') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate < today); emptyMessage = _('no_history_exams'); }
             if (examsToRender.length === 0) { container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="file-text" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${emptyMessage}</h3></div>`; lucide.createIcons(); return; }
             container.innerHTML = examsToRender.sort((a,b) => new Date(b.applicationDate || 0) - new Date(a.applicationDate || 0)).map(exam => {
@@ -3024,6 +3010,8 @@
                             markSubjectAsDoneForToday(subjectSourcePair);
                         }
                     }
+                    // Force DPT plan regeneration to sync with completed chapter
+                    delete data.dailyDptPlan[todayStr];
                 }
             } else { 
                 delete chapter.dateCompleted; 
@@ -3043,11 +3031,21 @@
         const saveChapterDetails = (subjectId, chapterId, sourceType) => {
             const chapter = getChapterByIds(subjectId, chapterId, sourceType); if (!chapter) return;
             const newStatus = document.querySelector('#chapter-status-buttons button.active').dataset.status;
+
+            if (newStatus === 'Postpone') {
+                hideModal('chapter-modal');
+                openPostponeModal(subjectId, chapterId, sourceType);
+                return;
+            }
+
             updateChapterStatus(subjectId, chapterId, sourceType, newStatus);
             chapter.notes = document.getElementById('chapter-notes-textarea').value;
             chapter.priorityRevision = document.getElementById('chapter-priority-revision-checkbox').checked;
-            saveData(); renderSubjectsPage(); hideModal('chapter-modal');
+            saveData(); 
+            renderSubjectsPage(); 
+            hideModal('chapter-modal');
         };
+
 
         const confirmDeleteChapter = (subjectId, chapterId, sourceType) => {
             const chapter = getChapterByIds(subjectId, chapterId, sourceType); if (!chapter) return;
@@ -3401,6 +3399,7 @@
                         html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/30 dark:bg-black/20">
                             <p class="font-bold flex items-center gap-2">${isManual ? `<i data-lucide="hand" class="w-4 h-4 text-indigo-500"></i>`: ''}${dptTitle}</p>
                             <div class="flex items-center gap-1">
+                                <button class="skip-dpt-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subjectId}"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>
                                 <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="check-circle" class="w-4 h-4"></i><span>${_('mark_as_complete')}</span></button>
                                 ${deleteButton}
                             </div>
@@ -3656,9 +3655,9 @@
 
         const applyBackgroundStyle = () => {
             stopAllBackgroundAnimations();
-            const style = data.settings.backgroundStyle || 'matrix';
+            const style = data.settings.backgroundStyle || 'constellation';
             
-            document.body.classList.remove('particles-active', 'matrix-active');
+            document.body.classList.remove('particles-active', 'constellation-active');
             particleCanvas.style.display = 'none';
 
             if (data.settings.theme === 'dark' && style !== 'default') {
@@ -3671,7 +3670,7 @@
             
             particleCanvas.style.display = 'block';
             if (style === 'particles') { document.body.classList.add('particles-active'); initParticleNetwork(); }
-            if (style === 'matrix') { document.body.classList.add('matrix-active'); initMatrixEffect(); }
+            if (style === 'constellation') { document.body.classList.add('constellation-active'); initConstellationEffect(); }
         };
         
         const hexToRgba = (hex, alpha = 1) => {
@@ -3714,37 +3713,57 @@
             }
         }
         
-        function initMatrixEffect() {
+       function initConstellationEffect() {
             initCanvas();
-            const fontSize = 16;
-            const columns = particleCanvas.width / fontSize;
-            matrixDrops = [];
-            for (let x = 0; x < columns; x++) {
-                matrixDrops[x] = 1;
+            const numberOfNodes = Math.floor((particleCanvas.width * particleCanvas.height) / 15000);
+            for (let i = 0; i < numberOfNodes; i++) {
+                backgroundElements.push({
+                    x: Math.random() * particleCanvas.width,
+                    y: Math.random() * particleCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.3, // Slow speed
+                    vy: (Math.random() - 0.5) * 0.3, // Slow speed
+                    radius: Math.random() * 1.5 + 1
+                });
             }
-            animateMatrix();
+            animateConstellation();
         }
 
-        function animateMatrix() {
+        function animateConstellation() {
             const isDark = data.settings.theme === 'dark';
-            ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.05)' : 'rgba(240, 249, 255, 0.05)';
+            ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(240, 249, 255, 0.2)';
             ctx.fillRect(0, 0, particleCanvas.width, particleCanvas.height);
-            
-            const color = isDark ? '#0F0' : '#0ea5e9';
-            ctx.fillStyle = color;
-            const fontSize = 16;
-            ctx.font = fontSize + 'px monospace';
-            const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*()_+-=[]{}|;:,.<>?/`~';
 
-            for (let i = 0; i < matrixDrops.length; i++) {
-                const text = characters.charAt(Math.floor(Math.random() * characters.length));
-                ctx.fillText(text, i * fontSize, matrixDrops[i] * fontSize);
-                if (matrixDrops[i] * fontSize > particleCanvas.height && Math.random() > 0.975) {
-                    matrixDrops[i] = 0;
+            const nodeColor = isDark ? 'rgba(0, 255, 150, 0.8)' : 'rgba(14, 165, 233, 0.8)';
+            const lineColor = isDark ? 'rgba(0, 255, 150, 0.15)' : 'rgba(14, 165, 233, 0.15)';
+            const connectDistance = 150;
+
+            backgroundElements.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+
+                if (node.x < 0 || node.x > particleCanvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > particleCanvas.height) node.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fillStyle = nodeColor;
+                ctx.fill();
+            });
+
+            for (let i = 0; i < backgroundElements.length; i++) {
+                for (let j = i + 1; j < backgroundElements.length; j++) {
+                    const dist = Math.hypot(backgroundElements[i].x - backgroundElements[j].x, backgroundElements[i].y - backgroundElements[j].y);
+                    if (dist < connectDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(backgroundElements[i].x, backgroundElements[i].y);
+                        ctx.lineTo(backgroundElements[j].x, backgroundElements[j].y);
+                        ctx.strokeStyle = lineColor;
+                        ctx.lineWidth = 1 - dist / connectDistance;
+                        ctx.stroke();
+                    }
                 }
-                matrixDrops[i]++;
             }
-            animationFrameId = requestAnimationFrame(animateMatrix);
+            animationFrameId = requestAnimationFrame(animateConstellation);
         }
 
         
@@ -4241,6 +4260,7 @@
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
+            document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
             document.getElementById('close-chapter-modal').addEventListener('click', () => hideModal('chapter-modal'));
             document.getElementById('save-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; if (subjectId && chapterId) saveChapterDetails(subjectId, chapterId, sourceType); });
             document.getElementById('delete-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId, sourceType } = e.currentTarget.dataset; if (subjectId && chapterId) confirmDeleteChapter(subjectId, chapterId, sourceType); });
@@ -4352,8 +4372,10 @@
                 const completeBtn = e.target.closest('.mark-dpt-complete-btn');
                 const viewBtn = e.target.closest('.view-dpt-details-btn');
                 const completeMissedBtn = e.target.closest('.complete-missed-dpt-btn');
+                const skipBtn = e.target.closest('.skip-dpt-btn');
                 if (completeBtn) { showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.chapterId, completeBtn.dataset.testId); }
                 if (viewBtn) { showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, viewBtn.dataset.testId); }
+                if (skipBtn) { skipDpt(skipBtn.dataset.subjectId); }
                 if (completeMissedBtn) {
                     const { subjectId, chapterId, testId } = completeMissedBtn.dataset;
                     const todayStr = getLocalDateString();
@@ -4624,8 +4646,6 @@
             }, 100);
         }
 
-        // --- NEW "OTHER TASK" FUNCTIONS ---
-
         function showAddOtherTaskModal() {
             const form = document.getElementById('add-other-task-form');
             form.reset();
@@ -4682,7 +4702,6 @@
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 task.date = getLocalDateString(tomorrow);
                 
-                // Move from main list to postponed list if not already there
                 if(!data.postponedOtherTasks.some(t => t.id === taskId)) {
                     data.postponedOtherTasks.push(task);
                     data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
@@ -4776,6 +4795,58 @@
             hideModal('add-all-chapters-dpt-modal');
             renderDptPage();
         }
+
+        function skipDpt(subjectId) {
+            const todayStr = getLocalDateString();
+            const todaysDptPlan = data.dailyDptPlan[todayStr] || [];
+            
+            // Find the current DPT for this subject in today's plan
+            const currentDptIndex = todaysDptPlan.findIndex(dpt => dpt.subjectId === subjectId && dpt.status !== 'Completed');
+            if (currentDptIndex === -1) {
+                logActivity('chevrons-right', `Skipped DPT, but no other DPTs available for ${_(subjectId)} today.`);
+                return; // No pending DPT for this subject today
+            }
+
+            const currentDpt = todaysDptPlan[currentDptIndex];
+
+            // Find the next available pending DPT for the same subject, EXCLUDING the current one
+            let nextDpt = null;
+            const allSubjectDpts = Object.entries(data.dpts[subjectId]?.chapters || {}).flatMap(([chapterId, tests]) => 
+                tests.map(test => ({ subjectId, chapterId, testId: test.id, status: test.status }))
+            );
+            
+            const pendingSubjectDpts = allSubjectDpts.filter(dpt => dpt.status !== 'Completed');
+            const currentInAllIndex = pendingSubjectDpts.findIndex(dpt => dpt.chapterId === currentDpt.chapterId && dpt.testId === currentDpt.testId);
+            
+            if (currentInAllIndex !== -1 && pendingSubjectDpts.length > 1) {
+                nextDpt = pendingSubjectDpts[(currentInAllIndex + 1) % pendingSubjectDpts.length];
+            }
+            
+            if (nextDpt) {
+                // Replace the current DPT with the next one in today's plan
+                todaysDptPlan[currentDptIndex] = { ...nextDpt, isManual: true, id: `manual-dpt-${Date.now()}` };
+                const chapter = getChapterByIds(subjectId, nextDpt.chapterId);
+                logActivity('chevrons-right', `Skipped to next DPT: ${_(subjectId)} - ${chapter.name} #${nextDpt.testId}`);
+            } else {
+                // No other DPTs available for this subject, so remove it from today's plan
+                todaysDptPlan.splice(currentDptIndex, 1);
+                logActivity('chevrons-right', `Skipped DPT, no more DPTs for ${_(subjectId)}.`);
+            }
+
+            saveData();
+            renderHomePage();
+        }
+
+        function resetStudyDate() {
+            showConfirmationModal('Reset Study Start Date?', 'This will reset your study day counter to Day 1, starting from today. Are you sure?', () => {
+                data.appStartDate = getLocalDateString();
+                logActivity('calendar-x', 'Study start date was reset to today.');
+                saveData();
+                renderHomePage();
+                alert('Study start date has been reset!');
+            });
+        }
+
 
         init();
     });
