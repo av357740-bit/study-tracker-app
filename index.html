@@ -141,7 +141,7 @@
         }
         .task-list-item {
             transition: opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease;
-            max-height: 100px;
+            max-height: 150px; /* Increased to accommodate note */
         }
 
         .task-note-missed {
@@ -177,7 +177,7 @@
             background: linear-gradient(135deg, var(--main-bg-start-dark) 0%, var(--main-bg-end-dark) 100%);
         }
         
-        body.particles-active main {
+        body.particles-active main, body.matrix-active main {
             background: transparent;
         }
         
@@ -203,6 +203,19 @@
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
         .animated-progress-bar { transition: width 0.8s ease-out; }
+
+        /* Study Day Counter */
+        #study-day-counter {
+            background: linear-gradient(45deg, #fde68a, #fca5a5, #a78bfa, #7dd3fc);
+            color: #1e293b;
+            animation: pulse-bg 4s infinite;
+            transform-origin: center;
+        }
+        @keyframes pulse-bg {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(253, 230, 138, 0.7); }
+        }
+
 
         /* AI Insights Glow Effect */
         #ai-insights-container {
@@ -395,9 +408,13 @@
                     <h1 class="text-lg font-extrabold app-header-title">Study Tracker</h1>
                     <p class="text-xs text-text-muted-light dark:text-text-muted-dark -mt-1">By Pravej Ahmad</p>
                 </div>
+                 <div id="study-day-counter" class="absolute top-1/2 -translate-y-1/2 right-4 text-xs font-bold p-2 rounded-full shadow-lg flex items-center gap-1.5">
+                    <i data-lucide="calendar-check-2" class="w-4 h-4"></i>
+                    <span id="study-day-text">Day 1</span>
+                </div>
             </header>
 
-            <main class="flex-grow overflow-y-auto p-4 md:p-6 pb-4 no-scrollbar">
+            <main class="flex-grow overflow-y-auto p-4 md:p-6 pb-4 no-scrollbar relative">
                 <div id="page-home" class="page active">
                     <div class="mb-6">
                         <h2 id="welcome-heading" class="text-3xl font-bold">Welcome, Pravej Ahmad!</h2>
@@ -695,6 +712,7 @@
                             <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                                 <option value="default">Default Gradient</option>
                                 <option value="particles">Particle Network</option>
+                                <option value="matrix">Cyber Rain</option>
                             </select>
                         </div>
                         
@@ -879,6 +897,21 @@
         </div>
     </div>
     
+    <!-- NEW Postpone Modal -->
+    <div id="postpone-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+            <button id="close-postpone-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
+            <h2 class="text-xl font-bold mb-4">Postpone Chapter</h2>
+            <form id="postpone-chapter-form" class="space-y-4">
+                <div>
+                    <label for="postpone-note-textarea" class="block text-sm font-medium mb-1">Add a note (where did you leave off?)</label>
+                    <textarea id="postpone-note-textarea" rows="3" placeholder="e.g., up to page 50..." class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg text-sm"></textarea>
+                </div>
+                <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-yellow-500 text-white hover:bg-yellow-600">Save & Postpone</button>
+            </form>
+        </div>
+    </div>
+
     <div id="badge-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-8 text-center relative overflow-hidden"><button id="close-badge-modal-x" class="absolute top-4 right-4 text-text-muted-light dark:hover:text-text-light dark:text-text-dark z-10"><i data-lucide="x" class="w-6 h-6"></i></button><div class="absolute top-0 left-0 w-full h-full opacity-10 dark:opacity-20" style="background-image: radial-gradient(circle, var(--primary) 0%, transparent 70%);"></div><i id="badge-icon" data-lucide="award" class="w-16 h-16 text-amber-400 mx-auto mb-4 drop-shadow-lg animate-pulse"></i><h2 class="text-2xl font-bold mb-2" data-translate="achievement_unlocked">Achievement Unlocked!</h2><p id="badge-name" class="text-lg font-semibold text-primary dark:text-blue-300 mb-4"></p><p id="badge-description" class="text-text-muted-light dark:text-text-muted-dark mb-6"></p><button id="close-badge-modal" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="awesome">Awesome!</button></div></div>
     
     <div id="undo-toast" class="p-3 rounded-lg shadow-lg bg-gray-800 text-white dark:bg-gray-200 dark:text-black flex items-center gap-4">
@@ -1164,35 +1197,37 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "4.3"; // Version updated for DPT sync and stability
+        const CURRENT_APP_VERSION = "5.0"; // Major update version
         const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
         const updateNotes = {
+            "5.0": [
+                { "title": "स्मार्ट 'पोस्टपोन' फीचर ✨", "note": "अब किसी चैप्टर को पोस्टपोन करने पर वह अगले दिन आने के बजाय, स्टडी साइकिल में जब उस विषय का दिन आएगा, तब सबसे पहले दिखेगा। पोस्टपोन करते समय आप यह नोट भी लिख सकते हैं कि आपने चैप्टर कहाँ तक पढ़ा है, ताकि आप वहीं से शुरू कर सकें।" },
+                { "title": "स्टडी-डे काउंटर 🔥", "note": "डैशबोर्ड पर अब एक आकर्षक, एनिमेटेड काउंटर है जो यह बताता है कि आपको पढ़ते हुए कितने दिन हो गए हैं। यह जानकारी अब AI इनसाइट्स में भी दिखाई देगी!" },
+                { "title": "नया 'साइबर रेन' बैकग्राउंड 🌌", "note": "सेटिंग्स में 'Particle Network' के अलावा एक नया 'Cyber Rain' एनिमेटेड बैकग्राउंड जोड़ा गया है, जो आपको एक साइबरपंक और futuristic स्टडी माहौल देता है।" },
+                { "title": "5 गुना ज़्यादा मज़बूत और स्थिर 🛡️", "note": "ऐप के कोर सिस्टम में बड़े सुधार किए गए हैं। यह अब पहले से कहीं ज़्यादा तेज़, स्मूथ और भरोसेमंद है, जिससे आपका डेटा हमेशा सुरक्षित रहता है और ऐप क्रैश नहीं होता।" }
+            ],
             "4.3": [
                 { "title": "स्मार्ट DPT सिंक्रोनाइज़ेशन ✨", "note": "अब 'Today’s DPT' सीधे 'Today’s Task' से जुड़ा है। जिस चैप्टर को आप पढ़ रहे हैं, उसी का DPT प्रैक्टिस के लिए अपने आप आ जाएगा, चाहे वह नया चैप्टर हो या रिवीजन।" },
                 { "title": "बेहतर टास्क लॉजिक 🧠", "note": "जब आप किसी चैप्टर को पूरा करते हैं, तो उसका DPT डैशबोर्ड पर बना रहेगा ताकि आप पढ़ाई के तुरंत बाद प्रैक्टिस कर सकें। अब कोई भी DPT मिस नहीं होगा!" },
-                { "title": "5 गुना ज़्यादा मज़बूत और स्थिर 🛡️", "note": "ऐप के कोर सिस्टम में बड़े सुधार किए गए हैं। यह अब पहले से कहीं ज़्यादा तेज़, स्मूथ और भरोसेमंद है, जिससे आपका डेटा हमेशा सुरक्षित रहता है और ऐप क्रैश नहीं होता।" },
                 { "title": "त्रुटि-मुक्त अनुभव 🐛", "note": "छोटे-मोटे बग्स को ठीक कर दिया गया है और परफॉरमेंस को ऑप्टिमाइज़ किया गया है ताकि आपको एक सहज और बेहतरीन स्टडी अनुभव मिले।" }
             ],
             "4.2": [
                 { "title": "बेहतर DPT डैशबोर्ड ✨", "note": "DPT अब डैशबोर्ड पर सही ढंग से दिखाई दे रहे हैं। अब आपकी दैनिक योजना के अनुसार निर्धारित विषयों के लिए लंबित DPT स्वचालित रूप से आपके डैशबोर्ड पर आ जाएंगे।" },
                 { "title": "DPT पेज पर 'सभी विषय' व्यू 📊", "note": "DPT पेज पर 'All Subjects' चुनने पर अब सभी विषयों के DPT एक ही स्थान पर दिखाई देंगे। इससे पूरी प्रगति को ट्रैक करना आसान हो गया है।" },
                 { "title": "एक साथ सभी DPT हटाएं 🚀", "note": "DPT पेज पर 'All Subjects' व्यू में अब एक 'Delete All DPTs' बटन जोड़ा गया है, जिससे आप एक ही बार में सभी DPTs को हटा सकते हैं। साथ ही, हर विषय के लिए भी सभी DPT को एक साथ हटाने का विकल्प दिया गया है।" },
-                { "title": "पूर्ण हुए कार्यों की रिपोर्ट 📝", "note": "रिपोर्ट पेज पर अब एक नया सेक्शन जोड़ा गया है जो पिछले 30 दिनों में पूरे किए गए 'Other Tasks' को दिखाता है। अब आप अपने सभी छोटे-बड़े कार्यों को ट्रैक कर सकते हैं।" },
-                { "title": "5 गुना ज़्यादा स्थिर और तेज़ 🛡️", "note": "एप्लिकेशन के कोर में महत्वपूर्ण सुधार किए गए हैं ताकि यह सुनिश्चित हो सके कि नए बदलावों से कोई पुराना फीचर प्रभावित न हो। ऐप अब पहले से कहीं ज़्यादा स्थिर, तेज़ और विश्वसनीय है।" }
+                { "title": "पूर्ण हुए कार्यों की रिपोर्ट 📝", "note": "रिपोर्ट पेज पर अब एक नया सेक्शन जोड़ा गया है जो पिछले 30 दिनों में पूरे किए गए 'Other Tasks' को दिखाता है। अब आप अपने सभी छोटे-बड़े कार्यों को ट्रैक कर सकते हैं।" }
             ],
             "4.1": [
                 { "title": "अध्याय-आधारित DPT सिस्टम ✨", "note": "DPT सिस्टम को पूरी तरह से नया रूप दिया गया है! अब आप हर विषय के विशिष्ट अध्यायों के लिए DPT जोड़ सकते हैं, जैसे 'Physics DPT - तरंग (Waves) - 1'। इससे आप हर अध्याय की प्रैक्टिस को ट्रैक कर सकते हैं।" },
                 { "title": "बेहतर DPT ट्रैकिंग और विश्लेषण 📊", "note": "अब आप देख सकते हैं कि आपने किस अध्याय का कितनी बार DPT दिया है। एनालिटिक्स पेज पर एक नया चार्ट जोड़ा गया है जो दिखाता है कि हर अध्याय का कितनी बार प्रैक्टिस किया गया है, जिससे आपको अपनी कमजोरियों और ताकतों का पता चलता है।" },
                 { "title": "एक साथ कई DPT जोड़ें 🚀", "note": "अब आप एक ही बार में किसी भी अध्याय के लिए कई DPT जोड़ सकते हैं। DPT पेज पर जाएं, विषय चुनें, और किसी भी अध्याय के आगे 'Add DPTs' बटन पर क्लिक करें। विषय के नाम के आगे 'Add to All Chapters' बटन से आप सभी चैप्टर्स में एक साथ DPT जोड़ सकते हैं।" },
-                { "title": "एंड्रॉयड पर बेहतर प्रिंटिंग 📱", "note": "रिपोर्ट और एनालिसिस पेज को एंड्रॉयड डिवाइस पर प्रिंट करने में आ रही समस्या को ठीक कर दिया गया है। अब आप मोबाइल पर भी आसानी से अपनी प्रगति का प्रिंट ले सकते हैं।" },
-                { "title": "पहले से 5 गुना ज़्यादा स्थिर 🛡️", "note": "एप्लिकेशन के कोर में महत्वपूर्ण सुधार किए गए हैं ताकि यह सुनिश्चित हो सके कि नए बदलावों से कोई पुराना फीचर प्रभावित न हो। ऐप अब पहले से कहीं ज़्यादा स्थिर, तेज़ और विश्वसनीय है।" }
+                { "title": "एंड्रॉयड पर बेहतर प्रिंटिंग 📱", "note": "रिपोर्ट और एनालिसिस पेज को एंड्रॉयड डिवाइस पर प्रिंट करने में आ रही समस्या को ठीक कर दिया गया है। अब आप मोबाइल पर भी आसानी से अपनी प्रगति का प्रिंट ले सकते हैं।" }
             ],
             "4.0": [
                 { "title": "अत्यंत उन्नत AI स्टडी कोच ✨", "note": "AI कोच अब वास्तविक समय में आपकी प्रगति का विश्लेषण करता है और कभी भी पीछे नहीं रहता। यह आपको आज के कार्यों, DPTs, आगामी परीक्षाओं, छूटे हुए अध्यायों, उपलब्धियों और यहां तक कि आपके सबसे अच्छे प्रदर्शन वाले दिन के बारे में भी जानकारी देता है।" },
                 { "title": "प्रेरणादायक संदेश और 12+ नई जानकारियां 🚀", "note": "AI कोच अब आपको प्रेरित रखने के लिए 50+ छोटे, प्रेरक संदेश दिखाएगा और 12 से ज़्यादा तरह की नई जानकारियां देगा। हर बार जब आप होम पेज पर आएंगे तो आपको एक नया संदेश मिलेगा!" },
                 { "title": "विशेष 'अन्य कार्य' जोड़ने की सुविधा 📝", "note": "अब आप डैशबोर्ड से ऐसे कार्य भी जोड़ सकते हैं जिनका विषयों से कोई संबंध नहीं है, जैसे 'फॉर्म भरना'। इन कार्यों का रंग अलग है और इन्हें पूरा करने, टालने और हटाने की सुविधा भी है।" },
-                { "title": "बेहतर डैशबोर्ड और UI 🎨", "note": "'Today's Plan' में अब ब्रैकेट में वर्तमान दिन (जैसे सोमवार) दिखाई देता है। AI कोच पर एक सूक्ष्म, सुंदर लाइटिंग एनीमेशन जोड़ा गया है जो आपके अनुभव को बेहतर बनाता है।" },
-                { "title": "स्थिरता और मजबूती 🛡️", "note": "एप्लिकेशन के कोड को और अधिक मजबूत बनाया गया है ताकि यह सुनिश्चित हो सके कि नए फीचर्स जोड़ने से कोई पुराना फीचर प्रभावित न हो। ऐप अब पहले से 5 गुना ज्यादा स्थिर और स्मूथ है, जिससे डेटा हानि का कोई खतरा नहीं है।" }
+                { "title": "बेहतर डैशबोर्ड और UI 🎨", "note": "'Today's Plan' में अब ब्रैकेट में वर्तमान दिन (जैसे सोमवार) दिखाई देता है। AI कोच पर एक सूक्ष्म, सुंदर लाइटिंग एनीमेशन जोड़ा गया है जो आपके अनुभव को बेहतर बनाता है।" }
             ],
             "3.5": [
                 { "title": "बेहतर डैशबोर्ड UI ✨", "note": "डैशबोर्ड पर 'विषय प्रगति' अब सही ढंग से एक हरी प्रगति पट्टी (green progress bar) के रूप में दिखाई देती है, जिससे आपको अपनी प्रगति का स्पष्ट विज़ुअल फीडबैक मिलता है।" },
@@ -1238,7 +1273,7 @@
                 "no_upcoming_revisions": "No upcoming revisions.", "keep_studying_prompt": "Keep studying to earn badges!",
                 "today": "Today", "tomorrow": "Tomorrow", "congratulations": "Congratulations!", 
                 "all_tasks_completed": "All tasks for today are completed.", "revision_task": "{chapterName} (Revision)", 
-                "postpone_tomorrow": "Postpone", "skip_chapter": "Skip",
+                "postpone_task": "Postpone", "skip_chapter": "Skip",
                 "postponed_chapters": "Postponed Chapters", "no_postponed_chapters": "No chapters have been postponed.",
                 "subject_wise_progress_dashboard": "Subject-wise Progress", "subjects_chapters": "Subjects & Chapters", 
                 "search_chapters": "Search chapters...", "chapters_done_of": "{completed} / {total} chapters done",
@@ -1330,7 +1365,7 @@
                 "no_upcoming_revisions": "कोई आगामी रिवीजन नहीं है।", "keep_studying_prompt": "बैज अर्जित करने के लिए अध्ययन करते रहें!",
                 "today": "आज", "tomorrow": "कल", "congratulations": "बधाई हो!", 
                 "all_tasks_completed": "आज के सभी कार्य पूरे हो गए हैं।", "revision_task": "{chapterName} (रिवीजन)", 
-                "postpone_tomorrow": "स्थगित", "skip_chapter": "स्किप",
+                "postpone_task": "स्थगित करें", "skip_chapter": "स्किप",
                 "postponed_chapters": "स्थगित अध्याय", "no_postponed_chapters": "कोई अध्याय स्थगित नहीं किया गया है।",
                 "subject_wise_progress_dashboard": "विषय-वार प्रगति", "subjects_chapters": "विषय और अध्याय", 
                 "search_chapters": "अध्याय खोजें...", "chapters_done_of": "{total} में से {completed} अध्याय पूरे हुए",
@@ -1430,13 +1465,13 @@
                 customCyclePlan: Array(14).fill([]),
                 dptPlanMode: 'auto',
                 dptCyclePlan: Array(14).fill([]),
-                language: 'en', 
+                language: 'hi', 
                 studentName: 'Pravej Ahmad',
                 customThemeColors: { 
                     start: null, end: null,
                     textLight: null, borderLight: null, textDark: null, borderDark: null 
                 },
-                backgroundStyle: 'particles', 
+                backgroundStyle: 'matrix', 
                 appVersion: "1.0"
             },
             gamification: { badges: [], completedHistory: [] },
@@ -1469,7 +1504,13 @@
         data.settings = {...initialState.settings, ...data.settings};
         data.settings.customThemeColors = {...initialState.settings.customThemeColors, ...data.settings.customThemeColors};
         
-        data.postponedChapters = data.postponedChapters || [];
+        // Postponed chapter data structure migration
+        if (data.postponedChapters && data.postponedChapters.length > 0 && data.postponedChapters[0].date) {
+            data.postponedChapters = []; // Clear old format
+        } else {
+            data.postponedChapters = data.postponedChapters || [];
+        }
+        
         data.missedChapters = data.missedChapters || [];
         data.missedRevisions = data.missedRevisions || [];
         data.dailyPlan = data.dailyPlan || {};
@@ -1483,7 +1524,7 @@
         data.postponedOtherTasks = data.postponedOtherTasks || [];
         if (data.links) { delete data.links; } // Migration from old structure
         
-        data.settings.backgroundStyle = data.settings.backgroundStyle || 'particles'; 
+        data.settings.backgroundStyle = data.settings.backgroundStyle || 'matrix'; 
         
         if(data.settings.weeklyPlan) {
             data.settings.customCyclePlan = [...Object.values(data.settings.weeklyPlan), ...Array(7).fill([])];
@@ -1525,7 +1566,7 @@
         // DPT Data Structure Migration from flat tests to chapter-based
         let dptDataMigrated = false;
         Object.keys(data.dpts || {}).forEach(subjectId => {
-            if (data.dpts[subjectId].tests) { // Old structure detected
+            if (data.dpts[subjectId] && data.dpts[subjectId].tests) { // Old structure detected
                 dptDataMigrated = true;
                 delete data.dpts[subjectId]; // Remove old, non-migratable data
             }
@@ -1553,7 +1594,7 @@
         };
         
         const _ = (key, replacements = {}) => {
-            const lang = data.settings.language || 'en';
+            const lang = data.settings.language || 'hi';
             let text = translations[lang]?.[key] || translations['en'][key];
             if (text === undefined) {
                 const subject = (data.subjects || []).find(s => s.id === key);
@@ -1605,6 +1646,7 @@
         const particleCanvas = document.getElementById('particle-canvas');
         const ctx = particleCanvas.getContext('2d');
         let backgroundElements = [];
+        let matrixDrops = [];
 
         const init = () => {
             handleNewDayLogic();
@@ -1889,6 +1931,9 @@
             handleNewDayLogic();
             document.getElementById('welcome-heading').innerHTML = `${_('welcome_pravej')}, <span class="text-primary">${data.settings.studentName || 'Student'}!</span>`;
             
+            const studyDay = Math.floor((new Date() - new Date(data.appStartDate)) / (1000 * 60 * 60 * 24)) + 1;
+            document.getElementById('study-day-text').textContent = `Day ${studyDay}`;
+
             // Clear old intervals before re-rendering
             Object.values(dynamicDisplayIntervals).forEach(clearInterval);
             dynamicDisplayIntervals = {};
@@ -2009,35 +2054,39 @@
             const yesterdayDate = new Date();
             yesterdayDate.setDate(yesterdayDate.getDate() - 1);
             const yesterdayStr = getLocalDateString(yesterdayDate);
+            const studyDay = Math.floor((today - new Date(data.appStartDate)) / (1000 * 60 * 60 * 24)) + 1;
 
             const allChapters = (data.subjects || []).flatMap(s => [...(s.chapters.notes || []), ...(s.chapters.book || [])]);
 
-            // 1. Upcoming Exam
+            // 1. Study Day
+            insights.push(`🎉 आपको पढ़ते हुए आज <strong>${studyDay} दिन</strong> हो गए हैं! इसी तरह लगे रहें।`);
+
+            // 2. Upcoming Exam
             const upcomingExam = (data.exams || []).filter(exam => exam.examDate && new Date(exam.examDate) >= new Date(todayStr)).sort((a, b) => new Date(a.examDate) - new Date(b.examDate))[0];
             if (upcomingExam) { const daysLeft = Math.ceil((new Date(upcomingExam.examDate) - new Date(todayStr)) / (1000 * 60 * 60 * 24)); insights.push(`🗓️ आपकी अगली परीक्षा "<strong>${upcomingExam.name}</strong>" में केवल <strong>${daysLeft} दिन</strong> बचे हैं। तैयारी करते रहें!`); }
 
-            // 2. Today's Plan
+            // 3. Today's Plan
             const todaysPlan = getOrGenerateDailyPlan(todayStr);
             const tasksToStudy = Object.values(todaysPlan.tasks || {}).map(task => getChapterByIds(task.subjectId, task.chapterId, task.sourceType)?.name).filter(Boolean);
             if (tasksToStudy.length > 0) insights.push(`📚 आज की योजना: <strong>${tasksToStudy.join(', ')}</strong> पढ़ें।`);
 
-            // 3. Today's DPT
+            // 4. Today's DPT
             const todaysDpts = (data.dailyDptPlan[todayStr] || []).map(({subjectId, chapterId, testId}) => {
                 const chapter = getChapterByIds(subjectId, chapterId);
                 return `${_(subjectId)} - ${chapter ? chapter.name : ''} DPT #${testId}`;
             });
             if (todaysDpts.length > 0) insights.push(`🎯 आज के DPTs: <strong>${todaysDpts.join(', ')}</strong>। इन्हें पूरा करना न भूलें!`);
             
-            // 4. Missed Items
+            // 5. Missed Items
             if ((data.missedChapters || []).length > 0) insights.push(`😥 आपके <strong>${data.missedChapters.length} अध्याय</strong> छूट गए हैं। उन्हें जल्द ही पूरा करने का प्रयास करें।`);
             if ((data.missedOtherTasks || []).length > 0) insights.push(`📋 आपके <strong>${data.missedOtherTasks.length} अन्य कार्य</strong> छूट गए हैं।`);
             if ((data.missedRevisions || []).length > 0) insights.push(`⏰ आपके <strong>${data.missedRevisions.length} रिवीजन</strong> छूट गए हैं। उन्हें आज पूरा करने का प्रयास करें।`);
 
-            // 5. Yesterday's Completed
+            // 6. Yesterday's Completed
             const completedYesterday = allChapters.filter(c => c.dateCompleted === yesterdayStr);
             if(completedYesterday.length > 0) insights.push(`👍 कल आपने <strong>${completedYesterday.length} अध्याय</strong> पूरे किए थे। बहुत बढ़िया!`);
 
-            // 6. Performance Analysis
+            // 7. Performance Analysis
             const completionByDate = allChapters.filter(c => c.dateCompleted).reduce((acc, c) => { acc[c.dateCompleted] = (acc[c.dateCompleted] || 0) + 1; return acc; }, {});
             const bestDayEntry = Object.entries(completionByDate).sort((a,b) => b[1] - a[1])[0];
             if(bestDayEntry) {
@@ -2045,7 +2094,7 @@
                 insights.push(`🚀 आपका सबसे अच्छा प्रदर्शन <strong>${bestDay}</strong> को था, जब आपने <strong>${bestDayEntry[1]} अध्याय</strong> पूरे किए थे!`);
             }
 
-            // 7. Streak
+            // 8. Streak
             const completedDates = new Set((data.gamification.completedHistory || []));
             let streak = 0;
             if (completedDates.size > 0) {
@@ -2057,7 +2106,7 @@
             }
             if(streak > 1) insights.push(`🔥 बहुत बढ़िया! आपने लगातार <strong>${streak} दिनों</strong> तक पढ़ाई की है। इसे जारी रखें!`);
 
-            // 8. Overall Progress Milestone
+            // 9. Overall Progress Milestone
             const totalCompleted = allChapters.filter(c => c.status === 'Completed').length;
             const totalChapters = allChapters.length;
             if (totalChapters > 0) {
@@ -2067,7 +2116,7 @@
                 if (percentage > 75 && percentage < 80) insights.push(`🏁 आप मंज़िल के बहुत करीब हैं! 75% सिलेबस पूरा हो चुका है।`);
             }
             
-            // 9. DPT Stats
+            // 10. DPT Stats
             const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
             if(allCompletedDpts.length > 5) {
                 let totalCorrect = 0, totalAttempted = 0;
@@ -2076,7 +2125,7 @@
                 insights.push(`🎯 आपने अब तक <strong>${allCompletedDpts.length} DPTs</strong> पूरे कर लिए हैं, जिसमें आपकी औसत सटीकता <strong>${accuracy}%</strong> है।`);
             }
 
-            // 10. Achievement Unlocked
+            // 11. Achievement Unlocked
             const latestActivity = (data.activityLog || [])[0];
             if(latestActivity && latestActivity.icon === 'award') {
                 insights.push(`🏆 उपलब्धि अनलॉक! ${latestActivity.description}`);
@@ -2117,17 +2166,30 @@
             saveData();
             renderHomePage(); 
         };
+        
+        const openPostponeModal = (subjectId, chapterId, sourceType) => {
+            const modal = document.getElementById('postpone-chapter-modal');
+            const form = document.getElementById('postpone-chapter-form');
+            form.reset();
+            form.dataset.subjectId = subjectId;
+            form.dataset.chapterId = chapterId;
+            form.dataset.sourceType = sourceType;
+            showModal('postpone-chapter-modal');
+        };
 
-        const postponeChapter = (subjectId, chapterId, sourceType) => {
-            const chapter = getChapterByIds(subjectId, chapterId, sourceType); if (!chapter) return;
+        const savePostponement = (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const { subjectId, chapterId, sourceType } = form.dataset;
+            const note = document.getElementById('postpone-note-textarea').value.trim();
+            const chapter = getChapterByIds(subjectId, chapterId, sourceType);
+
             document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item')?.classList.add('completed');
             setTimeout(() => {
-                const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-                const tomorrowStr = getLocalDateString(tomorrow);
-                data.postponedChapters = data.postponedChapters.filter(p => p.chapterId !== chapterId);
-                data.postponedChapters.push({ subjectId, chapterId, sourceType, date: tomorrowStr });
-                logActivity('skip-forward', `Chapter postponed to tomorrow: "${chapter.name}"`);
+                data.postponedChapters.push({ subjectId, chapterId, sourceType, note });
+                logActivity('skip-forward', `Chapter postponed with note: "${chapter.name}"`);
                 markSubjectAsDoneForToday(`${subjectId}:${sourceType}`);
+                hideModal('postpone-chapter-modal');
             }, 500);
         };
         
@@ -2151,30 +2213,32 @@
             if (!data.dailyPlan[dateStr] || !data.dailyPlan[dateStr].planGeneratedForDay) {
                 const plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []) };
                 const chaptersAlreadyUsed = new Set();
+                const subjectsForToday = getSubjectsForDay(new Date(dateStr));
                 
-                (data.postponedChapters || []).filter(p => p.date === dateStr).forEach(p => {
-                    const chapter = getChapterByIds(p.subjectId, p.chapterId, p.sourceType);
-                    if (chapter?.status !== 'Completed') {
-                        const planKey = `${p.subjectId}:${p.sourceType}`;
-                        if (!plan.tasks[planKey]) { 
-                            plan.tasks[planKey] = { subjectId: p.subjectId, chapterId: p.chapterId, sourceType: p.sourceType }; 
-                            chaptersAlreadyUsed.add(p.chapterId); 
+                subjectsForToday.forEach(pair => {
+                    const [subjectId, sourceType] = pair.split(':');
+                    const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
+                    if (postponedIndex > -1) {
+                        const postponed = data.postponedChapters[postponedIndex];
+                        const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId, postponed.sourceType);
+                        if (chapter?.status !== 'Completed' && !plan.tasks[pair]) {
+                            plan.tasks[pair] = { ...postponed };
+                            chaptersAlreadyUsed.add(postponed.chapterId);
+                            data.postponedChapters.splice(postponedIndex, 1);
                         }
                     }
                 });
-                data.postponedChapters = (data.postponedChapters || []).filter(p => p.date !== dateStr);
                 
-                getSubjectsForDay(new Date(dateStr)).forEach(pair => {
+                subjectsForToday.forEach(pair => {
                     if (plan.tasks[pair]) return;
                     const [subjectId, sourceType] = pair.split(':');
                     const subject = getSubjectById(subjectId); if (!subject) return;
                     
                     const availableChapters = (subject.chapters[sourceType] || []).filter(c => c.status !== 'Completed' && !chaptersAlreadyUsed.has(c.id));
                     if (availableChapters.length > 0) {
-                        // Prioritize chapters with fewer completion cycles if any, otherwise random
                         availableChapters.sort((a, b) => (a.completionCount || 0) - (b.completionCount || 0));
                         const chapter = availableChapters[0]; 
-                        plan.tasks[pair] = { subjectId, chapterId: chapter.id, sourceType }; 
+                        plan.tasks[pair] = { subjectId, chapterId: chapter.id, sourceType, note: null }; 
                         chaptersAlreadyUsed.add(chapter.id); 
                     }
                 });
@@ -2201,7 +2265,7 @@
             const chaptersToStudy = Object.entries(tasks).filter(([key]) => !completedSubjects.includes(key)).map(([, task]) => {
                 if (!task) return null;
                 const subject = getSubjectById(task.subjectId); const chapter = getChapterByIds(task.subjectId, task.chapterId, task.sourceType);
-                return (subject && chapter && chapter.status !== 'Completed') ? { type: 'chapter', subject, chapter, sourceType: task.sourceType } : null;
+                return (subject && chapter && chapter.status !== 'Completed') ? { type: 'chapter', subject, chapter, sourceType: task.sourceType, note: task.note } : null;
             }).filter(Boolean);
 
             const revisionsForToday = [];
@@ -2263,26 +2327,32 @@
                 let subText = `<p class="text-sm ${isRevision ? 'text-amber-600 dark:text-amber-300' : 'text-sky-600 dark:text-sky-300'} flex items-center gap-1.5">${isRevision ? '<i data-lucide="repeat" class="w-3 h-3"></i> ' : ''}${_(subject.id)} ${sourceBadge}</p>`;
                 if(isManual) subText = `<p class="text-sm text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5"><i data-lucide="hand" class="w-3 h-3"></i> ${_(subject.id)} ${sourceBadge}</p>`;
                 
+                const noteHtml = item.note ? `<div class="mt-2 pl-7"><p class="text-xs text-yellow-700 dark:text-yellow-300 p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-md flex items-start gap-2"><i data-lucide="notebook-text" class="w-4 h-4 flex-shrink-0 mt-0.5"></i><span>${item.note}</span></p></div>` : '';
+                
                 const actionButtons = `
                     <div class="flex gap-1">
-                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_tomorrow')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
+                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
                         ${isManual ? 
                             `<button class="task-action-btn delete-manual-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-manual-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>` :
-                            `<button class="task-action-btn skip-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>`
+                            (isRevision ? '' : `<button class="task-action-btn skip-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>`)
                         }
                     </div>`;
 
-                html = `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
-                    <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-source-pair="${subject.id}:${sourceType}"`} data-task-type="${type}">
-                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${labelText}</p>${subText}</label>
-                    ${actionButtons}</li>`;
+                html = `<li class="task-list-item p-3 rounded-lg flex flex-col items-start ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
+                    <div class="w-full flex items-center gap-3">
+                        <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-source-type="${sourceType}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-source-pair="${subject.id}:${sourceType}"`} data-task-type="${type}">
+                        <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${labelText}</p>${subText}</label>
+                        ${actionButtons}
+                    </div>
+                    ${noteHtml}
+                </li>`;
 
             } else if (type === 'other') {
                 const uniqueId = `other-task-${item.id}`;
                 const bgColor = 'bg-gray-100 dark:bg-slate-800';
                 const actionButtons = `
                     <div class="flex gap-1">
-                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_tomorrow')}" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
+                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
                         <button class="task-action-btn delete-other-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                     </div>`;
 
@@ -2777,8 +2847,8 @@
 
         const renderSettingsPage = () => {
             document.getElementById('student-name-input').value = data.settings.studentName || '';
-            document.getElementById('language-select').value = data.settings.language || 'en';
-            document.getElementById('background-style-select').value = data.settings.backgroundStyle || 'particles';
+            document.getElementById('language-select').value = data.settings.language || 'hi';
+            document.getElementById('background-style-select').value = data.settings.backgroundStyle || 'matrix';
             document.getElementById('bg-color-start').value = data.settings.customThemeColors.start || '#cffafe';
             document.getElementById('bg-color-end').value = data.settings.customThemeColors.end || '#e0e7ff';
             
@@ -3586,18 +3656,22 @@
 
         const applyBackgroundStyle = () => {
             stopAllBackgroundAnimations();
-            const style = data.settings.backgroundStyle || 'particles';
+            const style = data.settings.backgroundStyle || 'matrix';
             
+            document.body.classList.remove('particles-active', 'matrix-active');
+            particleCanvas.style.display = 'none';
+
             if (data.settings.theme === 'dark' && style !== 'default') {
                 document.documentElement.classList.add('pitch-black');
             } else {
                 document.documentElement.classList.remove('pitch-black');
             }
 
-            if (style === 'default') { document.body.classList.remove('particles-active'); particleCanvas.style.display = 'none'; return; }
-            document.body.classList.add('particles-active'); particleCanvas.style.display = 'block';
-            const animationInitializers = { particles: initParticleNetwork };
-            if (animationInitializers[style]) { animationInitializers[style](); }
+            if (style === 'default') { return; }
+            
+            particleCanvas.style.display = 'block';
+            if (style === 'particles') { document.body.classList.add('particles-active'); initParticleNetwork(); }
+            if (style === 'matrix') { document.body.classList.add('matrix-active'); initMatrixEffect(); }
         };
         
         const hexToRgba = (hex, alpha = 1) => {
@@ -3639,6 +3713,40 @@
                 }
             }
         }
+        
+        function initMatrixEffect() {
+            initCanvas();
+            const fontSize = 16;
+            const columns = particleCanvas.width / fontSize;
+            matrixDrops = [];
+            for (let x = 0; x < columns; x++) {
+                matrixDrops[x] = 1;
+            }
+            animateMatrix();
+        }
+
+        function animateMatrix() {
+            const isDark = data.settings.theme === 'dark';
+            ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.05)' : 'rgba(240, 249, 255, 0.05)';
+            ctx.fillRect(0, 0, particleCanvas.width, particleCanvas.height);
+            
+            const color = isDark ? '#0F0' : '#0ea5e9';
+            ctx.fillStyle = color;
+            const fontSize = 16;
+            ctx.font = fontSize + 'px monospace';
+            const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*()_+-=[]{}|;:,.<>?/`~';
+
+            for (let i = 0; i < matrixDrops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillText(text, i * fontSize, matrixDrops[i] * fontSize);
+                if (matrixDrops[i] * fontSize > particleCanvas.height && Math.random() > 0.975) {
+                    matrixDrops[i] = 0;
+                }
+                matrixDrops[i]++;
+            }
+            animationFrameId = requestAnimationFrame(animateMatrix);
+        }
+
         
         const postponeRevision = (subjectId, chapterId, sourceType, revisionDate) => {
             const chapter = getChapterByIds(subjectId, chapterId, sourceType);
@@ -4041,8 +4149,8 @@
                     if (postponeBtn) postponeOtherTask(taskId);
                 } else if (taskType === 'revision') { 
                     postponeRevision(subjectId, chapterId, sourceType, revisionDate); 
-                } else { 
-                    if (postponeBtn) { postponeChapter(subjectId, chapterId, sourceType); }
+                } else { // chapter or manual_chapter
+                    if (postponeBtn) { openPostponeModal(subjectId, chapterId, sourceType); }
                     if (skipBtn) { skipChapter(subjectId, chapterId, sourceType); }
                 }
             });
@@ -4127,7 +4235,8 @@
             document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value, document.getElementById('add-chapter-source-type').value); });
             document.getElementById('add-subject-form').addEventListener('submit', createSubject);
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal', 'close-add-chapter-dpt-modal', 'close-add-all-chapters-dpt-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal', 'close-add-chapter-dpt-modal', 'close-add-all-chapters-dpt-modal', 'close-postpone-chapter-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+            document.getElementById('postpone-chapter-form').addEventListener('submit', savePostponement);
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
