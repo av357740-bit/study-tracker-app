@@ -177,7 +177,7 @@
             background: linear-gradient(135deg, var(--main-bg-start-dark) 0%, var(--main-bg-end-dark) 100%);
         }
         
-        body.particles-active main, body.constellation-active main {
+        body.constellation-active main {
             background: transparent;
         }
         
@@ -722,7 +722,6 @@
                             <label for="background-style-select" class="font-semibold">Background Style</label>
                             <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                                 <option value="default">Default Gradient</option>
-                                <option value="particles">Particle Network</option>
                                 <option value="constellation">Cyber Constellation</option>
                             </select>
                         </div>
@@ -1077,6 +1076,12 @@
                     <label for="other-task-notes" class="block text-sm font-medium mb-1">Notes (Optional)</label>
                     <textarea id="other-task-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" placeholder="Add any extra details..."></textarea>
                 </div>
+                <div>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="other-task-repeat" class="form-checkbox h-4 w-4 text-primary rounded">
+                        <span class="text-sm font-medium">Repeat this task daily</span>
+                    </label>
+                </div>
                 <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save Task</button>
             </form>
         </div>
@@ -1199,8 +1204,6 @@
             </form>
         </div>
     </div>
-
-
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -1214,9 +1217,19 @@
             });
         }
         
-        const CURRENT_APP_VERSION = "5.3"; // Incremented version for new features
+        const CURRENT_APP_VERSION = "5.4"; // Incremented version for new features
         const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
-        const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];const updateNotes = {
+        const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
+        
+        const updateNotes = {
+            "5.4": [
+                { "title": "स्मार्ट रैंडम स्टडी प्लान 🎲", "note": "अब 'Today\'s Task' में आने वाले अध्याय पूरी तरह से रैंडम होंगे, जिससे आपकी तैयारी और भी विविध होगी। यह आपको बोरियत से बचाएगा और हर दिन एक नई चुनौती देगा।" },
+                { "title": "बेहतर सिंकिंग 🔄", "note": "Today's Task और Today's DPT अब और भी बेहतर तरीके से सिंक हैं। किसी भी अध्याय को कहीं से भी पूरा करने पर, उससे जुड़ा DPT और टास्क तुरंत आपके डैशबोर्ड से अपडेट हो जाएगा।" },
+                { "title": "नया DPT स्किप फीचर 🚀", "note": "अब DPT स्किप करने पर सिर्फ अगला चैप्टर नहीं आएगा, बल्कि उस पूरे विषय के DPT उस दिन के लिए आपके डैशबोर्ड से हट जाएंगे, जिससे आप दूसरे विषयों पर फोकस कर सकते हैं।" },
+                { "title": "रिपीट होने वाले टास्क ✨", "note": "अब आप 'Other Task' में ऐसे टास्क जोड़ सकते हैं जो रोज़ाना अपने आप रिपीट होंगे। इससे आपको रोज़ की आदतें बनाने में मदद मिलेगी।" },
+                { "title": "नया लुक और फील 🎨", "note": "ऐप से 'Particle Network' बैकग्राउंड को हटाकर 'Cyber Constellation' को डिफ़ॉल्ट बना दिया गया है, जो आँखों के लिए आरामदायक और मॉडर्न है।" },
+                { "title": "5 गुना ज़्यादा मज़बूत और स्थिर 🛡️", "note": "ऐप के कोर सिस्टम में बड़े सुधार किए गए हैं। यह अब पहले से कहीं ज़्यादा तेज़, स्मूथ और भरोसेमंद है, जिससे आपका डेटा हमेशा सुरक्षित रहता है और ऐप क्रैश नहीं होता।" }
+            ],
             "5.3": [
                 { "title": "स्मार्ट डैशबोर्ड ✨", "note": "अब पूरे हुए टास्क सीधे डैशबोर्ड से गायब नहीं होंगे, बल्कि 'Completed Tasks' नाम के एक नए ड्रॉपडाउन में चले जाएंगे। इससे आप देख सकते हैं कि आपने आज क्या-क्या पूरा किया है।" },
                 { "title": "बेहतर रिवीजन कंट्रोल 🎯", "note": "Static GK, Constitution Articles, Maths Formulas और Form Filling जैसे विषयों के लिए ऑटोमैटिक रिवीजन बंद कर दिया गया है। अब केवल मुख्य विषयों का ही रिवीजन शेड्यूल होगा।" },
@@ -1555,6 +1568,12 @@
             console.log('Old DPT data structure detected and cleared for new system.');
         }
 
+        // Migration for repeating 'other' tasks
+        (data.otherTasks || []).forEach(task => {
+            safeInitialize(task, 'isRepeating', false);
+            safeInitialize(task, 'lastCompletedDate', null);
+        });
+
 
         const saveData = () => {
             try {
@@ -1718,6 +1737,15 @@
             const todayStr = getLocalDateString();
             if (data.lastCheckedDate === todayStr) return;
 
+            // Handle repeating "other" tasks
+            (data.otherTasks || []).forEach(task => {
+                if (task.isRepeating && task.lastCompletedDate && task.lastCompletedDate < todayStr) {
+                    task.status = 'Pending';
+                    task.date = todayStr;
+                }
+            });
+
+
             const yesterdayDate = new Date();
             yesterdayDate.setDate(yesterdayDate.getDate() - 1);
             const yesterdayStr = data.lastCheckedDate || getLocalDateString(yesterdayDate);
@@ -1737,7 +1765,7 @@
             }
 
              // Handle Missed "Other Tasks"
-            const missedOtherTasks = (data.otherTasks || []).filter(task => task.date === yesterdayStr && task.status === 'Pending');
+            const missedOtherTasks = (data.otherTasks || []).filter(task => !task.isRepeating && task.date === yesterdayStr && task.status === 'Pending');
             missedOtherTasks.forEach(task => {
                 if (!data.missedOtherTasks.some(missed => missed.id === task.id)) {
                     data.missedOtherTasks.push(task);
@@ -1907,9 +1935,7 @@
             if (data.activityLog.length > 100) data.activityLog.pop();
             saveData();
             if (document.getElementById('page-report')?.classList.contains('active')) renderReportPage();
-        };
-
-        const renderHomePage = () => {
+        };const renderHomePage = () => {
             handleNewDayLogic();
             document.getElementById('welcome-heading').innerHTML = `${_('welcome_pravej')}, <span class="text-primary">${data.settings.studentName || 'Student'}!</span>`;
             
@@ -2116,9 +2142,8 @@
             
             let finalInsights = [...priorityInsights, ...shuffledOthers];
             
-            // Always add creator credit and a random quote
+            // Always add a random quote
             finalInsights.push(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
-            finalInsights.unshift(`यह स्टडी ट्रैकर प्रवेज अहमद द्वारा बनाया गया है। (संस्करण: ${CURRENT_APP_VERSION}) 🧑‍💻`);
 
             return finalInsights.length > 0 ? finalInsights : [_('ai_insight_start')];
         }
@@ -2180,51 +2205,74 @@
             const subject = getSubjectById(subjectId); if (!subject) return;
             const availableChapters = (subject.chapters[sourceType] || []).filter(c => c.status !== 'Completed');
             if (availableChapters.length > 1) {
-                const currentIndex = availableChapters.findIndex(c => c.id === chapterId);
-                const newChapter = availableChapters[(currentIndex + 1) % availableChapters.length];
                 const todayStr = getLocalDateString();
                 const planKey = `${subjectId}:${sourceType}`;
-                if (data.dailyPlan[todayStr]?.tasks?.[planKey]) {
-                    data.dailyPlan[todayStr].tasks[planKey].chapterId = newChapter.id;
-                    logActivity('chevrons-right', `Skipped to new chapter: "${newChapter.name}"`);
-                    saveData(); renderHomePage();
-                }
-            } else { logActivity('chevrons-right', `Skipped chapter "${getChapterByIds(subjectId, chapterId, sourceType)?.name}", but no other chapters are available.`); }
+                data.dailyPlan[todayStr].tasks[planKey] = null; // Mark as null to force regeneration
+                delete data.dailyPlan[todayStr].planGeneratedForDay;
+                logActivity('chevrons-right', `Skipped chapter: "${getChapterByIds(subjectId, chapterId, sourceType)?.name}"`);
+                saveData(); 
+                renderHomePage();
+            } else { 
+                logActivity('chevrons-right', `Skipped chapter "${getChapterByIds(subjectId, chapterId, sourceType)?.name}", but no other chapters are available.`); 
+                markSubjectAsDoneForToday(`${subjectId}:${sourceType}`);
+            }
         };
         
         const getOrGenerateDailyPlan = (dateStr) => {
             if (!data.dailyPlan[dateStr] || !data.dailyPlan[dateStr].planGeneratedForDay) {
                 const plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []), completedTasks: [] };
-                const chaptersAlreadyUsed = new Set();
+                
                 const subjectsForToday = getSubjectsForDay(new Date(dateStr));
                 
+                // 1. Handle postponed chapters first
+                const postponedChaptersForToday = [];
                 subjectsForToday.forEach(pair => {
                     const [subjectId, sourceType] = pair.split(':');
                     const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId && p.sourceType === sourceType);
                     if (postponedIndex > -1) {
-                        const postponed = data.postponedChapters[postponedIndex];
+                        const postponed = data.postponedChapters.splice(postponedIndex, 1)[0];
                         const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId, postponed.sourceType);
-                        if (chapter?.status !== 'Completed' && !plan.tasks[pair]) {
+                        if (chapter?.status !== 'Completed') {
                             plan.tasks[pair] = { ...postponed };
-                            chaptersAlreadyUsed.add(postponed.chapterId);
-                            data.postponedChapters.splice(postponedIndex, 1);
+                            postponedChaptersForToday.push(postponed.chapterId);
                         }
                     }
                 });
                 
+                // 2. Select random chapters for the remaining slots
                 subjectsForToday.forEach(pair => {
-                    if (plan.tasks[pair]) return;
-                    const [subjectId, sourceType] = pair.split(':');
-                    const subject = getSubjectById(subjectId); if (!subject) return;
+                    if (plan.tasks[pair]) return; // Already filled by a postponed chapter
                     
-                    const availableChapters = (subject.chapters[sourceType] || []).filter(c => c.status !== 'Completed' && !chaptersAlreadyUsed.has(c.id));
+                    const [subjectId, sourceType] = pair.split(':');
+                    const subject = getSubjectById(subjectId);
+                    if (!subject) return;
+
+                    // Special case for 'fill-form' on Sundays
+                    if (subjectId === 'fill-form' && new Date(dateStr).getDay() === 0) {
+                        const availableChapters = (subject.chapters[sourceType] || []).filter(c => c.status !== 'Completed');
+                        if (availableChapters.length > 0) {
+                            plan.tasks[pair] = { subjectId, chapterId: availableChapters[0].id, sourceType, note: null };
+                            return;
+                        }
+                    } else if (subjectId === 'fill-form') {
+                        return; // Skip 'fill-form' on other days
+                    }
+
+                    // Get all uncompleted chapters for the subject/source, excluding already selected postponed chapters
+                    const availableChapters = (subject.chapters[sourceType] || []).filter(c => 
+                        c.status !== 'Completed' && 
+                        !postponedChaptersForToday.includes(c.id) &&
+                        !Object.values(plan.tasks).some(task => task && task.chapterId === c.id)
+                    );
+                    
                     if (availableChapters.length > 0) {
-                        availableChapters.sort((a, b) => (a.completionCount || 0) - (b.completionCount || 0));
-                        const chapter = availableChapters[0]; 
+                        // Select a random chapter
+                        const randomIndex = Math.floor(Math.random() * availableChapters.length);
+                        const chapter = availableChapters[randomIndex];
                         plan.tasks[pair] = { subjectId, chapterId: chapter.id, sourceType, note: null }; 
-                        chaptersAlreadyUsed.add(chapter.id); 
                     }
                 });
+
                 data.dailyPlan[dateStr] = plan;
                 data.dailyPlan[dateStr].planGeneratedForDay = true;
                 saveData();
@@ -2242,7 +2290,9 @@
             const dayName = new Date().toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'long' });
             
             const otherTasksForToday = (data.otherTasks || [])
-                .concat(data.postponedOtherTasks || [])
+                .filter(task => (task.isRepeating && task.lastCompletedDate !== todayStr) || (!task.isRepeating && task.date === todayStr && task.status === 'Pending'));
+            
+            const postponedOtherTasksForToday = (data.postponedOtherTasks || [])
                 .filter(task => task.date === todayStr && task.status === 'Pending');
 
             const chaptersToStudy = Object.entries(tasks).filter(([key]) => !completedSubjects.includes(key)).map(([, task]) => {
@@ -2271,7 +2321,8 @@
                 ...chaptersToStudy, 
                 ...revisionsForToday,
                 ...manualChapterTasks,
-                ...otherTasksForToday.map(t => ({...t, type: 'other'}))
+                ...otherTasksForToday.map(t => ({...t, type: 'other'})),
+                ...postponedOtherTasksForToday.map(t => ({...t, type: 'other'}))
             ];
 
             if (allTasksForToday.length > 0) {
@@ -2365,15 +2416,17 @@
             } else if (type === 'other') {
                 const uniqueId = `other-task-${item.id}`;
                 const bgColor = 'bg-gray-100 dark:bg-slate-800';
+                const repeatIcon = item.isRepeating ? '<i data-lucide="repeat" class="w-3 h-3 text-violet-500"></i> ' : '';
+
                 const actionButtons = `
                     <div class="flex gap-1">
-                        <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
+                        ${!item.isRepeating ? `<button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>` : ''}
                         <button class="task-action-btn delete-other-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                     </div>`;
 
                 html = `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item">
                     <input type="checkbox" id="${uniqueId}" class="task-checkbox text-gray-500 h-5 w-5 rounded border flex-shrink-0" data-task-id="${item.id}" data-task-type="${type}">
-                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${item.description}</p><p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><i data-lucide="user-check" class="w-3 h-3"></i> Other Task</p></label>
+                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${item.description}</p><p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">${repeatIcon}<i data-lucide="user-check" class="w-3 h-3"></i> Other Task</p></label>
                     ${actionButtons}</li>`;
             }
             return html;
@@ -2386,6 +2439,7 @@
             const tomorrowStr = getLocalDateString(tomorrowDate);
             
             const chaptersForTomorrow = Object.values(getOrGenerateDailyPlan(tomorrowStr).tasks || {}).map(task => {
+                if (!task) return null;
                 const subject = getSubjectById(task.subjectId); const chapter = getChapterByIds(task.subjectId, task.chapterId, task.sourceType);
                 return (subject && chapter) ? { subject, chapter, sourceType: task.sourceType } : null;
             }).filter(Boolean);
@@ -3039,10 +3093,11 @@
                         dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
                         dailyPlanData.completedTasks.push({ type: 'chapter', subjectId, chapterId, sourceType });
                         const subjectSourcePair = `${subjectId}:${sourceType}`;
-                        if (Object.values(dailyPlanData.tasks).some(task => task.subjectId === subjectId && task.sourceType === sourceType)) {
-                            markSubjectAsDoneForToday(subjectSourcePair);
+                        if (Object.values(dailyPlanData.tasks).some(task => task && task.chapterId === chapterId)) {
+                             markSubjectAsDoneForToday(subjectSourcePair);
                         }
                     }
+                    // Force a regeneration of DPT plan after completing a chapter
                     delete data.dailyDptPlan[todayStr]?.planGeneratedForDay;
                 }
             } else { 
@@ -3399,10 +3454,7 @@
                 saveData();
             }
             return data.dailyDptPlan[dateStr];
-        };
-
-
-        const renderTodaysDpt = () => {
+        };const renderTodaysDpt = () => {
             const container = document.getElementById('todays-dpt-container');
             const todayStr = getLocalDateString();
             const yesterdayDate = new Date();
@@ -3698,7 +3750,7 @@
             stopAllBackgroundAnimations();
             const style = data.settings.backgroundStyle || 'constellation';
             
-            document.body.classList.remove('particles-active', 'constellation-active');
+            document.body.classList.remove('constellation-active');
             particleCanvas.style.display = 'none';
 
             if (data.settings.theme === 'dark' && style !== 'default') {
@@ -3710,7 +3762,6 @@
             if (style === 'default') { return; }
             
             particleCanvas.style.display = 'block';
-            if (style === 'particles') { document.body.classList.add('particles-active'); initParticleNetwork(); }
             if (style === 'constellation') { document.body.classList.add('constellation-active'); initConstellationEffect(); }
         };
         
@@ -3723,36 +3774,6 @@
 
         const stopAllBackgroundAnimations = () => { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } };
         function initCanvas() { particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight; backgroundElements = []; }
-        function initParticleNetwork() { initCanvas(); let numberOfParticles = (particleCanvas.height * particleCanvas.width) / 12000; if (numberOfParticles > 120) numberOfParticles = 120; for (let i = 0; i < numberOfParticles; i++) backgroundElements.push(new Particle()); animateParticleNetwork(); }
-        class Particle { 
-            constructor() { 
-                this.x = Math.random() * particleCanvas.width; this.y = Math.random() * particleCanvas.height; 
-                this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 1.5 - 0.75; 
-                this.speedY = Math.random() * 1.5 - 0.75; 
-                const colorVar = data.settings.theme === 'dark' ? '--accent' : '--primary';
-                const color = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
-                this.color = hexToRgba(color, data.settings.theme === 'dark' ? 0.7 : 0.5);
-            } 
-            update() { if (this.x > particleCanvas.width || this.x < 0) this.speedX = -this.speedX; if (this.y > particleCanvas.height || this.y < 0) this.speedY = -this.speedY; this.x += this.speedX; this.y += this.speedY; } 
-            draw() { ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } 
-        }
-        function animateParticleNetwork() { ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); for (let i = 0; i < backgroundElements.length; i++) { backgroundElements[i].update(); backgroundElements[i].draw(); } connectParticles(); animationFrameId = requestAnimationFrame(animateParticleNetwork); }
-        function connectParticles() { 
-            let opacityValue = 1; const connectDistance = 120; 
-            const colorVar = data.settings.theme === 'dark' ? '--accent' : '--primary';
-            const colorHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
-            const lineColor = hexToRgba(colorHex, data.settings.theme === 'dark' ? 0.2 : 0.1);
-            
-            for (let a = 0; a < backgroundElements.length; a++) { for (let b = a; b < backgroundElements.length; b++) { let distance = Math.hypot(backgroundElements[a].x - backgroundElements[b].x, backgroundElements[a].y - backgroundElements[b].y); if (distance < connectDistance) { opacityValue = 1 - (distance / connectDistance); ctx.strokeStyle = lineColor.replace(/,\s*\d?\.?\d+\)$/, `, ${opacityValue})`);
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(backgroundElements[a].x, backgroundElements[a].y);
-                        ctx.lineTo(backgroundElements[b].x, backgroundElements[b].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
         
        function initConstellationEffect() {
             initCanvas();
@@ -4206,7 +4227,10 @@
                     return;
                 }
                 
-                const { taskId, taskType, subjectId, chapterId, sourceType, revisionDate } = postponeBtn?.dataset || skipBtn?.dataset || {};
+                let targetButton = postponeBtn || skipBtn;
+                if (!targetButton) return;
+
+                const { taskId, taskType, subjectId, chapterId, sourceType, revisionDate } = targetButton.dataset;
                 
                 if (!taskType) return;
                 e.preventDefault();
@@ -4236,7 +4260,9 @@
                                 updateOtherTaskStatus(checkbox.dataset.taskId, 'Completed');
                             } else { // chapter or manual_chapter
                                 updateChapterStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.sourceType, 'Completed'); 
-                                if (taskType === 'chapter') { markSubjectAsDoneForToday(checkbox.dataset.subjectSourcePair); }
+                                if (taskType === 'chapter' && checkbox.dataset.subjectSourcePair) { 
+                                    markSubjectAsDoneForToday(checkbox.dataset.subjectSourcePair);
+                                }
                                 else if (taskType === 'manual_chapter') {
                                      const todayStr = getLocalDateString();
                                      const taskId = listItem.dataset.manualId;
@@ -4705,6 +4731,7 @@
             const description = document.getElementById('other-task-description').value.trim();
             const date = document.getElementById('other-task-date').value;
             const notes = document.getElementById('other-task-notes').value.trim();
+            const isRepeating = document.getElementById('other-task-repeat').checked;
 
             if (!description || !date) {
                 alert('Please provide a task description and a date.');
@@ -4717,7 +4744,9 @@
                 date,
                 notes,
                 status: 'Pending',
-                completedDate: null
+                completedDate: null,
+                isRepeating: isRepeating,
+                lastCompletedDate: null
             };
 
             data.otherTasks.push(newTask);
@@ -4730,16 +4759,25 @@
         function updateOtherTaskStatus(taskId, newStatus) {
             const task = (data.otherTasks || []).find(t => t.id === taskId) || (data.postponedOtherTasks || []).find(t => t.id === taskId);
             if (task) {
+                const todayStr = getLocalDateString();
                 task.status = newStatus;
+                
                 if (newStatus === 'Completed') {
-                    task.completedDate = getLocalDateString();
+                    task.completedDate = todayStr;
+                    if(task.isRepeating) {
+                        task.lastCompletedDate = todayStr;
+                    }
                     logActivity('check-square', `Other task completed: "${task.description}"`);
-                    const todayStr = getLocalDateString();
+                    
                     data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [] };
                     data.dailyPlan[todayStr].completedTasks.push({ type: 'other', description: task.description, id: task.id });
                 } else {
                     task.completedDate = null;
                 }
+
+                // If it was a postponed task, remove it from that list
+                data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
+
                 saveData();
                 renderHomePage();
             }
@@ -4747,7 +4785,7 @@
 
         function postponeOtherTask(taskId) {
             const task = (data.otherTasks || []).find(t => t.id === taskId) || (data.postponedOtherTasks || []).find(t => t.id === taskId);
-            if (task) {
+            if (task && !task.isRepeating) {
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 task.date = getLocalDateString(tomorrow);
@@ -4866,10 +4904,7 @@
                 renderHomePage();
                 alert('Study start date has been reset!');
             });
-        }
-
-
-        init();
+        }init();
     });
     </script>
 </body>
