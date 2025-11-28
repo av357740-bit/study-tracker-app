@@ -2,7 +2,8 @@
 <html lang="en" class="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pravej Ahmad's Digital Study Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pravej Ahmad's Digital Study Tracker</title>
 
 <!-- PWA (Progressive Web App) Meta Tags -->
 <meta name="theme-color" content="#0ea5e9">
@@ -60,6 +61,7 @@
         background-color: var(--background-light);
         color: var(--text-light);
         transition: background-color 0.3s ease, color 0.3s ease;
+        overflow-x: hidden; /* Prevent horizontal scroll */
     }
     .dark body {
         background-color: var(--background-dark);
@@ -85,6 +87,7 @@
         height: 100%;
         z-index: -1;
         display: none;
+        pointer-events: none; /* Ensure clicks pass through */
     }
 
     .app-header-title {
@@ -139,7 +142,7 @@
     }
     .task-list-item {
         transition: opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease;
-        max-height: 150px;
+        max-height: 250px; /* Increased to accommodate content */
     }
 
     .task-note-missed {
@@ -151,12 +154,11 @@
         border-left-color: #fb923c;
     }
     
-    /* Removed Book/Notes specific colors, keeping generic badge style just in case */
     .source-badge {
         font-size: 0.7rem; font-weight: 700; padding: 2px 6px;
         border-radius: 99px; margin-left: 8px; background-color: var(--primary);
         color: white; opacity: 0.8;
-        display: none; /* Hidden by default as we removed source distinction */
+        display: none; 
     }
     
     #undo-toast {
@@ -215,7 +217,6 @@
         50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(253, 230, 138, 0.7); }
     }
 
-
     /* AI Insights Glow Effect */
     #ai-insights-container {
         position: relative;
@@ -238,7 +239,6 @@
     @keyframes rotate-glow {
         100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
-
 
     .btn-neon {
         background-color: transparent;
@@ -322,50 +322,112 @@
     @keyframes rotate { 100% { transform: rotate(360deg); } }
     @keyframes fadeInItem { to { opacity: 1; transform: translateY(0); } }
 
-    /* Print-specific styles */
+    /* COMPLETELY REWRITTEN PRINT STYLES TO FIX BLANK PAGES */
     @media print {
-        body.is-printing > *:not(.printable),
-        body.is-printing #sidebar,
-        body.is-printing #mobile-bottom-nav,
-        body.is-printing header,
-        body.is-printing button,
-        body.is-printing .no-print {
+        /* Reset Body */
+        body, html {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            height: auto !important;
+            width: 100% !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
+        }
+
+        /* Hide specific non-printable elements */
+        #sidebar, 
+        #mobile-bottom-nav, 
+        header, 
+        #theme-toggle-btn, 
+        #mobile-menu-btn,
+        .btn-neon,
+        button,
+        .no-print,
+        #particle-canvas,
+        .page:not(.active), /* Hide inactive pages initially */
+        .modal-backdrop {
             display: none !important;
         }
-        body, html {
-            background: #fff !important; color: #000 !important;
-            -webkit-print-color-adjust: exact; print-color-adjust: exact;
-        }
-        body.is-printing main, body.is-printing .page.printable {
+
+        /* The main container logic */
+        .flex {
             display: block !important;
-            height: auto !important;
-            overflow: visible !important;
-            padding: 0 !important; margin: 0 !important;
-            background: none !important;
-            width: 100% !important;
         }
-        .page { display: none !important; }
-        .page.printable { display: block !important; animation: none !important; }
-        .dashboard-card, .bg-card-light {
-            box-shadow: none !important; border: 1px solid #ccc !important;
+        
+        main {
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            height: auto !important;
+            width: 100% !important;
+            background: none !important;
+        }
+
+        /* Specific Logic for Printable Pages */
+        /* We use a class 'printable' added via JS when printing */
+        .page {
+            display: none !important;
+        }
+        
+        .page.printable {
+            display: block !important;
+            visibility: visible !important;
+            position: relative !important;
+            left: 0 !important;
+            top: 0 !important;
+        }
+
+        /* Ensure Charts and Content are Visible */
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
             page-break-inside: avoid;
         }
-        .grid { display: block !important; }
-        .grid > * { width: 100% !important; }
-        canvas { max-width: 100% !important; height: auto !important; }
+
+        .dashboard-card, 
+        .bg-card-light, 
+        .dark .bg-card-dark {
+            background-color: #ffffff !important;
+            border: 1px solid #dddddd !important;
+            box-shadow: none !important;
+            color: #000 !important;
+            page-break-inside: avoid;
+            margin-bottom: 20px !important;
+        }
+
+        /* Text Colors Force Black */
+        .text-text-light, 
+        .text-text-dark,
+        .text-muted-light,
+        .text-muted-dark {
+            color: #000000 !important;
+        }
+
+        /* Remove Dark Mode Variables for Print */
         .dark, .dark body {
-             --background-dark: #ffffff; --card-dark: #ffffff;
-             --text-dark: #000000; --text-muted-dark: #333333;
+             --background-dark: #ffffff; 
+             --card-dark: #ffffff;
+             --text-dark: #000000; 
+             --text-muted-dark: #333333;
              --border-dark: #cccccc;
         }
+        
+        /* Grid Adjustments for Print */
+        .grid {
+            display: block !important;
+        }
+        .grid > * {
+            margin-bottom: 20px;
+        }
     }
-
 </style>
 </head>
 <body class="text-text-light dark:text-text-dark"><canvas id="particle-canvas"></canvas>
 
 <div class="flex h-screen bg-transparent">
-    <aside id="sidebar" class="flex flex-col w-64 bg-card-light dark:bg-card-dark relative">
+    <aside id="sidebar" class="flex flex-col w-64 bg-card-light dark:bg-card-dark relative no-print">
         <div class="flex items-center justify-between p-4 border-b h-16">
             <h1 class="text-xl font-extrabold app-header-title" data-translate="study_tracker">Study Tracker</h1>
         </div>
@@ -396,7 +458,7 @@
     </aside>
 
     <div class="flex-1 flex flex-col h-screen max-h-screen">
-        <header class="flex items-center justify-between p-4 border-b sticky top-0 bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-sm z-10">
+        <header class="flex items-center justify-between p-4 border-b sticky top-0 bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-sm z-10 no-print">
             <button id="mobile-menu-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden">
                 <i data-lucide="menu"></i>
             </button>
@@ -479,7 +541,6 @@
                         <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm">
                             <div class="flex justify-center items-center gap-2 mb-3 relative">
                                 <h2 id="subject-progress-title" class="text-lg font-bold text-center">Subject Progress</h2>
-                                <!-- Removed Toggle Button for Notes/Book View -->
                             </div>
                             <div id="subject-progress-dashboard-container" class="space-y-3"></div>
                         </div>
@@ -505,8 +566,7 @@
                 </div>
                 <div id="subjects-list-container" class="space-y-3"></div>
             </div>
-            
-            <div id="page-dpt" class="page">
+<div id="page-dpt" class="page">
                  <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                     <h2 class="text-2xl font-bold" data-translate="dpt_page_title">Daily Practice Tests (DPT)</h2>
                     <div class="flex items-center gap-3 flex-wrap">
@@ -553,8 +613,7 @@
                 </div>
                 <div id="url-container" class="space-y-3"></div>
             </div>
-
-            <div id="page-import-export" class="page">
+<div id="page-import-export" class="page">
                 <h2 class="text-2xl font-bold mb-4" data-translate="import_export_data">Import & Export Data</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
@@ -616,7 +675,7 @@
                         </div>
                     </div>
                     
-                    <!-- Modified Chapters Management (Removed Book/Notes Split) -->
+                    <!-- Modified Chapters Management (Unified Structure) -->
                     <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                         <h3 class="font-semibold mb-3 text-lg" data-translate="chapters_data_management">Chapters Data Management</h3>
                         <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4">Import or export chapter lists in JSON format.</p>
@@ -663,8 +722,7 @@
                     </div>
                 </div>
             </div>
-
-            <div id="page-report" class="page">
+<div id="page-report" class="page">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold" data-translate="study_report">Study Report</h2>
                     <button id="print-report-btn" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg btn-neon">
@@ -800,7 +858,6 @@
 </nav>
 
 <input type="file" id="import-file-input" class="hidden" accept=".json">
-
 <div id="update-popup-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="w-full max-w-lg rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto update-modal-content">
         <button id="close-update-popup-modal" class="absolute top-4 right-4 text-indigo-200 hover:text-white z-10"><i data-lucide="x"></i></button>
@@ -820,13 +877,12 @@
                 <label for="new-subject-name" class="block text-sm font-medium mb-1">Subject Name</label>
                 <input type="text" id="new-subject-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g. Current Affairs">
             </div>
-            <!-- Removed Subject Source Radio Buttons -->
             <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save Subject</button>
         </form>
     </div>
 </div>
 
-<div id="add-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative"><button id="close-add-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button><h2 class="text-xl font-bold mb-4" data-translate="add_new_chapter">Add New Chapter</h2><form id="add-chapter-form" class="space-y-4"><input type="hidden" id="add-chapter-subject-id"><!-- Removed source type hidden input --><div><label for="new-chapter-name" class="block text-sm font-medium mb-1" data-translate="chapter_name">Chapter Name</label><input type="text" id="new-chapter-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required></div><button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="add_chapter">Add Chapter</button></form></div></div>
+<div id="add-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative"><button id="close-add-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button><h2 class="text-xl font-bold mb-4" data-translate="add_new_chapter">Add New Chapter</h2><form id="add-chapter-form" class="space-y-4"><input type="hidden" id="add-chapter-subject-id"><div><label for="new-chapter-name" class="block text-sm font-medium mb-1" data-translate="chapter_name">Chapter Name</label><input type="text" id="new-chapter-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required></div><button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="add_chapter">Add Chapter</button></form></div></div>
 
 <div id="confirmation-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-6 text-center"><h2 id="confirmation-title" class="text-xl font-bold mb-2" data-translate="are_you_sure">Are you sure?</h2><p id="confirmation-message" class="text-text-muted-light dark:text-text-muted-dark mb-6" data-translate="action_cannot_be_undone">This action cannot be undone.</p><div class="flex justify-center gap-4"><button id="confirm-cancel" class="flex-1 p-3 font-semibold rounded-lg bg-gray-200 dark:bg-gray-700" data-translate="cancel">Cancel</button><button id="confirm-action" class="flex-1 p-3 font-semibold rounded-lg text-white bg-danger" data-translate="confirm">Confirm</button></div></div></div>
 
@@ -1000,7 +1056,6 @@
     </div>
 </div>
 
-<!-- MODAL FOR CHOOSING TASK TYPE -->
 <div id="add-task-choice-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-6 relative">
         <button id="close-add-task-choice-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -1018,7 +1073,6 @@
     </div>
 </div>
 
-<!-- MODAL FOR ADDING 'OTHER' TASK -->
 <div id="add-other-task-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
         <button id="close-add-other-task-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -1036,12 +1090,47 @@
                 <label for="other-task-notes" class="block text-sm font-medium mb-1">Notes (Optional)</label>
                 <textarea id="other-task-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" placeholder="Add any extra details..."></textarea>
             </div>
-            <div>
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" id="other-task-repeat" class="form-checkbox h-4 w-4 text-primary rounded">
-                    <span class="text-sm font-medium">Repeat this task daily</span>
+            
+            <div class="border-t pt-3 mt-2">
+                <label class="flex items-center gap-2 cursor-pointer mb-2">
+                    <input type="checkbox" id="other-task-is-repeating" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+                    <span class="font-semibold text-sm">Repeat this task</span>
                 </label>
+                <div id="repeat-options-container" class="hidden space-y-3 pl-2 transition-all duration-300">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Select days to repeat:</p>
+                    <div class="flex flex-wrap gap-2" id="week-days-selector">
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="1" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Mon</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="2" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Tue</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="3" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Wed</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="4" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Thu</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="5" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Fri</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="6" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Sat</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="repeat_day" value="0" class="peer sr-only">
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-500 transition-all duration-200">Sun</span>
+                        </label>
+                    </div>
+                </div>
             </div>
+
             <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save Task</button>
         </form>
     </div>
@@ -1123,7 +1212,7 @@
     </div>
 </div>
 
-<!-- NEW MODAL FOR ADDING DPT TO A CHAPTER -->
+<!-- MODAL FOR ADDING DPT TO A CHAPTER -->
 <div id="add-chapter-dpt-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
         <button id="close-add-chapter-dpt-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -1143,7 +1232,7 @@
     </div>
 </div>
 
-<!-- NEW MODAL FOR ADDING DPT TO ALL CHAPTERS -->
+<!-- MODAL FOR ADDING DPT TO ALL CHAPTERS -->
 <div id="add-all-chapters-dpt-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
         <button id="close-add-all-chapters-dpt-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
@@ -1171,14 +1260,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    const CURRENT_APP_VERSION = "6.0"; // Major version update for structure change
+    const CURRENT_APP_VERSION = "6.1"; // Updated version
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     const updateNotes = {
-        "6.0": [
+        "6.1": [
+            { "title": "Custom Repetition 📅", "note": "Now you can select specific days (Mon, Tue...) for repeating tasks." },
             { "title": "Simplified Structure 📂", "note": "We have merged 'Notes' and 'Book' chapters into a single list for easier management." },
-            { "title": "Crash Fixes 🛠️", "note": "Fixed issues where the app would crash due to missing source types." },
             { "title": "Better Performance 🚀", "note": "The app is now lighter and faster." }
         ]
     };
@@ -1186,9 +1275,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const DB_KEY = 'pravejStudyTracker';
     let lastAction = null;
     let undoTimeout = null;
-    // Removed dashboardProgressView variable as we don't need to switch views anymore
-    let subjectPageViewMode = 'all'; // 'all' or 'completed'
-    let dptPageViewMode = 'pending'; // 'pending' or 'completed'
+    let subjectPageViewMode = 'all'; 
+    let dptPageViewMode = 'pending';
     
     let dynamicDisplayIntervals = {}; 
     
@@ -1439,7 +1527,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- Data Structure Migration (CRITICAL FOR CRASH PREVENTION) ---
-    // This block converts old "Book/Notes" structure to new "Unified Chapters" structure
     if (data.subjects) {
         data.subjects.forEach(subject => {
             // Check if chapters is an object (Old format: { notes: [], book: [] })
@@ -1495,8 +1582,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const newTasks = {};
             Object.entries(plan.tasks).forEach(([key, task]) => {
                 if (task) {
-                    // Remove sourceType from task object if present, it's no longer needed
-                    // But we keep the task structure valid
                     const cleanTask = { ...task };
                     // Key might be "physics:notes", change to "physics"
                     const newKey = key.split(':')[0]; 
@@ -1569,8 +1654,7 @@ let allCharts = {};
     const particleCanvas = document.getElementById('particle-canvas');
     const ctx = particleCanvas.getContext('2d');
     let backgroundElements = [];
-
-    const init = () => {
+const init = () => {
         handleNewDayLogic();
         applyTheme(data.settings.theme);
         applyBackgroundStyle();
@@ -1661,13 +1745,32 @@ let allCharts = {};
 
     const handleNewDayLogic = () => {
         const todayStr = getLocalDateString();
+        const currentDayOfWeek = new Date().getDay().toString(); // 0 (Sun) to 6 (Sat)
+
         if (data.lastCheckedDate === todayStr) return;
 
-        // Handle repeating "other" tasks
+        // Handle Repeating "Other" Tasks (Updated for Custom Days)
         (data.otherTasks || []).forEach(task => {
-            if (task.isRepeating && task.lastCompletedDate && task.lastCompletedDate < todayStr) {
-                task.status = 'Pending';
-                task.date = todayStr;
+            if (task.isRepeating) {
+                let shouldRepeatToday = false;
+
+                if (task.repeatType === 'weekly' && Array.isArray(task.repeatDays)) {
+                    // Check if today matches one of the selected days
+                    if (task.repeatDays.includes(currentDayOfWeek)) {
+                        shouldRepeatToday = true;
+                    }
+                } else {
+                    // Default to daily if no specific type or days (Fallback)
+                    shouldRepeatToday = true; 
+                }
+
+                // If scheduled for today and not already completed today
+                if (shouldRepeatToday) {
+                    if (task.lastCompletedDate !== todayStr) {
+                        task.status = 'Pending';
+                        task.date = todayStr;
+                    }
+                }
             }
         });
 
@@ -1680,11 +1783,9 @@ let allCharts = {};
         if (yesterdayPlanData?.tasks) {
             yesterdayPlanData.completedSubjects = yesterdayPlanData.completedSubjects || [];
             Object.entries(yesterdayPlanData.tasks).forEach(([key, task]) => {
-                // Key is just subjectId now
                 if (task?.subjectId && task.chapterId && !yesterdayPlanData.completedSubjects.includes(key)) {
                     const chapter = getChapterByIds(task.subjectId, task.chapterId);
                     if (chapter && chapter.status !== 'Completed' && !data.missedChapters.some(c => c.chapterId === task.chapterId)) {
-                        // Removed sourceType from missedChapters object
                         data.missedChapters.push({ subjectId: task.subjectId, chapterId: task.chapterId, date: yesterdayStr });
                     }
                 }
@@ -1699,31 +1800,21 @@ let allCharts = {};
             }
         });
 
-        // Handle Missed Revisions from yesterday (Updated for unified structure)
+        // Handle Missed Revisions from yesterday
         data.missedRevisions = data.missedRevisions || [];
         (data.subjects || []).forEach(s => {
             (s.chapters || []).forEach(c => (c.revisions || []).forEach(r => { 
                 if(r.status === 'Pending' && r.date === yesterdayStr) {
                      if (!data.missedRevisions.some(mr => mr.chapterId === c.id && mr.revisionDate === r.date)) {
-                        // Removed sourceType
                         data.missedRevisions.push({ subjectId: s.id, chapterId: c.id, revisionDate: r.date });
                      }
                 }
             }));
         });
 
-        // Handle Missed DPTs
-        const yesterdayDptPlan = data.dailyDptPlan[yesterdayStr];
-        if (yesterdayDptPlan) {
-            yesterdayDptPlan.forEach(({ subjectId, chapterId, testId }) => {
-                const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
-                if (test && test.status !== 'Completed') {
-                    // Logic handled on dashboard
-                }
-            });
-        }
-
         data.lastCheckedDate = todayStr;
+        
+        // Clean up old data
         Object.keys(data.dailyPlan).forEach(date => { if (new Date(todayStr) - new Date(date) > 7 * 24 * 60 * 60 * 1000) { delete data.dailyPlan[date]; } });
         Object.keys(data.dailyDptPlan).forEach(date => { if (new Date(todayStr) - new Date(date) > 7 * 24 * 60 * 60 * 1000) { delete data.dailyDptPlan[date]; } });
         
@@ -1843,7 +1934,6 @@ let allCharts = {};
 
     const getSubjectById = (id) => (data.subjects || []).find(s => s.id === id);
     
-    // UPDATED: No longer uses sourceType, searches the unified chapters array
     const getChapterByIds = (subjectId, chapterId) => {
         const subject = getSubjectById(subjectId);
         if (!subject || !chapterId) return null;
@@ -2074,8 +2164,7 @@ const renderHomePage = () => {
         const insightContent = document.getElementById('ai-insight-content');
         initRotatingDisplay('ai-insight-content', gatherAllInsights(), (item) => `<p>${item}</p>`, _('ai_insight_start'));
     };
-
-    const getSubjectsForDay = (date = new Date()) => {
+const getSubjectsForDay = (date = new Date()) => {
         const dayIndex = getCycleDayIndex(date);
         if (data.settings.planMode === 'custom_cycle') { return (data.settings.customCyclePlan || [])[dayIndex] || []; }
         return dailyPattern[dayIndex] || [];
@@ -2119,17 +2208,20 @@ const renderHomePage = () => {
             hideModal('chapter-modal');
         }, 500);
     };
-    
     const skipChapter = (subjectId, chapterId) => {
         const subject = getSubjectById(subjectId); if (!subject) return;
         const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
         if (availableChapters.length > 1) {
             const todayStr = getLocalDateString();
-            const planKey = subjectId;
-            data.dailyPlan[todayStr].tasks[planKey] = null; // Mark as null to force regeneration
-            delete data.dailyPlan[todayStr].planGeneratedForDay;
+            // Mark specific slot as null to regenerate ONLY that slot
+            if(data.dailyPlan[todayStr] && data.dailyPlan[todayStr].tasks) {
+                data.dailyPlan[todayStr].tasks[subjectId] = null;
+                // DO NOT delete planGeneratedForDay, keep it to preserve completed history
+            }
             logActivity('chevrons-right', `Skipped chapter: "${getChapterByIds(subjectId, chapterId)?.name}"`);
             saveData(); 
+            // Force regeneration of missing slots
+            getOrGenerateDailyPlan(todayStr); 
             renderHomePage();
         } else { 
             logActivity('chevrons-right', `Skipped chapter "${getChapterByIds(subjectId, chapterId)?.name}", but no other chapters are available.`); 
@@ -2138,67 +2230,61 @@ const renderHomePage = () => {
     };
     
     const getOrGenerateDailyPlan = (dateStr) => {
-        if (!data.dailyPlan[dateStr] || !data.dailyPlan[dateStr].planGeneratedForDay) {
-            const plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []), completedTasks: [] };
-            
-            const subjectsForToday = getSubjectsForDay(new Date(dateStr));
-            
-            // 1. Handle postponed chapters first
-            const postponedChaptersForToday = [];
-            subjectsForToday.forEach(subjectId => {
-                // Clean subjectId (remove :notes if present from old data)
-                subjectId = subjectId.split(':')[0];
-                
-                const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
-                if (postponedIndex > -1) {
-                    const postponed = data.postponedChapters.splice(postponedIndex, 1)[0];
-                    const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId);
-                    if (chapter?.status !== 'Completed') {
-                        plan.tasks[subjectId] = { ...postponed };
-                        postponedChaptersForToday.push(postponed.chapterId);
-                    }
-                }
-            });
-            
-            // 2. Select random chapters for the remaining slots
-            subjectsForToday.forEach(subjectId => {
-                subjectId = subjectId.split(':')[0]; // Ensure clean ID
-                if (plan.tasks[subjectId]) return; // Already filled
-                
-                const subject = getSubjectById(subjectId);
-                if (!subject) return;
+        // Initialize if not exists
+        if (!data.dailyPlan[dateStr]) {
+            data.dailyPlan[dateStr] = { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [], planGeneratedForDay: false };
+        }
 
-                // Special case for 'fill-form' on Sundays
-                if (subjectId === 'fill-form' && new Date(dateStr).getDay() === 0) {
-                    const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
-                    if (availableChapters.length > 0) {
-                        plan.tasks[subjectId] = { subjectId, chapterId: availableChapters[0].id, note: null };
-                        return;
-                    }
-                } else if (subjectId === 'fill-form') {
-                    return; // Skip 'fill-form' on other days
-                }
+        const plan = data.dailyPlan[dateStr];
+        const subjectsForToday = getSubjectsForDay(new Date(dateStr));
+        const postponedChaptersForToday = []; // Re-calc not needed if already placed, but safe to keep vars
 
-                // Get all uncompleted chapters
+        // Only fill MISSING slots (null or undefined)
+        subjectsForToday.forEach(subjectId => {
+            subjectId = subjectId.split(':')[0];
+            
+            // If task exists and is valid, skip
+            if (plan.tasks[subjectId]) return;
+
+            const subject = getSubjectById(subjectId);
+            if (!subject) return;
+
+            // 1. Check Postponed (Only if this subject slot is empty)
+            const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
+            if (postponedIndex > -1) {
+                const postponed = data.postponedChapters.splice(postponedIndex, 1)[0];
+                const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId);
+                if (chapter?.status !== 'Completed') {
+                    plan.tasks[subjectId] = { ...postponed };
+                    return; // Done for this subject
+                }
+            }
+
+            // 2. Logic: Fill Form (Sequential) vs Others (Random)
+            if (subjectId === 'fill-form') {
+                const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
+                if (availableChapters.length > 0) {
+                    plan.tasks[subjectId] = { subjectId, chapterId: availableChapters[0].id, note: null };
+                }
+            } else {
+                // Filter available chapters (not completed, not currently in plan)
+                const currentPlanChapterIds = Object.values(plan.tasks).filter(t => t).map(t => t.chapterId);
                 const availableChapters = (subject.chapters || []).filter(c => 
                     c.status !== 'Completed' && 
-                    !postponedChaptersForToday.includes(c.id) &&
-                    !Object.values(plan.tasks).some(task => task && task.chapterId === c.id)
+                    !currentPlanChapterIds.includes(c.id)
                 );
                 
                 if (availableChapters.length > 0) {
-                    // Select a random chapter
                     const randomIndex = Math.floor(Math.random() * availableChapters.length);
                     const chapter = availableChapters[randomIndex];
                     plan.tasks[subjectId] = { subjectId, chapterId: chapter.id, note: null }; 
                 }
-            });
+            }
+        });
 
-            data.dailyPlan[dateStr] = plan;
-            data.dailyPlan[dateStr].planGeneratedForDay = true;
-            saveData();
-        }
-        return data.dailyPlan[dateStr];
+        plan.planGeneratedForDay = true;
+        saveData();
+        return plan;
     };
 
     const renderTodaysPlan = () => {
@@ -2207,28 +2293,48 @@ const renderHomePage = () => {
         const dailyPlanData = getOrGenerateDailyPlan(todayStr);
         const tasks = dailyPlanData.tasks || {};
         const manualTasks = dailyPlanData.manualTasks || [];
-        const completedSubjects = dailyPlanData.completedSubjects || [];
         const dayName = new Date().toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'long' });
         
-        const otherTasksForToday = (data.otherTasks || [])
-            .filter(task => (task.isRepeating && task.lastCompletedDate !== todayStr) || (!task.isRepeating && task.date === todayStr && task.status === 'Pending'));
+        // Auto-Remove Logic: Filter out COMPLETED other tasks
+        const otherTasksForToday = (data.otherTasks || []).filter(task => {
+            if (task.status === 'Completed') return false; // HIDE IF COMPLETED
+            
+            if (task.isRepeating) {
+                if (task.lastCompletedDate === todayStr) return false; // HIDE IF DONE TODAY
+                return task.date === todayStr && task.status === 'Pending';
+            } else {
+                return task.date === todayStr && task.status === 'Pending';
+            }
+        });
         
-        const postponedOtherTasksForToday = (data.postponedOtherTasks || [])
-            .filter(task => task.date === todayStr && task.status === 'Pending');
+        const postponedOtherTasksForToday = (data.postponedOtherTasks || []).filter(task => task.date === todayStr && task.status === 'Pending');
 
-        const chaptersToStudy = Object.entries(tasks).filter(([key]) => !completedSubjects.includes(key)).map(([, task]) => {
+        // Auto-Remove Logic: Filter out COMPLETED chapters
+        const chaptersToStudy = Object.entries(tasks).map(([, task]) => {
             if (!task) return null;
-            const subject = getSubjectById(task.subjectId); const chapter = getChapterByIds(task.subjectId, task.chapterId);
-            return (subject && chapter && chapter.status !== 'Completed') ? { type: 'chapter', subject, chapter, note: task.note } : null;
+            const subject = getSubjectById(task.subjectId); 
+            const chapter = getChapterByIds(task.subjectId, task.chapterId);
+            
+            // CRITICAL: If status is Completed, RETURN NULL (Hide it)
+            if (!subject || !chapter || chapter.status === 'Completed') return null;
+            
+            // Double Check: If in dailyPlan.completedTasks, Hide it
+            if (dailyPlanData.completedTasks && dailyPlanData.completedTasks.some(ct => ct.type === 'chapter' && ct.chapterId === chapter.id)) return null;
+
+            return { type: 'chapter', subject, chapter, note: task.note };
         }).filter(Boolean);
 
         const revisionsForToday = [];
         (data.subjects || []).forEach(s => {
-            (s.chapters || []).forEach(c => (c.revisions || []).forEach(r => { if(r.status === 'Pending' && r.date === todayStr) revisionsForToday.push({ type: 'revision', subject: s, chapter: c, revision: r }); }));
+            (s.chapters || []).forEach(c => (c.revisions || []).forEach(r => { 
+                // Hide completed revisions
+                if(r.status === 'Pending' && r.date === todayStr) revisionsForToday.push({ type: 'revision', subject: s, chapter: c, revision: r }); 
+            }));
         });
         
         const manualChapterTasks = manualTasks.filter(task => {
             const chapter = getChapterByIds(task.subjectId, task.chapterId);
+            // Hide completed manual tasks
             return chapter && chapter.status !== 'Completed';
         }).map(task => ({ ...task, type: 'manual_chapter' }));
 
@@ -2258,7 +2364,6 @@ const renderHomePage = () => {
         renderCompletedTasksDropdown();
         lucide.createIcons();
     };
-
     const renderCompletedTasksDropdown = () => {
         const todayStr = getLocalDateString();
         const completedTasks = data.dailyPlan[todayStr]?.completedTasks || [];
@@ -2281,6 +2386,8 @@ const renderHomePage = () => {
                 const chapter = getChapterByIds(task.subjectId, task.chapterId);
                 if (subject && chapter) {
                     text = `${_(subject.id)} - ${chapter.name} ${task.type === 'revision' ? '(Revision)' : ''}`;
+                } else {
+                    text = "Unknown Chapter"; // Fallback
                 }
             } else if (task.type === 'other') {
                 text = task.description;
@@ -2289,7 +2396,6 @@ const renderHomePage = () => {
         }).join('');
         lucide.createIcons();
     };
-    
     const renderTaskItemHTML = (item) => {
         let html = '';
         const { type } = item;
@@ -2304,7 +2410,7 @@ const renderHomePage = () => {
             if (!subject || !chapter) return '';
 
             const uniqueId = isManual ? `manual-${item.id}` : (isRevision ? `revision-${subject.id}-${chapter.id}-${revision.date}` : `task-${subject.id}-${chapter.id}`);
-            // Removed sourceBadge
+            
             const bgColor = isManual ? 'bg-indigo-50 dark:bg-indigo-900/40' : (isRevision ? 'bg-amber-50 dark:bg-amber-900/40' : 'bg-card-light dark:bg-card-dark shadow-sm');
             const checkboxClass = isRevision ? 'revision-checkbox text-amber-500' : 'task-checkbox text-primary';
             const labelText = isRevision ? _('revision_task', {chapterName: chapter.name}) : chapter.name;
@@ -2314,17 +2420,15 @@ const renderHomePage = () => {
             
             const noteHtml = item.note ? `<div class="mt-2 pl-7"><p class="text-xs text-yellow-700 dark:text-yellow-300 p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-md flex items-start gap-2"><i data-lucide="notebook-text" class="w-4 h-4 flex-shrink-0 mt-0.5"></i><span>${item.note}</span></p></div>` : '';
             
-            // Removed data-source-type from buttons
             const actionButtons = `
                 <div class="flex gap-1">
                     <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
                     ${isManual ? 
                         `<button class="task-action-btn delete-manual-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-manual-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>` :
-                        (isRevision ? '' : `<button class="task-action-btn skip-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>`)
+                        (isRevision ? '' : `<button class="task-action-btn skip-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-task-type="chapter"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>`)
                     }
                 </div>`;
 
-            // Removed data-source-type from checkbox
             html = `<li class="task-list-item p-3 rounded-lg flex flex-col items-start ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
                 <div class="w-full flex items-center gap-3">
                     <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-id-only="${subject.id}"`} data-task-type="${type}">
@@ -2337,7 +2441,14 @@ const renderHomePage = () => {
         } else if (type === 'other') {
             const uniqueId = `other-task-${item.id}`;
             const bgColor = 'bg-gray-100 dark:bg-slate-800';
-            const repeatIcon = item.isRepeating ? '<i data-lucide="repeat" class="w-3 h-3 text-violet-500"></i> ' : '';
+            let repeatIcon = '';
+            if (item.isRepeating) {
+                if (item.repeatType === 'weekly') {
+                    repeatIcon = '<span class="text-[10px] bg-violet-200 text-violet-800 px-1 rounded">Weekly</span> ';
+                } else {
+                    repeatIcon = '<i data-lucide="repeat" class="w-3 h-3 text-violet-500"></i> ';
+                }
+            }
 
             const actionButtons = `
                 <div class="flex gap-1">
@@ -2483,9 +2594,7 @@ const renderHomePage = () => {
         
         initRotatingDisplay('missed-revisions-list', missed, renderItem, 'No missed revisions. Great job!');
     };
-
-
-    const renderUpcomingRevisions = () => {
+const renderUpcomingRevisions = () => {
         const today = new Date(); today.setHours(0,0,0,0);
         const upcoming = [];
         (data.subjects || []).forEach(s => {
@@ -2675,6 +2784,7 @@ const renderSubjectsPage = () => {
             const accuracy = totalAttempted > 0 ? ((totalCorrect / totalAttempted) * 100).toFixed(1) : '0.0';
             const avgTimePerQ = totalAttempted > 0 ? (totalTimeTaken / totalAttempted).toFixed(1) : '0.0';
             
+            // --- DROPDOWN LOGIC IMPLEMENTED HERE ---
             let subjectBreakdownDptHtml = (data.subjects || []).map(subject => {
                 if (DPT_EXCLUDED_SUBJECTS.includes(subject.id)) return '';
                 const subjectDpts = Object.values(data.dpts[subject.id]?.chapters || {}).flat().filter(t => t.status === 'Completed');
@@ -2684,10 +2794,31 @@ const renderSubjectsPage = () => {
                     const chapterDpts = data.dpts[subject.id].chapters[chapterId].filter(t => t.status === 'Completed');
                     if(chapterDpts.length === 0) return '';
                     const chapter = getChapterByIds(subject.id, chapterId);
-                    return `<li class="ml-4 text-sm">- ${chapter ? chapter.name : 'Unknown Chapter'}: <strong>${chapterDpts.length} times</strong></li>`;
+                    
+                    // Calculate chapter specific accuracy
+                    let chapCorrect = 0, chapAttempted = 0;
+                    chapterDpts.forEach(d => { chapCorrect += d.details?.correct || 0; chapAttempted += d.details?.attempted || 0; });
+                    const chapAccuracy = chapAttempted > 0 ? Math.round((chapCorrect / chapAttempted) * 100) : 0;
+                    const accuracyColor = chapAccuracy >= 80 ? 'text-green-600' : (chapAccuracy >= 50 ? 'text-yellow-600' : 'text-red-600');
+
+                    return `<li class="flex justify-between items-center py-1 text-sm border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <span>${chapter ? chapter.name : 'Unknown Chapter'}</span>
+                        <span class="font-bold ${accuracyColor}">${chapAccuracy}% (${chapterDpts.length} tests)</span>
+                    </li>`;
                 }).join('');
 
-                return `<div class="mb-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><p class="font-semibold">${_(subject.id)}</p><ul class="list-disc pl-5">${chapterDptHtml}</ul></div>`;
+                return `<details class="group mb-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg overflow-hidden">
+                    <summary class="flex justify-between items-center p-3 cursor-pointer list-none font-semibold">
+                        <span>${_(subject.id)}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">${subjectDpts.length} Tests</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+                        </div>
+                    </summary>
+                    <div class="px-3 pb-3">
+                        <ul class="pl-2">${chapterDptHtml}</ul>
+                    </div>
+                </details>`;
             }).join('');
 
             return `<h2 class="text-xl font-bold mb-4 mt-8">${_('dpt_report_title')}</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('total_dpt_completed')}</p><p class="text-2xl font-bold">${allCompletedDpts.length}</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('overall_accuracy')}</p><p class="text-2xl font-bold text-accent">${accuracy}%</p></div><div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center"><p class="text-sm">${_('avg_time_per_q')}</p><p class="text-2xl font-bold text-warning">${avgTimePerQ}s</p></div></div><h3 class="text-lg font-bold mb-3 mt-6">${_('dpt_subject_breakdown')}</h3>${subjectBreakdownDptHtml}`;
@@ -2785,7 +2916,7 @@ const renderSubjectsPage = () => {
             }
         });
         if(allCharts.dptPerf) allCharts.dptPerf.destroy();
-        allCharts.dptPerf = new Chart(dptChartCtx, { type: 'bar', data: { labels: dptPerfLabels, datasets: [{ label: 'Accuracy (%)', data: dptPerfData, backgroundColor: '#10b981', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
+        allCharts.dptPerf = new Chart(dptChartCtx, { type: 'bar', data: { labels: dptPerfLabels, datasets: [{ label: 'Accuracy (%)', data: dptPerfData, backgroundColor: '#10b981', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
         
         const dptChapterCtx = document.getElementById('dpt-chapter-chart').getContext('2d');
         const chapterDptData = {};
@@ -2864,14 +2995,13 @@ const renderSubjectsPage = () => {
 const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-700 dark:text-green-300'}[status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300');
     const showModal = (id) => document.getElementById(id).classList.replace('hidden', 'flex');
     const hideModal = (id) => document.getElementById(id).classList.replace('flex', 'hidden');
-
-    const renderExamsPage = () => {
+const renderExamsPage = () => {
         const container = document.getElementById('exams-list-container');
         const today = getLocalDateString();
         let examsToRender = [...(data.exams || [])];
         let emptyMessage = _('no_exams_added');
         if (currentExamFilter === 'upcoming') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate >= today); emptyMessage = _('no_upcoming_exams_filter'); } 
-        else if (currentExamFilter === 'applied') { examsToRender = examsToRender.filter(exam => exam.status === 'Applied'); emptyMessage = _('no_applied_filter'); } 
+        else if (currentExamFilter === 'applied') { examsToRender = examsToRender.filter(exam => exam.status === 'Applied'); emptyMessage = _('no_applied_forms_filter'); } 
         else if (currentExamFilter === 'history') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate < today); emptyMessage = _('no_history_exams'); }
         if (examsToRender.length === 0) { container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="file-text" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${emptyMessage}</h3></div>`; lucide.createIcons(); return; }
         container.innerHTML = examsToRender.sort((a,b) => new Date(b.applicationDate || 0) - new Date(a.applicationDate || 0)).map(exam => {
@@ -2880,7 +3010,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             const exDate = exam.examDate ? new Date(exam.examDate).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
             const daysRemaining = exam.examDate ? Math.ceil((new Date(exam.examDate) - new Date()) / 86400000) : null;
             const statusColors = { "Applied": "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300", "Admit Card Out": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300", "Exam Done": "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300", "Result Out": "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300" };
-            const receiptLink = exam.receipt ? `<a href="${exam.receipt}" target="_blank" download="receipt" class="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"><<i data-lucide="paperclip" class="w-3 h-3"></i> ${_('receipt_attached')}</a>` : '';
+            const receiptLink = exam.receipt ? `<a href="${exam.receipt}" target="_blank" download="receipt" class="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"><i data-lucide="paperclip" class="w-3 h-3"></i> ${_('receipt_attached')}</a>` : '';
             const borderColorClass = exam.examDate && exam.examDate < today ? 'border-gray-400/50' : 'border-primary/50';
             return `<div class="p-4 rounded-lg bg-card-light dark:bg-card-dark shadow-sm border-l-4 ${borderColorClass} animate-list-item"><div class="flex flex-col md:flex-row justify-between items-start gap-3"><div class="flex-grow"><h3 class="font-bold text-lg">${exam.name}</h3><div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1"><span>${_('applied_on')}: <strong>${appDate}</strong></span><span>${_('exam_date')}: <strong>${exDate}</strong></span>${receiptLink ? `<span>${receiptLink}</span>` : ''}</div><p class="text-sm mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md whitespace-pre-wrap">${exam.notes || 'No notes.'}</p></div><div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto self-stretch"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColors[exam.status]}">${_(('status_'+exam.status).toLowerCase().replace(/\s/g, '_'))}</span><div class="flex gap-1"><button class="edit-exam-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200" data-exam-id="${exam.id}"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button class="delete-exam-btn p-2 rounded-lg bg-red-100 dark:bg-red-900/50 hover:bg-red-200" data-exam-id="${exam.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button></div></div>${daysRemaining !== null && daysRemaining >= 0 ? `<div class="text-right mt-auto"><div class="text-2xl font-bold text-primary">${daysRemaining}</div><p class="text-xs -mt-1">${_('days_remaining')}</p></div>` : ''}</div></div></div>`;
         }).join('');
@@ -2939,7 +3069,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         container.innerHTML += `<div class="text-center p-3 bg-amber-50 dark:bg-amber-900/50 rounded-lg animate-list-item"><p class="text-sm font-semibold">${upcomingExam.name}</p><div class="text-5xl font-bold text-warning">${daysRemaining >= 0 ? daysRemaining : '0'}</div><p class="text-xs -mt-1">${_('days_remaining')}</p><p class="text-xs font-semibold text-amber-600 dark:text-amber-300 mt-1">${examDateFormatted}</p></div>`;
     };
 
-    // Updated: Removed sourceType param
     const showChapterModal = (subjectId, chapterId) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         document.getElementById('chapter-modal-title').textContent = chapter.name;
@@ -2953,7 +3082,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         showModal('chapter-modal');
     };
 
-    // Updated: Removed sourceType param
     const showAddChapterModal = (subjectId) => {
         document.getElementById('add-chapter-form').reset();
         document.getElementById('add-chapter-subject-id').value = subjectId;
@@ -2971,7 +3099,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         showModal('confirmation-modal');
     };
 
-    // Updated: Removed sourceType param, pushes to unified chapters array
     const addNewChapter = (subjectId, chapterName) => {
         chapterName = chapterName.trim(); if (!subjectId || !chapterName) return;
         const subject = getSubjectById(subjectId);
@@ -2983,7 +3110,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         }
     };
     
-    // Updated: Removed sourceType param
     const updateChapterStatus = (subjectId, chapterId, newStatus, isUndo = false, completionDate = null) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         const oldStatus = chapter.status; if (oldStatus === newStatus) return;
@@ -3000,7 +3126,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                 }
                 logActivity('check-circle', `Chapter completed: "${chapter.name}"`);
                 checkAllGamification();
-                // Removed sourceType from undo action
                 lastAction = { type: 'complete', data: { subjectId, chapterId, oldStatus }, undo: () => updateChapterStatus(subjectId, chapterId, oldStatus, true) };
                 showUndoToast(_('chapter_completed_msg'), lastAction.undo);
                 
@@ -3008,10 +3133,15 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                 const dailyPlanData = data.dailyPlan[todayStr];
                 if (dailyPlanData) {
                     dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
-                    // Removed sourceType from completedTasks
                     dailyPlanData.completedTasks.push({ type: 'chapter', subjectId, chapterId });
-                    if (Object.values(dailyPlanData.tasks).some(task => task && task.chapterId === chapterId)) {
-                         markSubjectAsDoneForToday(subjectId);
+                    
+                    const planTaskKey = Object.keys(dailyPlanData.tasks).find(key => {
+                        const task = dailyPlanData.tasks[key];
+                        return task && task.chapterId === chapterId && task.subjectId === subjectId;
+                    });
+                    
+                    if (planTaskKey) {
+                        markSubjectAsDoneForToday(subjectId);
                     }
                 }
                 delete data.dailyDptPlan[todayStr]?.planGeneratedForDay;
@@ -3025,7 +3155,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         updateAllUI();
     };
 
-    // Updated: Removed sourceType param
     const updateRevisionStatus = (subjectId, chapterId, revisionDate, isComplete) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter || !chapter.revisions) return;
         const revision = chapter.revisions.find(r => r.date === revisionDate);
@@ -3035,14 +3164,12 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             if(isComplete) {
                 const todayStr = getLocalDateString();
                 data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [] };
-                // Removed sourceType
                 data.dailyPlan[todayStr].completedTasks.push({ type: 'revision', subjectId, chapterId, revisionDate });
             }
             saveData(); renderHomePage();
         }
     };
 
-    // Updated: Removed sourceType param
     const saveChapterDetails = (subjectId, chapterId) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         const newStatus = document.querySelector('#chapter-status-buttons button.active').dataset.status;
@@ -3061,7 +3188,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         hideModal('chapter-modal');
     };
 
-    // Updated: Removed sourceType param
     const confirmDeleteChapter = (subjectId, chapterId) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         hideModal('chapter-modal');
@@ -3081,7 +3207,8 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             chapter.revisions.push({ date: getLocalDateString(revisionDate), status: 'Pending', type: 'auto' });
         });
     };
-const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_data'), () => { localStorage.removeItem(DB_KEY); window.location.reload(); });
+    
+    const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_data'), () => { localStorage.removeItem(DB_KEY); window.location.reload(); });
         
         const exportData = (dataType) => {
             let dataToExport, fileName;
@@ -3159,7 +3286,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             });
         };
 
-        // Updated: Removed sourceType param
         const importAllChapters = (importedData) => {
             let chaptersAdded = 0, subjectsAdded = 0;
             Object.keys(importedData).forEach(subjectName => {
@@ -3306,8 +3432,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             }
         };
-
-        const getDptSubjectsForDay = (date = new Date()) => {
+const getDptSubjectsForDay = (date = new Date()) => {
             const dayIndex = getCycleDayIndex(date);
             if (data.settings.dptPlanMode === 'custom_cycle') { return (data.settings.dptCyclePlan || [])[dayIndex] || []; }
             // For 'auto' mode, derive from study plan subjects
@@ -3318,121 +3443,166 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             });
             return [...new Set([...studySubjects, ...revisionSubjects])].filter(id => !DPT_EXCLUDED_SUBJECTS.includes(id));
         };
+const getOrGenerateDailyDptPlan = (dateStr) => {
+        // 1. Ensure array exists
+        if (!data.dailyDptPlan[dateStr]) {
+            data.dailyDptPlan[dateStr] = [];
+        }
+        
+        // 2. Get current plan (Keep existing data!)
+        const plan = data.dailyDptPlan[dateStr];
+        
+        // 3. Create a Set of existing items to prevent duplicates
+        // We check existing items regardless of status (so we don't re-add removed/completed ones)
+        const dptsAlreadyInPlan = new Set(plan.map(p => `${p.subjectId}-${p.chapterId}-${p.testId}`));
 
-        const getOrGenerateDailyDptPlan = (dateStr) => {
-            if (!data.dailyDptPlan[dateStr] || !data.dailyDptPlan[dateStr].planGeneratedForDay) {
-                const plan = (data.dailyDptPlan[dateStr] || []).filter(dpt => dpt.isManual); // Keep manual DPTs
-                const dptsAlreadyInPlan = new Set(plan.map(p => `${p.subjectId}-${p.chapterId}-${p.testId}`));
+        // 4. Get Study Plan
+        const dailyPlan = getOrGenerateDailyPlan(dateStr);
+        const allTodayTasks = [
+            ...Object.values(dailyPlan.tasks),
+            ...(dailyPlan.manualTasks || [])
+        ];
 
-                const dailyPlan = getOrGenerateDailyPlan(dateStr);
-                const allTodayTasks = [
-                    ...Object.values(dailyPlan.tasks),
-                    ...(dailyPlan.manualTasks || [])
-                ];
+        // 5. Add DPTs for Study Tasks
+        allTodayTasks.forEach(task => {
+            if (task && !DPT_EXCLUDED_SUBJECTS.includes(task.subjectId)) {
+                const nextDpt = findNextPendingDptForChapter(task.subjectId, task.chapterId);
+                if (nextDpt) {
+                    const uniqueKey = `${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`;
+                    if (!dptsAlreadyInPlan.has(uniqueKey)) {
+                        plan.push(nextDpt);
+                        dptsAlreadyInPlan.add(uniqueKey);
+                    }
+                }
+            }
+        });
 
-                // Add DPTs for today's study tasks and revisions
-                allTodayTasks.forEach(task => {
-                    if (task && !DPT_EXCLUDED_SUBJECTS.includes(task.subjectId)) {
-                        const nextDpt = findNextPendingDptForChapter(task.subjectId, task.chapterId);
-                        if (nextDpt && !dptsAlreadyInPlan.has(`${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`)) {
+        // 6. Add DPTs for Revisions
+        (data.subjects || []).forEach(s => {
+            (s.chapters || []).forEach(c => (c.revisions || []).forEach(r => {
+                if (r.status === 'Pending' && r.date === dateStr && !DPT_EXCLUDED_SUBJECTS.includes(s.id)) {
+                    const nextDpt = findNextPendingDptForChapter(s.id, c.id);
+                    if (nextDpt) {
+                        const uniqueKey = `${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`;
+                        if (!dptsAlreadyInPlan.has(uniqueKey)) {
                             plan.push(nextDpt);
-                            dptsAlreadyInPlan.add(`${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`);
+                            dptsAlreadyInPlan.add(uniqueKey);
                         }
                     }
-                });
-
-                // Add DPTs for revision tasks
-                (data.subjects || []).forEach(s => {
-                    (s.chapters || []).forEach(c => (c.revisions || []).forEach(r => {
-                        if (r.status === 'Pending' && r.date === dateStr && !DPT_EXCLUDED_SUBJECTS.includes(s.id)) {
-                            const nextDpt = findNextPendingDptForChapter(s.id, c.id);
-                            if (nextDpt && !dptsAlreadyInPlan.has(`${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`)) {
-                                plan.push(nextDpt);
-                                dptsAlreadyInPlan.add(`${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`);
-                            }
-                        }
-                    }));
-                });
-                
-                // Fallback for custom DPT cycle if no tasks are found
-                if (plan.length === 0 && data.settings.dptPlanMode === 'custom_cycle') {
-                     getDptSubjectsForDay(new Date(dateStr)).forEach(subjectId => {
-                        const nextDpt = findNextPendingDptForSubject(subjectId);
-                        if (nextDpt && !dptsAlreadyInPlan.has(`${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`)) {
-                            plan.push(nextDpt);
-                            dptsAlreadyInPlan.add(`${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`);
-                        }
-                    });
                 }
+            }));
+        });
+        
+        // 7. Custom Cycle Fallback
+        if (plan.length === 0 && data.settings.dptPlanMode === 'custom_cycle') {
+                getDptSubjectsForDay(new Date(dateStr)).forEach(subjectId => {
+                const nextDpt = findNextPendingDptForSubject(subjectId);
+                if (nextDpt) {
+                    const uniqueKey = `${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`;
+                    if (!dptsAlreadyInPlan.has(uniqueKey)) {
+                        plan.push(nextDpt);
+                        dptsAlreadyInPlan.add(uniqueKey);
+                    }
+                }
+            });
+        }
 
-                data.dailyDptPlan[dateStr] = plan;
-                data.dailyDptPlan[dateStr].planGeneratedForDay = true;
-                saveData();
-            }
-            return data.dailyDptPlan[dateStr];
-        };
+        // Mark as generated (Note: JSON won't save this property on array, but useful for runtime)
+        plan.planGeneratedForDay = true;
+        saveData();
+        
+        return plan;
+    };
+const renderTodaysDpt = () => {
+        const container = document.getElementById('todays-dpt-container');
+        const todayStr = getLocalDateString();
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterdayStr = getLocalDateString(yesterdayDate);
+        
+        // Get Today's Plan
+        const todayPlan = getOrGenerateDailyDptPlan(todayStr);
 
-        const renderTodaysDpt = () => {
-            const container = document.getElementById('todays-dpt-container');
-            const todayStr = getLocalDateString();
-            const yesterdayDate = new Date();
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            const yesterdayStr = getLocalDateString(yesterdayDate);
+        // Get Yesterday's Missed DPTs
+        const yesterdayPlan = data.dailyDptPlan[yesterdayStr] || [];
+        let rawMissedDPTs = yesterdayPlan.filter(({ subjectId, chapterId, testId }) => {
+            const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
+            return test && test.status !== 'Completed';
+        });
+
+        // --- FILTERING LOGIC ---
+
+        // 1. Filter Current: Hide 'removed' and 'completed'
+        const visibleCurrentTests = todayPlan.filter(item => item.status !== 'removed' && item.status !== 'completed');
+
+        // 2. Filter Missed: Hide if it exists in TODAY'S plan as 'removed'
+        // (Because when you remove a missed DPT, we add it to today's plan as 'removed' to persist the action)
+        const visibleMissedDPTs = rawMissedDPTs.filter(missedItem => {
+            const isRemovedToday = todayPlan.some(todayItem => 
+                todayItem.subjectId === missedItem.subjectId &&
+                todayItem.chapterId === missedItem.chapterId &&
+                todayItem.testId === missedItem.testId &&
+                todayItem.status === 'removed'
+            );
+            return !isRemovedToday;
+        });
+
+        // UI Logic
+        const hasPending = visibleCurrentTests.some(({ subjectId, chapterId, testId }) => { 
+            const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); 
+            return test && test.status !== 'Completed'; 
+        });
+
+        container.className = `dashboard-card p-4 rounded-xl shadow-sm min-h-[100px] bg-gradient-to-br ${ (hasPending || visibleMissedDPTs.length > 0) ? 'from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900' : 'from-teal-100 to-green-200 dark:from-teal-800 dark:to-green-900' }`;
+        
+        let html = `<div class="flex items-center justify-between pb-3 border-b mb-3">
+            <div class="flex items-center gap-3"><i data-lucide="file-check" class="w-6 h-6"></i><h2 class="text-lg font-bold">${_('todays_dpt')}</h2></div>
+            <button id="manual-add-dpt-btn" class="p-1.5 rounded-full hover:bg-orange-200 dark:hover:bg-orange-800"><i data-lucide="plus-circle" class="w-5 h-5 text-orange-700 dark:text-orange-300 pointer-events-none"></i></button>
+        </div>`;
+
+        if (visibleCurrentTests.length === 0 && visibleMissedDPTs.length === 0) { 
+            html += `<div class="text-center py-4"><p>${_('no_dpt_scheduled')}</p></div>`; 
+        } else {
+            html += '<ul class="space-y-3">';
             
-            const scheduledTests = getOrGenerateDailyDptPlan(todayStr);
-
-            const yesterdayDptPlan = data.dailyDptPlan[yesterdayStr] || [];
-            const missedYesterdayDPTs = yesterdayDptPlan.filter(({ subjectId, chapterId, testId }) => {
+            // Render Today's
+            visibleCurrentTests.forEach(({ subjectId, chapterId, testId, isManual, id }) => {
                 const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
-                return test && test.status !== 'Completed';
+                if (!test || test.status === 'Completed') return; 
+
+                const chapter = getChapterByIds(subjectId, chapterId);
+                const dptTitle = `${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}`;
+                
+                html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/30 dark:bg-black/20">
+                    <p class="font-bold flex items-center gap-2">${isManual ? `<i data-lucide="hand" class="w-4 h-4 text-indigo-500"></i>`: ''}${dptTitle}</p>
+                    <div class="flex items-center gap-1">
+                        <button class="remove-daily-dpt-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Remove" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}" data-manual-id="${id || ''}"><i data-lucide="x" class="w-4 h-4 text-red-600 pointer-events-none"></i></button>
+                        <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="check-circle" class="w-4 h-4 pointer-events-none"></i><span>${_('mark_as_complete')}</span></button>
+                    </div>
+                </li>`;
             });
             
-            const hasPending = scheduledTests.some(({ subjectId, chapterId, testId }) => { const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); return test && test.status !== 'Completed'; });
-            container.className = `dashboard-card p-4 rounded-xl shadow-sm min-h-[100px] bg-gradient-to-br ${ hasPending ? 'from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900' : 'from-teal-100 to-green-200 dark:from-teal-800 dark:to-green-900' }`;
-            
-            let html = `<div class="flex items-center justify-between pb-3 border-b mb-3">
-                <div class="flex items-center gap-3"><i data-lucide="file-check" class="w-6 h-6"></i><h2 class="text-lg font-bold">${_('todays_dpt')}</h2></div>
-                <button id="manual-add-dpt-btn" class="p-1.5 rounded-full hover:bg-orange-200 dark:hover:bg-orange-800"><i data-lucide="plus-circle" class="w-5 h-5 text-orange-700 dark:text-orange-300"></i></button>
-            </div>`;
+            // Render Missed
+            visibleMissedDPTs.forEach(({ subjectId, chapterId, testId }) => {
+                const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
+                if (!test) return;
+                const chapter = getChapterByIds(subjectId, chapterId);
+                
+                html += `<li class="p-2 rounded-lg bg-red-100 dark:bg-red-900/50 flex flex-col items-start gap-2">
+                    <p class="font-semibold text-sm text-red-800 dark:text-red-200">Missed Yesterday: ${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}</p>
+                    <div class="flex gap-2 w-full">
+                        <button class="remove-daily-dpt-btn p-1.5 bg-red-200 text-red-800 rounded" data-is-missed="true" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></button>
+                        <button class="complete-missed-dpt-btn flex-grow text-xs font-semibold p-1.5 bg-red-500 text-white rounded-md" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}">${_('complete_yesterdays_dpt')}</button>
+                    </div>
+                </li>`;
+            });
 
-            if (scheduledTests.length === 0 && missedYesterdayDPTs.length === 0) { html += `<div class="text-center py-4"><p>${_('no_dpt_scheduled')}</p></div>`; } 
-            else {
-                html += '<ul class="space-y-3">';
-                scheduledTests.forEach(({ subjectId, chapterId, testId, isManual, id }) => {
-                    const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); if (!test) return;
-                    const chapter = getChapterByIds(subjectId, chapterId);
-                    const dptTitle = `${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}`;
-                    const deleteButton = isManual ? `<button class="manual-dpt-delete-btn p-1.5" data-manual-id="${id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>` : '';
-
-                    if (test.status === 'Completed') {
-                        html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-green-500/20"><p class="font-bold text-green-800 dark:text-green-200">${dptTitle}</p><button class="view-dpt-details-btn flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg bg-green-500 text-white" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="eye" class="w-4 h-4"></i><span>View</span></button></li>`;
-                    } else {
-                        html += `<li class="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/30 dark:bg-black/20">
-                            <p class="font-bold flex items-center gap-2">${isManual ? `<i data-lucide="hand" class="w-4 h-4 text-indigo-500"></i>`: ''}${dptTitle}</p>
-                            <div class="flex items-center gap-1">
-                                <button class="skip-dpt-btn p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50" title="${_('skip_chapter')}" data-subject-id="${subjectId}"><i data-lucide="chevrons-right" class="w-4 h-4 text-blue-600"></i></button>
-                                <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="check-circle" class="w-4 h-4"></i><span>${_('mark_as_complete')}</span></button>
-                                ${deleteButton}
-                            </div>
-                        </li>`;
-                    }
-                });
-                missedYesterdayDPTs.forEach(({ subjectId, chapterId, testId }) => {
-                    const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); if (!test) return;
-                    const chapter = getChapterByIds(subjectId, chapterId);
-                     html += `<li class="p-2 rounded-lg bg-red-100 dark:bg-red-900/50 flex flex-col items-start gap-2">
-                        <p class="font-semibold text-sm text-red-800 dark:text-red-200">Missed Yesterday: ${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}</p>
-                        <button class="complete-missed-dpt-btn w-full text-xs font-semibold p-1.5 bg-red-500 text-white rounded-md" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${testId}">${_('complete_yesterdays_dpt')}</button>
-                    </li>`;
-                });
-
-                html += '</ul>';
-                if(!hasPending && missedYesterdayDPTs.length === 0) { html += `<div class="text-center pt-4 text-green-800 dark:text-green-200 font-semibold"><p>${_('all_dpt_completed')}</p></div>`; }
-            }
-            container.innerHTML = html;
-            lucide.createIcons();
-        };
-
+            html += '</ul>';
+            if(!hasPending && visibleMissedDPTs.length === 0) { html += `<div class="text-center pt-4 text-green-800 dark:text-green-200 font-semibold"><p>${_('all_dpt_completed')}</p></div>`; }
+        }
+        container.innerHTML = html;
+        lucide.createIcons();
+    };
         const renderDptPage = () => {
             document.querySelectorAll('#dpt-view-filter .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === dptPageViewMode));
 
@@ -3656,6 +3826,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             const chapter = getChapterByIds(subjectId, chapterId);
             logActivity('check-square', `Completed DPT #${testId} for ${_(subjectId)} - ${chapter ? chapter.name : ''}.`);
+            
             saveData(); 
             checkAllGamification(); 
             hideDptDetailsModal(); 
@@ -4069,361 +4240,385 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             renderUrlPage();
             hideModal('add-link-modal');
         }
+function addEventListeners() {
+        navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
+        document.getElementById('mobile-bottom-nav').addEventListener('click', e => {
+            const navBtn = e.target.closest('.mobile-nav-btn');
+            if (navBtn && navBtn.dataset.page) { navigateTo(navBtn.dataset.page); }
+        });
+        
+        themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
+        sidebarToggleBtn.addEventListener('click', toggleSidebar);
+        document.getElementById('search-input').addEventListener('input', renderSubjectsPage);
+        document.getElementById('dpt-search-input').addEventListener('input', renderDptPage);
+        document.getElementById('language-select').addEventListener('change', (e) => { data.settings.language = e.target.value; saveData(); applyTranslations(); });
+        document.getElementById('student-name-input')?.addEventListener('input', (e) => { data.settings.studentName = e.target.value; saveData(); renderHomePage(); });
+        document.getElementById('toggle-completed-tasks-btn').addEventListener('click', () => {
+            const list = document.getElementById('completed-tasks-list');
+            const icon = document.querySelector('#toggle-completed-tasks-btn i');
+            list.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        });
+        
+        document.getElementById('other-task-is-repeating')?.addEventListener('change', (e) => {
+            const container = document.getElementById('repeat-options-container');
+            if (e.target.checked) { container.classList.remove('hidden'); } 
+            else { container.classList.add('hidden'); }
+        });
 
-        function addEventListeners() {
-            navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
-            document.getElementById('mobile-bottom-nav').addEventListener('click', e => {
-                const navBtn = e.target.closest('.mobile-nav-btn');
-                if (navBtn && navBtn.dataset.page) { navigateTo(navBtn.dataset.page); }
-            });
+        document.getElementById('subjects-list-container').addEventListener('click', e => { 
+            const addBtn = e.target.closest('.add-chapter-btn');
+            const chapterItem = e.target.closest('.chapter-item');
+            const deleteSubjectBtn = e.target.closest('.delete-subject-btn');
+            const restudyBtn = e.target.closest('.restudy-subject-btn');
             
-            themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
-            sidebarToggleBtn.addEventListener('click', toggleSidebar);
-            document.getElementById('search-input').addEventListener('input', renderSubjectsPage);
-            document.getElementById('dpt-search-input').addEventListener('input', renderDptPage);
-            document.getElementById('language-select').addEventListener('change', (e) => { data.settings.language = e.target.value; saveData(); applyTranslations(); });
-            document.getElementById('student-name-input')?.addEventListener('input', (e) => { data.settings.studentName = e.target.value; saveData(); renderHomePage(); });
-            document.getElementById('toggle-completed-tasks-btn').addEventListener('click', () => {
-                const list = document.getElementById('completed-tasks-list');
-                const icon = document.querySelector('#toggle-completed-tasks-btn i');
-                list.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
-            });
-            
-            document.getElementById('subjects-list-container').addEventListener('click', e => { 
-                const addBtn = e.target.closest('.add-chapter-btn');
-                const chapterItem = e.target.closest('.chapter-item');
-                const deleteSubjectBtn = e.target.closest('.delete-subject-btn');
-                const restudyBtn = e.target.closest('.restudy-subject-btn');
-                
-                if (addBtn) { showAddChapterModal(addBtn.dataset.subjectId); } 
-                else if (chapterItem) { showChapterModal(chapterItem.dataset.subjectId, chapterItem.dataset.chapterId); }
-                else if (deleteSubjectBtn) { e.preventDefault(); confirmDeleteSubject(deleteSubjectBtn.dataset.subjectId); }
-                else if (restudyBtn) { e.preventDefault(); confirmRestudySubject(restudyBtn.dataset.subjectId); }
-            });
+            if (addBtn) { showAddChapterModal(addBtn.dataset.subjectId); } 
+            else if (chapterItem) { showChapterModal(chapterItem.dataset.subjectId, chapterItem.dataset.chapterId); }
+            else if (deleteSubjectBtn) { e.preventDefault(); confirmDeleteSubject(deleteSubjectBtn.dataset.subjectId); }
+            else if (restudyBtn) { e.preventDefault(); confirmRestudySubject(restudyBtn.dataset.subjectId); }
+        });
 
-            document.getElementById('subject-view-filter').addEventListener('click', (e) => {
-                const viewBtn = e.target.closest('.filter-btn');
-                if(viewBtn && viewBtn.dataset.view) { subjectPageViewMode = viewBtn.dataset.view; renderSubjectsPage(); }
-            });
+        document.getElementById('subject-view-filter').addEventListener('click', (e) => {
+            const viewBtn = e.target.closest('.filter-btn');
+            if(viewBtn && viewBtn.dataset.view) { subjectPageViewMode = viewBtn.dataset.view; renderSubjectsPage(); }
+        });
 
-            document.getElementById('dpt-view-filter').addEventListener('click', (e) => {
-                const viewBtn = e.target.closest('.filter-btn');
-                if(viewBtn && viewBtn.dataset.view) { dptPageViewMode = viewBtn.dataset.view; renderDptPage(); }
-            });
+        document.getElementById('dpt-view-filter').addEventListener('click', (e) => {
+            const viewBtn = e.target.closest('.filter-btn');
+            if(viewBtn && viewBtn.dataset.view) { dptPageViewMode = viewBtn.dataset.view; renderDptPage(); }
+        });
 
-            document.getElementById('todays-plan-container').addEventListener('click', e => {
-                const postponeBtn = e.target.closest('.postpone-btn');
-                const skipBtn = e.target.closest('.skip-btn');
-                const deleteManualBtn = e.target.closest('.delete-manual-task-btn');
-                const deleteOtherTaskBtn = e.target.closest('.delete-other-task-btn');
+        document.getElementById('todays-plan-container').addEventListener('click', e => {
+            const postponeBtn = e.target.closest('.postpone-btn');
+            const skipBtn = e.target.closest('.skip-btn');
+            const deleteManualBtn = e.target.closest('.delete-manual-task-btn');
+            const deleteOtherTaskBtn = e.target.closest('.delete-other-task-btn');
 
-                if (deleteManualBtn) {
-                    const todayStr = getLocalDateString();
-                    const taskId = deleteManualBtn.dataset.manualId;
-                    data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
-                    saveData(); renderHomePage(); return;
-                }
-                 if (deleteOtherTaskBtn) {
-                    const taskId = deleteOtherTaskBtn.dataset.taskId;
-                    showConfirmationModal('Delete Task?', 'Are you sure you want to permanently delete this task?', () => {
-                        data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
-                        data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
-                        saveData(); renderHomePage();
-                    });
-                    return;
-                }
-                
-                let targetButton = postponeBtn || skipBtn;
-                if (!targetButton) return;
-
-                const { taskId, taskType, subjectId, chapterId, revisionDate } = targetButton.dataset;
-                
-                if (!taskType) return;
-                e.preventDefault();
-
-                if (taskType === 'other') {
-                    if (postponeBtn) postponeOtherTask(taskId);
-                } else if (taskType === 'revision') { 
-                    postponeRevision(subjectId, chapterId, revisionDate); 
-                } else { 
-                    if (postponeBtn) { openPostponeModal(subjectId, chapterId); }
-                    if (skipBtn) { skipChapter(subjectId, chapterId); }
-                }
-            });
-
-            document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
-                const checkbox = e.target;
-                const listItem = checkbox.closest('.task-list-item');
-                const taskType = checkbox.dataset.taskType;
-
-                if (checkbox.classList.contains('task-checkbox') || checkbox.classList.contains('revision-checkbox')) {
-                    if (checkbox.checked) {
-                        listItem?.classList.add('completed');
-                        setTimeout(() => {
-                           if (taskType === 'revision') {
-                                 updateRevisionStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.revisionDate, true);
-                            } else if (taskType === 'other') {
-                                updateOtherTaskStatus(checkbox.dataset.taskId, 'Completed');
-                            } else { 
-                                updateChapterStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, 'Completed'); 
-                                if (taskType === 'chapter' && checkbox.dataset.subjectIdOnly) { 
-                                    markSubjectAsDoneForToday(checkbox.dataset.subjectIdOnly);
-                                }
-                                else if (taskType === 'manual_chapter') {
-                                     const todayStr = getLocalDateString();
-                                     const taskId = listItem.dataset.manualId;
-                                     data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
-                                     saveData(); renderHomePage();
-                                }
-                            }
-                        }, 500);
-                    }
-                }
-            });
-
-            document.getElementById('missed-chapters-list').addEventListener('click', e => {
-                const completeBtn = e.target.closest('.complete-missed-chapter-btn');
-                if (completeBtn) {
-                    const { subjectId, chapterId } = completeBtn.dataset;
-                    const todayStr = getLocalDateString();
-                    data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [] };
-                    data.dailyPlan[todayStr].manualTasks.push({ subjectId, chapterId, id: `manual-${Date.now()}` });
-                    data.missedChapters = data.missedChapters.filter(c => c.chapterId !== chapterId);
-                    logActivity('plus', `Added yesterday's missed chapter to today's plan: ${getChapterByIds(subjectId, chapterId)?.name}`);
+            if (deleteManualBtn) {
+                const todayStr = getLocalDateString();
+                const taskId = deleteManualBtn.dataset.manualId;
+                data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
+                saveData(); renderHomePage(); return;
+            }
+             if (deleteOtherTaskBtn) {
+                const taskId = deleteOtherTaskBtn.dataset.taskId;
+                showConfirmationModal('Delete Task?', 'Are you sure you want to permanently delete this task?', () => {
+                    data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
+                    data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
                     saveData(); renderHomePage();
-                }
-            });
+                });
+                return;
+            }
             
-             document.getElementById('missed-other-tasks-list').addEventListener('click', e => {
-                const addBtn = e.target.closest('.add-missed-other-task-btn');
-                if (addBtn) {
-                    const taskId = addBtn.dataset.taskId;
-                    const task = data.missedOtherTasks.find(t => t.id === taskId);
-                    if (task) {
-                        task.date = getLocalDateString(); 
-                        data.postponedOtherTasks.push(task);
-                        data.missedOtherTasks = data.missedOtherTasks.filter(t => t.id !== taskId);
-                        logActivity('plus', `Added missed task to today's plan: "${task.description}"`);
-                        saveData();
-                        renderHomePage();
-                    }
+            if (postponeBtn) {
+                const { taskId, taskType, subjectId, chapterId, revisionDate } = postponeBtn.dataset;
+                if (taskType === 'other') postponeOtherTask(taskId);
+                else if (taskType === 'revision') postponeRevision(subjectId, chapterId, revisionDate);
+                else openPostponeModal(subjectId, chapterId);
+            }
+
+            if (skipBtn) {
+                const { subjectId, chapterId } = skipBtn.dataset;
+                skipChapter(subjectId, chapterId);
+            }
+        });
+
+        document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
+            const checkbox = e.target;
+            const listItem = checkbox.closest('.task-list-item');
+            const taskType = checkbox.dataset.taskType;
+
+            if (checkbox.classList.contains('task-checkbox') || checkbox.classList.contains('revision-checkbox')) {
+                if (checkbox.checked) {
+                    listItem?.classList.add('completed');
+                    setTimeout(() => {
+                       if (taskType === 'revision') {
+                             updateRevisionStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.revisionDate, true);
+                        } else if (taskType === 'other') {
+                            updateOtherTaskStatus(checkbox.dataset.taskId, 'Completed');
+                        } else { 
+                            updateChapterStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, 'Completed'); 
+                            if (taskType === 'chapter' && checkbox.dataset.subjectIdOnly) { 
+                                markSubjectAsDoneForToday(checkbox.dataset.subjectIdOnly);
+                            }
+                            else if (taskType === 'manual_chapter') {
+                                 const todayStr = getLocalDateString();
+                                 const taskId = listItem.dataset.manualId;
+                                 data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
+                                 saveData(); renderHomePage();
+                            }
+                        }
+                    }, 500);
                 }
-            });
+            }
+        });
 
-
-             document.getElementById('missed-revisions-list').addEventListener('click', e => {
-                const completeBtn = e.target.closest('.complete-missed-revision-btn');
-                if (completeBtn) {
-                    const { subjectId, chapterId, revisionDate } = completeBtn.dataset;
-                    
-                    updateRevisionStatus(subjectId, chapterId, revisionDate, true);
-                    data.missedRevisions = data.missedRevisions.filter(r => !(r.chapterId === chapterId && r.revisionDate === revisionDate));
-                    
-                    logActivity('check-circle', `Completed a missed revision.`);
+        document.getElementById('missed-chapters-list').addEventListener('click', e => {
+            const completeBtn = e.target.closest('.complete-missed-chapter-btn');
+            if (completeBtn) {
+                const { subjectId, chapterId } = completeBtn.dataset;
+                const todayStr = getLocalDateString();
+                data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [] };
+                data.dailyPlan[todayStr].manualTasks.push({ subjectId, chapterId, id: `manual-${Date.now()}` });
+                data.missedChapters = data.missedChapters.filter(c => c.chapterId !== chapterId);
+                logActivity('plus', `Added yesterday's missed chapter to today's plan: ${getChapterByIds(subjectId, chapterId)?.name}`);
+                saveData(); renderHomePage();
+            }
+        });
+        
+         document.getElementById('missed-other-tasks-list').addEventListener('click', e => {
+            const addBtn = e.target.closest('.add-missed-other-task-btn');
+            if (addBtn) {
+                const taskId = addBtn.dataset.taskId;
+                const task = data.missedOtherTasks.find(t => t.id === taskId);
+                if (task) {
+                    task.date = getLocalDateString(); 
+                    data.postponedOtherTasks.push(task);
+                    data.missedOtherTasks = data.missedOtherTasks.filter(t => t.id !== taskId);
+                    logActivity('plus', `Added missed task to today's plan: "${task.description}"`);
                     saveData();
                     renderHomePage();
                 }
-            });
-            
-            document.getElementById('export-routine-json-btn').addEventListener('click', () => exportRoutine('json'));
-            document.getElementById('export-routine-pdf-btn').addEventListener('click', () => exportRoutine('pdf'));
-            document.getElementById('print-report-btn').addEventListener('click', () => printElement('report-content-container'));
-            document.getElementById('print-analysis-btn').addEventListener('click', () => printElement('analytics-content-container'));
+            }
+        });
 
-            document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value); });
-            document.getElementById('add-subject-form').addEventListener('submit', createSubject);
-            document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
-            ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal', 'close-add-chapter-dpt-modal', 'close-add-all-chapters-dpt-modal', 'close-postpone-chapter-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
-            document.getElementById('postpone-chapter-form').addEventListener('submit', savePostponement);
-            document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
-            document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
-            document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
-            document.getElementById('reset-app-btn').addEventListener('click', resetApp);
-            document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
-            document.getElementById('close-chapter-modal').addEventListener('click', () => hideModal('chapter-modal'));
-            document.getElementById('save-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId } = e.currentTarget.dataset; if (subjectId && chapterId) saveChapterDetails(subjectId, chapterId); });
-            document.getElementById('delete-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId } = e.currentTarget.dataset; if (subjectId && chapterId) confirmDeleteChapter(subjectId, chapterId); });
-            document.getElementById('chapter-status-buttons').addEventListener('click', (e) => { const clickedBtn = e.target.closest('button'); if (clickedBtn) { document.querySelectorAll('#chapter-status-buttons button').forEach(btn => btn.classList.remove('active')); clickedBtn.classList.add('active'); } });
-            
-            const importFileInput = document.getElementById('import-file-input');
-            document.getElementById('import-full-backup-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'full_backup'; importFileInput.click(); });
-            // Updated: Single import button for all chapters
-            document.getElementById('import-all-chapters-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.click(); });
-            document.getElementById('import-routine-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'routine'; importFileInput.click(); });
-            document.getElementById('import-exams-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'exams'; importFileInput.click(); });
-            document.getElementById('import-urls-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'urls'; importFileInput.click(); });
-            importFileInput.addEventListener('change', (e) => handleFileUpload(e, e.target.dataset.importType));
+         document.getElementById('missed-revisions-list').addEventListener('click', e => {
+            const completeBtn = e.target.closest('.complete-missed-revision-btn');
+            if (completeBtn) {
+                const { subjectId, chapterId, revisionDate } = completeBtn.dataset;
+                updateRevisionStatus(subjectId, chapterId, revisionDate, true);
+                data.missedRevisions = data.missedRevisions.filter(r => !(r.chapterId === chapterId && r.revisionDate === revisionDate));
+                logActivity('check-circle', `Completed a missed revision.`);
+                saveData(); renderHomePage();
+            }
+        });
+        
+        document.getElementById('export-routine-json-btn').addEventListener('click', () => exportRoutine('json'));
+        document.getElementById('export-routine-pdf-btn').addEventListener('click', () => exportRoutine('pdf'));
+        document.getElementById('print-report-btn').addEventListener('click', () => printElement('report-content-container'));
+        document.getElementById('print-analysis-btn').addEventListener('click', () => printElement('analytics-content-container'));
 
-            // Updated: Single delete button for all chapters
-            document.getElementById('delete-all-chapters-btn').addEventListener('click', () => deleteAllChaptersForSubject());
-            
-            document.getElementById('bg-color-start').addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; saveData(); applyCustomTheme(); });
-            document.getElementById('bg-color-end').addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; saveData(); applyCustomTheme(); });
-            document.getElementById('reset-theme-btn').addEventListener('click', () => { data.settings.customThemeColors.start = null; data.settings.customThemeColors.end = null; saveData(); applyCustomTheme(); renderSettingsPage(); });
-            
-            document.querySelectorAll('.adv-color-picker').forEach(picker => {
-                picker.addEventListener('input', (e) => {
-                    const colorType = e.target.dataset.colorType;
-                    data.settings.customThemeColors[colorType] = e.target.value;
-                    saveData();
-                    applyManualColors();
-                });
-            });
-            document.getElementById('reset-advanced-colors-btn').addEventListener('click', () => {
-                data.settings.customThemeColors.textLight = null;
-                data.settings.customThemeColors.borderLight = null;
-                data.settings.customThemeColors.textDark = null;
-                data.settings.customThemeColors.borderDark = null;
+        document.getElementById('add-chapter-form').addEventListener('submit', e => { e.preventDefault(); addNewChapter(document.getElementById('add-chapter-subject-id').value, document.getElementById('new-chapter-name').value); });
+        document.getElementById('add-subject-form').addEventListener('submit', createSubject);
+        document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
+        ['close-add-subject-modal', 'close-add-chapter-modal', 'confirm-cancel', 'close-badge-modal', 'close-badge-modal-x', 'close-date-completion-modal', 'close-manual-add-modal', 'close-update-popup-modal', 'close-add-folder-modal', 'close-add-link-modal', 'close-add-task-choice-modal', 'close-add-other-task-modal', 'close-add-chapter-dpt-modal', 'close-add-all-chapters-dpt-modal', 'close-postpone-chapter-modal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => hideModal(id.replace('close-', '').replace('-x',''))));
+        document.getElementById('postpone-chapter-form').addEventListener('submit', savePostponement);
+        document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
+        document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
+        document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
+        document.getElementById('reset-app-btn').addEventListener('click', resetApp);
+        document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
+        document.getElementById('close-chapter-modal').addEventListener('click', () => hideModal('chapter-modal'));
+        document.getElementById('save-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId } = e.currentTarget.dataset; if (subjectId && chapterId) saveChapterDetails(subjectId, chapterId); });
+        document.getElementById('delete-chapter-details-btn').addEventListener('click', (e) => { const { subjectId, chapterId } = e.currentTarget.dataset; if (subjectId && chapterId) confirmDeleteChapter(subjectId, chapterId); });
+        document.getElementById('chapter-status-buttons').addEventListener('click', (e) => { const clickedBtn = e.target.closest('button'); if (clickedBtn) { document.querySelectorAll('#chapter-status-buttons button').forEach(btn => btn.classList.remove('active')); clickedBtn.classList.add('active'); } });
+        
+        const importFileInput = document.getElementById('import-file-input');
+        document.getElementById('import-full-backup-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'full_backup'; importFileInput.click(); });
+        document.getElementById('import-all-chapters-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'chapters'; importFileInput.click(); });
+        document.getElementById('import-routine-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'routine'; importFileInput.click(); });
+        document.getElementById('import-exams-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'exams'; importFileInput.click(); });
+        document.getElementById('import-urls-btn').addEventListener('click', () => { importFileInput.dataset.importType = 'urls'; importFileInput.click(); });
+        importFileInput.addEventListener('change', (e) => handleFileUpload(e, e.target.dataset.importType));
+
+        document.getElementById('delete-all-chapters-btn').addEventListener('click', () => deleteAllChaptersForSubject());
+        
+        document.getElementById('bg-color-start').addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; saveData(); applyCustomTheme(); });
+        document.getElementById('bg-color-end').addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; saveData(); applyCustomTheme(); });
+        document.getElementById('reset-theme-btn').addEventListener('click', () => { data.settings.customThemeColors.start = null; data.settings.customThemeColors.end = null; saveData(); applyCustomTheme(); renderSettingsPage(); });
+        
+        document.querySelectorAll('.adv-color-picker').forEach(picker => {
+            picker.addEventListener('input', (e) => {
+                const colorType = e.target.dataset.colorType;
+                data.settings.customThemeColors[colorType] = e.target.value;
                 saveData();
                 applyManualColors();
-                renderSettingsPage();
             });
+        });
+        document.getElementById('reset-advanced-colors-btn').addEventListener('click', () => {
+            data.settings.customThemeColors.textLight = null;
+            data.settings.customThemeColors.borderLight = null;
+            data.settings.customThemeColors.textDark = null;
+            data.settings.customThemeColors.borderDark = null;
+            saveData();
+            applyManualColors();
+            renderSettingsPage();
+        });
 
-            document.getElementById('background-style-select').addEventListener('change', (e) => { data.settings.backgroundStyle = e.target.value; saveData(); applyBackgroundStyle(); });
-            document.getElementById('page-settings').addEventListener('change', e => {
-                if (e.target.name === 'plan-mode') { data.settings.planMode = e.target.value; delete data.dailyPlan[getLocalDateString()]; saveData(); renderSettingsPage(); renderHomePage(); }
-                if (e.target.name === 'dpt-plan-mode') { data.settings.dptPlanMode = e.target.value; data.dailyDptPlan = {}; saveData(); renderSettingsPage(); renderHomePage(); }
-            });
-            document.getElementById('save-custom-cycle-plan')?.addEventListener('click', () => {
-                data.settings.customCyclePlan = [...Array(14)].map(() => []);
-                document.querySelectorAll('.custom-cycle-subject-checkbox:checked').forEach(cb => { data.settings.customCyclePlan[cb.dataset.day].push(cb.value); });
-                data.dailyPlan = {}; saveData(); alert('Custom study plan saved!'); renderHomePage();
-            });
-            document.getElementById('save-dpt-custom-cycle-plan')?.addEventListener('click', () => {
-                data.settings.dptCyclePlan = [...Array(14)].map(() => []);
-                document.querySelectorAll('.custom-dpt-subject-checkbox:checked').forEach(cb => { data.settings.dptCyclePlan[cb.dataset.day].push(cb.value); });
-                data.dailyDptPlan = {}; saveData(); alert('Custom DPT plan saved!'); renderHomePage();
-            });
-            document.getElementById('add-exam-btn').addEventListener('click', () => showAddExamModal());
-            document.getElementById('close-add-exam-modal').addEventListener('click', () => hideModal('add-exam-modal'));
-            document.getElementById('add-exam-form').addEventListener('submit', e => { e.preventDefault(); saveExam(); });
-            document.getElementById('exams-list-container').addEventListener('click', e => {
-                const editBtn = e.target.closest('.edit-exam-btn'); const deleteBtn = e.target.closest('.delete-exam-btn');
-                if (editBtn) showAddExamModal(editBtn.dataset.examId); if (deleteBtn) deleteExam(deleteBtn.dataset.examId);
-            });
-            document.getElementById('exam-filter-buttons').addEventListener('click', e => {
-                const filterBtn = e.target.closest('.exam-filter-btn');
-                if (filterBtn) {
-                    currentExamFilter = filterBtn.dataset.filter;
-                    document.querySelectorAll('.exam-filter-btn').forEach(btn => { btn.classList.remove('active', 'bg-primary', 'text-white'); btn.classList.add('bg-gray-200', 'dark:bg-gray-700'); });
-                    filterBtn.classList.add('active', 'bg-primary', 'text-white'); filterBtn.classList.remove('bg-gray-200', 'dark:bg-gray-700');
-                    renderExamsPage();
-                }
-            });
-            document.getElementById('date-completion-subject-select').addEventListener('change', (e) => {
-                const subjectId = e.target.value; const chapterList = document.getElementById('date-completion-chapter-list');
-               if (!subjectId) { chapterList.innerHTML = `<p class="text-center text-sm">Please select a subject first.</p>`; return; }
-                const subject = getSubjectById(subjectId);
-                const uncompletedChapters = (subject.chapters || []).filter(c => c.status === 'Not Started');
-                if(uncompletedChapters.length === 0) { chapterList.innerHTML = `<p class="text-center text-sm">No uncompleted chapters.</p>`; return; }
-                chapterList.innerHTML = uncompletedChapters.map(c => `<label class="flex items-center gap-2 p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md cursor-pointer"><input type="radio" name="date-completion-chapter" value="${c.id}" data-subject-id="${subjectId}" class="form-radio text-primary"><span>${c.name}</span></label>`).join('');
-            });
-            document.getElementById('save-date-completion-btn').addEventListener('click', () => {
-                const selectedRadio = document.querySelector('input[name="date-completion-chapter"]:checked');
-                if (!selectedRadio) { alert('Please select a chapter to mark as complete.'); return; }
-                const { subjectId } = selectedRadio.dataset; const chapterId = selectedRadio.value;
-                const completionDate = document.getElementById('date-completion-modal').dataset.date;
-                updateChapterStatus(subjectId, chapterId, 'Completed', false, completionDate);
-                hideModal('date-completion-modal');
-            });
-            const progressDropdown = document.getElementById('progress-view-dropdown');
-            document.getElementById('toggle-progress-view-btn').addEventListener('click', () => progressDropdown.classList.toggle('hidden'));
-            progressDropdown.addEventListener('click', (e) => { e.preventDefault(); const link = e.target.closest('a'); if (link?.dataset.view) { dashboardProgressView = link.dataset.view; renderSubjectWiseProgressDashboard(); progressDropdown.classList.add('hidden'); } });
-            document.addEventListener('click', (e) => { if (!e.target.closest('#toggle-progress-view-btn') && !e.target.closest('#progress-view-dropdown')) progressDropdown.classList.add('hidden'); });
-            
-            document.getElementById('dpt-subject-filter').addEventListener('change', renderDptPage);
-            document.getElementById('page-dpt').addEventListener('click', (e) => {
-                const dptItem = e.target.closest('.dpt-list-item'); 
-                const addBtn = e.target.closest('.add-dpt-to-chapter-btn');
-                const addAllBtn = e.target.closest('.add-dpt-to-all-chapters-btn');
-                const deleteAllSubjectBtn = e.target.closest('.delete-all-dpts-subject-btn');
-                const deleteAllGlobalBtn = e.target.closest('#delete-all-dpts-global-btn');
-
-                if (dptItem) { showDptDetailsModal(dptItem.dataset.subjectId, dptItem.dataset.chapterId, dptItem.dataset.testId); }
-                if (addBtn) { showAddChapterDptModal(addBtn.dataset.subjectId, addBtn.dataset.chapterId); }
-                if (addAllBtn) { showAddAllChaptersDptModal(addAllBtn.dataset.subjectId); }
-                if (deleteAllSubjectBtn) { confirmDeleteAllDptsForSubject(deleteAllSubjectBtn.dataset.subjectId); }
-                if (deleteAllGlobalBtn) { confirmDeleteAllDptsGlobally(); }
-            });
-
-            document.getElementById('todays-dpt-container').addEventListener('click', (e) => {
-                const completeBtn = e.target.closest('.mark-dpt-complete-btn');
-                const viewBtn = e.target.closest('.view-dpt-details-btn');
-                const completeMissedBtn = e.target.closest('.complete-missed-dpt-btn');
-                const skipBtn = e.target.closest('.skip-dpt-btn');
-                if (completeBtn) { showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.chapterId, completeBtn.dataset.testId); }
-                if (viewBtn) { showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, viewBtn.dataset.testId); }
-                if (skipBtn) { skipDpt(skipBtn.dataset.subjectId); }
-                if (completeMissedBtn) {
-                    const { subjectId, chapterId, testId } = completeMissedBtn.dataset;
-                    const todayStr = getLocalDateString();
-                    data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
-                    if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.chapterId === chapterId && d.testId === parseInt(testId))) {
-                        data.dailyDptPlan[todayStr].push({ subjectId, chapterId, testId: parseInt(testId), isManual: true, id: `manual-dpt-${Date.now()}` });
-                        logActivity('plus', `Added yesterday's missed DPT to today's plan.`);
-                        saveData();
-                        renderHomePage();
-                    }
-                }
-                const deleteManualBtn = e.target.closest('.manual-dpt-delete-btn');
-                if (deleteManualBtn) {
-                    const todayStr = getLocalDateString();
-                    const taskId = deleteManualBtn.dataset.manualId;
-                    data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(t => t.id !== taskId);
-                    saveData(); renderHomePage();
-                }
-            });
-
-            document.getElementById('dpt-details-form').addEventListener('submit', submitDptDetails);
-            document.getElementById('delete-dpt-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId, parseInt(e.currentTarget.dataset.testId)); });
-            document.getElementById('delete-dpt-display-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId, parseInt(e.currentTarget.dataset.testId)); });
-            document.getElementById('close-dpt-display-btn').addEventListener('click', hideDptDetailsModal);
-            document.getElementById('close-dpt-details-popup-modal').addEventListener('click', hideDptDetailsModal);
-            document.getElementById('add-chapter-dpt-form').addEventListener('submit', handleAddDptToChapter);
-            document.getElementById('add-all-chapters-dpt-form').addEventListener('submit', handleAddDptToAllChapters);
-
-
-            document.getElementById('add-manual-revision-btn').addEventListener('click', e => { const { subjectId, chapterId } = e.currentTarget.dataset; const date = document.getElementById('manual-revision-date').value; addManualRevision(subjectId, chapterId, null, date); });
-            document.getElementById('chapter-modal').addEventListener('click', e => { const deleteBtn = e.target.closest('.delete-revision-btn'); if (deleteBtn) { const { subjectId, chapterId, revisionDate } = deleteBtn.dataset; deleteRevision(subjectId, chapterId, null, revisionDate); } });
-            
-            document.getElementById('todays-plan-container').addEventListener('click', e => { if (e.target.closest('#add-task-choice-btn')) showModal('add-task-choice-modal'); });
-            document.getElementById('choice-manual-chapter-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); openManualAddModal('chapter'); });
-            document.getElementById('choice-other-task-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); showAddOtherTaskModal(); });
-            document.getElementById('add-other-task-form').addEventListener('submit', saveOtherTask);
-
-            document.getElementById('todays-dpt-container').addEventListener('click', e => { if (e.target.closest('#manual-add-dpt-btn')) openManualAddModal('dpt'); });
-            document.getElementById('manual-add-subject-select').addEventListener('change', (e) => {
-                const modal = document.getElementById('manual-add-modal');
-                if(modal.dataset.type === 'dpt') { populateManualItemList(e.target.value, 'dpt'); }
-            });
-            document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
-            
-            document.getElementById('add-new-root-folder-btn').addEventListener('click', () => showAddFolderModal(null, null));
-            document.getElementById('add-folder-form').addEventListener('submit', saveFolder);
-            document.getElementById('add-link-form').addEventListener('submit', saveLink);
-            
-            document.getElementById('url-container').addEventListener('click', e => {
-                const addSubFolderBtn = e.target.closest('.add-sub-folder-btn');
-                const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
-                const editFolderBtn = e.target.closest('.edit-folder-btn');
-                const deleteFolderBtn = e.target.closest('.delete-folder-btn');
-                const editLinkBtn = e.target.closest('.edit-link-btn');
-                const deleteLinkBtn = e.target.closest('.delete-link-btn');
-
-                if (addSubFolderBtn) showAddFolderModal(null, addSubFolderBtn.dataset.folderId);
-                else if (addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
-                else if (editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId, null);
-                else if (deleteFolderBtn) deleteItem(deleteFolderBtn.dataset.folderId);
-                else if (editLinkBtn) showAddLinkModal(e.target.closest('[data-folder-id]')?.dataset.folderId, editLinkBtn.dataset.linkId);
-                else if (deleteLinkBtn) deleteItem(deleteLinkBtn.dataset.linkId);
-            });
-
-
-            window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
-        }
+        document.getElementById('background-style-select').addEventListener('change', (e) => { data.settings.backgroundStyle = e.target.value; saveData(); applyBackgroundStyle(); });
+        document.getElementById('page-settings').addEventListener('change', e => {
+            if (e.target.name === 'plan-mode') { data.settings.planMode = e.target.value; delete data.dailyPlan[getLocalDateString()]; saveData(); renderSettingsPage(); renderHomePage(); }
+            if (e.target.name === 'dpt-plan-mode') { data.settings.dptPlanMode = e.target.value; data.dailyDptPlan = {}; saveData(); renderSettingsPage(); renderHomePage(); }
+        });
+        document.getElementById('save-custom-cycle-plan')?.addEventListener('click', () => {
+            data.settings.customCyclePlan = [...Array(14)].map(() => []);
+            document.querySelectorAll('.custom-cycle-subject-checkbox:checked').forEach(cb => { data.settings.customCyclePlan[cb.dataset.day].push(cb.value); });
+            data.dailyPlan = {}; saveData(); alert('Custom study plan saved!'); renderHomePage();
+        });
+        document.getElementById('save-dpt-custom-cycle-plan')?.addEventListener('click', () => {
+            data.settings.dptCyclePlan = [...Array(14)].map(() => []);
+            document.querySelectorAll('.custom-dpt-subject-checkbox:checked').forEach(cb => { data.settings.dptCyclePlan[cb.dataset.day].push(cb.value); });
+            data.dailyDptPlan = {}; saveData(); alert('Custom DPT plan saved!'); renderHomePage();
+        });
+        document.getElementById('add-exam-btn').addEventListener('click', () => showAddExamModal());
+        document.getElementById('close-add-exam-modal').addEventListener('click', () => hideModal('add-exam-modal'));
+        document.getElementById('add-exam-form').addEventListener('submit', e => { e.preventDefault(); saveExam(); });
+        document.getElementById('exams-list-container').addEventListener('click', e => {
+            const editBtn = e.target.closest('.edit-exam-btn'); const deleteBtn = e.target.closest('.delete-exam-btn');
+            if (editBtn) showAddExamModal(editBtn.dataset.examId); if (deleteBtn) deleteExam(deleteBtn.dataset.examId);
+        });
+        document.getElementById('exam-filter-buttons').addEventListener('click', e => {
+            const filterBtn = e.target.closest('.exam-filter-btn');
+            if (filterBtn) {
+                currentExamFilter = filterBtn.dataset.filter;
+                document.querySelectorAll('.exam-filter-btn').forEach(btn => { btn.classList.remove('active', 'bg-primary', 'text-white'); btn.classList.add('bg-gray-200', 'dark:bg-gray-700'); });
+                filterBtn.classList.add('active', 'bg-primary', 'text-white'); filterBtn.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+                renderExamsPage();
+            }
+        });
+        document.getElementById('date-completion-subject-select').addEventListener('change', (e) => {
+            const subjectId = e.target.value; const chapterList = document.getElementById('date-completion-chapter-list');
+           if (!subjectId) { chapterList.innerHTML = `<p class="text-center text-sm">Please select a subject first.</p>`; return; }
+            const subject = getSubjectById(subjectId);
+            const uncompletedChapters = (subject.chapters || []).filter(c => c.status === 'Not Started');
+            if(uncompletedChapters.length === 0) { chapterList.innerHTML = `<p class="text-center text-sm">No uncompleted chapters.</p>`; return; }
+            chapterList.innerHTML = uncompletedChapters.map(c => `<label class="flex items-center gap-2 p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md cursor-pointer"><input type="radio" name="date-completion-chapter" value="${c.id}" data-subject-id="${subjectId}" class="form-radio text-primary"><span>${c.name}</span></label>`).join('');
+        });
+        document.getElementById('save-date-completion-btn').addEventListener('click', () => {
+            const selectedRadio = document.querySelector('input[name="date-completion-chapter"]:checked');
+            if (!selectedRadio) { alert('Please select a chapter to mark as complete.'); return; }
+            const { subjectId } = selectedRadio.dataset; const chapterId = selectedRadio.value;
+            const completionDate = document.getElementById('date-completion-modal').dataset.date;
+            updateChapterStatus(subjectId, chapterId, 'Completed', false, completionDate);
+            hideModal('date-completion-modal');
+        });
         
-        function openDateCompletionModal(dateStr) {
+        document.getElementById('dpt-subject-filter').addEventListener('change', renderDptPage);
+        document.getElementById('page-dpt').addEventListener('click', (e) => {
+            const dptItem = e.target.closest('.dpt-list-item'); 
+            const addBtn = e.target.closest('.add-dpt-to-chapter-btn');
+            const addAllBtn = e.target.closest('.add-dpt-to-all-chapters-btn');
+            const deleteAllSubjectBtn = e.target.closest('.delete-all-dpts-subject-btn');
+            const deleteAllGlobalBtn = e.target.closest('#delete-all-dpts-global-btn');
+
+            if (dptItem) { showDptDetailsModal(dptItem.dataset.subjectId, dptItem.dataset.chapterId, dptItem.dataset.testId); }
+            if (addBtn) { showAddChapterDptModal(addBtn.dataset.subjectId, addBtn.dataset.chapterId); }
+            if (addAllBtn) { showAddAllChaptersDptModal(addAllBtn.dataset.subjectId); }
+            if (deleteAllSubjectBtn) { confirmDeleteAllDptsForSubject(deleteAllSubjectBtn.dataset.subjectId); }
+            if (deleteAllGlobalBtn) { confirmDeleteAllDptsGlobally(); }
+        });
+document.getElementById('todays-dpt-container').addEventListener('click', (e) => {
+            const completeBtn = e.target.closest('.mark-dpt-complete-btn');
+            const viewBtn = e.target.closest('.view-dpt-details-btn');
+            const completeMissedBtn = e.target.closest('.complete-missed-dpt-btn');
+            const removeBtn = e.target.closest('.remove-daily-dpt-btn');
+            const deleteManualBtn = e.target.closest('.manual-dpt-delete-btn');
+
+            if (completeBtn) { showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.chapterId, completeBtn.dataset.testId); }
+            if (viewBtn) { showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, viewBtn.dataset.testId); }
+            
+            // DPT Remove Logic - Fixed
+            if (removeBtn) { 
+                const { subjectId, chapterId, testId, manualId, isMissed } = removeBtn.dataset;
+                
+                showConfirmationModal('Remove DPT?', 'Are you sure you want to remove this DPT from the list?', () => {
+                    const todayStr = getLocalDateString();
+                    const tid = parseInt(testId);
+                    
+                    if (isMissed) {
+                        // Handle removal of missed item visuals (Optional logic extension)
+                        // For now, simpler to just complete/ignore. But user wants remove.
+                        // We will add it to today's plan as 'removed' status so it persists.
+                        data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
+                        data.dailyDptPlan[todayStr].push({ subjectId, chapterId, testId: tid, status: 'removed' });
+                    } else {
+                        // Standard today DPT
+                        if (data.dailyDptPlan[todayStr]) {
+                            const index = data.dailyDptPlan[todayStr].findIndex(d => 
+                                d.subjectId === subjectId && d.chapterId === chapterId && d.testId === tid
+                            );
+                            
+                            if (index > -1) {
+                                // If it was in the plan, mark as removed
+                                data.dailyDptPlan[todayStr][index].status = 'removed';
+                            } else {
+                                // If it was auto-generated but not saved in array yet, add as removed
+                                data.dailyDptPlan[todayStr].push({ subjectId, chapterId, testId: tid, status: 'removed' });
+                            }
+                        }
+                    }
+                    saveData();
+                    renderHomePage();
+                });
+            }
+
+            if (completeMissedBtn) {
+                const { subjectId, chapterId, testId } = completeMissedBtn.dataset;
+                const todayStr = getLocalDateString();
+                data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
+                // Check if already added to avoid duplicates
+                if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.chapterId === chapterId && d.testId === parseInt(testId))) {
+                    data.dailyDptPlan[todayStr].push({ subjectId, chapterId, testId: parseInt(testId), isManual: true, id: `manual-dpt-${Date.now()}` });
+                    logActivity('plus', `Added yesterday's missed DPT to today's plan.`);
+                    saveData();
+                    renderHomePage();
+                }
+            }
+            if (deleteManualBtn) {
+                const todayStr = getLocalDateString();
+                const taskId = deleteManualBtn.dataset.manualId;
+                data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(t => t.id !== taskId);
+                saveData(); renderHomePage();
+            }
+        });
+        document.getElementById('dpt-details-form').addEventListener('submit', submitDptDetails);
+        document.getElementById('delete-dpt-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId, parseInt(e.currentTarget.dataset.testId)); });
+        document.getElementById('delete-dpt-display-btn').addEventListener('click', (e) => { deleteDpt(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId, parseInt(e.currentTarget.dataset.testId)); });
+        document.getElementById('close-dpt-display-btn').addEventListener('click', hideDptDetailsModal);
+        document.getElementById('close-dpt-details-popup-modal').addEventListener('click', hideDptDetailsModal);
+        document.getElementById('add-chapter-dpt-form').addEventListener('submit', handleAddDptToChapter);
+        document.getElementById('add-all-chapters-dpt-form').addEventListener('submit', handleAddDptToAllChapters);
+
+
+        document.getElementById('add-manual-revision-btn').addEventListener('click', e => { const { subjectId, chapterId } = e.currentTarget.dataset; const date = document.getElementById('manual-revision-date').value; addManualRevision(subjectId, chapterId, null, date); });
+        document.getElementById('chapter-modal').addEventListener('click', e => { const deleteBtn = e.target.closest('.delete-revision-btn'); if (deleteBtn) { const { subjectId, chapterId, revisionDate } = deleteBtn.dataset; deleteRevision(subjectId, chapterId, null, revisionDate); } });
+        
+        document.getElementById('todays-plan-container').addEventListener('click', e => { if (e.target.closest('#add-task-choice-btn')) showModal('add-task-choice-modal'); });
+        document.getElementById('choice-manual-chapter-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); openManualAddModal('chapter'); });
+        document.getElementById('choice-other-task-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); showAddOtherTaskModal(); });
+        document.getElementById('add-other-task-form').addEventListener('submit', saveOtherTask);
+
+        document.getElementById('todays-dpt-container').addEventListener('click', e => { if (e.target.closest('#manual-add-dpt-btn')) openManualAddModal('dpt'); });
+        document.getElementById('manual-add-subject-select').addEventListener('change', (e) => {
+            const modal = document.getElementById('manual-add-modal');
+            if(modal.dataset.type === 'dpt') { populateManualItemList(e.target.value, 'dpt'); }
+        });
+        document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
+        
+        document.getElementById('add-new-root-folder-btn').addEventListener('click', () => showAddFolderModal(null, null));
+        document.getElementById('add-folder-form').addEventListener('submit', saveFolder);
+        document.getElementById('add-link-form').addEventListener('submit', saveLink);
+        
+        document.getElementById('url-container').addEventListener('click', e => {
+            const addSubFolderBtn = e.target.closest('.add-sub-folder-btn');
+            const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
+            const editFolderBtn = e.target.closest('.edit-folder-btn');
+            const deleteFolderBtn = e.target.closest('.delete-folder-btn');
+            const editLinkBtn = e.target.closest('.edit-link-btn');
+            const deleteLinkBtn = e.target.closest('.delete-link-btn');
+
+            if (addSubFolderBtn) showAddFolderModal(null, addSubFolderBtn.dataset.folderId);
+            else if (addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
+            else if (editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId, null);
+            else if (deleteFolderBtn) deleteItem(deleteFolderBtn.dataset.folderId);
+            else if (editLinkBtn) showAddLinkModal(e.target.closest('[data-folder-id]')?.dataset.folderId, editLinkBtn.dataset.linkId);
+            else if (deleteLinkBtn) deleteItem(deleteLinkBtn.dataset.linkId);
+        });
+
+
+        window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
+    }
+function openDateCompletionModal(dateStr) {
             const modal = document.getElementById('date-completion-modal'); modal.dataset.date = dateStr;
             document.getElementById('date-completion-modal-title').textContent = `Mark Completion for ${new Date(dateStr).toLocaleDateString()}`;
             const subjectSelect = document.getElementById('date-completion-subject-select');
@@ -4506,7 +4701,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 const week = index < 7 ? 1 : 2;
                 const dayName = `${dayNames[index % 7]} (${_('week')} ${week})`;
                 routineData[dayName] = subjects.map(s => {
-                    // Clean ID if it has :notes suffix
                     const id = s.split(':')[0];
                     return _(id);
                 });
@@ -4626,6 +4820,11 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         function showAddOtherTaskModal() {
             const form = document.getElementById('add-other-task-form');
             form.reset();
+            // Reset repeat UI
+            document.getElementById('other-task-is-repeating').checked = false;
+            document.getElementById('repeat-options-container').classList.add('hidden');
+            document.querySelectorAll('input[name="repeat_day"]').forEach(cb => cb.checked = false);
+            
             document.getElementById('other-task-date').value = getLocalDateString();
             showModal('add-other-task-modal');
         }
@@ -4635,7 +4834,22 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             const description = document.getElementById('other-task-description').value.trim();
             const date = document.getElementById('other-task-date').value;
             const notes = document.getElementById('other-task-notes').value.trim();
-            const isRepeating = document.getElementById('other-task-repeat').checked;
+            
+            // Updated Logic for Repetition
+            const isRepeating = document.getElementById('other-task-is-repeating').checked;
+            let repeatType = 'none';
+            let repeatDays = [];
+
+            if (isRepeating) {
+                // Check if specific days are selected
+                const selectedDays = Array.from(document.querySelectorAll('input[name="repeat_day"]:checked')).map(cb => cb.value);
+                if (selectedDays.length > 0) {
+                    repeatType = 'weekly';
+                    repeatDays = selectedDays;
+                } else {
+                    repeatType = 'daily'; // Default to daily if repeat checked but no specific days
+                }
+            }
 
             if (!description || !date) {
                 alert('Please provide a task description and a date.');
@@ -4650,11 +4864,16 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 status: 'Pending',
                 completedDate: null,
                 isRepeating: isRepeating,
+                repeatType: repeatType,
+                repeatDays: repeatDays, // Save the array of days (e.g. ['1', '3'] for Mon, Wed)
                 lastCompletedDate: null
             };
 
             data.otherTasks.push(newTask);
-            logActivity('clipboard-list', `New other task added: "${description}"`);
+            
+            const logType = isRepeating ? (repeatType === 'weekly' ? 'Weekly' : 'Daily') : 'One-time';
+            logActivity('clipboard-list', `New other task added: "${description}" (${logType})`);
+            
             saveData();
             hideModal('add-other-task-modal');
             renderHomePage();
@@ -4791,10 +5010,8 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         function skipDpt(subjectId) {
             const todayStr = getLocalDateString();
             if (!data.dailyDptPlan[todayStr]) return;
-            
             // Filter out all DPTs for the given subject for today
             data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(dpt => dpt.subjectId !== subjectId);
-            
             logActivity('chevrons-right', `Skipped all DPTs for ${_(subjectId)} for today.`);
             saveData();
             renderHomePage();
