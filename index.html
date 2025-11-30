@@ -98,8 +98,13 @@
         color: var(--text-dark);
     }
 
+    /* Scrollbar Hiding & Smooth Scrolling */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Hide scrollbar for Modal Content but keep functionality */
+    .modal-content-scroll::-webkit-scrollbar { display: none; }
+    .modal-content-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
     .page { display: none; }
     .page.active { display: block; animation: fadeIn 0.4s ease-in-out; }
@@ -111,6 +116,45 @@
     .animate-list-item {
         animation: slideInUp 0.5s ease-out forwards;
         opacity: 0;
+    }
+
+    /* --- NEW 3D & SHINE ANIMATIONS --- */
+    /* 1. High Contrast Shining Text (Visible in Day & Night) */
+    .shining-text-anim {
+        background: linear-gradient(90deg, #000 0%, #666 40%, #fbbf24 50%, #666 60%, #000 100%);
+        background-size: 200% auto;
+        color: #000;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 8s linear infinite;
+    }
+    .dark .shining-text-anim {
+        background: linear-gradient(90deg, #fff 0%, #aaa 40%, #fbbf24 50%, #aaa 60%, #fff 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    @keyframes shine { to { background-position: 200% center; } }
+
+    /* 2. 3D Infinite Scroll for Forms */
+    .scrolling-wrapper {
+        position: relative;
+        height: 180px; /* Box height */
+        overflow: hidden;
+        /* Fade Top & Bottom */
+        mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    }
+    .scrolling-content {
+        animation: scroll-vertical 20s linear infinite;
+    }
+    .scrolling-wrapper:hover .scrolling-content {
+        animation-play-state: paused; /* Pause on hover */
+    }
+    @keyframes scroll-vertical {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-50%); } /* Move half way (since we duplicate list) */
     }
     @keyframes slideInUp {
         from { opacity: 0; transform: translateY(20px); }
@@ -125,47 +169,48 @@
         display: block;
     }
 
-    /* --- TRUE WATER/GLASS THEME --- */
+    /* --- ULTIMATE CYBERPUNK GLASS THEME --- */
     .modal-backdrop {
-        background-color: rgba(0, 0, 0, 0.3); /* स्क्रीन को हल्का काला करें */
-        backdrop-filter: blur(5px);
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
         z-index: 60;
     }
 
-    /* मुख्य ग्लास बॉक्स */
+    /* Common Glass Box for ALL Modals */
     .modal-backdrop > div {
-        /* बिल्कुल पानी जैसा ट्रांसपेरेंट बैकग्राउंड */
-        background: rgba(20, 20, 30, 0.45) !important; 
-        backdrop-filter: blur(25px) !important; /* बहुत ज्यादा ब्लर ताकि कंटेंट दिखे */
-        -webkit-backdrop-filter: blur(25px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
-        border-radius: 24px !important;
-        color: #fff !important;
+        background: rgba(12, 20, 35, 0.65) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(0, 242, 255, 0.15) !important;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 255, 0.05) !important;
+        border-radius: 16px !important;
+        color: #e0f2fe !important;
     }
 
-    /* क्रॉस (X) बटन को छुपाना */
+    /* Hidden X button logic (Click outside acts as close) */
     .modal-backdrop button i[data-lucide="x"], 
     .modal-backdrop button:has(i[data-lucide="x"]) {
         display: none !important;
     }
 
-    /* इनपुट्स (कांच के ऊपर लिखे हुए जैसे) */
+    /* Cyber Inputs */
     .modal-backdrop input, 
     .modal-backdrop textarea, 
     .modal-backdrop select {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: none !important;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-        color: #fff !important;
-        border-radius: 8px !important;
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-left: 2px solid rgba(0, 242, 255, 0.5) !important;
+        color: #00f2ff !important;
+        border-radius: 4px !important;
         padding: 12px !important;
+        font-family: 'Courier New', monospace;
         transition: all 0.3s ease;
     }
     .modal-backdrop input:focus, .modal-backdrop textarea:focus {
-        background: rgba(255, 255, 255, 0.1) !important;
-        border-bottom-color: #0ea5e9 !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        background: rgba(0, 242, 255, 0.05) !important;
+        border-color: rgba(0, 242, 255, 0.5) !important;
+        box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        outline: none !important;
     }
 
     /* टॉगल स्विच (Checkbox को सुंदर बनाना) */
@@ -468,28 +513,9 @@
             padding-bottom: 10px;
         }
     }
-
-    /* --- CYBERPUNK ANIMATION KEYFRAMES --- */
-    @keyframes blob {
-        0% { transform: translate(0px, 0px) scale(1); }
-        33% { transform: translate(30px, -50px) scale(1.1); }
-        66% { transform: translate(-20px, 20px) scale(0.9); }
-        100% { transform: translate(0px, 0px) scale(1); }
-    }
-    .animate-blob {
-        animation: blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .animation-delay-2000 { animation-delay: 2s; }
-    .animation-delay-4000 { animation-delay: 4s; }
 </style>
 </head>
-<body class="text-text-light dark:text-text-dark">
-    <canvas id="particle-canvas"></canvas>
-    <div id="cyberpunk-bg-container" class="fixed inset-0 z-[-2] hidden overflow-hidden pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob bg-cyan-500"></div>
-        <div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob animation-delay-2000 bg-purple-600"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-[50%] h-[50%] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob animation-delay-4000 bg-green-500"></div>
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-[2px]"></div> </div>
+<body class="text-text-light dark:text-text-dark"><canvas id="particle-canvas"></canvas>
 
 <div class="flex h-screen bg-transparent">
     <aside id="sidebar" class="flex flex-col w-64 bg-card-light dark:bg-card-dark relative no-print">
@@ -528,8 +554,10 @@
                 <i data-lucide="menu"></i>
             </button>
             <div class="text-center flex-grow">
-                <h1 class="text-lg font-extrabold app-header-title">Study Tracker</h1>
-                <p class="text-xs text-text-muted-light dark:text-text-muted-dark -mt-1">By Pravej Ahmad</p>
+                <div class="shining-text-anim">
+                    <h1 class="text-lg font-extrabold app-header-title" style="letter-spacing: 1px;">Study Tracker</h1>
+                    <p class="text-xs font-bold -mt-1">By Pravej Ahmad</p>
+                </div>
             </div>
              <div id="study-day-counter" class="absolute top-1/2 -translate-y-1/2 right-4 text-xs font-bold p-2 rounded-full shadow-lg flex items-center gap-1.5">
                 <i data-lucide="calendar-check-2" class="w-4 h-4"></i>
@@ -567,7 +595,10 @@
                                     <!-- Completed tasks will be injected here -->
                                 </div>
                             </div>
-                            <div id="todays-dpt-container" class="dashboard-card bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900 p-4 rounded-xl shadow-sm min-h-[100px]"></div>
+                            <div class="space-y-6">
+                                <div id="todays-dpt-container" class="dashboard-card bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900 p-4 rounded-xl shadow-sm min-h-[100px]"></div>
+                                <div id="dashboard-applied-exams-container" class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm border-l-4 border-blue-500"></div>
+                            </div>
                         </div>
                         
                         <!-- Other Sections -->
@@ -820,7 +851,6 @@
                         <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                             <option value="default">Default Gradient</option>
                             <option value="constellation">Cyber Constellation</option>
-                            <option value="cyberpunk-glass">Cyberpunk Glass (Animated)</option>
                         </select>
                     </div>
                     
@@ -954,74 +984,75 @@
 <div id="confirmation-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-6 text-center"><h2 id="confirmation-title" class="text-xl font-bold mb-2" data-translate="are_you_sure">Are you sure?</h2><p id="confirmation-message" class="text-text-muted-light dark:text-text-muted-dark mb-6" data-translate="action_cannot_be_undone">This action cannot be undone.</p><div class="flex justify-center gap-4"><button id="confirm-cancel" class="flex-1 p-3 font-semibold rounded-lg bg-gray-200 dark:bg-gray-700" data-translate="cancel">Cancel</button><button id="confirm-action" class="flex-1 p-3 font-semibold rounded-lg text-white bg-danger" data-translate="confirm">Confirm</button></div></div></div>
 
 <div id="chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
-    <div class="w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto" style="background: rgba(10, 15, 30, 0.7); border: 1px solid rgba(0, 242, 255, 0.3); box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); border-radius: 16px;">
+    <div class="w-full max-w-lg relative overflow-hidden no-scrollbar" 
+         style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(6, 182, 212, 0.5); box-shadow: 0 0 40px rgba(6, 182, 212, 0.2); border-radius: 24px;">
         
-        <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400 rounded-tl-xl pointer-events-none"></div>
-        <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400 rounded-tr-xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400 rounded-bl-xl pointer-events-none"></div>
-        <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400 rounded-br-xl pointer-events-none"></div>
-
         <button id="close-chapter-modal" class="hidden"><i data-lucide="x"></i></button>
         
-        <div class="text-center mb-6">
-            <h2 id="chapter-modal-title" class="text-2xl font-bold tracking-wider" style="color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.6); font-family: 'Poppins', sans-serif;">
+        <div class="relative p-6 pb-8 bg-gradient-to-b from-cyan-900/30 to-transparent">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+            <h2 id="chapter-modal-title" class="text-2xl font-extrabold text-center text-white tracking-wide drop-shadow-lg" style="font-family: 'Poppins', sans-serif;">
                 Chapter Name
             </h2>
-            <div class="h-0.5 w-1/2 mx-auto bg-gradient-to-r from-transparent via-cyan-500 to-transparent mt-2 opacity-50"></div>
+            <p class="text-center text-cyan-300/70 text-xs mt-1 uppercase tracking-[0.2em]">Control Panel</p>
         </div>
 
-        <div class="space-y-6">
+        <div class="px-6 pb-6 space-y-6 -mt-4">
             
-            <div class="bg-black/20 p-1.5 rounded-full border border-white/10 backdrop-blur-sm">
-                <div id="chapter-status-buttons" class="status-btn-group flex justify-between gap-1">
-                    <button data-status="Not Started" class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-full hover:bg-white/5 transition-all"><span data-translate="not_started">Not Started</span></button>
-                    <button data-status="Completed" class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-full hover:bg-white/5 transition-all"><span data-translate="completed">Completed</span></button>
-                    <button data-status="Postpone" class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-full hover:bg-white/5 transition-all"><span data-translate="postpone_task">Postpone</span></button>
+            <div class="bg-slate-900/80 p-1.5 rounded-2xl border border-slate-700 shadow-inner flex justify-between relative overflow-hidden">
+                <div id="chapter-status-buttons" class="status-btn-group w-full flex justify-between gap-1 relative z-10">
+                    <button data-status="Not Started" class="flex-1 py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-xl text-slate-400 hover:text-white transition-all">Not Started</button>
+                    <button data-status="Completed" class="flex-1 py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-xl text-slate-400 hover:text-white transition-all">Completed</button>
+                    <button data-status="Postpone" class="flex-1 py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-xl text-slate-400 hover:text-white transition-all">Postpone</button>
                 </div>
             </div>
 
-            <div class="relative group">
-                <label for="chapter-notes-textarea" class="text-xs text-cyan-300 uppercase tracking-widest mb-1 block pl-2 flex items-center gap-2">
-                    <i data-lucide="terminal" class="w-3 h-3"></i> <span data-translate="study_notes">Study Notes</span>
+            <div class="space-y-2">
+                <label for="chapter-notes-textarea" class="text-xs font-bold text-cyan-400 uppercase tracking-wider ml-2 flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-3 h-3"></i> Field Notes
                 </label>
-                <div class="relative">
+                <div class="relative group">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
                     <textarea id="chapter-notes-textarea" rows="4" 
-                        class="w-full bg-black/40 text-cyan-50 p-4 rounded-lg border border-white/10 focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,255,0.2)] outline-none transition-all resize-none text-sm font-mono" 
-                        data-translate-placeholder="study_notes_placeholder" placeholder="> Enter study data..."></textarea>
-                    </div>
+                        class="relative w-full bg-slate-900 text-slate-200 p-4 rounded-xl border border-slate-700 focus:border-cyan-500/50 focus:bg-slate-900 outline-none transition-all resize-none text-sm placeholder-slate-600" 
+                        placeholder="Enter important details here..."></textarea>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <div class="p-4 rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent flex flex-col justify-center items-center text-center">
-                    <label class="cursor-pointer flex flex-col items-center gap-2 group">
-                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider" data-translate="priority_revision">Priority Mode</span>
-                        <div class="relative">
-                            <input type="checkbox" id="chapter-priority-revision-checkbox" class="sr-only peer">
-                            <div class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-amber-500 peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.5)]"></div>
-                        </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center gap-3">
+                    <div class="flex items-center gap-2 text-amber-400">
+                        <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest">Priority</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="chapter-priority-revision-checkbox" class="sr-only peer">
+                        <div class="w-14 h-8 bg-slate-800 border border-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-slate-400 after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-white"></div>
                     </label>
                 </div>
 
-                <div class="p-4 rounded-xl border border-white/10 bg-black/30">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 border-b border-white/5 pb-1">System Revisions</h3>
-                    <div id="scheduled-revisions-list" class="space-y-1.5 max-h-[80px] overflow-y-auto pr-1 text-xs mb-2">
-                        </div>
-                    <div class="flex items-center gap-1 mt-auto">
-                        <input type="date" id="manual-revision-date" class="flex-grow p-1.5 bg-white/5 border border-white/10 rounded text-xs text-white focus:border-cyan-400 outline-none">
-                        <button id="add-manual-revision-btn" class="p-1.5 rounded bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors border border-cyan-500/50">
-                            <i data-lucide="plus" class="w-3 h-3"></i>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Schedule</span>
+                        <i data-lucide="calendar" class="w-3 h-3 text-slate-500"></i>
+                    </div>
+                    <div id="scheduled-revisions-list" class="space-y-1.5 overflow-y-auto max-h-[80px] no-scrollbar mb-3 flex-grow"></div>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="date" id="manual-revision-date" class="w-full p-1.5 bg-slate-800 border border-slate-700 rounded-lg text-[10px] text-white outline-none focus:border-cyan-500">
+                        <button id="add-manual-revision-btn" class="p-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-lg hover:bg-cyan-500 hover:text-white transition-all">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-2">
-                <button id="delete-chapter-details-btn" class="p-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-all">
-                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+            <div class="flex gap-4 pt-2">
+                <button id="delete-chapter-details-btn" class="group p-4 rounded-2xl bg-red-500/5 border border-red-500/20 hover:bg-red-500 hover:border-red-500 transition-all duration-300">
+                    <i data-lucide="trash-2" class="w-5 h-5 text-red-500 group-hover:text-white"></i>
                 </button>
-                <button id="save-chapter-details-btn" class="flex-grow p-3 font-bold rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-[0_0_20px_rgba(8,145,178,0.4)] transition-all transform active:scale-95 tracking-wide" data-translate="save_changes">
-                    SAVE SYSTEM CHANGES
+                <button id="save-chapter-details-btn" class="flex-grow p-4 font-bold rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/20 transition-all duration-300 transform active:scale-95 tracking-wide uppercase flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> Save Changes
                 </button>
             </div>
         </div>
@@ -1172,24 +1203,24 @@
 </div>
 
 <div id="add-other-task-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
-    <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+    <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative border border-gray-200 dark:border-gray-700">
         <button id="close-add-other-task-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
-        <h2 class="text-xl font-bold mb-4">Add Other Task</h2>
+        <h2 class="text-xl font-bold mb-4 text-primary">Add Other Task</h2>
         <form id="add-other-task-form" class="space-y-4">
             <div>
                 <label for="other-task-description" class="block text-sm font-medium mb-1">Task Description</label>
-                <input type="text" id="other-task-description" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required placeholder="e.g., Buy new notebook">
+                <input type="text" id="other-task-description" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" required placeholder="e.g., Buy new notebook">
             </div>
             <div>
                 <label for="other-task-date" class="block text-sm font-medium mb-1">Date</label>
-                <input type="date" id="other-task-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required>
+                <input type="date" id="other-task-date" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg" required>
             </div>
             <div>
                 <label for="other-task-notes" class="block text-sm font-medium mb-1">Notes (Optional)</label>
-                <textarea id="other-task-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" placeholder="Add any extra details..."></textarea>
+                <textarea id="other-task-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg" placeholder="Add any extra details..."></textarea>
             </div>
             
-            <div class="border-t pt-3 mt-2">
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-2">
                 <label class="flex items-center gap-2 cursor-pointer mb-2">
                     <input type="checkbox" id="other-task-is-repeating" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
                     <span class="font-semibold text-sm">Repeat this task</span>
@@ -1199,37 +1230,37 @@
                     <div class="flex flex-wrap gap-2" id="week-days-selector">
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="1" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Mon</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-cyan-400 peer-checked:text-black peer-checked:border-cyan-500 transition-all duration-200">Mon</span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="2" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Tue</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-cyan-400 peer-checked:text-black peer-checked:border-cyan-500 transition-all duration-200">Tue</span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="3" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Wed</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-cyan-400 peer-checked:text-black peer-checked:border-cyan-500 transition-all duration-200">Wed</span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="4" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Thu</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-cyan-400 peer-checked:text-black peer-checked:border-cyan-500 transition-all duration-200">Thu</span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="5" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Fri</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-cyan-400 peer-checked:text-black peer-checked:border-cyan-500 transition-all duration-200">Fri</span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="6" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-200">Sat</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-cyan-400 peer-checked:text-black peer-checked:border-cyan-500 transition-all duration-200">Sat</span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="checkbox" name="repeat_day" value="0" class="peer sr-only">
-                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-500 transition-all duration-200">Sun</span>
+                            <span class="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 transition-all duration-200">Sun</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Save Task</button>
+            <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-lg transform active:scale-95 transition-all">Save Task</button>
         </form>
     </div>
 </div>
@@ -2066,11 +2097,46 @@ const renderHomePage = () => {
         renderMissedOtherTasks();
         renderMissedRevisions();
         renderUpcomingExamsOnDashboard();
+        renderAppliedFormsList(); // Added new function call
         renderOverallProgress();
         renderUpcomingRevisions();
         renderBadges();
         renderSubjectWiseProgressDashboard();
         lucide.createIcons();
+    };
+
+    // --- NEW: RENDER APPLIED FORMS LIST ON DASHBOARD ---
+    const renderAppliedFormsList = () => {
+        const container = document.getElementById('dashboard-applied-exams-container');
+        if (!container) return;
+        
+        // Filter only 'Applied' status exams
+        const appliedExams = (data.exams || []).filter(e => e.status === 'Applied').sort((a,b) => new Date(b.applicationDate || 0) - new Date(a.applicationDate || 0));
+        
+        container.innerHTML = `<h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-blue-600 dark:text-blue-400"><i data-lucide="file-check-2" class="w-5 h-5"></i>Applied Forms</h2>`;
+        
+        if (appliedExams.length === 0) {
+            container.innerHTML += `<p class="text-sm text-text-muted-light dark:text-text-muted-dark text-center py-2">No applied forms to show.</p>`;
+        } else {
+            const listHtml = appliedExams.map(exam => {
+                const locale = data.settings.language === 'hi' ? 'hi-IN' : 'en-GB';
+                const appDate = exam.applicationDate ? new Date(exam.applicationDate).toLocaleDateString(locale) : 'N/A';
+                const examDate = exam.examDate ? new Date(exam.examDate).toLocaleDateString(locale) : 'Not set';
+                
+                return `<div class="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800/50 mb-2 last:mb-0">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-bold text-sm text-blue-900 dark:text-blue-100 leading-tight">${exam.name}</h4>
+                        <span class="text-[10px] font-bold bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded">Applied</span>
+                    </div>
+                    <div class="flex justify-between mt-1 text-xs text-text-muted-light dark:text-text-muted-dark">
+                        <span>Applied: <span class="font-semibold text-gray-700 dark:text-gray-300">${appDate}</span></span>
+                        <span>Exam: <span class="font-semibold ${exam.examDate ? 'text-red-500' : 'text-gray-500'}">${examDate}</span></span>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            container.innerHTML += `<div class="max-h-[200px] overflow-y-auto pr-1 no-scrollbar space-y-1">${listHtml}</div>`;
+        }
     };
     
     const initRotatingDisplay = (containerId, items, renderFunction, emptyMessage) => {
@@ -2404,12 +2470,16 @@ const getSubjectsForDay = (date = new Date()) => {
         const manualTasks = dailyPlanData.manualTasks || [];
         const dayName = new Date().toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'long' });
         
-        // Auto-Remove Logic: Filter out COMPLETED other tasks
+        // Get skipped tasks (Today only delete)
+        const skippedOtherTasks = dailyPlanData.skippedOtherTasks || [];
+
+        // Auto-Remove Logic: Filter out COMPLETED/SKIPPED other tasks
         const otherTasksForToday = (data.otherTasks || []).filter(task => {
+            if (skippedOtherTasks.includes(task.id)) return false; // Hide if skipped today
             if (task.status === 'Completed') return false; // HIDE IF COMPLETED
             
             if (task.isRepeating) {
-                if (task.lastCompletedDate === todayStr) return false; // HIDE IF DONE TODAY
+                if (task.lastCompletedDate === todayStr) return false; 
                 return task.date === todayStr && task.status === 'Pending';
             } else {
                 return task.date === todayStr && task.status === 'Pending';
@@ -2418,16 +2488,23 @@ const getSubjectsForDay = (date = new Date()) => {
         
         const postponedOtherTasksForToday = (data.postponedOtherTasks || []).filter(task => task.date === todayStr && task.status === 'Pending');
 
-        // Auto-Remove Logic: Filter out COMPLETED chapters
+        // Auto-Remove Logic: Filter out COMPLETED chapters OR Completed Subjects (Sync)
         const chaptersToStudy = Object.entries(tasks).map(([, task]) => {
             if (!task) return null;
+            
+            // 1. SYNC FIX: Check if the SUBJECT itself is marked as completed for today
+            // (This means ANY chapter of this subject was done)
+            if (dailyPlanData.completedSubjects && dailyPlanData.completedSubjects.includes(task.subjectId)) {
+                return null;
+            }
+
             const subject = getSubjectById(task.subjectId); 
             const chapter = getChapterByIds(task.subjectId, task.chapterId);
             
-            // CRITICAL: If status is Completed, RETURN NULL (Hide it)
+            // 2. Check if chapter is completed
             if (!subject || !chapter || chapter.status === 'Completed') return null;
             
-            // Double Check: If in dailyPlan.completedTasks, Hide it
+            // 3. Double Check individual task completion
             if (dailyPlanData.completedTasks && dailyPlanData.completedTasks.some(ct => ct.type === 'chapter' && ct.chapterId === chapter.id)) return null;
 
             return { type: 'chapter', subject, chapter, note: task.note };
@@ -3202,9 +3279,10 @@ const renderExamsPage = () => {
         showModal('add-chapter-modal');
     };
     
-    const showConfirmationModal = (title, message, onConfirm) => {
+    const showConfirmationModal = (title, messageHtml, onConfirm) => {
         document.getElementById('confirmation-title').textContent = title;
-        document.getElementById('confirmation-message').textContent = message;
+        // Changed to innerHTML to support Checkbox in Smart Delete
+        document.getElementById('confirmation-message').innerHTML = messageHtml;
         const confirmBtn = document.getElementById('confirm-action');
         const newConfirmBtn = confirmBtn.cloneNode(true);
         confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
@@ -3228,28 +3306,45 @@ const renderExamsPage = () => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         const oldStatus = chapter.status; if (oldStatus === newStatus) return;
         chapter.status = newStatus;
+        const todayStr = getLocalDateString();
         
         if (newStatus === 'Completed') {
-            chapter.dateCompleted = completionDate || getLocalDateString();
+            chapter.dateCompleted = completionDate || todayStr;
             if (!REVISION_EXCLUDED_SUBJECTS.includes(subjectId)) {
                 scheduleRevisions(chapter);
             }
 
-            // NEW LOGIC: Add DPT immediately upon completion (Modified by Amock)
+            // ADD DPT Logic (Only on complete)
             if (!isUndo && !DPT_EXCLUDED_SUBJECTS.includes(subjectId)) {
                 const nextDpt = findNextPendingDptForChapter(subjectId, chapterId);
                 if (nextDpt) {
-                    const todayStr = getLocalDateString();
                     data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
                     // Avoid duplicates
                     const alreadyExists = data.dailyDptPlan[todayStr].some(d => 
-                        d.subjectId === nextDpt.subjectId && 
-                        d.chapterId === nextDpt.chapterId && 
-                        d.testId === nextDpt.testId
+                        d.subjectId === nextDpt.subjectId && d.chapterId === nextDpt.chapterId && d.testId === nextDpt.testId
                     );
                     if (!alreadyExists) {
                         data.dailyDptPlan[todayStr].push(nextDpt);
                     }
+                }
+            }
+
+            // SYNC LOGIC: Mark dashboard task as done IF subject matches
+            if (data.dailyPlan[todayStr]) {
+                const dailyPlanData = data.dailyPlan[todayStr];
+                dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
+                
+                // Add this specific chapter to completed list
+                if (!dailyPlanData.completedTasks.some(ct => ct.type === 'chapter' && ct.chapterId === chapterId)) {
+                    dailyPlanData.completedTasks.push({ type: 'chapter', subjectId, chapterId });
+                }
+
+                // IMPORTANT: Check if this SUBJECT was in today's plan. If yes, mark the subject as "Done"
+                // This ensures that if I complete *any* Physics chapter, the Physics slot on dashboard is satisfied.
+                const isSubjectInPlan = Object.values(dailyPlanData.tasks).some(task => task && task.subjectId === subjectId);
+                
+                if (isSubjectInPlan) {
+                    markSubjectAsDoneForToday(subjectId);
                 }
             }
 
@@ -3261,27 +3356,33 @@ const renderExamsPage = () => {
                 checkAllGamification();
                 lastAction = { type: 'complete', data: { subjectId, chapterId, oldStatus }, undo: () => updateChapterStatus(subjectId, chapterId, oldStatus, true) };
                 showUndoToast(_('chapter_completed_msg'), lastAction.undo);
-                
-                const todayStr = getLocalDateString();
-                const dailyPlanData = data.dailyPlan[todayStr];
-                if (dailyPlanData) {
-                    dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
-                    dailyPlanData.completedTasks.push({ type: 'chapter', subjectId, chapterId });
-                    
-                    const planTaskKey = Object.keys(dailyPlanData.tasks).find(key => {
-                        const task = dailyPlanData.tasks[key];
-                        return task && task.chapterId === chapterId && task.subjectId === subjectId;
-                    });
-                    
-                    if (planTaskKey) {
-                        markSubjectAsDoneForToday(subjectId);
-                    }
-                }
-                delete data.dailyDptPlan[todayStr]?.planGeneratedForDay;
             }
         } else { 
+            // UNDO LOGIC
             delete chapter.dateCompleted; 
             chapter.revisions = []; 
+            
+            // 1. Remove from Dashboard Completed List
+            if (data.dailyPlan[todayStr] && data.dailyPlan[todayStr].completedTasks) {
+                data.dailyPlan[todayStr].completedTasks = data.dailyPlan[todayStr].completedTasks.filter(ct => 
+                    !(ct.type === 'chapter' && ct.subjectId === subjectId && ct.chapterId === chapterId)
+                );
+                
+                // Un-mark subject bubble if NO other chapters of this subject are done today
+                const otherDoneForSubject = data.dailyPlan[todayStr].completedTasks.some(ct => ct.subjectId === subjectId);
+                if (!otherDoneForSubject && data.dailyPlan[todayStr].completedSubjects) {
+                    data.dailyPlan[todayStr].completedSubjects = data.dailyPlan[todayStr].completedSubjects.filter(sid => sid !== subjectId);
+                }
+            }
+
+            // 2. UNDO DPT: Remove the generated DPT from Today's DPT Plan
+            if (data.dailyDptPlan[todayStr]) {
+                // Filter out DPTs that match this subject+chapter AND are not manually added
+                data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(dpt => 
+                    !(dpt.subjectId === subjectId && dpt.chapterId === chapterId && !dpt.isManual)
+                );
+            }
+
             if (!isUndo) { logActivity('rotate-ccw', `Chapter status changed: "${chapter.name}" to ${newStatus}`); } 
         }
         saveData(); 
@@ -3577,63 +3678,16 @@ const getDptSubjectsForDay = (date = new Date()) => {
             return [...new Set([...studySubjects, ...revisionSubjects])].filter(id => !DPT_EXCLUDED_SUBJECTS.includes(id));
         };
 const getOrGenerateDailyDptPlan = (dateStr) => {
-        // 1. Ensure array exists
+        // Only initialize if not exists
         if (!data.dailyDptPlan[dateStr]) {
             data.dailyDptPlan[dateStr] = [];
         }
         
-        // 2. Get current plan (Keep existing data!)
-        const plan = data.dailyDptPlan[dateStr];
+        // 4. Return the plan directly. 
+        // We REMOVED the logic that auto-adds DPTs from daily plan or cycles.
+        // DPTs will only appear here if 'updateChapterStatus' pushes them upon completion.
         
-        // 3. Create a Set of existing items to prevent duplicates
-        // We check existing items regardless of status (so we don't re-add removed/completed ones)
-        const dptsAlreadyInPlan = new Set(plan.map(p => `${p.subjectId}-${p.chapterId}-${p.testId}`));
-
-        // 4. Get Study Plan
-        const dailyPlan = getOrGenerateDailyPlan(dateStr);
-        const allTodayTasks = [
-            ...Object.values(dailyPlan.tasks),
-            ...(dailyPlan.manualTasks || [])
-        ];
-
-        // 5. Add DPTs for Study Tasks - DISABLED AS PER REQUEST (Only add on completion)
-        // Code block removed to prevent auto-adding DPTs when chapters appear in plan.
-
-        // 6. Add DPTs for Revisions
-        (data.subjects || []).forEach(s => {
-            (s.chapters || []).forEach(c => (c.revisions || []).forEach(r => {
-                if (r.status === 'Pending' && r.date === dateStr && !DPT_EXCLUDED_SUBJECTS.includes(s.id)) {
-                    const nextDpt = findNextPendingDptForChapter(s.id, c.id);
-                    if (nextDpt) {
-                        const uniqueKey = `${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`;
-                        if (!dptsAlreadyInPlan.has(uniqueKey)) {
-                            plan.push(nextDpt);
-                            dptsAlreadyInPlan.add(uniqueKey);
-                        }
-                    }
-                }
-            }));
-        });
-        
-        // 7. Custom Cycle Fallback
-        if (plan.length === 0 && data.settings.dptPlanMode === 'custom_cycle') {
-                getDptSubjectsForDay(new Date(dateStr)).forEach(subjectId => {
-                const nextDpt = findNextPendingDptForSubject(subjectId);
-                if (nextDpt) {
-                    const uniqueKey = `${nextDpt.subjectId}-${nextDpt.chapterId}-${nextDpt.testId}`;
-                    if (!dptsAlreadyInPlan.has(uniqueKey)) {
-                        plan.push(nextDpt);
-                        dptsAlreadyInPlan.add(uniqueKey);
-                    }
-                }
-            });
-        }
-
-        // Mark as generated (Note: JSON won't save this property on array, but useful for runtime)
-        plan.planGeneratedForDay = true;
-        saveData();
-        
-        return plan;
+        return data.dailyDptPlan[dateStr];
     };
 const renderTodaysDpt = () => {
         const container = document.getElementById('todays-dpt-container');
@@ -3645,20 +3699,29 @@ const renderTodaysDpt = () => {
         // Get Today's Plan
         const todayPlan = getOrGenerateDailyDptPlan(todayStr);
 
-        // Get Yesterday's Missed DPTs
+        // Get Completed DPTs for Dropdown (FIXED LOGIC)
+        const completedDptsToday = todayPlan.filter(item => {
+            const testData = data.dpts[item.subjectId]?.chapters?.[item.chapterId];
+            const test = testData ? testData.find(t => t.id === item.testId) : null;
+            // Check if item is explicitly completed OR test status is completed
+            return (item.status === 'Completed' || (test && test.status === 'Completed'));
+        });
+
+        // Get Pending DPTs (Filter out removed & completed)
+        const visibleCurrentTests = todayPlan.filter(item => {
+            const testData = data.dpts[item.subjectId]?.chapters?.[item.chapterId];
+            const test = testData ? testData.find(t => t.id === item.testId) : null;
+            const isCompleted = item.status === 'Completed' || (test && test.status === 'Completed');
+            return item.status !== 'removed' && !isCompleted;
+        });
+
+        // Get Missed DPTs
         const yesterdayPlan = data.dailyDptPlan[yesterdayStr] || [];
         let rawMissedDPTs = yesterdayPlan.filter(({ subjectId, chapterId, testId }) => {
             const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
             return test && test.status !== 'Completed';
         });
-
-        // --- FILTERING LOGIC ---
-
-        // 1. Filter Current: Hide 'removed' and 'completed'
-        const visibleCurrentTests = todayPlan.filter(item => item.status !== 'removed' && item.status !== 'completed');
-
-        // 2. Filter Missed: Hide if it exists in TODAY'S plan as 'removed'
-        // (Because when you remove a missed DPT, we add it to today's plan as 'removed' to persist the action)
+        
         const visibleMissedDPTs = rawMissedDPTs.filter(missedItem => {
             const isRemovedToday = todayPlan.some(todayItem => 
                 todayItem.subjectId === missedItem.subjectId &&
@@ -3669,28 +3732,26 @@ const renderTodaysDpt = () => {
             return !isRemovedToday;
         });
 
-        // UI Logic
-        const hasPending = visibleCurrentTests.some(({ subjectId, chapterId, testId }) => { 
-            const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId); 
-            return test && test.status !== 'Completed'; 
-        });
+        const hasPending = visibleCurrentTests.length > 0;
+        const hasMissed = visibleMissedDPTs.length > 0;
 
-        container.className = `dashboard-card p-4 rounded-xl shadow-sm min-h-[100px] bg-gradient-to-br ${ (hasPending || visibleMissedDPTs.length > 0) ? 'from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900' : 'from-teal-100 to-green-200 dark:from-teal-800 dark:to-green-900' }`;
+        container.className = `dashboard-card p-4 rounded-xl shadow-sm min-h-[100px] bg-gradient-to-br ${ (hasPending || hasMissed) ? 'from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900' : 'from-teal-100 to-green-200 dark:from-teal-800 dark:to-green-900' }`;
         
         let html = `<div class="flex items-center justify-between pb-3 border-b mb-3">
             <div class="flex items-center gap-3"><i data-lucide="file-check" class="w-6 h-6"></i><h2 class="text-lg font-bold">${_('todays_dpt')}</h2></div>
             <button id="manual-add-dpt-btn" class="p-1.5 rounded-full hover:bg-orange-200 dark:hover:bg-orange-800"><i data-lucide="plus-circle" class="w-5 h-5 text-orange-700 dark:text-orange-300 pointer-events-none"></i></button>
         </div>`;
 
-        if (visibleCurrentTests.length === 0 && visibleMissedDPTs.length === 0) { 
+        if (!hasPending && !hasMissed) { 
             html += `<div class="text-center py-4"><p>${_('no_dpt_scheduled')}</p></div>`; 
         } else {
             html += '<ul class="space-y-3">';
             
-            // Render Today's
+            // Pending
             visibleCurrentTests.forEach(({ subjectId, chapterId, testId, isManual, id }) => {
-                const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
-                if (!test || test.status === 'Completed') return; 
+                const testData = data.dpts[subjectId]?.chapters?.[chapterId];
+                const test = testData ? testData.find(t => t.id === testId) : null;
+                if (!test) return; 
 
                 const chapter = getChapterByIds(subjectId, chapterId);
                 const dptTitle = `${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}`;
@@ -3699,30 +3760,67 @@ const renderTodaysDpt = () => {
                     <p class="font-bold flex items-center gap-2">${isManual ? `<i data-lucide="hand" class="w-4 h-4 text-indigo-500"></i>`: ''}${dptTitle}</p>
                     <div class="flex items-center gap-1">
                         <button class="remove-daily-dpt-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Remove" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}" data-manual-id="${id || ''}"><i data-lucide="x" class="w-4 h-4 text-red-600 pointer-events-none"></i></button>
-                        <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="check-circle" class="w-4 h-4 pointer-events-none"></i><span>${_('mark_as_complete')}</span></button>
+                        <button class="mark-dpt-complete-btn w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-amber-500 rounded-lg hover:bg-amber-600 shadow" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}"><i data-lucide="check-circle" class="w-4 h-4 pointer-events-none"></i><span>${_('mark_as_complete')}</span></button>
                     </div>
                 </li>`;
             });
             
-            // Render Missed
+            // Missed
             visibleMissedDPTs.forEach(({ subjectId, chapterId, testId }) => {
-                const test = data.dpts[subjectId]?.chapters?.[chapterId]?.find(t => t.id === testId);
+                const testData = data.dpts[subjectId]?.chapters?.[chapterId];
+                const test = testData ? testData.find(t => t.id === testId) : null;
                 if (!test) return;
                 const chapter = getChapterByIds(subjectId, chapterId);
                 
                 html += `<li class="p-2 rounded-lg bg-red-100 dark:bg-red-900/50 flex flex-col items-start gap-2">
-                    <p class="font-semibold text-sm text-red-800 dark:text-red-200">Missed Yesterday: ${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}</p>
+                    <p class="font-semibold text-sm text-red-800 dark:text-red-200">Missed: ${_(subjectId)} - ${chapter ? chapter.name : ''} #${test.id}</p>
                     <div class="flex gap-2 w-full">
                         <button class="remove-daily-dpt-btn p-1.5 bg-red-200 text-red-800 rounded" data-is-missed="true" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></button>
-                        <button class="complete-missed-dpt-btn flex-grow text-xs font-semibold p-1.5 bg-red-500 text-white rounded-md" data-subject-id="${subjectId}" data-chapter-id="${chapterId}" data-test-id="${test.id}">${_('complete_yesterdays_dpt')}</button>
+                        <button class="complete-missed-dpt-btn flex-grow text-xs font-semibold p-1.5 bg-red-500 text-white rounded-md" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}">${_('complete_yesterdays_dpt')}</button>
                     </div>
                 </li>`;
             });
-
             html += '</ul>';
-            if(!hasPending && visibleMissedDPTs.length === 0) { html += `<div class="text-center pt-4 text-green-800 dark:text-green-200 font-semibold"><p>${_('all_dpt_completed')}</p></div>`; }
+            if(!hasPending && !hasMissed) { html += `<div class="text-center pt-4 text-green-800 dark:text-green-200 font-semibold"><p>${_('all_dpt_completed')}</p></div>`; }
         }
+
+        // --- COMPLETED DPT DROPDOWN WITH GOLDEN EYE ---
+        if (completedDptsToday.length > 0) {
+            const completedListHtml = completedDptsToday.map(item => {
+                const chapter = getChapterByIds(item.subjectId, item.chapterId);
+                // Premium Golden Eye Button
+                const viewBtn = `<button class="view-dpt-details-btn p-1.5 rounded-full bg-gradient-to-r from-amber-200 to-yellow-500 hover:from-amber-300 hover:to-yellow-600 shadow text-yellow-900 border border-yellow-300" title="View Score" data-subject-id="${item.subjectId}" data-chapter-id="${item.chapterId}" data-test-id="${item.testId}"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>`;
+                
+                return `<div class="text-xs text-green-800 dark:text-green-200 flex justify-between items-center gap-2 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-100 dark:border-green-800/50">
+                    <div class="flex items-center gap-2"><i data-lucide="check-check" class="w-3 h-3 text-green-500"></i><span>${_(item.subjectId)} - ${chapter ? chapter.name : ''} #${item.testId}</span></div>
+                    ${viewBtn}
+                </div>`;
+            }).join('');
+
+            html += `<div class="mt-4 pt-2 border-t border-black/10 dark:border-white/10">
+                <button id="toggle-completed-dpt-btn" class="w-full flex items-center justify-center gap-2 text-xs font-bold text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors py-1">
+                    <span>${completedDptsToday.length} Completed DPT(s)</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-300"></i>
+                </button>
+                <div id="completed-dpt-list" class="hidden mt-2 space-y-1">
+                    ${completedListHtml}
+                </div>
+            </div>`;
+        }
+
         container.innerHTML = html;
+        
+        // Toggle Event
+        const toggleBtn = document.getElementById('toggle-completed-dpt-btn');
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const list = document.getElementById('completed-dpt-list');
+                const icon = toggleBtn.querySelector('i');
+                list.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        }
+        
         lucide.createIcons();
     };
         const renderDptPage = () => {
@@ -3960,15 +4058,9 @@ const renderTodaysDpt = () => {
             stopAllBackgroundAnimations();
             const style = data.settings.backgroundStyle || 'constellation';
             
-            // Reset Classes & Elements
             document.body.classList.remove('constellation-active');
-            const particleCanvas = document.getElementById('particle-canvas');
-            const cyberpunkBg = document.getElementById('cyberpunk-bg-container');
-            
-            if(particleCanvas) particleCanvas.style.display = 'none';
-            if(cyberpunkBg) cyberpunkBg.classList.add('hidden');
+            particleCanvas.style.display = 'none';
 
-            // Handle Pitch Black for Dark Mode special themes
             if (data.settings.theme === 'dark' && style !== 'default') {
                 document.documentElement.classList.add('pitch-black');
             } else {
@@ -3977,19 +4069,8 @@ const renderTodaysDpt = () => {
 
             if (style === 'default') { return; }
             
-            // 1. Constellation Logic
-            if (style === 'constellation') { 
-                if(particleCanvas) particleCanvas.style.display = 'block';
-                document.body.classList.add('constellation-active'); 
-                initConstellationEffect(); 
-            }
-            
-            // 2. Cyberpunk Glass Logic (New)
-            if (style === 'cyberpunk-glass') {
-                if(cyberpunkBg) cyberpunkBg.classList.remove('hidden');
-                // Force transparent backgrounds on main containers to let the blobs show through
-                document.body.classList.add('constellation-active'); 
-            }
+            particleCanvas.style.display = 'block';
+            if (style === 'constellation') { document.body.classList.add('constellation-active'); initConstellationEffect(); }
         };
         
         const hexToRgba = (hex, alpha = 1) => {
@@ -4468,16 +4549,52 @@ function addEventListeners() {
             }
              if (deleteOtherTaskBtn) {
                 const taskId = deleteOtherTaskBtn.dataset.taskId;
-                showConfirmationModal('Delete Permanently?', 'This will delete this task and stop it from repeating forever. Are you sure?', () => {
-                    // Universal Delete: Remove from all possible lists
-                    data.otherTasks = (data.otherTasks || []).filter(t => t.id !== taskId);
-                    data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
-                    data.missedOtherTasks = (data.missedOtherTasks || []).filter(t => t.id !== taskId);
+                const task = (data.otherTasks || []).find(t => t.id === taskId);
+                
+                // Checkbox only for repeating tasks
+                let messageHtml = 'Are you sure you want to delete this task?';
+                
+                if (task && task.isRepeating) {
+                    messageHtml = `
+                        <div class="text-left space-y-3">
+                            <p>Do you want to delete <strong>"${task.description}"</strong>?</p>
+                            <label class="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg cursor-pointer border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
+                                <input type="checkbox" id="delete-permanent-checkbox" class="mt-1 w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500">
+                                <div>
+                                    <span class="block font-bold text-red-600 dark:text-red-300">Permanent Delete Task</span>
+                                    <span class="block text-xs text-gray-500 dark:text-gray-400">Check to remove future repeats (Forever). Uncheck for today only.</span>
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                }
+
+                showConfirmationModal('Delete Task?', messageHtml, () => {
+                    const isPermanentChecked = document.getElementById('delete-permanent-checkbox')?.checked;
                     
-                    // Also remove from today's manual plan if it exists there (rare but safe)
-                    const todayStr = getLocalDateString();
-                    if (data.dailyPlan[todayStr] && data.dailyPlan[todayStr].manualTasks) {
-                         data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
+                    // Case 1: Temporary Delete (Only Today) - Add to skipped list
+                    if (task && task.isRepeating && !isPermanentChecked) {
+                        const todayStr = getLocalDateString();
+                        data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || {};
+                        data.dailyPlan[todayStr].skippedOtherTasks = data.dailyPlan[todayStr].skippedOtherTasks || [];
+                        data.dailyPlan[todayStr].skippedOtherTasks.push(taskId);
+                        
+                        // Clean visual from postponed if present
+                        data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
+                        
+                        logActivity('trash-2', `Task deleted for today only: "${task.description}"`);
+                    } 
+                    // Case 2: Permanent Delete
+                    else {
+                        data.otherTasks = (data.otherTasks || []).filter(t => t.id !== taskId);
+                        data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
+                        data.missedOtherTasks = (data.missedOtherTasks || []).filter(t => t.id !== taskId);
+                        
+                        const todayStr = getLocalDateString();
+                        if (data.dailyPlan[todayStr] && data.dailyPlan[todayStr].manualTasks) {
+                             data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
+                        }
+                        logActivity('trash-2', `Task permanently deleted: "${task ? task.description : 'Task'}"`);
                     }
 
                     saveData(); 
