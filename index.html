@@ -91,24 +91,47 @@
         font-family: 'Poppins', sans-serif;
         position: relative;
         overflow: hidden;
-        background: linear-gradient(to right, var(--text-light) 20%, var(--text-muted-light) 40%, var(--text-light) 60%);
+        /* Premium Golden-Silver Gradient */
+        background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
         background-size: 200% auto;
-        color: var(--text-light);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: shine-premium 10s linear infinite;
+        animation: shine-premium 4s linear infinite;
+        text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        font-weight: 900 !important;
+        letter-spacing: 0.5px;
     }
     .dark .app-header-title {
-        background: linear-gradient(to right, var(--text-dark) 20%, #a78bfa 40%, var(--text-dark) 60%);
+        /* Cyber Silver-Blue Gradient for Dark Mode */
+        background: linear-gradient(to right, #e2e8f0, #38bdf8, #e2e8f0, #818cf8);
         background-size: 200% auto;
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
     }
     @keyframes shine-premium {
         0% { background-position: 200% center; }
         100% { background-position: -200% center; }
+    }
+    
+    /* Cyberistic Glassmorphism & Neon Borders */
+    .dashboard-card {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dark .dashboard-card {
+        background: rgba(17, 25, 40, 0.7) !important;
+        border: 1px solid rgba(56, 189, 248, 0.2); /* Neon Blue Border */
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.05), inset 0 0 20px rgba(56, 189, 248, 0.05);
+    }
+    .dark .dashboard-card:hover {
+        border-color: rgba(56, 189, 248, 0.6);
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 10px rgba(56, 189, 248, 0.1);
+        transform: translateY(-2px);
     }
     .dark .app-header-title {
         color: var(--text-dark);
@@ -154,9 +177,123 @@
         display: block;
     }
 
+    /* --- PREMIUM GLASSMORPHISM POPUP STYLES (Cyberistic Water Look) --- */
     .modal-backdrop {
-        background-color: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
+        background-color: rgba(0, 0, 0, 0.35); /* हल्का डिम बैकग्राउंड */
+        backdrop-filter: blur(8px); /* पीछे का कंटेंट ब्लर (Water Effect) */
+        transition: all 0.3s ease-in-out;
+        z-index: 9999; /* सबसे ऊपर */
+    }
+
+    /* मुख्य पॉपअप कंटेनर - ग्लास इफेक्ट */
+    .modal-backdrop > div {
+        /* ग्लास बैकग्राउंड: पारदर्शी और ब्लर */
+        background: rgba(255, 255, 255, 0.85) !important; 
+        backdrop-filter: blur(25px) !important;
+        -webkit-backdrop-filter: blur(25px) !important; /* Safari के लिए */
+        
+        /* प्रीमियम बॉर्डर और चमक */
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+        border-radius: 24px !important;
+        
+        /* टेक्स्ट कलर */
+        color: #1e293b !important;
+        
+        /* AI एंट्री एनिमेशन (छोटा से बड़ा होकर आना) */
+        animation: aiPopupEntry 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        transform-origin: center center;
+        overflow: hidden; /* चमक को अंदर रखने के लिए */
+        position: relative;
+    }
+
+    /* डार्क मोड के लिए ग्लास इफेक्ट */
+    .dark .modal-backdrop > div {
+        background: rgba(15, 23, 42, 0.65) !important; /* डार्क ब्लू/स्लेट टिंट */
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* 'Shining' (चमकने) वाला इफेक्ट */
+    .modal-backdrop > div::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: skewX(-25deg);
+        animation: shine-effect 5s infinite;
+        pointer-events: none;
+    }
+    .dark .modal-backdrop > div::after {
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+    }
+
+    /* पॉपअप आने का AI एनिमेशन */
+    @keyframes aiPopupEntry {
+        0% { opacity: 0; transform: scale(0.8) translateY(20px); filter: blur(10px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+    }
+
+    /* चमकने का एनिमेशन */
+    @keyframes shine-effect {
+        0% { left: -150%; }
+        20% { left: 150%; } /* तेजी से गुजरेगा */
+        100% { left: 150%; } /* रुका रहेगा */
+    }
+
+    /* ग्लास मॉडल के अंदर इनपुट बॉक्स */
+    .modal-backdrop input, 
+    .modal-backdrop select, 
+    .modal-backdrop textarea {
+        background: rgba(0, 0, 0, 0.05) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+    }
+    .dark .modal-backdrop input, 
+    .dark .modal-backdrop select, 
+    .dark .modal-backdrop textarea {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: white !important;
+    }
+    .modal-backdrop input:focus, .modal-backdrop select:focus, .modal-backdrop textarea:focus {
+        background: rgba(255, 255, 255, 0.6) !important;
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+        transform: translateY(-2px);
+    }
+    .dark .modal-backdrop input:focus, .dark .modal-backdrop select:focus, .dark .modal-backdrop textarea:focus {
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* Close (X) बटन का डिज़ाइन - हमेशा दिखेगा */
+    .modal-backdrop > div button[id^="close-"] {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 50;
+    }
+    .dark .modal-backdrop > div button[id^="close-"] {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255,255,255,0.7);
+    }
+    .modal-backdrop > div button[id^="close-"]:hover {
+        background: #ef4444 !important; /* लाल रंग होवर पर */
+        color: white !important;
+        transform: rotate(90deg) scale(1.1);
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
     }
     
     .task-list-item.completed {
@@ -525,7 +662,18 @@
                             </div>
                          </div>
 
-                        <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h2 class="text-lg font-bold mb-3 flex items-center gap-2"><i data-lucide="calendar-clock" class="text-blue-500"></i><span>Upcoming Exams</span></h2><div id="dashboard-upcoming-exams-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div></div>
+                        <div class="dashboard-card bg-card-light dark:bg-[#0c1425] p-0 rounded-xl shadow-lg border border-cyan-500/30 relative overflow-hidden group hover:shadow-cyan-500/20 transition-all duration-300">
+                            <div class="p-4 border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 backdrop-blur-sm">
+                                <h2 class="text-lg font-bold flex items-center gap-2 relative z-10">
+                                    <i data-lucide="file-signature" class="text-cyan-400 animate-pulse"></i>
+                                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 drop-shadow-sm">Applied Exams Form</span>
+                                </h2>
+                            </div>
+                            <div id="dashboard-upcoming-exams-list" class="relative z-10 h-64 overflow-y-auto no-scrollbar p-2 bg-gradient-to-b from-transparent via-cyan-900/5 to-transparent"></div>
+                            
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-cyan-500/10 blur-[50px] rounded-full pointer-events-none"></div>
+                            <div class="absolute bottom-0 left-0 w-20 h-20 bg-purple-500/10 blur-[50px] rounded-full pointer-events-none"></div>
+                        </div>
                         <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h2 class="text-lg font-bold mb-3 flex items-center gap-2"><i data-lucide="award" class="text-amber-500"></i><span data-translate="achievements">Achievements</span></h2><div id="badges-container" class="space-y-3"></div></div>
                         
                         <div class="dashboard-card bg-card-light dark:bg-card-dark p-4 rounded-xl shadow-sm"><h2 class="text-lg font-bold mb-3 flex items-center gap-2"><i data-lucide="repeat" class="text-teal-500"></i><span data-translate="upcoming_revisions">Upcoming Revisions</span></h2><div id="revisions-container" class="space-y-2 text-sm text-text-muted-light dark:text-text-muted-dark min-h-[60px]"></div></div>
@@ -916,48 +1064,100 @@
     </div>
 </div>
 
-<div id="chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
-    <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto">
-        <button id="close-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
-        <h2 id="chapter-modal-title" class="text-xl font-bold mb-4" data-translate="chapter_details">Chapter Details</h2>
-        <div class="space-y-5">
-            <div>
-                <label class="block text-sm font-medium mb-2" data-translate="status">Status</label>
-                <div id="chapter-status-buttons" class="status-btn-group grid grid-cols-3 gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                    <button data-status="Not Started" class="p-2 text-sm rounded-md transition-colors duration-200"><span data-translate="not_started">Not Started</span></button>
-                    <button data-status="Completed" class="p-2 text-sm rounded-md transition-colors duration-200"><span data-translate="completed">Completed</span></button>
-                    <button data-status="Postpone" class="p-2 text-sm rounded-md transition-colors duration-200 bg-yellow-500/20 text-yellow-800 dark:text-yellow-200"><span data-translate="postpone_task">Postpone</span></button>
-                </div>
-            </div>
-            <div>
-                <label for="chapter-notes-textarea" class="block text-sm font-medium mb-1" data-translate="study_notes">Study Notes</label>
-                <textarea id="chapter-notes-textarea" rows="4" data-translate-placeholder="study_notes_placeholder" placeholder="e.g., This chapter is important for exams..." class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg text-sm"></textarea>
-            </div>
-            <div>
-                <label class="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/40 rounded-lg cursor-pointer">
-                    <input type="checkbox" id="chapter-priority-revision-checkbox" class="h-5 w-5 rounded border-gray-300 text-yellow-500 focus:ring-yellow-500">
-                    <span class="font-semibold text-yellow-800 dark:text-yellow-200" data-translate="priority_revision">Mark for Priority Revision</span>
-                </label>
-            </div>
+<div id="chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden" style="backdrop-filter: blur(12px);">
+    <div class="relative w-full max-w-lg rounded-3xl p-[1px] overflow-hidden shadow-[0_0_50px_-10px_rgba(14,165,233,0.4)] transition-all transform animate-fadeIn">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500 via-violet-500 to-fuchsia-500 opacity-60 animate-pulse"></div>
+        
+        <div class="relative bg-[#050b14]/90 backdrop-blur-3xl rounded-[1.4rem] p-6 border border-white/10 h-full max-h-[85vh] overflow-y-auto no-scrollbar">
             
-            <div class="border-t pt-4">
-                <h3 class="font-semibold mb-2">Scheduled Revisions</h3>
-                <div id="scheduled-revisions-list" class="space-y-2 mb-3">
+            <button id="close-chapter-modal" class="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all z-10 border border-transparent hover:border-red-500/30">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <h2 id="chapter-modal-title" class="text-2xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] tracking-tight" data-translate="chapter_details">
+                Chapter Details
+            </h2>
+
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] uppercase tracking-widest font-bold text-cyan-300/70 pl-1" data-translate="status">STATUS UPDATE</label>
+                    <div id="chapter-status-buttons" class="status-btn-group grid grid-cols-3 gap-3 p-1.5 bg-black/40 border border-white/5 rounded-2xl shadow-inner">
+                        <button data-status="Not Started" class="py-3 px-2 text-xs font-bold rounded-xl transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5 border border-transparent focus:scale-95">
+                            <span data-translate="not_started">Not Started</span>
+                        </button>
+                        <button data-status="Completed" class="py-3 px-2 text-xs font-bold rounded-xl transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5 border border-transparent focus:scale-95">
+                            <span data-translate="completed">Completed</span>
+                        </button>
+                        <button data-status="Postpone" class="py-3 px-2 text-xs font-bold rounded-xl transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5 border border-transparent focus:scale-95">
+                            <span data-translate="postpone_task">Postpone</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <input type="date" id="manual-revision-date" class="flex-grow p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg text-sm">
-                    <button id="add-manual-revision-btn" class="p-2 font-semibold rounded-lg bg-accent text-white hover:bg-violet-600">
-                        <i data-lucide="plus"></i>
+
+                <div class="space-y-2">
+                    <label for="chapter-notes-textarea" class="text-[10px] uppercase tracking-widest font-bold text-purple-300/70 pl-1" data-translate="study_notes">DATA LOGS / NOTES</label>
+                    <div class="relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl opacity-0 group-hover:opacity-30 transition duration-500 blur"></div>
+                        <textarea id="chapter-notes-textarea" rows="4" data-translate-placeholder="study_notes_placeholder" placeholder="Enter critical study data here..." class="relative w-full p-4 bg-black/50 text-gray-200 border border-white/10 rounded-xl focus:border-cyan-500/50 focus:ring-0 focus:bg-black/80 transition-all placeholder-gray-600 text-sm resize-none shadow-inner"></textarea>
+                    </div>
+                </div>
+
+                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500/5 to-transparent border border-amber-500/20 p-0.5">
+                    <label class="flex items-center gap-4 p-3 cursor-pointer group hover:bg-amber-500/5 rounded-lg transition-colors">
+                        <div class="relative">
+                            <input type="checkbox" id="chapter-priority-revision-checkbox" class="peer sr-only">
+                            <div class="w-6 h-6 border-2 border-amber-500/40 rounded bg-black/40 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] peer-checked:shadow-[0_0_20px_rgba(245,158,11,0.6)]"></div>
+                            <i data-lucide="zap" class="absolute inset-0 text-black w-3.5 h-3.5 m-auto opacity-0 peer-checked:opacity-100 transition-opacity scale-0 peer-checked:scale-100 duration-200"></i>
+                        </div>
+                        <span class="font-bold text-amber-200/90 text-sm tracking-wide group-hover:text-amber-100 transition-colors" data-translate="priority_revision">Mark High Priority</span>
+                    </label>
+                </div>
+                
+                <div class="pt-2 border-t border-white/5">
+                    <h3 class="text-[10px] uppercase tracking-widest font-bold text-green-300/70 pl-1 mb-3">TIMELINE & REVISIONS</h3>
+                    <div class="bg-black/30 rounded-xl border border-white/5 p-3">
+                        <div id="scheduled-revisions-list" class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                            </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <div class="relative flex-grow group">
+                                <input type="date" id="manual-revision-date" class="relative w-full p-2.5 bg-[#0a1120] text-gray-300 border border-white/10 rounded-lg focus:border-green-500/50 outline-none text-sm [color-scheme:dark] transition-colors focus:bg-black">
+                            </div>
+                            <button id="add-manual-revision-btn" class="p-2.5 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-lg hover:shadow-green-500/30 hover:scale-105 active:scale-95 transition-all border border-green-400/20">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button id="delete-chapter-details-btn" class="group p-3.5 rounded-xl bg-red-500/5 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300">
+                        <i data-lucide="trash-2" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    </button>
+                    <button id="save-chapter-details-btn" class="flex-grow relative overflow-hidden p-3.5 font-bold rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_40px_rgba(8,145,178,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border border-white/10 group" data-translate="save_changes">
+                        <span class="relative z-10 flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Save Changes
+                        </span>
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     </button>
                 </div>
             </div>
-
-            <div class="flex gap-3 mt-4">
-                <button id="delete-chapter-details-btn" class="w-auto p-3 text-sm font-semibold rounded-lg bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                <button id="save-chapter-details-btn" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="save_changes">Save Changes</button>
-            </div>
         </div>
     </div>
+    
+    <style>
+        /* Neon Active States for Status Buttons */
+        #chapter-status-buttons button.active[data-status="Not Started"] { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 0 15px rgba(255,255,255,0.1); text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        
+        #chapter-status-buttons button.active[data-status="Completed"] { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #fff; border: 1px solid rgba(6,182,212,0.5); box-shadow: 0 0 25px rgba(6,182,212,0.4); text-shadow: 0 0 5px rgba(255,255,255,0.8); }
+        
+        #chapter-status-buttons button.active[data-status="Postpone"] { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: 1px solid rgba(245,158,11,0.5); box-shadow: 0 0 25px rgba(245,158,11,0.4); text-shadow: 0 0 5px rgba(255,255,255,0.8); }
+
+        /* Custom Scrollbar for inner content */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    </style>
 </div>
 
 <div id="postpone-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
@@ -1264,11 +1464,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, err => {
-                console.log('ServiceWorker registration failed: ', err);
-            });
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         });
     }
     
@@ -1536,10 +1732,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     try {
         const savedData = localStorage.getItem(DB_KEY);
-        data = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(initialState));
+        if (savedData) {
+            try {
+                data = JSON.parse(savedData);
+                // Integrity Check: Ensure essential arrays exist to prevent crashes later
+                if (!data.subjects || !Array.isArray(data.subjects)) throw new Error("Corrupt Data");
+            } catch (innerError) {
+                console.warn("Data corruption detected. Attempting partial recovery or reset.");
+                // Backup corrupt data just in case
+                localStorage.setItem(DB_KEY + '_corrupt_backup', savedData);
+                data = JSON.parse(JSON.stringify(initialState));
+                alert("Study Tracker recovered from a data error. Settings have been reset to ensure stability.");
+            }
+        } else {
+            data = JSON.parse(JSON.stringify(initialState));
+        }
     } catch (error) {
-        console.error("Error parsing saved data, resetting to initial state.", error);
-        alert("Could not read saved data. It might be corrupted. The application will start fresh.");
+        console.error("Critical Storage Error", error);
         data = JSON.parse(JSON.stringify(initialState));
     }
     
@@ -1612,13 +1821,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    let saveTimeout = null;
     const saveData = () => {
-        try {
-            localStorage.setItem(DB_KEY, JSON.stringify(data));
-        } catch (error) {
-            console.error("Failed to save data to localStorage:", error);
-            alert("Could not save your progress. Your browser's storage might be full or in private mode.");
-        }
+        if (saveTimeout) clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            try {
+                // SAFETY: Using a try-catch block for stringify to handle circular references if any appear
+                const dataString = JSON.stringify(data);
+                localStorage.setItem(DB_KEY, dataString);
+            } catch (error) {
+                console.error("Auto-save failed:", error);
+                if (error.name === 'QuotaExceededError' || error.code === 22) {
+                    alert("⚠️ Storage Warning: App memory is full! Please use 'Export Data' in Settings and then 'Reset All Data' to continue smoothly.");
+                } else {
+                    console.warn("Non-critical save error. Data might not persist.");
+                }
+            }
+        }, 1000); // Increased to 1000ms to reduce CPU load during rapid typing
     };
     
     const _ = (key, replacements = {}) => {
@@ -1756,7 +1975,8 @@ let allCharts = {};
         const undoHandler = () => { onUndo(); hideUndoToast(); };
         newUndoBtn.addEventListener('click', undoHandler, { once: true });
         undoToast.classList.add('show');
-        undoTimeout = setTimeout(hideUndoToast, 6000);
+        // Updated to 8 seconds as requested
+        undoTimeout = setTimeout(hideUndoToast, 8000);
     };
 
     const hideUndoToast = () => {
@@ -2096,104 +2316,137 @@ let allCharts = {};
     function gatherAllInsights() {
         let insights = [];
         const today = new Date();
+        const hour = today.getHours();
         const todayStr = getLocalDateString(today);
-        const yesterdayDate = new Date();
-        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-        const yesterdayStr = getLocalDateString(yesterdayDate);
         const studyDay = Math.floor((today - new Date(data.appStartDate)) / (1000 * 60 * 60 * 24)) + 1;
-
-        // Updated: Flatten chapters directly
         const allChapters = (data.subjects || []).flatMap(s => s.chapters || []);
 
-        // 1. Study Day
-        insights.push(`🎉 आपको पढ़ते हुए आज <strong>${studyDay} दिन</strong> हो गए हैं! इसी तरह लगे रहें।`);
-
-        // 2. Upcoming Exam
-        const upcomingExam = (data.exams || []).filter(exam => exam.examDate && new Date(exam.examDate) >= new Date(todayStr)).sort((a, b) => new Date(a.examDate) - new Date(b.examDate))[0];
-        if (upcomingExam) { const daysLeft = Math.ceil((new Date(upcomingExam.examDate) - new Date(todayStr)) / (1000 * 60 * 60 * 24)); insights.push(`🗓️ आपकी अगली परीक्षा "<strong>${upcomingExam.name}</strong>" में केवल <strong>${daysLeft} दिन</strong> बचे हैं। तैयारी करते रहें!`); }
-
-        // 3. Today's Plan
-        const todaysPlan = getOrGenerateDailyPlan(todayStr);
-        const tasksToStudy = Object.values(todaysPlan.tasks || {}).map(task => getChapterByIds(task.subjectId, task.chapterId)?.name).filter(Boolean);
-        if (tasksToStudy.length > 0) insights.push(`📚 आज की योजना: <strong>${tasksToStudy.join(', ')}</strong> पढ़ें।`);
-
-        // 4. Today's DPT
-        const todaysDpts = (data.dailyDptPlan[todayStr] || []).map(({subjectId, chapterId, testId}) => {
-            const chapter = getChapterByIds(subjectId, chapterId);
-            return `${_(subjectId)} - ${chapter ? chapter.name : ''} DPT #${testId}`;
-        });
-        if (todaysDpts.length > 0) insights.push(`🎯 आज के DPTs: <strong>${todaysDpts.join(', ')}</strong>। इन्हें पूरा करना न भूलें!`);
-        
-        // 5. Missed Items
-        if ((data.missedChapters || []).length > 0) insights.push(`😥 आपके <strong>${data.missedChapters.length} अध्याय</strong> छूट गए हैं। उन्हें जल्द ही पूरा करने का प्रयास करें।`);
-        if ((data.missedOtherTasks || []).length > 0) insights.push(`📋 आपके <strong>${data.missedOtherTasks.length} अन्य कार्य</strong> छूट गए हैं।`);
-        if ((data.missedRevisions || []).length > 0) insights.push(`⏰ आपके <strong>${data.missedRevisions.length} रिवीजन</strong> छूट गए हैं। उन्हें आज पूरा करने का प्रयास करें।`);
-
-        // 6. Yesterday's Completed
-        const completedYesterday = allChapters.filter(c => c.dateCompleted === yesterdayStr);
-        if(completedYesterday.length > 0) insights.push(`👍 कल आपने <strong>${completedYesterday.length} अध्याय</strong> पूरे किए थे। बहुत बढ़िया!`);
-
-        // 7. Performance Analysis
-        const completionByDate = allChapters.filter(c => c.dateCompleted).reduce((acc, c) => { acc[c.dateCompleted] = (acc[c.dateCompleted] || 0) + 1; return acc; }, {});
-        const bestDayEntry = Object.entries(completionByDate).sort((a,b) => b[1] - a[1])[0];
-        if(bestDayEntry) {
-            const bestDay = new Date(bestDayEntry[0]).toLocaleDateString('hi-IN', { weekday: 'long' });
-            insights.push(`🚀 आपका सबसे अच्छा प्रदर्शन <strong>${bestDay}</strong> को था, जब आपने <strong>${bestDayEntry[1]} अध्याय</strong> पूरे किए थे!`);
-        }
-
-        // 8. Streak
-        const completedDates = new Set((data.gamification.completedHistory || []));
-        let streak = 0;
-        if (completedDates.size > 0) {
-            let currentDate = new Date();
-            while(completedDates.has(getLocalDateString(currentDate))) {
-                streak++;
-                currentDate.setDate(currentDate.getDate() - 1);
+        // --- 1. REAL-TIME ACTIVITY REACTION (The "Advanced" Brain) ---
+        // Checks activity from the last 2 minutes to react instantly
+        const latestLog = (data.activityLog || [])[0];
+        if (latestLog) {
+            const logTime = new Date(latestLog.timestamp);
+            const diffMinutes = (today - logTime) / 60000;
+            
+            if (diffMinutes < 2) { // Action happened recently
+                let reaction = "";
+                const desc = latestLog.description;
+                
+                // 15+ Granular Triggers based on Icon types or description text
+                if (latestLog.icon === 'check-circle') reaction = `🔥 शानदार! अभी आपने <strong>"${desc.replace('Chapter completed: ', '').replace(/"/g, '')}"</strong> पूरा किया। रुकना मत!`;
+                else if (latestLog.icon === 'plus-circle') reaction = `🌱 नई शुरुआत! आपने <strong>"${desc.split(': ')[1]?.replace(/"/g, '') || 'नया चैप्टर'}"</strong> जोड़ा है। इसे जल्द ही पूरा करें।`;
+                else if (latestLog.icon === 'briefcase') reaction = `🎯 लक्ष्य निर्धारित! नई परीक्षा <strong>"${desc.split(': ')[1]?.replace(/"/g, '') || 'Exam'}"</strong> जोड़ी गई। तैयारी शुरू करें!`;
+                else if (latestLog.icon === 'trash-2') reaction = `🗑️ सफाई हो गई! आपने <strong>"${desc.split(': ')[1]?.replace(/"/g, '') || 'Item'}"</strong> को हटा दिया।`;
+                else if (latestLog.icon === 'skip-forward') reaction = `⏳ कोई बात नहीं! <strong>"${desc.split(': ')[1]?.replace(/"/g, '') || 'Task'}"</strong> को बाद में पूरा कर लेंगे।`;
+                else if (latestLog.icon === 'check-square') reaction = `✅ टास्क पूरा हुआ! <strong>"${desc.replace('Other task completed: ', '').replace(/"/g, '')}"</strong> चेकलिस्ट से हट गया।`;
+                else if (latestLog.icon === 'award') reaction = `🏆 वाह! नई उपलब्धि: <strong>"${desc.replace('Achievement Unlocked: ', '').replace(/"/g, '')}"</strong>`;
+                else if (latestLog.icon === 'refresh-cw') reaction = `🔄 रिवीजन मोड ऑन! विषय को दोबारा पढ़ना एक होशियार कदम है।`;
+                else if (latestLog.icon === 'upload') reaction = `📂 डेटा इंपोर्ट सफल! आपका स्टडी ट्रैकर अपडेट हो गया है।`;
+                else if (latestLog.icon === 'calendar-x') reaction = `📅 कैलेंडर रीसेट! चलिए नई ऊर्जा के साथ फिर से शुरू करते हैं (Day 1)।`;
+                else if (latestLog.icon === 'folder-plus') reaction = `📁 व्यवस्थित! नया फोल्डर <strong>"${desc.split(': ')[1]?.replace(/"/g, '')}"</strong> बनाया गया।`;
+                else if (latestLog.icon === 'target') reaction = `🔓 DPT अनलॉक! <strong>${desc.replace('DPT Unlocked: ', '')}</strong> अब उपलब्ध है।`;
+                else if (latestLog.icon === 'plus-square') reaction = `📝 अभ्यास जरूरी है! आपने नए DPTs जोड़े हैं।`;
+                
+                if (reaction) insights.unshift(reaction); // Put reaction at the very top
             }
         }
-        if(streak > 1) insights.push(`🔥 बहुत बढ़िया! आपने लगातार <strong>${streak} दिनों</strong> तक पढ़ाई की है। इसे जारी रखें!`);
 
-        // 9. Overall Progress Milestone
-        const totalCompleted = allChapters.filter(c => c.status === 'Completed').length;
-        const totalChapters = allChapters.length;
-        if (totalChapters > 0) {
-            const percentage = Math.round((totalCompleted / totalChapters) * 100);
-            if (percentage > 25 && percentage < 30) insights.push(`📈 शानदार! आपने 25% से ज़्यादा सिलेबस पूरा कर लिया है।`);
-            if (percentage > 50 && percentage < 55) insights.push(`🎉 बधाई! आप आधा सफ़र तय कर चुके हैं, 50% सिलेबस पूरा हो गया है।`);
-            if (percentage > 75 && percentage < 80) insights.push(`🏁 आप मंज़िल के बहुत करीब हैं! 75% सिलेबस पूरा हो चुका है।`);
+        // --- 2. Time-Aware Greetings ---
+        if (hour < 6) insights.push(`🦉 इतनी रात गए पढ़ाई? पानी पीते रहें और अपनी आँखों का ध्यान रखें।`);
+        else if (hour < 9) insights.push(`🌅 सुप्रभात! सुबह की पढ़ाई सबसे असरदार होती है। चलिए शुरू करते हैं।`);
+        else if (hour > 22) insights.push(`🌙 दिन समाप्त होने वाला है। आज का लक्ष्य पूरा हुआ क्या?`);
+
+        // --- 3. Exam Countdowns (Real-time) ---
+        const exams = (data.exams || []).filter(e => e.examDate && new Date(e.examDate) >= new Date(todayStr)).sort((a,b) => new Date(a.examDate) - new Date(b.examDate));
+        if (exams.length > 0) {
+            const nearest = exams[0];
+            const diffDays = Math.ceil((new Date(nearest.examDate) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) insights.push(`🚨 आज <strong>${nearest.name}</strong> परीक्षा है! शुभकामनाएँ! आप कर सकते हैं!`);
+            else if (diffDays <= 7) insights.push(`⚠️ ध्यान दें! <strong>${nearest.name}</strong> में केवल <strong>${diffDays} दिन</strong> बचे हैं। रिविज़न तेज़ करें।`);
+            else insights.push(`🗓️ आगामी परीक्षा: <strong>${nearest.name}</strong> (${diffDays} दिन शेष)`);
         }
+
+        // --- 4. Deep Stats & Reminders ---
+        // Study Day Milestone
+        if (studyDay % 7 === 0) insights.push(`🎉 <strong>${Math.floor(studyDay / 7)} सप्ताह</strong> पूरे! आपकी निरंतरता ही आपकी ताकत है। (Day ${studyDay})`);
         
-        // 10. DPT Stats
-        const allCompletedDpts = Object.values(data.dpts || {}).flatMap(subjectData => Object.values(subjectData.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
-        if(allCompletedDpts.length > 5) {
-            let totalCorrect = 0, totalAttempted = 0;
-            allCompletedDpts.forEach(dpt => { totalCorrect += dpt.details.correct || 0; totalAttempted += dpt.details.attempted || 0; });
-            const accuracy = totalAttempted > 0 ? ((totalCorrect / totalAttempted) * 100).toFixed(1) : '0.0';
-            insights.push(`🎯 आपने अब तक <strong>${allCompletedDpts.length} DPTs</strong> पूरे कर लिए हैं, जिसमें आपकी औसत सटीकता <strong>${accuracy}%</strong> है।`);
-        }
-
-        // 11. Achievement Unlocked
-        const latestActivity = (data.activityLog || [])[0];
-        if(latestActivity && latestActivity.icon === 'award') {
-            insights.push(`🏆 उपलब्धि अनलॉक! ${latestActivity.description}`);
-        }
-
-        const priorityInsights = insights.filter(i => i.includes("परीक्षा") || i.includes("छूट गए"));
-        const otherInsights = insights.filter(i => !priorityInsights.includes(i));
-        const shuffledOthers = otherInsights.sort(() => 0.5 - Math.random());
+        // Missed Tasks (The Nudge)
+        const missedCount = (data.missedChapters || []).length;
+        if (missedCount > 0) insights.push(`📉 बैकलॉग बढ़ रहा है: <strong>${missedCount} चैप्टर</strong> पेंडिंग हैं। वीकेंड पर इसे क्लियर करें।`);
         
-        let finalInsights = [...priorityInsights, ...shuffledOthers];
-        finalInsights.push(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+        // Revisions
+        const pendingRevisions = (data.subjects || []).flatMap(s => s.chapters).flatMap(c => c.revisions).filter(r => r.status === 'Pending' && r.date <= todayStr).length;
+        if (pendingRevisions > 0) insights.push(`🧠 याददाश्त ताज़ा करें: <strong>${pendingRevisions} चैप्टर</strong> रिविज़न के लिए तैयार हैं।`);
 
-        return finalInsights.length > 0 ? finalInsights : [_('ai_insight_start')];
+        // DPT Accuracy Check
+        const completedDpts = Object.values(data.dpts || {}).flatMap(s => Object.values(s.chapters || {})).flat().filter(t => t.status === 'Completed' && t.details);
+        if (completedDpts.length > 3) {
+            let correct = 0, total = 0;
+            completedDpts.slice(0, 5).forEach(d => { correct += d.details.correct || 0; total += d.details.attempted || 0; });
+            const recentAccuracy = total > 0 ? (correct / total * 100) : 0;
+            if (recentAccuracy > 85) insights.push(`🌟 अद्भुत! पिछले 5 टेस्ट में आपकी सटीकता <strong>${recentAccuracy.toFixed(1)}%</strong> है।`);
+            else if (recentAccuracy < 50) insights.push(`💡 सुझाव: आपकी सटीकता (${recentAccuracy.toFixed(1)}%) कम है। टेस्ट देने से पहले नोट्स पढ़ें।`);
+        }
+
+        // Streak
+        const history = new Set(data.gamification.completedHistory || []);
+        let streak = 0; let d = new Date();
+        while (history.has(getLocalDateString(d))) { streak++; d.setDate(d.getDate() - 1); }
+        if (streak > 2) insights.push(`🔥 स्ट्रीक ऑन: लगातार <strong>${streak} दिन</strong>! इस चेन को टूटने न दें।`);
+
+        // Motivational Filler
+        const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+        // Combine: [Real-time Reaction] + [Exam Alert] + [Time Greeting] + [Stats/Quote]
+        // Filter duplicates and empty strings
+        const finalInsights = [...new Set(insights)].filter(Boolean);
+        
+        // Ensure at least the quote exists if nothing else matches
+        if (finalInsights.length === 0) finalInsights.push(randomQuote);
+        
+        // If we have a real-time reaction (first item), we want to make sure it shows first, 
+        // but we also want to mix in quotes if the list is short.
+        if (finalInsights.length < 3) finalInsights.push(randomQuote);
+
+        return finalInsights;
     }
-
 
     const renderAIInsights = () => {
         const container = document.getElementById('ai-insights-container');
-        container.innerHTML = `<div class="flex items-center gap-3 pb-3 border-b border-accent/20 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-accent"></i><h2 class="text-lg font-bold text-accent">${_('ai_insights')}</h2></div><div id="ai-insight-content" class="relative min-h-[40px] text-sm"></div>`;
-        const insightContent = document.getElementById('ai-insight-content');
-        initRotatingDisplay('ai-insight-content', gatherAllInsights(), (item) => `<p>${item}</p>`, _('ai_insight_start'));
+        // PREMIUM UPGRADE: Glassmorphism, Gradient Borders, and Depth Effects
+        container.className = "md:col-span-3 relative overflow-hidden dashboard-card p-5 rounded-2xl min-h-[130px] transition-all duration-300 group hover:shadow-lg dark:hover:shadow-violet-900/20 border border-violet-100 dark:border-white/10";
+        
+        // Background Styles for Light/Dark
+        const bgStyle = "bg-gradient-to-br from-white to-violet-50 dark:from-[#1e1b4b] dark:to-[#312e81]";
+        container.classList.add(...bgStyle.split(' '));
+
+        container.innerHTML = `
+            <!-- Decorative Glow Background -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 dark:bg-violet-400/10 blur-[40px] rounded-full pointer-events-none -mr-10 -mt-10"></div>
+            
+            <div class="relative z-10">
+                <div class="flex items-center justify-between pb-3 border-b border-violet-100 dark:border-white/10 mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg shadow-violet-500/30">
+                            <i data-lucide="bot" class="w-6 h-6"></i>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white dark:border-[#1e1b4b] rounded-full animate-pulse"></div>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black tracking-tight text-slate-800 dark:text-white flex items-center gap-2">
+                                AI Coach
+                                <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-100 dark:text-amber-300 dark:bg-amber-900/40 rounded-md border border-amber-200 dark:border-amber-700/50">Pro</span>
+                            </h2>
+                            <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Personalized Insights</p>
+                        </div>
+                    </div>
+                    <div class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30">
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-widest">Active</span>
+                    </div>
+                </div>
+                <div id="ai-insight-content" class="relative min-h-[50px] text-[15px] font-medium text-slate-700 dark:text-violet-100 flex items-center leading-relaxed"></div>
+            </div>
+        `;
+        initRotatingDisplay('ai-insight-content', gatherAllInsights(), (item) => `<div class="animate-fadeIn drop-shadow-sm">${item}</div>`, _('ai_insight_start'));
     };
 
     const getSubjectsForDay = (date = new Date()) => {
@@ -2242,19 +2495,51 @@ let allCharts = {};
     };
     
     const skipChapter = (subjectId, chapterId) => {
-        const subject = getSubjectById(subjectId); if (!subject) return;
+        const subject = getSubjectById(subjectId); 
+        if (!subject) return;
         const todayStr = getLocalDateString();
-        
-        // Remove current task immediately
-        if (data.dailyPlan[todayStr] && data.dailyPlan[todayStr].tasks) {
-            delete data.dailyPlan[todayStr].tasks[subjectId];
-            // Force regeneration logic to pick a NEW chapter
-            delete data.dailyPlan[todayStr].planGeneratedForDay;
-        }
+        const plan = data.dailyPlan[todayStr];
 
-        logActivity('chevrons-right', `Skipped chapter: "${getChapterByIds(subjectId, chapterId)?.name}"`);
-        saveData(); 
-        renderHomePage();
+        if (plan && plan.tasks) {
+            // 1. Store old task for Undo functionality
+            const oldTask = { ...plan.tasks[subjectId] };
+            
+            lastAction = {
+                type: 'skip_chapter',
+                message: `Skipped: ${getChapterByIds(subjectId, chapterId)?.name}`,
+                undo: () => {
+                    // Undo logic: Restore the old task
+                    data.dailyPlan[todayStr].tasks[subjectId] = oldTask;
+                    saveData();
+                    renderHomePage();
+                }
+            };
+            showUndoToast(`Skipped: ${getChapterByIds(subjectId, chapterId)?.name}`, lastAction.undo);
+
+            // 2. Find a replacement chapter (FAST REPLACEMENT)
+            // Filter chapters: Not completed, Not the one we just skipped, Not postponed today
+            const postponedIds = (data.postponedChapters || []).map(p => p.chapterId);
+            const availableChapters = (subject.chapters || []).filter(c => 
+                c.status !== 'Completed' && 
+                c.id !== chapterId &&
+                !postponedIds.includes(c.id)
+            );
+
+            if (availableChapters.length > 0) {
+                // Pick a random new chapter
+                const randomIndex = Math.floor(Math.random() * availableChapters.length);
+                const newChapter = availableChapters[randomIndex];
+                // Replace directly without regenerating whole day (Prevents "Completed" tasks from reappearing)
+                plan.tasks[subjectId] = { subjectId, chapterId: newChapter.id, note: null };
+            } else {
+                // No other chapters available, just remove this slot
+                delete plan.tasks[subjectId];
+            }
+            
+            logActivity('chevrons-right', `Skipped chapter: "${getChapterByIds(subjectId, chapterId)?.name}"`);
+            saveData(); 
+            renderHomePage(); // Instant render
+        }
     };
     
     const getOrGenerateDailyPlan = (dateStr) => {
@@ -2623,48 +2908,106 @@ let allCharts = {};
     };
     
     const renderDashboardExamList = () => {
-    const container = document.getElementById('dashboard-upcoming-exams-list');
-    if(!container) return;
+        const container = document.getElementById('dashboard-upcoming-exams-list');
+        if (!container) return;
 
-    // Premium Layout for Applied Exams
-    const activeExams = (data.exams || []).filter(e => 
-        e.status === 'Applied' || e.status === 'Admit Card Out'
-    ).sort((a, b) => new Date(a.examDate || '9999-12-31') - new Date(b.examDate || '9999-12-31'));
+        // Clear previous intervals
+        if (container.dataset.scrollInterval) {
+            clearInterval(parseInt(container.dataset.scrollInterval));
+            delete container.dataset.scrollInterval;
+        }
 
-    if (activeExams.length === 0) {
-        container.innerHTML = `<div class="flex flex-col items-center justify-center py-4 opacity-50"><i data-lucide="clipboard-x" class="w-8 h-8 mb-2"></i><p class="text-xs">No active forms applied.</p></div>`;
-        return;
-    }
+        const activeExams = (data.exams || []).filter(e =>
+            e.status === 'Applied' || e.status === 'Admit Card Out'
+        ).sort((a, b) => new Date(a.examDate || '9999-12-31') - new Date(b.examDate || '9999-12-31'));
 
-    // Showing only top 3 to keep layout clean, rest available in full page
-    const displayExams = activeExams.slice(0, 3);
+        if (activeExams.length === 0) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full opacity-60 text-cyan-500/70"><i data-lucide="clipboard-check" class="w-10 h-10 mb-2 opacity-50"></i><p class="text-xs font-medium tracking-wider">NO ACTIVE FORMS</p></div>`;
+            lucide.createIcons();
+            return;
+        }
 
-    container.innerHTML = displayExams.map(exam => {
-        const locale = data.settings.language === 'hi' ? 'hi-IN' : 'en-GB';
-        const examDate = exam.examDate ? new Date(exam.examDate).toLocaleDateString(locale, { day: 'numeric', month: 'short' }) : 'TBD';
-        const statusColor = exam.status === 'Admit Card Out' ? 'text-green-600 bg-green-100 dark:bg-green-900/40' : 'text-blue-600 bg-blue-100 dark:bg-blue-900/40';
+        // Generate List HTML
+        const generateList = () => activeExams.map(exam => {
+            const locale = data.settings.language === 'hi' ? 'hi-IN' : 'en-GB';
+            const examDate = exam.examDate ? new Date(exam.examDate).toLocaleDateString(locale, { day: 'numeric', month: 'short' }) : 'TBD';
+            const appDate = exam.applicationDate ? new Date(exam.applicationDate).toLocaleDateString(locale, { day: 'numeric', month: 'short' }) : 'N/A';
+            
+            // Calculate days remaining to highlight red if urgent
+            const daysRemaining = exam.examDate ? Math.ceil((new Date(exam.examDate) - new Date()) / 86400000) : 999;
+            const isNear = daysRemaining <= 10 && daysRemaining >= 0; // Highlight if less than 10 days
 
-        return `<div class="group flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900 transition-all shadow-sm">
-            <div class="flex items-center gap-3 overflow-hidden">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full ${statusColor} flex items-center justify-center font-bold text-xs">
-                    ${exam.name.charAt(0).toUpperCase()}
+            let statusStyle = "";
+            let statusIcon = "";
+            // Logic for visual style based on status and urgency
+            if (exam.status === 'Admit Card Out') {
+                statusStyle = "border-green-500/50 text-green-400 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.2)]";
+                statusIcon = "check-circle-2";
+            } else {
+                statusStyle = "border-cyan-500/50 text-cyan-400 bg-cyan-500/10 shadow-[0_0_10px_rgba(6,182,212,0.2)]";
+                statusIcon = "loader";
+            }
+            
+            // Card Border Color (Red if near, else Default)
+            const cardBorderClass = isNear ? "border-red-500/60 shadow-[0_0_15px_rgba(239,68,68,0.15)]" : "border-gray-700/50 hover:border-cyan-500/50";
+            const dateColorClass = isNear ? "text-red-400 font-extrabold animate-pulse" : "text-purple-300";
+
+            return `<div class="mb-3 transform hover:scale-[1.02] transition-all duration-300">
+                <div class="relative p-3 rounded-lg bg-[#111827]/80 ${cardBorderClass} backdrop-blur-md shadow-lg group">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                             <div class="flex-shrink-0 w-8 h-8 rounded-lg ${statusStyle} flex items-center justify-center border">
+                                <i data-lucide="${statusIcon}" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-sm truncate text-gray-200 group-hover:text-cyan-300 transition-colors">${exam.name}</h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[10px] uppercase tracking-wider font-semibold ${exam.status === 'Admit Card Out' ? 'text-green-400' : 'text-cyan-400'}">${exam.status}</span>
+                                    <span class="text-[9px] text-gray-400 border-l border-gray-600 pl-2 ml-1">Applied: ${appDate}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 text-right bg-black/20 p-1.5 rounded-md border border-white/5">
+                            <span class="block text-xs font-bold ${dateColorClass}">${examDate}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="min-w-0">
-                    <h4 class="font-semibold text-sm truncate text-gray-800 dark:text-gray-100">${exam.name}</h4>
-                    <p class="text-[10px] text-text-muted-light dark:text-text-muted-dark uppercase tracking-wide">${exam.status}</p>
-                </div>
-            </div>
-            <div class="flex-shrink-0 text-right">
-                <span class="block text-xs font-bold text-primary">${examDate}</span>
-            </div>
-        </div>`;
-    }).join('');
+            </div>`;
+        }).join('');
 
-    if (activeExams.length > 3) {
-        container.innerHTML += `<div class="text-center pt-1"><button onclick="navigateTo('exams')" class="text-xs text-text-muted-light hover:text-primary transition-colors">+ ${activeExams.length - 3} more forms</button></div>`;
-    }
-    lucide.createIcons();
-};
+        container.innerHTML = `<div id="exam-scroll-content" class="pb-4">${generateList()}</div>`;
+        lucide.createIcons();
+
+        // Auto Scroll Logic
+        const scrollContent = document.getElementById('exam-scroll-content');
+        if (scrollContent.clientHeight > container.clientHeight) {
+            let scrollPos = 0;
+            let isPaused = false;
+            const scrollSpeed = 0.4; 
+
+            container.innerHTML += `<div class="pb-4">${generateList()}</div>`; 
+            lucide.createIcons(); 
+
+            const autoScroll = () => {
+                if (!isPaused) {
+                    scrollPos += scrollSpeed;
+                    if (scrollPos >= (container.scrollHeight / 2)) {
+                        scrollPos = 0;
+                    }
+                    container.scrollTop = scrollPos;
+                } else {
+                    scrollPos = container.scrollTop;
+                }
+            };
+            const intervalId = setInterval(autoScroll, 20); 
+            container.dataset.scrollInterval = intervalId;
+
+            container.addEventListener('mouseenter', () => { isPaused = true; });
+            container.addEventListener('mouseleave', () => { isPaused = false; });
+            container.addEventListener('touchstart', () => { isPaused = true; });
+            container.addEventListener('touchend', () => { setTimeout(() => { isPaused = false; }, 2000); }); 
+        }
+    };
 
     const renderOverallProgress = () => {
         const allChapters = (data.subjects || []).flatMap(s => s.chapters || []);
@@ -3158,6 +3501,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         chapter.status = newStatus;
         
         const todayStr = getLocalDateString();
+        const dailyPlanData = data.dailyPlan[todayStr];
 
         if (newStatus === 'Completed') {
             chapter.dateCompleted = completionDate || todayStr;
@@ -3171,48 +3515,52 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                 lastAction = { type: 'complete', data: { subjectId, chapterId, oldStatus }, undo: () => updateChapterStatus(subjectId, chapterId, oldStatus, true) };
                 showUndoToast(_('chapter_completed_msg'), lastAction.undo);
                 
-                // 1. SYNC: Remove from Today's Task & Mark Subject Done (PREMIUM FIX)
-                const dailyPlanData = data.dailyPlan[todayStr];
                 if (dailyPlanData) {
                     dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
-                    
                     // Log completion
                     if(!dailyPlanData.completedTasks.some(t => t.chapterId === chapterId)) {
                         dailyPlanData.completedTasks.push({ type: 'chapter', subjectId, chapterId });
                     }
-
-                    // SYNC LOGIC: If user completes ANY chapter of a subject, mark that subject as 'done' for the dashboard plan
-                    // This covers the case where user studies a different chapter than suggested
+                    // Mark subject as done so it hides from list
                     if (!dailyPlanData.completedSubjects.includes(subjectId)) {
                         dailyPlanData.completedSubjects.push(subjectId);
                     }
-                    
-                    // Also clear specific task entry if it exists to be safe
-                    if (dailyPlanData.tasks[subjectId]) {
-                        delete dailyPlanData.tasks[subjectId];
-                    }
                 }
 
-                // 2. DPT TRIGGER: Add *only* next DPT for this specific chapter
+                // DPT TRIGGER
                 if (!DPT_EXCLUDED_SUBJECTS.includes(subjectId)) {
                     const nextDpt = findNextPendingDptForChapter(subjectId, chapterId);
                     if (nextDpt) {
                         data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr] || [];
-                        // Check if already exists to avoid duplicates
                         if (!data.dailyDptPlan[todayStr].some(d => d.subjectId === subjectId && d.chapterId === chapterId && d.testId === nextDpt.testId)) {
-                            data.dailyDptPlan[todayStr].unshift({ ...nextDpt, isTriggered: true }); // Add to top
+                            data.dailyDptPlan[todayStr].unshift({ ...nextDpt, isTriggered: true });
                             logActivity('target', `DPT Unlocked: ${_(subjectId)} #${nextDpt.testId}`);
                         }
                     }
                 }
             }
         } else { 
+            // UNDO LOGIC: If returning to Not Started/Pending, bring it back to the Today's List
             delete chapter.dateCompleted; 
             chapter.revisions = []; 
+            
+            if (dailyPlanData) {
+                // 1. Remove from completedSubjects so it reappears in the list
+                dailyPlanData.completedSubjects = (dailyPlanData.completedSubjects || []).filter(id => id !== subjectId);
+                // 2. Remove from completedTasks log
+                dailyPlanData.completedTasks = (dailyPlanData.completedTasks || []).filter(t => t.chapterId !== chapterId);
+                
+                // 3. Ensure the task exists in 'tasks' object so renderTodaysPlan finds it
+                if (!dailyPlanData.tasks[subjectId]) {
+                    // Restore it to the plan
+                    dailyPlanData.tasks[subjectId] = { subjectId, chapterId, note: chapter.notes || null };
+                }
+            }
+
             if (!isUndo) { logActivity('rotate-ccw', `Chapter status changed: "${chapter.name}" to ${newStatus}`); } 
         }
         saveData(); 
-        updateAllUI(); // Premium Sync: Refreshes everything
+        updateAllUI(); 
     };
 
     // Updated: Removed sourceType param
@@ -3874,14 +4222,18 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         
        function initConstellationEffect() {
             initCanvas();
-            const numberOfNodes = Math.floor((particleCanvas.width * particleCanvas.height) / 15000);
+            // OPTIMIZATION: Limit max nodes to 120 to prevent lag on 4k screens/gaming monitors
+            const density = 15000;
+            let numberOfNodes = Math.floor((particleCanvas.width * particleCanvas.height) / density);
+            if (numberOfNodes > 120) numberOfNodes = 120; // Hard cap for performance
+            
             for (let i = 0; i < numberOfNodes; i++) {
                 backgroundElements.push({
                     x: Math.random() * particleCanvas.width,
                     y: Math.random() * particleCanvas.height,
-                    vx: (Math.random() - 0.5) * 0.3, 
-                    vy: (Math.random() - 0.5) * 0.3, 
-                    radius: Math.random() * 1.5 + 1
+                    vx: (Math.random() - 0.5) * 0.2, // Slightly slower for smoother feel
+                    vy: (Math.random() - 0.5) * 0.2, 
+                    radius: Math.random() * 1.5 + 0.5 // Varied sizes
                 });
             }
             animateConstellation();
@@ -4251,6 +4603,16 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function addEventListeners() {
+            // --- NEW: Close Modals on Outside Click (बाहर क्लिक करने पर बंद) ---
+            document.querySelectorAll('.modal-backdrop').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    // अगर क्लिक सीधे बैकड्रॉप (काले हिस्से) पर है, तो बंद करें
+                    if (e.target === modal) {
+                        hideModal(modal.id);
+                    }
+                });
+            });
+
             navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
             document.getElementById('mobile-bottom-nav').addEventListener('click', e => {
                 const navBtn = e.target.closest('.mobile-nav-btn');
@@ -4301,89 +4663,94 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             });
 
             document.getElementById('todays-plan-container').addEventListener('click', e => {
+                // Determine which button was clicked (handling clicks on icons inside buttons)
                 const postponeBtn = e.target.closest('.postpone-btn');
                 const skipBtn = e.target.closest('.skip-btn');
                 const deleteManualBtn = e.target.closest('.delete-manual-task-btn');
                 const deleteOtherTaskBtn = e.target.closest('.delete-other-task-btn');
 
+                // 1. Handle Delete Manual Task
                 if (deleteManualBtn) {
+                    e.stopPropagation();
                     const todayStr = getLocalDateString();
                     const taskId = deleteManualBtn.dataset.manualId;
-                    data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
-                    saveData(); renderHomePage(); return;
+                    if(data.dailyPlan[todayStr] && data.dailyPlan[todayStr].manualTasks) {
+                        data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
+                        saveData(); 
+                        renderHomePage(); 
+                    }
+                    return;
                 }
-                 if (deleteOtherTaskBtn) {
-                const taskId = deleteOtherTaskBtn.dataset.taskId;
-                const task = (data.otherTasks || []).find(t => t.id === taskId);
 
-                // Logic for Checkbox in Modal
-                const modal = document.getElementById('confirmation-modal');
-                const checkboxContainer = document.getElementById('confirmation-checkbox-container');
-                const checkbox = document.getElementById('confirmation-checkbox');
+                // 2. Handle Delete Other Task
+                if (deleteOtherTaskBtn) {
+                    e.stopPropagation();
+                    const taskId = deleteOtherTaskBtn.dataset.taskId;
+                    const task = (data.otherTasks || []).find(t => t.id === taskId);
+                    
+                    const modal = document.getElementById('confirmation-modal');
+                    const checkboxContainer = document.getElementById('confirmation-checkbox-container');
+                    const checkbox = document.getElementById('confirmation-checkbox');
 
-                if (task && task.isRepeating) {
-                    checkboxContainer.classList.remove('hidden');
-                    checkbox.checked = false;
-                    // Handle confirmation logic
-                    showConfirmationModal('Delete Task?', `Do you want to delete "${task.description}"?`, () => {
-                        const deletePermanently = checkbox.checked;
-                        if (deletePermanently) {
-                            // Delete completely
-                            data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
-                            data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
-                        } else {
-                            // Mark done for today only (so it reappears tomorrow if repeating logic is set)
-                            // Actually for "Delete" on a repeating task, we usually just want to hide it for today
-                            // We can simulate "completing" it or just removing from daily view.
-                            // Let's just remove the current instance logic if needed, but for simplicity:
-                            // If not permanent, we assume user wants to remove it for today.
-                            // But since structure is simple, let's just use the checkbox logic strictly.
-                            if(!deletePermanently) {
-                                 // If specific logic needed for "Just today", we'd need a "hidden dates" array.
-                                 // For now, let's assume standard behavior:
-                                 // If not permanent delete, we do nothing or just postpone? 
-                                 // Let's treat "Delete" without permanent as "Remove for today"
-                                 task.lastCompletedDate = getLocalDateString(); // Hide for today effectively
-                                 task.status = 'Completed'; // Or similar
+                    if (task && task.isRepeating) {
+                        checkboxContainer.classList.remove('hidden');
+                        checkbox.checked = false;
+                        showConfirmationModal('Delete Task?', `Do you want to delete "${task.description}"?`, () => {
+                            if (checkbox.checked) {
+                                // Permanent Delete
+                                data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
+                                data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
+                            } else {
+                                // Mark as done/hidden for today
+                                task.lastCompletedDate = getLocalDateString();
+                                task.status = 'Completed'; 
                             }
-                        }
-
-                        // Clean up modal state
+                            checkboxContainer.classList.add('hidden');
+                            saveData(); renderHomePage();
+                        });
+                    } else {
                         checkboxContainer.classList.add('hidden');
-                        saveData(); renderHomePage();
-                    });
-                } else {
-                    // Non-repeating task - always permanent delete
-                    checkboxContainer.classList.add('hidden');
-                    showConfirmationModal('Delete Task', 'Delete this task permanently?', () => {
-                         data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
-                         data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
-                         saveData(); renderHomePage();
-                    });
+                        showConfirmationModal('Delete Task', 'Delete this task permanently?', () => {
+                             data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
+                             data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
+                             saveData(); renderHomePage();
+                        });
+                    }
+                    return;
                 }
-                return;
-            }
                 
-                let targetButton = postponeBtn || skipBtn;
+                // 3. Handle Skip & Postpone
+                const targetButton = postponeBtn || skipBtn;
                 if (!targetButton) return;
+
+                // Stop propagation to prevent card clicking effects if any
+                e.stopPropagation(); 
+                e.preventDefault();
 
                 const { taskId, taskType, subjectId, chapterId, revisionDate } = targetButton.dataset;
                 
-                if (!taskType) return;
-                e.preventDefault();
-
-                if (taskType === 'other') {
-                    if (postponeBtn) postponeOtherTask(taskId);
-                } else if (taskType === 'revision') { 
-                    postponeRevision(subjectId, chapterId, revisionDate); 
-                } else { 
-                    if (postponeBtn) { openPostponeModal(subjectId, chapterId); }
-                    if (skipBtn) { 
-    // FIX: Ensure Skip works instantly
-    skipChapter(subjectId, chapterId);
-    // Force UI update immediately
-    setTimeout(renderHomePage, 50);
-}
+                // --- SKIP LOGIC (FIXED) ---
+                if (skipBtn) {
+                    // Visual feedback
+                    skipBtn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>';
+                    lucide.createIcons();
+                    
+                    // Small delay to allow UI to update icon before freezing for render
+                    requestAnimationFrame(() => {
+                        skipChapter(subjectId, chapterId);
+                    });
+                    return;
+                }
+                
+                // --- POSTPONE LOGIC ---
+                if (postponeBtn) {
+                    if (taskType === 'other') {
+                        postponeOtherTask(taskId);
+                    } else if (taskType === 'revision') { 
+                        postponeRevision(subjectId, chapterId, revisionDate); 
+                    } else { 
+                        openPostponeModal(subjectId, chapterId); 
+                    }
                 }
             });
 
@@ -5065,9 +5432,23 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             const todayStr = getLocalDateString();
             if (!data.dailyDptPlan[todayStr]) return;
             
-            // Filter out all DPTs for the given subject for today
+            // Store old plan for Undo
+            const oldDptPlan = [...data.dailyDptPlan[todayStr]];
+            
+            // Filter out DPTs for this subject
             data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(dpt => dpt.subjectId !== subjectId);
             
+            lastAction = {
+                type: 'skip_dpt',
+                message: `Skipped DPTs for ${_(subjectId)}`,
+                undo: () => {
+                    data.dailyDptPlan[todayStr] = oldDptPlan;
+                    saveData();
+                    renderHomePage();
+                }
+            };
+            showUndoToast(`Skipped DPTs for ${_(subjectId)}`, lastAction.undo);
+
             logActivity('chevrons-right', `Skipped all DPTs for ${_(subjectId)} for today.`);
             saveData();
             renderHomePage();
