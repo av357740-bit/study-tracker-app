@@ -2,7 +2,7 @@
 <html lang="en" class="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pravej Ahmad's Digital Study Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Rayen's Digital Study Tracker</title>
 
 <!-- PWA (Progressive Web App) Meta Tags -->
 <meta name="theme-color" content="#0ea5e9">
@@ -575,7 +575,7 @@
             </button>
         </div>
         <div id="creator-credit" class="p-4 text-center text-xs text-text-muted-light dark:text-text-muted-dark">
-            <span>Created by Pravej Ahmad</span>
+            <span>Designed by Rayen</span>
         </div>
     </aside>
 
@@ -586,7 +586,7 @@
             </button>
             <div class="text-center flex-grow">
                 <h1 class="text-lg font-extrabold app-header-title">Study Tracker</h1>
-                <p class="text-xs text-text-muted-light dark:text-text-muted-dark -mt-1">By Pravej Ahmad</p>
+                <p class="text-xs text-text-muted-light dark:text-text-muted-dark -mt-1">Designed by Rayen</p>
             </div>
              <div id="study-day-counter" class="absolute top-1/2 -translate-y-1/2 right-4 text-xs font-bold p-2 rounded-full shadow-lg flex items-center gap-1.5">
                 <i data-lucide="calendar-check-2" class="w-4 h-4"></i>
@@ -597,7 +597,7 @@
         <main class="flex-grow overflow-y-auto p-4 md:p-6 pb-4 no-scrollbar relative">
 <div id="page-home" class="page active">
                 <div class="mb-6">
-                    <h2 id="welcome-heading" class="text-3xl font-bold">Welcome, Pravej Ahmad!</h2>
+                    <h2 id="welcome-heading" class="text-3xl font-bold">Welcome, Rayen!</h2>
                     <p class="text-text-muted-light dark:text-text-muted-dark" data-translate="welcome_subtitle">Here's your plan for today. Let's get it done!</p>
                 </div>
 
@@ -974,7 +974,42 @@
                         <h3 class="font-semibold mb-4" data-translate="custom_dpt_plan">Custom DPT Plan (2 Week Cycle)</h3>
                         <div id="dpt-custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                         <button id="save-dpt-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom DPT Plan</button>
+                </div>
+
+                <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 border border-indigo-100 dark:border-indigo-900/30">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="calendar-clock" class="text-indigo-500 w-6 h-6"></i>
+                        <h3 class="font-semibold text-lg">Advanced Subject Routine (Extra)</h3>
                     </div>
+                    <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4">Add extra subjects to your daily schedule permanently on specific days.</p>
+
+                    <div class="bg-indigo-50 dark:bg-indigo-950/30 p-4 rounded-xl mb-4">
+                        <label class="block text-sm font-medium mb-2">Select Subject or Type Custom Name</label>
+                        <div class="flex gap-2 mb-3">
+                            <select id="adv-routine-subject-select" class="flex-1 p-2 bg-white dark:bg-gray-800 border rounded-lg">
+                                <option value="">-- Select Subject --</option>
+                            </select>
+                            <input type="text" id="adv-routine-custom-name" placeholder="Or type custom (e.g. Gym)" class="flex-1 p-2 bg-white dark:bg-gray-800 border rounded-lg hidden">
+                            <button id="toggle-custom-name-btn" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-xs font-bold">Type Custom</button>
+                        </div>
+
+                        <label class="block text-sm font-medium mb-2">Select Days to Repeat</label>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="1">Mon</button>
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="2">Tue</button>
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="3">Wed</button>
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="4">Thu</button>
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="5">Fri</button>
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="6">Sat</button>
+                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-red-500 text-red-500" data-day="0">Sun</button>
+                        </div>
+
+                        <button id="save-adv-routine-btn" class="w-full p-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">Add to Routine</button>
+                    </div>
+
+                    <div id="adv-routine-list" class="space-y-2 max-h-60 overflow-y-auto">
+                        </div>
+                </div>
 
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                         <h3 class="font-semibold mb-3">Study Day Counter</h3>
@@ -1703,8 +1738,9 @@ document.addEventListener('DOMContentLoaded', () => {
             customCyclePlan: Array(14).fill([]),
             dptPlanMode: 'auto',
             dptCyclePlan: Array(14).fill([]),
-            language: 'hi', 
-            studentName: 'Pravej Ahmad',
+        customSubjectRoutine: [], // Added by Rayen for Advanced Routine
+        language: 'hi', 
+        studentName: 'Rayen',
             customThemeColors: { 
                 start: null, end: null,
                 textLight: null, borderLight: null, textDark: null, borderDark: null 
@@ -1790,6 +1826,7 @@ document.addEventListener('DOMContentLoaded', () => {
         safeInitialize(data, key, initialState[key]);
     });
     safeInitialize(data, 'lastCheckedDate', getLocalDateString());
+safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine array exists
 
     if (data.links) { delete data.links; }
     
@@ -1824,20 +1861,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let saveTimeout = null;
     const saveData = () => {
         if (saveTimeout) clearTimeout(saveTimeout);
+        // INCREASED TIMEOUT to 2000ms: This reduces lag significantly while typing
         saveTimeout = setTimeout(() => {
-            try {
-                // SAFETY: Using a try-catch block for stringify to handle circular references if any appear
-                const dataString = JSON.stringify(data);
-                localStorage.setItem(DB_KEY, dataString);
-            } catch (error) {
-                console.error("Auto-save failed:", error);
-                if (error.name === 'QuotaExceededError' || error.code === 22) {
-                    alert("⚠️ Storage Warning: App memory is full! Please use 'Export Data' in Settings and then 'Reset All Data' to continue smoothly.");
-                } else {
-                    console.warn("Non-critical save error. Data might not persist.");
+            requestAnimationFrame(() => {
+                try {
+                    const dataString = JSON.stringify(data);
+                    localStorage.setItem(DB_KEY, dataString);
+                } catch (error) {
+                    console.error("Auto-save failed:", error);
+                    if (error.name === 'QuotaExceededError' || error.code === 22) {
+                        // Alert only once per session to avoid spamming
+                        if (!window.quotaAlertShown) {
+                            alert("⚠️ App Memory Full! Please Export Data & Reset to keep app smooth.");
+                            window.quotaAlertShown = true;
+                        }
+                    }
                 }
-            }
-        }, 1000); // Increased to 1000ms to reduce CPU load during rapid typing
+            });
+        }, 2000); 
     };
     
     const _ = (key, replacements = {}) => {
@@ -2412,47 +2453,69 @@ let allCharts = {};
 
     const renderAIInsights = () => {
         const container = document.getElementById('ai-insights-container');
-        // PREMIUM UPGRADE: Glassmorphism, Gradient Borders, and Depth Effects
-        container.className = "md:col-span-3 relative overflow-hidden dashboard-card p-5 rounded-2xl min-h-[130px] transition-all duration-300 group hover:shadow-lg dark:hover:shadow-violet-900/20 border border-violet-100 dark:border-white/10";
+        // ULTRA PREMIUM & SMOOTH DESIGN (5x Better Look)
+        container.className = "md:col-span-3 relative overflow-hidden dashboard-card px-5 py-4 rounded-2xl min-h-[110px] transition-all duration-300 border border-white/20 shadow-xl bg-gradient-to-br from-white/80 via-white/50 to-white/30 dark:from-[#1e293b]/90 dark:via-[#0f172a]/90 dark:to-[#020617]/90 backdrop-blur-xl flex items-center group hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1";
         
-        // Background Styles for Light/Dark
-        const bgStyle = "bg-gradient-to-br from-white to-violet-50 dark:from-[#1e1b4b] dark:to-[#312e81]";
-        container.classList.add(...bgStyle.split(' '));
-
         container.innerHTML = `
-            <!-- Decorative Glow Background -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 dark:bg-violet-400/10 blur-[40px] rounded-full pointer-events-none -mr-10 -mt-10"></div>
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/20 rounded-full blur-[50px] animate-pulse"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-[50px] animate-pulse" style="animation-delay: 1s;"></div>
             
-            <div class="relative z-10">
-                <div class="flex items-center justify-between pb-3 border-b border-violet-100 dark:border-white/10 mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg shadow-violet-500/30">
-                            <i data-lucide="bot" class="w-6 h-6"></i>
-                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white dark:border-[#1e1b4b] rounded-full animate-pulse"></div>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-black tracking-tight text-slate-800 dark:text-white flex items-center gap-2">
-                                AI Coach
-                                <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-100 dark:text-amber-300 dark:bg-amber-900/40 rounded-md border border-amber-200 dark:border-amber-700/50">Pro</span>
-                            </h2>
-                            <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Personalized Insights</p>
-                        </div>
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-purple-500 via-pink-500 to-blue-500 rounded-l-2xl"></div>
+
+            <div class="w-full relative z-10 flex flex-col justify-center pl-2">
+                <div class="flex items-center justify-between mb-2 pb-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                    <div class="flex items-center gap-2">
+                         <div class="p-1.5 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg shadow-purple-500/30">
+                            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+                         </div>
+                         <h2 class="text-sm font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 uppercase">
+                            AI Advanced Coach
+                        </h2>
+                        <span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.1)]">
+                            <span class="relative flex h-2 w-2">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            <span class="text-[9px] font-bold text-green-600 dark:text-green-400 uppercase tracking-widest leading-none">REALTIME</span>
+                        </span>
                     </div>
-                    <div class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30">
-                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                        <span class="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-widest">Active</span>
-                    </div>
+                    <p class="text-[10px] font-bold text-indigo-400/80 dark:text-indigo-300/60 tracking-wider bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded-md border border-indigo-100 dark:border-indigo-500/20">Appdesigned@Rayen</p>
                 </div>
-                <div id="ai-insight-content" class="relative min-h-[50px] text-[15px] font-medium text-slate-700 dark:text-violet-100 flex items-center leading-relaxed"></div>
+                <div id="ai-insight-content" class="text-sm font-medium text-gray-700 dark:text-gray-200 leading-relaxed drop-shadow-sm min-h-[2.5rem] flex items-center"></div>
             </div>
         `;
-        initRotatingDisplay('ai-insight-content', gatherAllInsights(), (item) => `<div class="animate-fadeIn drop-shadow-sm">${item}</div>`, _('ai_insight_start'));
+        // Pass student name for personalization logic
+        const sName = data.settings.studentName || 'Student';
+        const insights = gatherAllInsights().map(i => i.replace('Student', sName));
+        
+        initRotatingDisplay('ai-insight-content', insights, (item) => `<div class="animate-fadeIn transition-all duration-500 transform translate-y-0 opacity-100">${item}</div>`, _('ai_insight_start'));
     };
 
     const getSubjectsForDay = (date = new Date()) => {
-        const dayIndex = getCycleDayIndex(date);
-        if (data.settings.planMode === 'custom_cycle') { return (data.settings.customCyclePlan || [])[dayIndex] || []; }
-        return dailyPattern[dayIndex] || [];
+        const dayIndex = getCycleDayIndex(date); // 0-13 cycle index
+        const currentDayOfWeek = date.getDay(); // 0 (Sun) - 6 (Sat)
+
+        let baseSubjects = [];
+        if (data.settings.planMode === 'custom_cycle') { 
+            baseSubjects = [...((data.settings.customCyclePlan || [])[dayIndex] || [])]; 
+        } else {
+            baseSubjects = [...(dailyPattern[dayIndex] || [])];
+        }
+
+        // --- MERGE ADVANCED ROUTINE SUBJECTS (Added by Rayen) ---
+        // Now fully integrated to act like main schedule
+        const customRoutines = data.settings.customSubjectRoutine || [];
+        customRoutines.forEach(routine => {
+            if (routine.active && routine.days.includes(currentDayOfWeek)) {
+                // We add it to the list. 
+                // getOrGenerateDailyPlan will verify if it's a real subject ID or a custom string.
+                if (!baseSubjects.includes(routine.subjectId)) {
+                    baseSubjects.push(routine.subjectId);
+                }
+            }
+        });
+
+        return baseSubjects;
     };
     
     const markSubjectAsDoneForToday = (subjectId) => {
@@ -2543,68 +2606,122 @@ let allCharts = {};
     };
     
     const getOrGenerateDailyPlan = (dateStr) => {
-        if (!data.dailyPlan[dateStr] || !data.dailyPlan[dateStr].planGeneratedForDay) {
-            const plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []), completedTasks: [] };
-            
-            const subjectsForToday = getSubjectsForDay(new Date(dateStr));
-            
-            // 1. Handle postponed chapters first
-            const postponedChaptersForToday = [];
-            subjectsForToday.forEach(subjectId => {
-                // Clean subjectId (remove :notes if present from old data)
-                subjectId = subjectId.split(':')[0];
-                
-                const postponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
-                if (postponedIndex > -1) {
-                    const postponed = data.postponedChapters.splice(postponedIndex, 1)[0];
-                    const chapter = getChapterByIds(postponed.subjectId, postponed.chapterId);
-                    if (chapter?.status !== 'Completed') {
-                        plan.tasks[subjectId] = { ...postponed };
-                        postponedChaptersForToday.push(postponed.chapterId);
-                    }
-                }
-            });
-            
-            // 2. Select random chapters for the remaining slots
-            subjectsForToday.forEach(subjectId => {
-                subjectId = subjectId.split(':')[0]; // Ensure clean ID
-                if (plan.tasks[subjectId]) return; // Already filled
-                
-                const subject = getSubjectById(subjectId);
-                if (!subject) return;
+    if (!data.dailyPlan[dateStr] || !data.dailyPlan[dateStr].planGeneratedForDay) {
+        const plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []), completedTasks: [] };
 
-                // Special case for 'fill-form' on Sundays
-                if (subjectId === 'fill-form' && new Date(dateStr).getDay() === 0) {
-                    const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
-                    if (availableChapters.length > 0) {
-                        plan.tasks[subjectId] = { subjectId, chapterId: availableChapters[0].id, note: null };
-                        return;
-                    }
-                } else if (subjectId === 'fill-form') {
-                    return; // Skip 'fill-form' on other days
-                }
+        const subjectsForToday = getSubjectsForDay(new Date(dateStr));
+        const usedChapterIds = []; // Track to prevent duplicates
 
-                // Get all uncompleted chapters
-                const availableChapters = (subject.chapters || []).filter(c => 
-                    c.status !== 'Completed' && 
-                    !postponedChaptersForToday.includes(c.id) &&
-                    !Object.values(plan.tasks).some(task => task && task.chapterId === c.id)
-                );
+        // 1. SMART POSTPONE LOGIC (Updated by Rayen)
+        // Instead of taking just one, we check ALL postponed chapters for today's subjects
+        // If a subject has 2 postponed chapters, both will be added (one as main task, others pushed to manual for display)
+
+        // First, identify all postponed tasks relevant to today's subjects
+        const relevantPostponed = [];
+        const remainingPostponed = [];
+
+        (data.postponedChapters || []).forEach(p => {
+            // Clean ID check
+            if (subjectsForToday.some(s => s.split(':')[0] === p.subjectId)) {
+                relevantPostponed.push(p);
+            } else {
+                remainingPostponed.push(p);
+            }
+        });
+
+        // Update global postponed list to only keep those NOT used today
+        // (We will re-add them if they are skipped again, but for now they move to Today's Plan)
+        data.postponedChapters = remainingPostponed;
+
+        // Add Relevant Postponed to Plan
+        relevantPostponed.forEach(p => {
+            const chapter = getChapterByIds(p.subjectId, p.chapterId);
+            if (chapter && chapter.status !== 'Completed') {
+                if (!plan.tasks[p.subjectId]) {
+                    // First slot for this subject
+                    plan.tasks[p.subjectId] = { ...p };
+                } else {
+                    // Subject slot already filled (e.g. user postponed 2 chapters of Physics)
+                    // Add as a 'Manual Task' so it appears on dashboard without replacing the first one
+                    plan.manualTasks.push({ subjectId: p.subjectId, chapterId: p.chapterId, id: `restored-${Date.now()}-${Math.random()}`, note: p.note });
+                }
+                usedChapterIds.push(p.chapterId);
+            }
+        });
+
+        // 2. Fill remaining slots with new chapters
+        subjectsForToday.forEach(subjectId => {
+            subjectId = subjectId.split(':')[0]; // Ensure clean ID
+
+            // If subject already has a task from Postponed, skip generating new one
+            if (plan.tasks[subjectId]) return; 
+
+            // Check if it's a custom text subject (start with 'custom-')
+            if (subjectId.startsWith('custom-')) {
+                // Only process if not already processed for this day to avoid duplicates on re-render
+                const alreadyAdded = (data.otherTasks || []).some(t => t.date === dateStr && t.description === ((data.settings.customSubjectRoutine || []).find(r => r.subjectId === subjectId)?.name));
                 
+                if (!alreadyAdded) {
+                    const customRoutine = (data.settings.customSubjectRoutine || []).find(r => r.subjectId === subjectId);
+                    if (customRoutine) {
+                        const newTask = {
+                            id: `other-auto-${Date.now()}-${Math.random()}`,
+                            description: customRoutine.name,
+                            date: dateStr,
+                            notes: 'Recurring Routine',
+                            status: 'Pending',
+                            completedDate: null,
+                            isRepeating: false,
+                            lastCompletedDate: null
+                        };
+                        data.otherTasks.push(newTask);
+                        plan.tasks[subjectId] = { type: 'other_placeholder' }; 
+                    }
+                } else {
+                     plan.tasks[subjectId] = { type: 'other_placeholder' };
+                }
+                return;
+            }
+
+            const subject = getSubjectById(subjectId);
+            if (!subject) return;
+
+            // Special case for 'fill-form' on Sundays
+            if (subjectId === 'fill-form' && new Date(dateStr).getDay() === 0) {
+                const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
                 if (availableChapters.length > 0) {
-                    // Select a random chapter
-                    const randomIndex = Math.floor(Math.random() * availableChapters.length);
-                    const chapter = availableChapters[randomIndex];
-                    plan.tasks[subjectId] = { subjectId, chapterId: chapter.id, note: null }; 
+                    plan.tasks[subjectId] = { subjectId, chapterId: availableChapters[0].id, note: null };
+                    return;
                 }
-            });
+            } else if (subjectId === 'fill-form') {
+                return; // Skip 'fill-form' on other days
+            }
 
-            data.dailyPlan[dateStr] = plan;
-            data.dailyPlan[dateStr].planGeneratedForDay = true;
-            saveData();
-        }
-        return data.dailyPlan[dateStr];
-    };
+            // Get all uncompleted chapters
+            const availableChapters = (subject.chapters || []).filter(c => 
+                c.status !== 'Completed' && 
+                !usedChapterIds.includes(c.id)
+            );
+
+            if (availableChapters.length > 0) {
+                // Select a random chapter
+                const randomIndex = Math.floor(Math.random() * availableChapters.length);
+                const chapter = availableChapters[randomIndex];
+                plan.tasks[subjectId] = { subjectId, chapterId: chapter.id, note: null }; 
+            }
+        });
+
+        // Clean up placeholders
+        Object.keys(plan.tasks).forEach(k => {
+            if(plan.tasks[k].type === 'other_placeholder') delete plan.tasks[k];
+        });
+
+        data.dailyPlan[dateStr] = plan;
+        data.dailyPlan[dateStr].planGeneratedForDay = true;
+        saveData();
+    }
+    return data.dailyPlan[dateStr];
+};
 
     const renderTodaysPlan = () => {
         const container = document.getElementById('todays-plan-container');
@@ -3371,7 +3488,62 @@ const renderSubjectsPage = () => {
             const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), `${_('sunday')} (${_('week')} 2)`, `${_('monday')} (${_('week')} 2)`, `${_('tuesday')} (${_('week')} 2)`, `${_('wednesday')} (${_('week')} 2)`, `${_('thursday')} (${_('week')} 2)`, `${_('friday')} (${_('week')} 2)`, `${_('saturday')} (${_('week')} 2)` ];
             dptCycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2 max-h-60 overflow-y-auto">${(data.subjects || []).filter(s => !DPT_EXCLUDED_SUBJECTS.includes(s.id)).map(s => `<label class="flex items-center gap-2 text-sm cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-dpt-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}" ${((data.settings.dptCyclePlan?.[i] || []).includes(s.id)) ? 'checked' : ''}><span>${_(s.id)}</span></label>`).join('')}</div></div>`).join('');
         } else { customDptContainer.classList.add('hidden'); }
-    };
+
+        // --- RENDER ADVANCED ROUTINE UI (Added by Rayen) ---
+        renderAdvancedRoutineUI();
+};
+
+const renderAdvancedRoutineUI = () => {
+    const select = document.getElementById('adv-routine-subject-select');
+    const list = document.getElementById('adv-routine-list');
+
+    // Populate Select
+    select.innerHTML = `<option value="">-- Select Subject --</option>` + 
+        (data.subjects || []).map(s => `<option value="${s.id}">${_(s.id)}</option>`).join('');
+
+    // Populate List
+    const routines = data.settings.customSubjectRoutine || [];
+    if (routines.length === 0) {
+        list.innerHTML = `<p class="text-xs text-center text-gray-400 py-2">No custom routines added yet.</p>`;
+    } else {
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        list.innerHTML = routines.map((r, index) => {
+            const daysStr = r.days.map(d => `<span class="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-200 dark:border-indigo-800">${dayNames[d]}</span>`).join(' ');
+            const activeClass = r.active ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500';
+            
+            return `<div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm">
+                <div>
+                    <p class="font-bold text-sm flex items-center gap-2">${r.name} ${r.active ? '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>' : ''}</p>
+                    <div class="flex flex-wrap gap-1 mt-1.5">${daysStr}</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="toggle-adv-routine-btn p-2 rounded-lg transition-colors ${activeClass}" data-index="${index}" title="${r.active ? 'Deactivate' : 'Activate'}">
+                        <i data-lucide="${r.active ? 'power' : 'power-off'}" class="w-4 h-4"></i>
+                    </button>
+                    <button class="delete-adv-routine-btn p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition-colors" data-index="${index}" title="Delete">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    
+    // UI Logic for Day Buttons Selection Visuals (Making sure they look clicked)
+    document.querySelectorAll('.adv-day-btn').forEach(btn => {
+        // Reset listeners to prevent duplication
+        btn.onclick = (e) => {
+            e.target.classList.toggle('bg-indigo-600');
+            e.target.classList.toggle('text-white');
+            e.target.classList.toggle('border-indigo-600');
+            e.target.classList.toggle('shadow-md');
+            // Remove default bg
+            e.target.classList.toggle('bg-white');
+            e.target.classList.toggle('dark:bg-gray-900');
+        };
+    });
+
+    lucide.createIcons();
+};
 const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-700 dark:text-green-300'}[status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300');
     const showModal = (id) => document.getElementById(id).classList.replace('hidden', 'flex');
     const hideModal = (id) => document.getElementById(id).classList.replace('flex', 'hidden');
@@ -4222,20 +4394,21 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         
        function initConstellationEffect() {
             initCanvas();
-            // OPTIMIZATION: Limit max nodes to 120 to prevent lag on 4k screens/gaming monitors
-            const density = 15000;
-            let numberOfNodes = Math.floor((particleCanvas.width * particleCanvas.height) / density);
-            if (numberOfNodes > 120) numberOfNodes = 120; // Hard cap for performance
+            // ULTIMATE PERFORMANCE FIX: Nodes reduced drastically to 30 for ZERO LAG
+            // This makes it run smooth even on low-end devices.
+            const numberOfNodes = 30; 
             
             for (let i = 0; i < numberOfNodes; i++) {
                 backgroundElements.push({
                     x: Math.random() * particleCanvas.width,
                     y: Math.random() * particleCanvas.height,
-                    vx: (Math.random() - 0.5) * 0.2, // Slightly slower for smoother feel
+                    vx: (Math.random() - 0.5) * 0.2, // Slightly faster movement for fluid feel
                     vy: (Math.random() - 0.5) * 0.2, 
-                    radius: Math.random() * 1.5 + 0.5 // Varied sizes
+                    radius: Math.random() * 1.5 + 0.5
                 });
             }
+            // Clear existing animation loop if any to prevent memory leak
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
             animateConstellation();
         }
 
@@ -5033,20 +5206,126 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('add-link-form').addEventListener('submit', saveLink);
             
             document.getElementById('url-container').addEventListener('click', e => {
-                const addSubFolderBtn = e.target.closest('.add-sub-folder-btn');
-                const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
-                const editFolderBtn = e.target.closest('.edit-folder-btn');
-                const deleteFolderBtn = e.target.closest('.delete-folder-btn');
-                const editLinkBtn = e.target.closest('.edit-link-btn');
-                const deleteLinkBtn = e.target.closest('.delete-link-btn');
+            const addSubFolderBtn = e.target.closest('.add-sub-folder-btn');
+            const addLinkBtn = e.target.closest('.add-link-to-folder-btn');
+            const editFolderBtn = e.target.closest('.edit-folder-btn');
+            const deleteFolderBtn = e.target.closest('.delete-folder-btn');
+            const editLinkBtn = e.target.closest('.edit-link-btn');
+            const deleteLinkBtn = e.target.closest('.delete-link-btn');
 
-                if (addSubFolderBtn) showAddFolderModal(null, addSubFolderBtn.dataset.folderId);
-                else if (addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
-                else if (editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId, null);
-                else if (deleteFolderBtn) deleteItem(deleteFolderBtn.dataset.folderId);
-                else if (editLinkBtn) showAddLinkModal(e.target.closest('[data-folder-id]')?.dataset.folderId, editLinkBtn.dataset.linkId);
-                else if (deleteLinkBtn) deleteItem(deleteLinkBtn.dataset.linkId);
+            if (addSubFolderBtn) showAddFolderModal(null, addSubFolderBtn.dataset.folderId);
+            else if (addLinkBtn) showAddLinkModal(addLinkBtn.dataset.folderId);
+            else if (editFolderBtn) showAddFolderModal(editFolderBtn.dataset.folderId, null);
+            else if (deleteFolderBtn) deleteItem(deleteFolderBtn.dataset.folderId);
+            else if (editLinkBtn) showAddLinkModal(e.target.closest('[data-folder-id]')?.dataset.folderId, editLinkBtn.dataset.linkId);
+            else if (deleteLinkBtn) deleteItem(deleteLinkBtn.dataset.linkId);
+        });
+
+        // --- ADVANCED ROUTINE LISTENERS (Added by Rayen) ---
+        document.getElementById('toggle-custom-name-btn')?.addEventListener('click', () => {
+            const select = document.getElementById('adv-routine-subject-select');
+            const input = document.getElementById('adv-routine-custom-name');
+            const btn = document.getElementById('toggle-custom-name-btn');
+
+            if (input.classList.contains('hidden')) {
+                input.classList.remove('hidden'); select.classList.add('hidden');
+                btn.textContent = 'Select Subject';
+                select.value = ""; 
+            } else {
+                input.classList.add('hidden'); select.classList.remove('hidden');
+                btn.textContent = 'Type Custom';
+                input.value = "";
+            }
+        });
+
+        document.querySelectorAll('.adv-day-btn').forEach(btn => {
+            btn.addEventListener('click', e => e.target.classList.toggle('bg-indigo-500'));
+            btn.addEventListener('click', e => e.target.classList.toggle('text-white'));
+        });
+
+        document.getElementById('save-adv-routine-btn')?.addEventListener('click', () => {
+            const select = document.getElementById('adv-routine-subject-select');
+            const input = document.getElementById('adv-routine-custom-name');
+            const days = [];
+            document.querySelectorAll('.adv-day-btn').forEach(btn => {
+                if (btn.classList.contains('bg-indigo-500')) days.push(parseInt(btn.dataset.day));
             });
+
+            if (days.length === 0) { alert('Select at least one day.'); return; }
+
+            let subjectId, name;
+            if (!input.classList.contains('hidden') && input.value.trim()) {
+                name = input.value.trim();
+                subjectId = `custom-${Date.now()}`;
+            } else if (select.value) {
+                subjectId = select.value;
+                name = select.options[select.selectedIndex].text;
+            } else {
+                alert('Select a subject or type a custom name.'); return;
+            }
+
+            data.settings.customSubjectRoutine = data.settings.customSubjectRoutine || [];
+            data.settings.customSubjectRoutine.push({ subjectId, name, days, active: true });
+            saveData();
+            renderAdvancedRoutineUI();
+
+            // Reset UI
+            input.value = ""; select.value = "";
+            document.querySelectorAll('.adv-day-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-500', 'text-white');
+            });
+            alert('Routine added! It will appear on "Today\'s Plan" on selected days.');
+        });
+
+        document.getElementById('adv-routine-list')?.addEventListener('click', e => {
+            const toggleBtn = e.target.closest('.toggle-adv-routine-btn');
+            const deleteBtn = e.target.closest('.delete-adv-routine-btn');
+            const todayStr = getLocalDateString();
+            const currentDayOfWeek = new Date().getDay();
+
+            if (toggleBtn) {
+                const idx = toggleBtn.dataset.index;
+                const routine = data.settings.customSubjectRoutine[idx];
+                routine.active = !routine.active;
+                
+                // IMMEDIATE DASHBOARD UPDATE LOGIC
+                if (routine.days.includes(currentDayOfWeek)) {
+                    if (!routine.active) {
+                        // Deactivated: Remove from today's plan immediately
+                        if (data.dailyPlan[todayStr] && data.dailyPlan[todayStr].tasks) {
+                            delete data.dailyPlan[todayStr].tasks[routine.subjectId];
+                        }
+                    } else {
+                        // Activated: Force regenerate/add to today's plan
+                        // By deleting the 'planGeneratedForDay' flag for today, we force a refresh
+                        // However, to keep existing tasks safe, we just call the generator again which is smart enough
+                        // But we need to make sure the generator sees it.
+                        // We will clear the specific task slot to allow regeneration
+                    }
+                    // Force refresh plan logic
+                    data.dailyPlan[todayStr].planGeneratedForDay = false; 
+                }
+
+                saveData(); 
+                renderAdvancedRoutineUI();
+                renderHomePage(); // Refresh Dashboard immediately
+            } else if (deleteBtn) {
+                const idx = deleteBtn.dataset.index;
+                const routine = data.settings.customSubjectRoutine[idx];
+                
+                showConfirmationModal('Delete Routine?', 'This will remove this subject from your recurring schedule.', () => {
+                    // Remove from today's dashboard if it exists
+                    if (routine.days.includes(currentDayOfWeek) && data.dailyPlan[todayStr] && data.dailyPlan[todayStr].tasks) {
+                        delete data.dailyPlan[todayStr].tasks[routine.subjectId];
+                    }
+
+                    data.settings.customSubjectRoutine.splice(idx, 1);
+                    saveData(); 
+                    renderAdvancedRoutineUI();
+                    renderHomePage(); // Refresh Dashboard immediately
+                });
+            }
+        });
 
 
             window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
