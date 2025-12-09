@@ -1,72 +1,94 @@
-// --- SERVICE WORKER: V6 (Crash Fix & Auto Update) ---
-const CACHE_NAME = 'pravej-study-tracker-v6-stable';
+// --- RAYEN PREMIUM SERVICE WORKER: V7.0 (Performance Optimized) ---
+const CACHE_NAME = 'rayen-study-tracker-v7-premium';
 
-// Relative paths are safer for GitHub Pages (./ instead of /)
-const URLS_TO_CACHE = [
+// GitHub Pages Safe Paths
+const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './manifest.json'
+    './manifest.json',
+    './icon-192.png',
+    './icon-512.png'
 ];
 
-// 1. INSTALL: Cache core files & Force activation
+// 1. INSTALL: Cache Critical Assets & Take Control
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Forces this new SW to take control immediately
+    console.log('[Rayen SW] Installing Service Worker...');
+    self.skipWaiting(); // Forces the new SW to activate immediately
+
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(URLS_TO_CACHE);
+                console.log('[Rayen SW] Caching core assets');
+                return cache.addAll(ASSETS_TO_CACHE);
             })
-            .catch(err => console.error('Cache addAll error:', err))
+            .catch(err => console.error('[Rayen SW] Cache Error:', err))
     );
 });
 
-// 2. ACTIVATE: Delete OLD caches to prevent Crash due to mismatched versions
+// 2. ACTIVATE: Cleanup Old Caches (Removes old Pravej data)
 self.addEventListener('activate', event => {
+    console.log('[Rayen SW] Activating & Cleaning old caches...');
+    
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
+                    // Delete any cache that doesn't match the current premium version
                     if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName); // Wipe old data
+                        console.log('[Rayen SW] Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
                     }
                 })
             );
         }).then(() => {
-            console.log('Service Worker Activated & Claiming Clients');
-            return self.clients.claim(); // Take control of all open tabs
+            console.log('[Rayen SW] Now controlling the page.');
+            return self.clients.claim(); // Take control of all clients immediately
         })
     );
 });
 
-// 3. FETCH: Network First Strategy for HTML (Prevents loading old buggy code)
+// 3. FETCH: Stale-While-Revalidate Strategy (Fastest User Experience)
+// This serves from cache instantly, then updates in the background.
 self.addEventListener('fetch', event => {
     
-    // For the HTML page (Navigation), always try Network first
+    // HTML Navigation: Network First (to get fresh updates), fallback to Cache
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request)
                 .then(networkResponse => {
-                    // Update cache with the new fresh version
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseClone);
+                    return caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, networkResponse.clone());
+                        return networkResponse;
                     });
-                    return networkResponse;
                 })
-                .catch(() => {
-                    // If offline, use cached version
-                    return caches.match('./index.html');
-                })
+                .catch(() => caches.match('./index.html')) // Offline fallback
         );
         return;
     }
 
-    // For other assets (images, scripts), try Cache first, then Network
+    // Assets (Images, JS, CSS): Cache First, fallback to Network
     event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
+        caches.match(event.request).then(cachedResponse => {
+            // Return cached response immediately if found
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+
+            // Otherwise fetch from network
+            return fetch(event.request).then(networkResponse => {
+                // Don't cache invalid responses
+                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                    return networkResponse;
+                }
+
+                // Cache the new asset for next time
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseToCache);
+                });
+
+                return networkResponse;
+            });
         })
     );
 });
