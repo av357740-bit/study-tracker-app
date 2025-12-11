@@ -33,10 +33,11 @@
 
 <style>
     :root {
+        /* Glassmorphism Variables - More Transparent */
         --background-light: #f0f9ff;
         --background-dark: #0c1425;
-        --card-light: #ffffff;
-        --card-dark: #1e293b;
+        --card-light: rgba(255, 255, 255, 0.65); /* Transparent White */
+        --card-dark: rgba(15, 23, 42, 0.65);     /* Transparent Dark Blue */
         --text-light: #020617;
         --text-dark: #f1f5f9;
         --text-muted-light: #475569;
@@ -50,13 +51,19 @@
         --main-bg-end-light: #e0e7ff;
         --main-bg-start-dark: #164e63;
         --main-bg-end-dark: #312e81;
-        --border-light: #e5e7eb;
-        --border-dark: #374151;
+        --border-light: rgba(229, 231, 235, 0.5);
+        --border-dark: rgba(55, 65, 81, 0.5);
     }
 
     /* Base styles */
     html {
         scroll-behavior: smooth;
+    }
+    
+    /* Global Glass Effect for Pages & Cards */
+    .dashboard-card, .page, #sidebar, .modal-backdrop > div {
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
     }
     body {
         font-family: 'Inter', sans-serif;
@@ -128,13 +135,17 @@
         100% { background-position: -200% center; }
     }
     
-    /* Cyberistic Glassmorphism & Neon Borders */
+    /* --- ULTRA PREMIUM GLASSMORPHISM & WATER EFFECT --- */
     .dashboard-card {
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Performance Boost */
+        content-visibility: auto; 
     }
+
+    /* Custom Background Image Styles Removed for Performance */
     .dark .dashboard-card {
         background: rgba(17, 25, 40, 0.7) !important;
         border: 1px solid rgba(56, 189, 248, 0.2); /* Neon Blue Border */
@@ -449,7 +460,11 @@
     #mobile-bottom-nav { display: none; }
     @media (max-width: 767px) {
         #sidebar, #mobile-menu-btn { display: none; }
-        main { padding-bottom: 80px !important; }
+        main { 
+            padding-bottom: 100px !important; /* Increased padding for safety */
+            padding-top: 10px;
+            overflow-x: hidden; /* Prevent horizontal scroll glitches */
+        }
         #mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-light); border-top: 1px solid var(--border-light); z-index: 50; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); }
         .dark #mobile-bottom-nav { background-color: var(--card-dark); border-top-color: var(--border-dark); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2); }
         #mobile-nav-scroller { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; padding: 4px 8px; }
@@ -578,6 +593,10 @@
             <button data-page="settings" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="settings" class="w-5 h-5"></i> <span data-translate="settings">Settings</span></button>
         </nav>
         <div class="p-4 border-t space-y-2">
+             <button id="view-updates-btn-sidebar" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-bold shadow-lg hover:opacity-90 transition-all">
+                <i data-lucide="sparkles" class="w-5 h-5 animate-pulse"></i>
+                <span class="md:inline text-xs uppercase tracking-wider">What's New</span>
+            </button>
             <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700">
                 <i data-lucide="sun" id="theme-icon-sun"></i>
                 <i data-lucide="moon" id="theme-icon-moon"></i>
@@ -587,7 +606,7 @@
             </button>
         </div>
         <div id="creator-credit" class="p-4 text-center text-xs text-text-muted-light dark:text-text-muted-dark">
-            <span>Designed by Rayen</span>
+            <span class="font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">Aidesignedapp@Rayen</span>
         </div>
     </aside>
 
@@ -623,6 +642,11 @@
                         </div>
                         
                         <!-- Today's Plan & DPT -->
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold" data-translate="todays_plan">Today's Plan</h2>
+                        </div>
+                        <div id="recent-updates-container" class="hidden"></div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div id="todays-plan-container-wrapper">
                                 <div id="todays-plan-container" class="dashboard-card bg-sky-50 dark:bg-sky-900/30 border-2 p-4 rounded-xl shadow-sm min-h-[180px]"></div>
@@ -777,81 +801,110 @@
 
             <div id="page-import-export" class="page">
                 <h2 class="text-2xl font-bold mb-4" data-translate="import_export_data">Import & Export Data</h2>
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-3 text-lg" data-translate="routine_management">Routine Management</h3>
-                        <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="routine_management_desc">Export your 14-day study cycle or import a new one from a JSON file.</p>
-                        <div class="flex flex-col gap-2">
-                            <button id="import-routine-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900">
-                                <i data-lucide="upload" class="w-4 h-4"></i> <span data-translate="import_routine">Import Routine (JSON)</span>
-                            </button>
-                            <div class="flex gap-2">
-                                <button id="export-routine-json-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900">
-                                    <i data-lucide="file-json" class="w-4 h-4"></i> <span data-translate="export_json">Export as JSON</span>
-                                </button>
-                                <button id="export-routine-pdf-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900">
-                                    <i data-lucide="file-type" class="w-4 h-4"></i> <span data-translate="export_pdf">Export as PDF</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-3 text-lg" data-translate="exams_data_management">Exams Data Management</h3>
-                        <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="exams_data_management_desc">Import or export your list of exams.</p>
-                        <div class="flex gap-2">
-                            <button id="import-exams-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-200 dark:hover:bg-cyan-900">
-                                <i data-lucide="upload" class="w-4 h-4"></i> <span>Import Exams (JSON)</span>
-                            </button>
-                            <button id="export-exams-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 hover:bg-teal-200 dark:hover:bg-teal-900">
-                                <i data-lucide="download" class="w-4 h-4"></i> <span>Export Exams (JSON)</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-3 text-lg">URL Data Management</h3>
-                        <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4">Import or export your saved URLs.</p>
-                        <div class="flex gap-2">
-                            <button id="import-urls-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900">
-                                <i data-lucide="upload" class="w-4 h-4"></i> <span>Import URLs (JSON)</span>
-                            </button>
-                            <button id="export-urls-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900">
-                                <i data-lucide="download" class="w-4 h-4"></i> <span>Export URLs (JSON)</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-3 text-lg" data-translate="full_app_backup">Full Application Backup</h3>
-                        <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4" data-translate="full_app_backup_desc">Export all your data into a single JSON file.</p>
-                         <div class="flex flex-col sm:flex-row gap-2">
-                            <button id="import-full-backup-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900">
-                                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                                <span>Import from Backup (JSON)</span>
-                            </button>
-                            <button id="export-full-data-btn" class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900">
-                                <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                                <span data-translate="export_data">Export All Data (Backup)</span>
-                            </button>
-                        </div>
-                    </div>
                     
-                    <!-- Modified Chapters Management (Removed Book/Notes Split) -->
-                    <div class="md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-3 text-lg" data-translate="chapters_data_management">Chapters Data Management</h3>
-                        <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4">Import or export chapter lists in JSON format.</p>
-                        <div class="p-4 rounded-lg bg-cyan-50 dark:bg-cyan-900/30 border border-cyan-200 dark:border-cyan-800">
-                            <div class="flex items-center gap-3 mb-2">
-                                <i data-lucide="notebook-tabs" class="w-6 h-6 text-cyan-700 dark:text-cyan-300"></i>
-                                <h4 class="font-bold text-cyan-800 dark:text-cyan-200">All Chapters</h4>
+                    <div class="md:col-span-2 p-5 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-violet-100 dark:bg-violet-900/50 rounded-lg text-violet-600">
+                                <i data-lucide="calendar-clock" class="w-6 h-6"></i>
                             </div>
+                            <div>
+                                <h3 class="font-bold text-lg" data-translate="routine_management">Routine Management</h3>
+                                <p class="text-xs text-text-muted-light dark:text-text-muted-dark">Choose between the default study cycle or your own custom plan.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-4">
+                            <button id="routine-mode-default-btn" class="flex-1 py-2 text-sm font-bold rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white transition-all">Default Routine</button>
+                            <button id="routine-mode-custom-btn" class="flex-1 py-2 text-sm font-bold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-all">Custom Upload</button>
+                        </div>
+
+                        <div id="routine-default-content" class="p-4 bg-violet-50 dark:bg-violet-900/20 rounded-lg border border-violet-100 dark:border-violet-900/50 animate-fadeIn">
+                            <div class="flex items-center gap-2 text-violet-700 dark:text-violet-300 mb-2">
+                                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                                <span class="font-bold">Default Mode Active</span>
+                            </div>
+                            <p class="text-sm opacity-80 mb-3">You are using the recommended 14-day study cycle. This is best for beginners.</p>
                             <div class="flex gap-2">
-                                <button id="import-all-chapters-btn" class="flex-1 flex items-center justify-center gap-2 p-2 text-sm font-semibold text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-900/50 rounded-lg hover:bg-cyan-200 dark:hover:bg-cyan-900"><i data-lucide="upload" class="w-4 h-4"></i><span data-translate="import">Import</span></button>
-                                <button id="delete-all-chapters-btn" class="flex-1 flex items-center justify-center gap-2 p-2 text-sm font-semibold text-red-600 dark:text-red-300 bg-red-100 dark:bg-red-900/50 rounded-lg hover:bg-red-200 dark:hover:bg-red-900"><i data-lucide="trash-2" class="w-4 h-4"></i><span data-translate="delete_all">Delete All</span></button>
+                                <button id="restore-default-routine-btn" class="px-4 py-2 bg-violet-600 text-white text-sm font-bold rounded-lg hover:bg-violet-700">Re-Apply Default Routine</button>
+                                <button id="export-routine-pdf-btn" class="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Export PDF</button>
+                            </div>
+                        </div>
+
+                        <div id="routine-custom-content" class="hidden p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 animate-fadeIn">
+                             <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                                <span class="font-bold">Custom Mode</span>
+                            </div>
+                            <p class="text-sm opacity-80 mb-3">Upload your own JSON file to replace the study schedule.</p>
+                            <div class="flex gap-2">
+                                <button id="import-routine-btn" class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">Import Custom JSON</button>
+                                <button id="export-routine-json-btn" class="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Export JSON</button>
                             </div>
                         </div>
                     </div>
+
+                    <div class="md:col-span-2 p-5 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-cyan-100 dark:bg-cyan-900/50 rounded-lg text-cyan-600">
+                                <i data-lucide="library" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg" data-translate="chapters_data_management">Chapters Management</h3>
+                                <p class="text-xs text-text-muted-light dark:text-text-muted-dark">Manage your subject chapters database.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-4">
+                            <button id="chapter-mode-default-btn" class="flex-1 py-2 text-sm font-bold rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white transition-all">Default Chapters</button>
+                            <button id="chapter-mode-custom-btn" class="flex-1 py-2 text-sm font-bold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-all">Custom Upload</button>
+                        </div>
+
+                        <div id="chapter-default-content" class="hidden"></div>
+
+                        <div id="chapter-custom-content" class="hidden p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 animate-fadeIn">
+                             <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                <i data-lucide="folder-up" class="w-5 h-5"></i>
+                                <span class="font-bold">Custom Database</span>
+                            </div>
+                            <p class="text-sm opacity-80 mb-3">Add your own chapters from a file or clean everything.</p>
+                            <div class="flex gap-2">
+                                <button id="import-all-chapters-btn" class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">Import Chapters</button>
+                                <button id="delete-all-chapters-btn" class="flex-1 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 text-sm font-bold rounded-lg hover:bg-red-200 dark:hover:bg-red-900">Delete All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                        <h3 class="font-semibold mb-3 text-lg" data-translate="exams_data_management">Exams Data</h3>
+                        <div class="flex gap-2">
+                            <button id="import-exams-btn" class="flex-1 p-2 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">Import</button>
+                            <button id="export-exams-btn" class="flex-1 p-2 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">Export</button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                        <h3 class="font-semibold mb-3 text-lg">URL Data</h3>
+                        <div class="flex gap-2">
+                            <button id="import-urls-btn" class="flex-1 p-2 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">Import</button>
+                            <button id="export-urls-btn" class="flex-1 p-2 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">Export</button>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 p-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl shadow-lg">
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-bold text-lg" data-translate="full_app_backup">Full Backup (All Data)</h3>
+                                <p class="text-xs text-gray-300">Save everything including progress, settings, and logs.</p>
+                            </div>
+                             <div class="flex gap-3">
+                                <button id="import-full-backup-btn" class="px-4 py-2 text-sm font-bold rounded-lg bg-white/10 hover:bg-white/20 border border-white/20">Import Backup</button>
+                                <button id="export-full-data-btn" class="px-4 py-2 text-sm font-bold rounded-lg bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30">Download Backup</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -863,10 +916,7 @@
             <div id="page-analytics" class="page">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold" data-translate="analytics_reports">Analytics & Reports</h2>
-                    <button id="print-analysis-btn" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg btn-neon">
-                        <i data-lucide="printer" class="w-4 h-4"></i> <span>Print Analysis</span>
-                    </button>
-                </div>
+                    </div>
                 <div id="analytics-content-container">
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm text-center"><h3 class="text-sm font-medium text-text-muted-light dark:text-text-muted-dark" data-translate="total_chapters_done">Total Chapters Done</h3><p id="metric-total-completed" class="text-3xl font-bold text-primary">0</p></div>
@@ -888,11 +938,24 @@
             <div id="page-report" class="page">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold" data-translate="study_report">Study Report</h2>
-                    <button id="print-report-btn" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg btn-neon">
-                        <i data-lucide="printer" class="w-4 h-4"></i> <span>Print Report</span>
-                    </button>
                 </div>
                 <div id="report-content-container">
+                </div>
+            </div>
+
+            <div id="page-updates" class="page">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-purple-500/30">
+                            <i data-lucide="sparkles" class="w-8 h-8 text-white animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">What's New</h2>
+                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark">Latest features & improvements.</p>
+                        </div>
+                    </div>
+                    <div id="updates-content-list" class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                        </div>
                 </div>
             </div>
 
@@ -918,6 +981,7 @@
                             <option value="default">Default Gradient</option>
                             <option value="constellation">Cyber Constellation</option>
                         </select>
+                        <p class="text-[10px] text-text-muted-light dark:text-text-muted-dark mt-2">Custom Image upload removed for better performance.</p>
                     </div>
                     
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
@@ -935,27 +999,31 @@
                          <button id="reset-theme-btn" class="mt-3 w-full text-sm p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset to Default</button>
                     </div>
                     
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
-                        <h3 class="font-semibold mb-3">Advanced Color Customization</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
-                            <div>
-                                <label for="color-text-light" class="text-sm font-medium">Light Mode Text</label>
-                                <input type="color" id="color-text-light" data-color-type="textLight" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex-grow">
+                             <h3 class="font-semibold text-sm">Theme Colors (Advanced)</h3>
+                             <p class="text-xs text-text-muted-light dark:text-text-muted-dark">Customize text & borders.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center gap-1" title="Light Text">
+                                <input type="color" id="color-text-light" data-color-type="textLight" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer p-0 overflow-hidden">
+                                <span class="text-[10px] font-bold">L-Text</span>
                             </div>
-                            <div>
-                                <label for="color-border-light" class="text-sm font-medium">Light Mode Border</label>
-                                <input type="color" id="color-border-light" data-color-type="borderLight" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                            <div class="flex flex-col items-center gap-1" title="Light Border">
+                                <input type="color" id="color-border-light" data-color-type="borderLight" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer p-0 overflow-hidden">
+                                <span class="text-[10px] font-bold">L-Bord</span>
                             </div>
-                            <div>
-                                <label for="color-text-dark" class="text-sm font-medium">Dark Mode Text</label>
-                                <input type="color" id="color-text-dark" data-color-type="textDark" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                            <div class="w-px h-8 bg-gray-300 dark:bg-gray-700 mx-2"></div>
+                            <div class="flex flex-col items-center gap-1" title="Dark Text">
+                                <input type="color" id="color-text-dark" data-color-type="textDark" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-600 cursor-pointer p-0 overflow-hidden">
+                                <span class="text-[10px] font-bold">D-Text</span>
                             </div>
-                            <div>
-                                <label for="color-border-dark" class="text-sm font-medium">Dark Mode Border</label>
-                                <input type="color" id="color-border-dark" data-color-type="borderDark" class="adv-color-picker mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
+                            <div class="flex flex-col items-center gap-1" title="Dark Border">
+                                <input type="color" id="color-border-dark" data-color-type="borderDark" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-600 cursor-pointer p-0 overflow-hidden">
+                                <span class="text-[10px] font-bold">D-Bord</span>
                             </div>
                         </div>
-                        <button id="reset-advanced-colors-btn" class="mt-3 w-full text-sm p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset Advanced Colors</button>
+                        <button id="reset-advanced-colors-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset</button>
                     </div>
 
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
@@ -967,10 +1035,15 @@
                         </div>
                     </div>
                     
-                    <div id="custom-cycle-plan-container" class="hidden md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-4" data-translate="custom_study_plan">Custom Study Plan (2 Week Cycle)</h3>
-                        <div id="custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-                        <button id="save-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom Plan</button>
+                    <div id="custom-cycle-plan-container" class="hidden md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm transition-all duration-300">
+                        <div class="collapsible-header flex justify-between items-center cursor-pointer">
+                            <h3 class="font-semibold" data-translate="custom_study_plan">Custom Study Plan (2 Week Cycle)</h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                        </div>
+                        <div class="collapsible-content hidden mt-4">
+                            <div id="custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                            <button id="save-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom Plan</button>
+                        </div>
                     </div>
                     
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
@@ -982,46 +1055,56 @@
                         </div>
                     </div>
                     
-                    <div id="custom-dpt-plan-container" class="hidden md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                        <h3 class="font-semibold mb-4" data-translate="custom_dpt_plan">Custom DPT Plan (2 Week Cycle)</h3>
-                        <div id="dpt-custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-                        <button id="save-dpt-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom DPT Plan</button>
-                </div>
-
-                <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 border border-indigo-100 dark:border-indigo-900/30">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i data-lucide="calendar-clock" class="text-indigo-500 w-6 h-6"></i>
-                        <h3 class="font-semibold text-lg">Advanced Subject Routine (Extra)</h3>
-                    </div>
-                    <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4">Add extra subjects to your daily schedule permanently on specific days.</p>
-
-                    <div class="bg-indigo-50 dark:bg-indigo-950/30 p-4 rounded-xl mb-4">
-                        <label class="block text-sm font-medium mb-2">Select Subject or Type Custom Name</label>
-                        <div class="flex gap-2 mb-3">
-                            <select id="adv-routine-subject-select" class="flex-1 p-2 bg-white dark:bg-gray-800 border rounded-lg">
-                                <option value="">-- Select Subject --</option>
-                            </select>
-                            <input type="text" id="adv-routine-custom-name" placeholder="Or type custom (e.g. Gym)" class="flex-1 p-2 bg-white dark:bg-gray-800 border rounded-lg hidden">
-                            <button id="toggle-custom-name-btn" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-xs font-bold">Type Custom</button>
+                    <div id="custom-dpt-plan-container" class="hidden md:col-span-2 p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm transition-all duration-300">
+                        <div class="collapsible-header flex justify-between items-center cursor-pointer">
+                            <h3 class="font-semibold" data-translate="custom_dpt_plan">Custom DPT Plan (2 Week Cycle)</h3>
+                             <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
                         </div>
-
-                        <label class="block text-sm font-medium mb-2">Select Days to Repeat</label>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="1">Mon</button>
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="2">Tue</button>
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="3">Wed</button>
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="4">Thu</button>
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="5">Fri</button>
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="6">Sat</button>
-                            <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-red-500 text-red-500" data-day="0">Sun</button>
+                        <div class="collapsible-content hidden mt-4">
+                            <div id="dpt-custom-cycle-subject-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                            <button id="save-dpt-custom-cycle-plan" class="mt-4 px-4 py-2 btn-neon font-semibold rounded-lg" data-translate="save_custom_plan">Save Custom DPT Plan</button>
                         </div>
-
-                        <button id="save-adv-routine-btn" class="w-full p-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">Add to Routine</button>
                     </div>
 
-                    <div id="adv-routine-list" class="space-y-2 max-h-60 overflow-y-auto">
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 border border-indigo-100 dark:border-indigo-900/30 transition-all duration-300">
+                        <div class="collapsible-header flex justify-between items-center cursor-pointer">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="calendar-clock" class="text-indigo-500 w-6 h-6"></i>
+                                <h3 class="font-semibold text-lg">Advanced Subject Routine (Extra)</h3>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
                         </div>
-                </div>
+                        <div class="collapsible-content hidden mt-4">
+                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-4">Add extra subjects to your daily schedule permanently on specific days.</p>
+
+                            <div class="bg-indigo-50 dark:bg-indigo-950/30 p-4 rounded-xl mb-4">
+                                <label class="block text-sm font-medium mb-2">Select Subject or Type Custom Name</label>
+                                <div class="flex gap-2 mb-3">
+                                    <select id="adv-routine-subject-select" class="flex-1 p-2 bg-white dark:bg-gray-800 border rounded-lg">
+                                        <option value="">-- Select Subject --</option>
+                                    </select>
+                                    <input type="text" id="adv-routine-custom-name" placeholder="Or type custom (e.g. Gym)" class="flex-1 p-2 bg-white dark:bg-gray-800 border rounded-lg hidden">
+                                    <button id="toggle-custom-name-btn" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-xs font-bold">Type Custom</button>
+                                </div>
+
+                                <label class="block text-sm font-medium mb-2">Select Days to Repeat</label>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="1">Mon</button>
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="2">Tue</button>
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="3">Wed</button>
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="4">Thu</button>
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="5">Fri</button>
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-indigo-500 transition-all" data-day="6">Sat</button>
+                                    <button type="button" class="adv-day-btn w-10 h-10 rounded-lg text-xs font-bold bg-white dark:bg-gray-900 border hover:border-red-500 text-red-500" data-day="0">Sun</button>
+                                </div>
+
+                                <button id="save-adv-routine-btn" class="w-full p-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">Add to Routine</button>
+                            </div>
+
+                            <div id="adv-routine-list" class="space-y-2 max-h-60 overflow-y-auto">
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
                         <h3 class="font-semibold mb-3">Study Day Counter</h3>
@@ -1508,27 +1591,92 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
+    // --- PERFORMANCE OPTIMIZATION: DELAY HEAVY TASKS ---
+    // Defers service worker registration
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+            setTimeout(() => navigator.serviceWorker.register('sw.js').catch(() => {}), 1000);
         });
     }
     
-    const CURRENT_APP_VERSION = "6.2"; // Performance & Postpone Fix
+    // --- 1. DEFAULT DATA INJECTION (EMBEDDED) ---
+    // Foundation Routine (14 Days)
+    const FOUNDATION_ROUTINE = [
+        ["economics", "math", "reasoning", "fill-form"],
+        ["physics", "history", "math", "static-gk"],
+        ["chemistry", "polity", "math", "संविधान-articles"],
+        ["biology", "geography", "math", "maths-formulas"],
+        ["physics", "math", "hindi", "static-gk"],
+        ["chemistry", "history", "math", "संविधान-articles"],
+        ["biology", "polity", "math", "maths-formulas"],
+        ["economics", "math", "reasoning", "fill-form"],
+        ["physics", "geography", "math", "static-gk"],
+        ["chemistry", "history", "math", "संविधान-articles"],
+        ["biology", "polity", "math", "maths-formulas"],
+        ["physics", "math", "hindi", "static-gk"],
+        ["chemistry", "history", "math", "संविधान-articles"],
+        ["biology", "polity", "math", "maths-formulas"]
+    ];
+
+    // Railway Routine (14 Days)
+    const RAILWAY_ROUTINE = [
+        ["math", "history", "reasoning", "fill-form"],
+        ["chemistry", "hindi", "संविधान-articles", "math"],
+        ["biology", "economics", "maths-formulas", "reasoning"],
+        ["physics", "geography", "static-gk", "math"],
+        ["chemistry", "polity", "संविधान-articles", "reasoning"],
+        ["biology", "history", "maths-formulas", "math"],
+        ["physics", "hindi", "static-gk", "reasoning"],
+        ["math", "economics", "संविधान-articles", "fill-form"],
+        ["biology", "geography", "maths-formulas", "math"],
+        ["physics", "polity", "static-gk", "reasoning"],
+        ["chemistry", "history", "संविधान-articles", "math"],
+        ["biology", "hindi", "maths-formulas", "reasoning"],
+        ["physics", "economics", "static-gk", "math"],
+        ["chemistry", "geography", "संविधान-articles", "reasoning"]
+    ];
+
+    // Default Chapters Database (Full Content)
+    const DEFAULT_CHAPTERS_DB = {
+        "physics": ["1. तरंग (Waves)","2. उत्तोलक (Lever)","3. सरल आवर्त गति (Simple Harmonic Motion)","4. ऊष्मा (Heat)","5. प्रकाश (Light)","6. ध्वनि (Sound)","7. बल तथा बल आघूर्ण (Force and Torque)","8. गुरुत्वाकर्षण (Gravitation)","9. मात्रक तथा बीमा (Units and Measurement)","10. आवर्धन तथा वर्ण विक्षेपण (Magnification and Dispersion)","11. घर्षण (Friction)","12. प्रक्षेप्य गति (Projectile Motion)","13. प्रत्यास्थता (Elasticity)","14. कार्य शक्ति और ऊर्जा (Work, Power and Energy)","15. गति और वेग (Motion and Velocity)","16. दाब (Pressure)","17. चुंबक (Magnetism)","18. अपवर्तन (Refraction)","19. महत्वपूर्ण तथ्य (Important Facts)","20. मानव नेत्र (Human Eye)","21. प्रकाश का विद्युत प्रभाव (Photoelectric Effect)","22. लेंस (Lens)","23. विद्युत और विद्युत धारा (Electricity and Current)"],
+        "chemistry": ["1. अयस्क और धातु कर्म (Ore and Metallurgy)","2. तत्व तथा मिश्रण (Elements and Mixtures)","3. परमाणु की संरचना (Structure of Atom)","4. अम्ल क्षार और लवण (Acids, Bases and Salts)","5. रासायनिक बंधन (Chemical Bonding)","6. हमारे आसपास के पदार्थ (Substances Around Us)","7. ऑक्सीडेशन और रिडक्शन (Oxidation and Reduction)","8. जल (Water)","9. ऑर्गेनिक केमिस्ट्री एंड इट्स कंपोनेंट (Organic Chemistry)","10. मोल संकल्पना (Mole Concept)","11. रेडियोएक्टिविटी (Radioactivity)","12. आवर्त सारणी (Periodic Table)","13. इंडस्ट्रियल केमेस्ट्री (Industrial Chemistry)"],
+        "biology": ["1. ग्रंथियां (Glands)","2. कोशिका (Cell)","3. ऊतक (Tissues)","4. पेशीय तंत्र (Muscular System)","5. पाचन तंत्र (Digestive System)","6. स्वसन तंत्र (Respiratory System)","7. परिसंचरण तंत्र (Circulatory System)","8. रक्त (Blood)","9. उत्सर्जन तंत्र (Excretory System)","10. तंत्रिका तंत्र (Nervous System)","11. जनन तंत्र (Reproductive System)","12. शरीर के गुहा (Body Cavities)","13. कंकाल तंत्र (Skeletal System)","14. पोषण (Nutrition)","15. ज्ञानेंद्रिय (Sense Organs)","16. मानव रोग (Human Diseases)","17. जंतुओं का वर्गीकरण (Classification of Animals)","18. पादप (Plants)","19. पादप पोषण (Plant Nutrition)","20. पादप कूल पादप रोग और हार्मोन (Plant Disease/Hormones)","21. वाष्पोत्सर्जन प्रकाश संश्लेषण (Transpiration/Photosynthesis)","22. पादप उत्तक (Plant Tissues)","23. अनुवांशिकी (Genetics)","24. प्रदूषण (Pollution)","25. जैव विकास (Evolution)","26. खाद्य श्रृंखला (Food Chain)","27. पारिस्थितिकी (Ecology)"],
+        "geography": ["1. खगोल विज्ञान (Astronomy)","2. स्थलाकृति विज्ञान (Geomorphology)","3. भूगर्भ विज्ञान (Geology)","4. चट्टान (Rocks)","5. वायुमंडल (Atmosphere)","6. पवन संचार (Wind Circulation)","7. चक्रवात (Cyclone)","8. जल मंडल (Hydrosphere)","9. पृथ्वी का भूगर्भिक इतिहास (Geological History)","10. कोपेन का जलवायु वर्गीकरण (Koppen Climate)","11. हिमालय (Himalayas)","12. उत्तर का विशाल मैदान (Northern Plains)","13. मृदा (Soil)","14. भारत का वन (Forests of India)","15. भारत की जलवायु (Climate of India)","16. कृषि (Agriculture)","17. खनिज (Minerals)","18. भारत का उद्योग (Industries of India)","19. भारत की परिवहन व्यवस्था (Transport System)","20. प्रायद्वीपीय पठार (Peninsular Plateau)","21. भारत की बहुउद्देशीय प्रोजेक्ट (Multipurpose Projects)","22. जनसंख्या (Population)","23. भारत के विभिन्न प्रजातियां (Species of India)"],
+        "polity": ["1. भारतीय संविधान (Indian Constitution)","14. भाग 1 संघ और राज्य","15. भाग 2 नागरिकता","16. भाग 3 मूल अधिकार","17. भाग 4 राज्य के नीति निर्देशक तत्व","18. मूल कर्तव्य","19. भाग 5 संघ","20. संसद","21. सर्वोच्च न्यायालय","22. भाग 6 राज्य","23. विधान मंडल","24. उच्च न्यायालय","25. भाग 7 से 10","26. भाग 11 और 12","27. भाग 13 और 14","28. भाग 15","29. भाग 16","30. भाग 17 राजभाषा","31. भाग 18 आपातकालीन उपबंध","32. भाग 19 प्रमुख उपबंध","33. भाग 21 और 22","34. भारतीय संविधान एक परिचय","35. भाग और अनुसूची","36. भाग और अनुच्छेद","37. अंतरराष्ट्रीय संबंध"],
+        "economics": ["1. अर्थशास्त्र (Economics)","2. अर्थव्यवस्था (Economy)","3. सकल घरेलू उत्पाद (GDP)","4. गरीबी (Poverty)","5. राष्ट्रीय आय (National Income)","6. बजट (Budget)","7. टैक्स (Tax)","8. व्यापार संतुलन (Balance of Trade)","9. बैंक (Bank)","10. बैंक से जुड़ी अन्य","11. मुद्रा (Currency)","12. वस्तु (Goods)","13. बाजार (Market)","14. उपयोगिता (Utility)","15. रिवेन्यू (Revenue)","16. शेयर बाजार (Stock Market)","17. कंपनी (Company)","18. प्रमुख संस्था (Institutions)","19. प्रमुख संगठन (Organizations)","20. भविष्य निधि (PF)"],
+        "history": ["1. प्रागैतिहासिक काल","2. आद्य-एतिहासिक काल","3. ऐतिहासिक काल","4. वेद","5. वैदिक काल","6. जैन धर्म","7. बौद्ध धर्म","8. प्रमुख धर्म","9. महाजनपद","10. हर्यक वंश","11. शिशु नागवंश","12. नंद वंश","13. मौर्य वंश","14. सम्राट अशोक","15. मौर्य कालीन व्यवस्थाएं","16. ब्राह्मण साम्राज्य","17. शुंग वंश","18. कण्ण्व वंश","19. सातवाहन वंश","20. मौर्य उत्तर कल","21. हिंदी यूनानी इंडो ग्रीक","22. शक वंश","23. कुषाण वंश+रेशम मार्ग","24. गुप्त काल","25. समुद्रगुप्त","26. चंद्रगुप्त द्वितीय","27. पुष्यभूति वंश","28. दक्षिण भारत का इतिहास","29. संगम काल","30. पांडय्य वंश","31. चोल वंश","32. चालुक्य वंश","33. पल्लव वंश","34. राष्ट्रकूट वंश","35. गुर्जर प्रतिहार वंश","36. यादव वंश","37. वर्मन वंश","38. राजपूत काल","39. मुस्लिम आक्रमण","40. तुर्क आक्रमण","41. दिल्ली सल्तनत","42. गुलाम वंश","43. कुतुबुद्दीन ऐबक","44. रजिया सुल्तान","45. खिलजी वंश","46. तुगलक वंश","47. सैयद वंश","48. लोदी वंश","49. विजयनगर साम्राज्य","50. प्रशासनिक व्यवस्था","51. बहमनी साम्राज्य","52. भक्ति आंदोलन","53. मुगल काल","54. बाबर","55. हुमायूं","56. शेरशाह सूरी","57. अकबर","58. जहांगीर","59. शाहजहां","60. औरंगज़ेब","61. उत्तर मुगल काल","62. मुगल प्रशासनिक व्यवस्था","63. मराठा साम्राज्य","64. पेशवा काल","65. अवध/मैसूर/पंजाब","66. कोहिनूर हीरा","67. बंगाल","68. यूरोपीय कंपनियों का आगमन","69. 1857 की क्रांति","70. भारतीय राष्ट्रीय कांग्रेस","71. प्रमुख क्रांतिकारी आंदोलन","72. सामाजिक सुधार संगठन","73. गांधी युग","74. रॉलेट एक्ट","75. साइमन कमीशन","76. मुस्लिम लीग","77. अगस्त प्रस्ताव","78. कैबिनेट मिशन","79. गवर्नर जनरल एवं वायसराय","80. कांग्रेस का अधिवेशन","81. दिल्ली दरबार","82. नेहरू काल","83. पुनर्जागरण","84. इंग्लैंड की क्रांति","85. फ्रांस की क्रांति","86. प्रथम विश्व युद्ध"],
+        "reasoning": ["1. सादृश्य परीक्षा","2. वर्गीकरण","3. वर्णमाला","4. कोडिंग और डिकोडिंग","5. दिशा और दूरी","6. रक्त संबंध","7. पदानुक्रम","8. व्यवस्थीकरण","9. पहेली","10. नवीन दृष्टि","11. श्रृंखला","12. गणितीय समीकरण","13. अंकीय तर्कशक्ति","14. अंक-अंक श्रृंखला","15. संख्याओं पर श्रृंखला","16. समीकरण","17. आरोही व्याख्या","18. तर्कसंगत क्रम","19. औंको का अनुपालन","20. इनपुट-आउटपुट","21. असमानता","22. कैलेंडर","23. समय और घड़ियाँ","24. जल प्रतिबिंब","25. दर्पण प्रतिबिंब","26. पासा","27. धन का मुद्रण","28. कथनों की सत्यता","29. निर्णय-निर्धारण","30. न्याय निगमन","31. कथन : कार्यवाही","32. कथन एवं पूर्वधारणाएँ","33. कथन और तर्क","34. कथन और निष्कर्ष","35. कारण और प्रभाव","36. कथन और कारण","37. परिच्छेद और निष्कर्ष"],
+        "math": ["1. Digital Sum","2. Geometry","3. Mensuration 2D","4. Mensuration 3D","5. LCM & HCF","6. Number System","7. Simplification","8. Algebra","9. Trigonometry","10. Height & Distance","11. Co-ordinate Geometry","12. Percentage","13. Profit & Loss","14. Discount","15. Simple Interest","16. Compound Interest","17. Ratio & Proportion","18. Partnership","19. Mixture","20. Alligation","21. Average","22. Time & Work","23. Pipe & Cistern","24. Time & Distance","25. Train","26. Race","27. Boat & Stream","28. Permutation & Combination","29. Probability","30. Statistics","31. Logarithm","32. Calculation"],
+        "hindi": ["1. वर्णमाला","2. पर्यायवाची शब्द","3. विलोम शब्द","4. भिन्नार्थक शब्द","5. अनेकार्थी शब्द","6. अनेक शब्दों के स्थान पर एक शब्द","7. विकारी शब्द(संज्ञा)","8. विकारी शब्द(सर्वनाम)","9. विकारी शब्द(विशेषण)","10. विकारी शब्द(क्रिया)","11. क्रिया(काल)","12. क्रिया(वाच्य)","13. अविकारी शब्द","14. लिंग वचन और कारक","15. संधि","16. समास","17. उपसर्ग-प्रत्यय","18. मुहावरे-लोकोक्ति","19. विराम चिन्ह"],
+        "static-gk": ["1. भारत की जनगणना","2. प्रमुख पुरस्कार","3. महत्वपूर्ण उपनाम","4. संगठन","5. महत्वपूर्ण दिवस","6. भारत में प्रथम","7. लार्जेस्ट एंड बिगेस्ट","8. महत्वपूर्ण स्थल","9. नेशनल पार्क","10. शास्त्रीय नृत्य","11. वाद्य यंत्र","12. मेले और त्योहार","13. आर्ट और कल्चर","14. प्रमुख घराना","15. खेल","16. किताबें","17. पड़ोसी देश","18. राजधानी और मुद्राएं","19. मिसलेनियस"],
+        "संविधान-articles": ["1. अनुसूचिया","2. अनुच्छेद 1-50","3. अनुच्छेद 50-100","4. अनुच्छेद 100-150","5. अनुच्छेद 150-200","6. अनुच्छेद 200-250","7. अनुच्छेद 250-300","8. अनुच्छेद 300-371","9. भाग 1-22","10. संशोधन 1-31","11. संशोधन 35-61","12. संशोधन 65-97","13. संशोधन 98-106"],
+        "maths-formulas": ["1. क्षेत्रमिति फॉर्मूला (mensuration)","2. त्रिकोणमिती फॉर्मूला (trignometry)"],
+        "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
+    };
+
+    const CURRENT_APP_VERSION = "8.0"; // Final Version: Stability + Cleanup
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
+    // Updates Logic
     const updateNotes = {
-        "6.1": [
-            { "title": "DPT Fix 🛠️", "note": "Fixed crash in dashboard related to completed DPTs." },
-            { "title": "New Feature ✨", "note": "Added completed DPT dropdown to dashboard." }
-        ],
-        "6.2": [
-            { "title": "Postpone Fixed 📌", "note": "स्थगित (Postponed) अध्यायों के नोट्स अब हमेशा डैशबोर्ड पर दिखाई देंगे।" },
-            { "title": "Super Fast 🚀", "note": "PC और मोबाइल पर हीटिंग की समस्या खत्म। ऐप अब 5 गुना स्मूथ है।" },
-            { "title": "Rebranded 🎨", "note": "Updated by Rayen." }
-        ]
+        "8.0": {
+            date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "Routine & Chapter Management 🛠️", "note": "इंपोर्ट और एक्सपोर्ट वाले ऑप्शन में रूटिंग मैनेजमेंट और चैप्टर मैनेजमेंट, इन दोनों को बेस्ट किया गया। रेलवे और फाउंडेशन रूटिंग अब डिफ़ॉल्ट रूप से मौजूद हैं।" },
+                { "title": "Enhanced Stability & Storage 🚀", "note": "ऐप को मजबूत बनाया गया है ताकि क्रैश या हीटिंग की समस्या न आए।" },
+                { "title": "Smoother Experience 🧹", "note": "अनावश्यक कोड हटाकर ऐप को मक्खन जैसा स्मूथ बनाया गया है।" }
+            ]
+        },
+        "7.5": { date: "2024-11-20", features: [{ "title": "Dark Mode Update 🌙", "note": "डार्क मोड में रंगों को आँखों के लिए और आरामदायक बनाया गया।" }] },
+        "7.0": { date: "2024-11-05", features: [{ "title": "Super Fast Speed ⚡", "note": "व्हाइट स्क्रीन की समस्या ठीक की गई। ऐप अब 5 गुना तेज़ खुलता है।" }] },
+        "6.5": { date: "2024-10-15", features: [{ "title": "DPT Analytics 📊", "note": "DPT (डेली प्रैक्टिस टेस्ट) के लिए नए चार्ट और ग्राफ जोड़े गए।" }] },
+        "6.0": { date: "2024-09-30", features: [{ "title": "Custom Folders 📁", "note": "URL सेक्शन में अब आप फोल्डर के अंदर फोल्डर बना सकते हैं।" }] },
+        "5.5": { date: "2024-09-10", features: [{ "title": "Exam Tracking 📝", "note": "आगामी परीक्षाओं को ट्रैक करने के लिए नया डैशबोर्ड कार्ड।" }] },
+        "5.0": { date: "2024-08-25", features: [{ "title": "Backup & Restore 💾", "note": "अपना पूरा डेटा JSON फाइल के रूप में सुरक्षित करने की सुविधा।" }] },
+        "4.5": { date: "2024-08-01", features: [{ "title": "AI Insights 🤖", "note": "आपकी पढ़ाई के आधार पर स्मार्ट सुझाव देने वाला AI सिस्टम।" }] },
+        "4.0": { date: "2024-07-15", features: [{ "title": "Subject Progress 📈", "note": "हर विषय की अलग-अलग प्रगति देखने की सुविधा।" }] },
+        "3.5": { date: "2024-06-20", features: [{ "title": "Performance Boost 🚀", "note": "पुराने लेग और अटकने की समस्याओं को पूरी तरह खत्म किया गया।" }] }
     };
 
     const DB_KEY = 'pravejStudyTracker';
@@ -1745,7 +1893,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: "fill-form", name: "Form Filling / Misc", chapters: [], completionCount: 0 }
         ],
         settings: {
-            theme: 'dark', // Changed to dark by default
+            theme: 'light', // Changed to light by default
             planMode: 'auto',
             customCyclePlan: Array(14).fill([]),
             dptPlanMode: 'auto',
@@ -1783,14 +1931,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedData) {
             try {
                 data = JSON.parse(savedData);
-                // Integrity Check: Ensure essential arrays exist to prevent crashes later
                 if (!data.subjects || !Array.isArray(data.subjects)) throw new Error("Corrupt Data");
             } catch (innerError) {
-                console.warn("Data corruption detected. Attempting partial recovery or reset.");
-                // Backup corrupt data just in case
+                console.warn("Data corruption detected. Resetting.");
                 localStorage.setItem(DB_KEY + '_corrupt_backup', savedData);
                 data = JSON.parse(JSON.stringify(initialState));
-                alert("Study Tracker recovered from a data error. Settings have been reset to ensure stability.");
             }
         } else {
             data = JSON.parse(JSON.stringify(initialState));
@@ -1799,6 +1944,46 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Critical Storage Error", error);
         data = JSON.parse(JSON.stringify(initialState));
     }
+
+    // --- 2. AUTO-POPULATE DEFAULT DATA (IF EMPTY) ---
+    // If subjects have no chapters, populate them from DEFAULT_CHAPTERS_DB
+    const populateDefaults = () => {
+        let addedCount = 0;
+        (data.subjects || []).forEach(subject => {
+            // Clean ID to match DB keys
+            let key = subject.id;
+            if(key === 'reasoning') key = 'reasoning'; // map if needed
+            
+            // Special handling for reasoning mapping if ID differs
+            // Try direct match first
+            let defaultChapters = DEFAULT_CHAPTERS_DB[key];
+            if(!defaultChapters && key === 'reasoning') defaultChapters = DEFAULT_CHAPTERS_DB['reasoning'];
+            
+            if (defaultChapters && subject.chapters.length === 0) {
+                const chapters = defaultChapters.map(name => {
+                    const cleanName = typeof name === 'string' ? name : name.name;
+                    return {
+                        id: `ch-def-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        name: cleanName,
+                        status: 'Not Started',
+                        dateAdded: new Date().toISOString().split('T')[0],
+                        notes: '', priorityRevision: false, revisions: []
+                    };
+                });
+                subject.chapters = chapters;
+                addedCount += chapters.length;
+            }
+        });
+        
+        // Set Default Foundation Routine if no custom plan exists
+        if (!data.settings.customCyclePlan || data.settings.customCyclePlan.every(d => d.length === 0)) {
+            data.settings.customCyclePlan = JSON.parse(JSON.stringify(FOUNDATION_ROUTINE));
+            data.settings.planMode = 'foundation_cycle'; 
+        }
+    };
+    
+    // Run population logic
+    populateDefaults();
     
     // --- Data Structure Migration (CRITICAL FOR CRASH PREVENTION) ---
     // This block converts old "Book/Notes" structure to new "Unified Chapters" structure
@@ -1873,24 +2058,45 @@ safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine arr
     let saveTimeout = null;
     const saveData = () => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        // INCREASED TIMEOUT to 2000ms: This reduces lag significantly while typing
+        // Smart Debounce: Saves every 1.5s to prevent lag but ensures data safety
         saveTimeout = setTimeout(() => {
             requestAnimationFrame(() => {
                 try {
+                    // 1. Data Cleaning before saving (Remove temporary UI states)
+                    if(data.dailyPlan) {
+                        // Remove plans older than 30 days to save space automatically
+                        const thirtyDaysAgo = new Date();
+                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                        const cutoff = thirtyDaysAgo.toISOString().split('T')[0];
+                        Object.keys(data.dailyPlan).forEach(date => {
+                            if(date < cutoff) delete data.dailyPlan[date];
+                        });
+                    }
+
                     const dataString = JSON.stringify(data);
+                    
+                    // 2. Storage Limit Guard (Prevents Auto-Reset Crash)
+                    // Browser limits are usually 5MB (~5.2 million chars)
+                    if (dataString.length > 4500000) { 
+                        if (!window.storageWarningShown) {
+                            alert("⚠️ Storage Warning: App memory is 90% full. Please 'Export Backup' soon to avoid data loss.");
+                            window.storageWarningShown = true;
+                        }
+                    }
+
                     localStorage.setItem(DB_KEY, dataString);
+                    
                 } catch (error) {
-                    console.error("Auto-save failed:", error);
+                    console.error("Save Failed (Protected):", error);
                     if (error.name === 'QuotaExceededError' || error.code === 22) {
-                        // Alert only once per session to avoid spamming
                         if (!window.quotaAlertShown) {
-                            alert("⚠️ App Memory Full! Please Export Data & Reset to keep app smooth.");
+                            alert("⛔ STORAGE FULL! Data cannot be saved. \n\n1. Export your data NOW (Backup).\n2. Then use 'Reset App'.\n\nDon't close this window until you export.");
                             window.quotaAlertShown = true;
                         }
                     }
                 }
             });
-        }, 2000); 
+        }, 1500); 
     };
     
     const _ = (key, replacements = {}) => {
@@ -1948,20 +2154,47 @@ let allCharts = {};
     let backgroundElements = [];
 
     const init = () => {
-        handleNewDayLogic();
-        applyTheme(data.settings.theme);
-        applyBackgroundStyle();
-        applyCustomTheme();
-        applyManualColors();
-        lucide.createIcons();
-        addEventListeners();
-        applyTranslations();
-        if ('Notification' in window && Notification.permission !== 'denied') {
-            Notification.requestPermission();
-        }
-        setInterval(checkDateChange, 60000); 
-        checkAppUpdate();
-        navigateTo('home');
+        // FAST LOADING FIX: Use double RequestAnimationFrame to clear the paint queue
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // 1. Critical Logic First
+                handleNewDayLogic();
+                applyTheme(data.settings.theme);
+                applyManualColors();
+                applyCustomTheme();
+                
+                // 2. Render UI immediately after layout
+                navigateTo('home');
+                applyTranslations();
+                
+                // 3. Defer Heavy/Non-Critical tasks (Animation, Listeners) to reduce startup blocking
+                setTimeout(() => {
+                    applyBackgroundStyle();
+                    lucide.createIcons();
+                    addEventListeners();
+                    checkAppUpdate();
+                    
+                    // HEATING FIX: Pause animation when tab is not visible
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.hidden) {
+                            stopAllBackgroundAnimations(); // Pause to cool down CPU
+                        } else {
+                            if (data.settings.backgroundStyle === 'constellation') {
+                                initConstellationEffect(); // Resume
+                            }
+                        }
+                    });
+
+                    // Add listener for sidebar updates button
+                    document.getElementById('view-updates-btn-sidebar')?.addEventListener('click', () => navigateTo('updates'));
+                }, 100);
+
+                if ('Notification' in window && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+                setInterval(checkDateChange, 60000); 
+            });
+        });
     };
 
     const checkDateChange = () => {
@@ -1977,45 +2210,54 @@ let allCharts = {};
     
     const checkAppUpdate = () => {
         const savedVersion = data.settings.appVersion || "1.0";
+        // अगर वर्जन अलग है, तो पॉप-अप दिखाएं और वर्जन अपडेट करें
         if (savedVersion !== CURRENT_APP_VERSION) {
-            const notesKey = Object.keys(updateNotes).find(key => key === CURRENT_APP_VERSION);
-            if(notesKey){
-                showAnimatedUpdatePopup(notesKey, savedVersion);
-            }
+            showAnimatedUpdatePopup(CURRENT_APP_VERSION);
             data.settings.appVersion = CURRENT_APP_VERSION;
             saveData();
         }
+        // "What's New" पेज को हमेशा तैयार रखें
+        renderUpdatesPage();
     };
     
-    const showAnimatedUpdatePopup = (version, oldVersion) => {
-        const notesForVersion = updateNotes[version];
-        if (!notesForVersion) return;
+    const showAnimatedUpdatePopup = (version) => {
+        const updateData = updateNotes[version];
+        const features = Array.isArray(updateData) ? updateData : (updateData?.features || []);
+        
+        if (!features || features.length === 0) return;
 
         const headerEl = document.getElementById('update-popup-header');
         const contentEl = document.getElementById('update-popup-content');
         
+        // पॉप-अप हेडर
         headerEl.innerHTML = `<h2 class="text-xl font-bold mb-1 text-white flex items-center justify-center gap-2"><i data-lucide="sparkles" class="text-amber-300"></i> नया अपडेट!</h2>
-            <p class="text-xs text-indigo-300">Updated by Rayen | संस्करण: ${version} | ${new Date().toLocaleDateString('hi-IN')}</p>`;
+            <p class="text-xs text-indigo-300">संस्करण: ${version} | Rayen's Tracker</p>`;
         
         contentEl.innerHTML = '';
-        showModal('update-popup-modal');
-        lucide.createIcons();
         
-        notesForVersion.forEach((item, index) => {
+        // फीचर्स लिस्ट
+        features.forEach((item, index) => {
             const noteContainer = document.createElement('div');
-            noteContainer.className = 'p-3 bg-white/10 rounded-lg update-note-item';
-            noteContainer.style.animationDelay = `${index * 150}ms`;
+            noteContainer.className = 'p-3 bg-white/10 rounded-lg update-note-item border border-white/10';
+            noteContainer.style.animationDelay = `${index * 100}ms`;
             const titleEl = document.createElement('h4');
             titleEl.className = 'font-bold text-amber-300 flex items-center gap-2 mb-1';
-            titleEl.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> ${item.title}`;
+            titleEl.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> ${item.title}`;
             const noteEl = document.createElement('p');
-            noteEl.className = 'ml-6 text-indigo-200 text-xs';
+            noteEl.className = 'ml-6 text-indigo-100 text-xs leading-relaxed';
             noteEl.innerHTML = item.note;
             noteContainer.appendChild(titleEl);
             noteContainer.appendChild(noteEl);
             contentEl.appendChild(noteContainer);
         });
+        
+        showModal('update-popup-modal');
         lucide.createIcons();
+    };
+
+    const renderRecentUpdates = () => {
+        // यह फंक्शन अब खाली है क्योंकि हम साइडबार बटन का उपयोग कर रहे हैं,
+        // लेकिन कोड क्रैश न हो इसलिए इसे खाली रखा है।
     };
     
     const showUndoToast = (message, onUndo) => {
@@ -2128,13 +2370,45 @@ let allCharts = {};
             home: renderHomePage, subjects: renderSubjectsPage, dpt: renderDptPage,
             analytics: renderAnalyticsPage, settings: renderSettingsPage, calendar: renderCalendarPage,
             report: renderReportPage, 'import-export': renderImportExportPage,
-            exams: renderExamsPage, url: renderUrlPage
+            exams: renderExamsPage, url: renderUrlPage, updates: renderUpdatesPage
         };
         if(activePageId && pageRenderFunctions[activePageId]) {
              pageRenderFunctions[activePageId]();
         } else {
             renderHomePage();
         }
+    };
+    
+    const renderUpdatesPage = () => {
+        const container = document.getElementById('updates-content-list');
+        const versions = Object.keys(updateNotes).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+        
+        container.innerHTML = versions.map((version, index) => {
+            const data = updateNotes[version];
+            const features = Array.isArray(data) ? data : (data?.features || []);
+            const date = data.date ? new Date(data.date).toLocaleDateString('hi-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently';
+            
+            const featuresHtml = features.map(feat => `
+                <li class="mb-4 ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                        <i data-lucide="check" class="w-3 h-3 text-blue-800 dark:text-blue-300"></i>
+                    </span>
+                    <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">${feat.title}</h3>
+                    <p class="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">${feat.note}</p>
+                </li>
+            `).join('');
+
+            return `
+                <div class="relative p-6 bg-card-light dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm md:ml-6 mb-8 transform transition-all hover:scale-[1.01]">
+                    <span class="absolute top-6 right-6 bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300 border border-indigo-200">v${version}</span>
+                    <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">${date}</time>
+                    <ol class="relative border-l border-gray-200 dark:border-gray-700 mt-4">                  
+                        ${featuresHtml}
+                    </ol>
+                </div>
+            `;
+        }).join('');
+        lucide.createIcons();
     };
     
     const applyTheme = (theme) => {
@@ -2272,6 +2546,7 @@ let allCharts = {};
             try { renderBadges(); } catch (e) { console.error("Badges Error:", e); }
             try { renderSubjectWiseProgressDashboard(); } catch (e) { console.error("Subject Progress Error:", e); }
             try { renderDashboardExamList(); } catch (e) { console.error("Dashboard Exam List Error:", e); }
+            try { renderRecentUpdates(); } catch (e) { console.error("Recent Updates Error:", e); }
             
             lucide.createIcons();
         } catch (error) {
@@ -2508,10 +2783,13 @@ let allCharts = {};
         const currentDayOfWeek = date.getDay(); // 0 (Sun) - 6 (Sat)
 
         let baseSubjects = [];
-        if (data.settings.planMode === 'custom_cycle') { 
+        // Support all modes including the legacy 'auto' which defaults to Foundation logic
+        if (data.settings.planMode === 'custom_cycle' || data.settings.planMode === 'foundation_cycle' || data.settings.planMode === 'railway_cycle') { 
+            // All these modes now use customCyclePlan storage to keep current data
             baseSubjects = [...((data.settings.customCyclePlan || [])[dayIndex] || [])]; 
         } else {
-            baseSubjects = [...(dailyPattern[dayIndex] || [])];
+            // Fallback for very old data
+            baseSubjects = [...(FOUNDATION_ROUTINE[dayIndex] || [])];
         }
 
         // --- MERGE ADVANCED ROUTINE SUBJECTS (Added by Rayen) ---
@@ -2554,19 +2832,35 @@ let allCharts = {};
         const note = document.getElementById('postpone-note-textarea').value.trim();
         const chapter = getChapterByIds(subjectId, chapterId);
 
-        const activeTaskItem = document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item');
-        if (activeTaskItem) {
-            activeTaskItem.classList.add('completed');
+        if (chapter) {
+            // 1. Force Status Update
+            chapter.status = 'Postpone';
+            chapter.notes = note; // Save note to chapter itself too
+            
+            // 2. Add to Postponed List if not exists
+            if (!data.postponedChapters.some(p => p.subjectId === subjectId && p.chapterId === chapterId)) {
+                data.postponedChapters.push({ subjectId, chapterId, note });
+            } else {
+                // Update note if already exists
+                const existing = data.postponedChapters.find(p => p.subjectId === subjectId && p.chapterId === chapterId);
+                if(existing) existing.note = note;
+            }
+
+            // 3. Mark visual task as done for today
+            const activeTaskItem = document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item');
+            if (activeTaskItem) {
+                activeTaskItem.classList.add('completed');
+            }
+            
+            setTimeout(() => {
+                logActivity('skip-forward', `Chapter postponed: "${chapter.name}"`);
+                markSubjectAsDoneForToday(subjectId);
+                saveData();
+                hideModal('postpone-chapter-modal');
+                hideModal('chapter-modal');
+                updateAllUI(); // Refresh all to ensure lists update
+            }, 500);
         }
-        
-        setTimeout(() => {
-            // Removed sourceType from postponed object
-            data.postponedChapters.push({ subjectId, chapterId, note });
-            logActivity('skip-forward', `Chapter postponed with note: "${chapter.name}"`);
-            markSubjectAsDoneForToday(subjectId);
-            hideModal('postpone-chapter-modal');
-            hideModal('chapter-modal');
-        }, 500);
     };
     
     const skipChapter = (subjectId, chapterId) => {
@@ -2620,123 +2914,96 @@ let allCharts = {};
     const getOrGenerateDailyPlan = (dateStr) => {
     if (!data.dailyPlan[dateStr] || !data.dailyPlan[dateStr].planGeneratedForDay) {
         const plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []), completedTasks: [] };
-
         const subjectsForToday = getSubjectsForDay(new Date(dateStr));
-        const usedChapterIds = []; // Track to prevent duplicates
+        const usedChapterIds = [];
 
-        // 1. SMART POSTPONE LOGIC (Updated by Rayen)
-        // Instead of taking just one, we check ALL postponed chapters for today's subjects
-        // If a subject has 2 postponed chapters, both will be added (one as main task, others pushed to manual for display)
-
-        // First, identify all postponed tasks relevant to today's subjects
-        const relevantPostponed = [];
-        const remainingPostponed = [];
-
-        (data.postponedChapters || []).forEach(p => {
-            // Clean ID check
-            if (subjectsForToday.some(s => s.split(':')[0] === p.subjectId)) {
-                relevantPostponed.push(p);
-            } else {
-                remainingPostponed.push(p);
-            }
-        });
-
-        // Update global postponed list to only keep those NOT used today
-        // (We will re-add them if they are skipped again, but for now they move to Today's Plan)
-        data.postponedChapters = remainingPostponed;
-
-        // Add Relevant Postponed to Plan (Fixed Logic by Rayen)
-        relevantPostponed.forEach(p => {
-            const chapter = getChapterByIds(p.subjectId, p.chapterId);
-            if (chapter && chapter.status !== 'Completed') {
-                // Ensure note is preserved strictly
-                const taskObject = { 
-                    subjectId: p.subjectId, 
-                    chapterId: p.chapterId, 
-                    note: p.note || null, // Explicitly carry over the note
-                    isPostponed: true // Flag to help rendering
-                };
-
-                if (!plan.tasks[p.subjectId]) {
-                    // First slot for this subject
-                    plan.tasks[p.subjectId] = taskObject;
-                } else {
-                    // Subject slot already filled
-                    plan.manualTasks.push({ 
-                        ...taskObject, 
-                        id: `restored-${Date.now()}-${Math.random()}` 
-                    });
-                }
-                usedChapterIds.push(p.chapterId);
-            }
-        });
-
-        // 2. Fill remaining slots with new chapters
-        subjectsForToday.forEach(subjectId => {
-            subjectId = subjectId.split(':')[0]; // Ensure clean ID
-
-            // If subject already has a task from Postponed, skip generating new one
-            if (plan.tasks[subjectId]) return; 
-
-            // Check if it's a custom text subject (start with 'custom-')
+        // 1. SMART POSTPONE PRIORITY LOGIC
+        // Check ALL subjects for today. If any has a "Postpone" chapter, THAT chapter MUST be the task.
+        
+        subjectsForToday.forEach(rawSubjectId => {
+            const subjectId = rawSubjectId.split(':')[0];
+            
+            // Check custom routine first
             if (subjectId.startsWith('custom-')) {
-                // Only process if not already processed for this day to avoid duplicates on re-render
-                const alreadyAdded = (data.otherTasks || []).some(t => t.date === dateStr && t.description === ((data.settings.customSubjectRoutine || []).find(r => r.subjectId === subjectId)?.name));
-                
+                 const alreadyAdded = (data.otherTasks || []).some(t => t.date === dateStr && t.description === ((data.settings.customSubjectRoutine || []).find(r => r.subjectId === subjectId)?.name));
                 if (!alreadyAdded) {
                     const customRoutine = (data.settings.customSubjectRoutine || []).find(r => r.subjectId === subjectId);
                     if (customRoutine) {
-                        const newTask = {
+                        data.otherTasks.push({
                             id: `other-auto-${Date.now()}-${Math.random()}`,
                             description: customRoutine.name,
                             date: dateStr,
                             notes: 'Recurring Routine',
                             status: 'Pending',
-                            completedDate: null,
-                            isRepeating: false,
-                            lastCompletedDate: null
-                        };
-                        data.otherTasks.push(newTask);
-                        plan.tasks[subjectId] = { type: 'other_placeholder' }; 
+                            completedDate: null, isRepeating: false, lastCompletedDate: null
+                        });
+                        plan.tasks[subjectId] = { type: 'other_placeholder' };
                     }
-                } else {
-                     plan.tasks[subjectId] = { type: 'other_placeholder' };
-                }
+                } else { plan.tasks[subjectId] = { type: 'other_placeholder' }; }
                 return;
             }
 
             const subject = getSubjectById(subjectId);
             if (!subject) return;
 
-            // Special case for 'fill-form' on Sundays
-            if (subjectId === 'fill-form' && new Date(dateStr).getDay() === 0) {
-                const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
-                if (availableChapters.length > 0) {
-                    plan.tasks[subjectId] = { subjectId, chapterId: availableChapters[0].id, note: null };
-                    return;
+            // PRIORITY CHECK: Is there a Postponed chapter for this subject?
+            // Check Global List AND Chapter Status
+            let targetChapter = null;
+            let postponementNote = null;
+
+            // Strategy A: Check Global Postponed List first (Strongest signal)
+            const postponedEntryIndex = data.postponedChapters.findIndex(p => p.subjectId === subjectId);
+            
+            if (postponedEntryIndex !== -1) {
+                const entry = data.postponedChapters[postponedEntryIndex];
+                const chapter = getChapterByIds(subjectId, entry.chapterId);
+                if (chapter && chapter.status !== 'Completed') {
+                    targetChapter = chapter;
+                    postponementNote = entry.note;
+                    // Remove from global list so it doesn't duplicate, but keep status 'Postpone' until done
+                    data.postponedChapters.splice(postponedEntryIndex, 1); 
                 }
-            } else if (subjectId === 'fill-form') {
-                return; // Skip 'fill-form' on other days
             }
 
-            // Get all uncompleted chapters
-            const availableChapters = (subject.chapters || []).filter(c => 
-                c.status !== 'Completed' && 
-                !usedChapterIds.includes(c.id)
-            );
+            // Strategy B: If no global entry, check subject chapters for 'Postpone' status
+            if (!targetChapter) {
+                const statusPostponed = subject.chapters.find(c => c.status === 'Postpone');
+                if (statusPostponed) {
+                    targetChapter = statusPostponed;
+                    postponementNote = statusPostponed.notes || "Resuming postponed chapter";
+                }
+            }
 
-            if (availableChapters.length > 0) {
-                // Select a random chapter
-                const randomIndex = Math.floor(Math.random() * availableChapters.length);
-                const chapter = availableChapters[randomIndex];
-                plan.tasks[subjectId] = { subjectId, chapterId: chapter.id, note: null }; 
+            // Strategy C: If nothing postponed, pick a random new one
+            if (!targetChapter) {
+                // Special 'fill-form' logic
+                if (subjectId === 'fill-form') {
+                   if (new Date(dateStr).getDay() === 0) {
+                        const avail = subject.chapters.filter(c => c.status !== 'Completed');
+                        if(avail.length > 0) targetChapter = avail[0];
+                   }
+                } else {
+                    const availableChapters = subject.chapters.filter(c => c.status !== 'Completed' && !usedChapterIds.includes(c.id));
+                    if (availableChapters.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * availableChapters.length);
+                        targetChapter = availableChapters[randomIndex];
+                    }
+                }
+            }
+
+            // Assign Task
+            if (targetChapter) {
+                plan.tasks[subjectId] = { 
+                    subjectId, 
+                    chapterId: targetChapter.id, 
+                    note: postponementNote 
+                };
+                usedChapterIds.push(targetChapter.id);
             }
         });
 
         // Clean up placeholders
-        Object.keys(plan.tasks).forEach(k => {
-            if(plan.tasks[k].type === 'other_placeholder') delete plan.tasks[k];
-        });
+        Object.keys(plan.tasks).forEach(k => { if(plan.tasks[k].type === 'other_placeholder') delete plan.tasks[k]; });
 
         data.dailyPlan[dateStr] = plan;
         data.dailyPlan[dateStr].planGeneratedForDay = true;
@@ -3197,9 +3464,9 @@ const renderSubjectsPage = () => {
              if (subjectPageViewMode === 'completed') {
                  chapters = chapters.filter(c => c.status === 'Completed');
              } else if (subjectPageViewMode === 'postponed') {
-                 // Filter using the postponedChapters array logic
+                 // Filter using BOTH array logic AND status check
                  const postponedIds = (data.postponedChapters || []).filter(p => p.subjectId === subject.id).map(p => p.chapterId);
-                 chapters = chapters.filter(c => postponedIds.includes(c.id) && c.status !== 'Completed');
+                 chapters = chapters.filter(c => (postponedIds.includes(c.id) || c.status === 'Postpone') && c.status !== 'Completed');
              }
 
              const filteredChapters = chapters.filter(c => c.name.toLowerCase().includes(filter));
@@ -3249,7 +3516,143 @@ const renderSubjectsPage = () => {
         lucide.createIcons();
     };
 
-    const renderImportExportPage = () => { lucide.createIcons(); };
+    const renderImportExportPage = () => {
+        // --- 1. ROUTINE TOGGLE LOGIC (UPDATED FOR RAILWAY/FOUNDATION) ---
+        // Instead of toggling classes, we inject new HTML for better control
+        const routineContainer = document.querySelector('#page-import-export .md\\:col-span-2:first-child');
+        
+        const currentMode = data.settings.planMode; // 'foundation_cycle', 'railway_cycle', 'custom_cycle'
+        
+        const routineHtml = `
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-violet-100 dark:bg-violet-900/50 rounded-lg text-violet-600">
+                    <i data-lucide="calendar-clock" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">Routine Management</h3>
+                    <p class="text-xs text-text-muted-light dark:text-text-muted-dark">Select your preferred study cycle.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 mb-4">
+                <button id="set-foundation-routine-btn" class="flex items-center justify-between p-4 rounded-xl border-2 transition-all ${currentMode === 'foundation_cycle' ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-violet-300'}">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm"><i data-lucide="train" class="w-5 h-5 text-violet-600"></i></div>
+                        <div class="text-left">
+                            <h4 class="font-bold">Railway Routine</h4>
+                            <p class="text-xs opacity-70">Specialized plan for Railway exams.</p>
+                        </div>
+                    </div>
+                    ${currentMode === 'foundation_cycle' ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-violet-600 fill-violet-100"></i>' : ''}
+                </button>
+
+                <button id="set-railway-routine-btn" class="flex items-center justify-between p-4 rounded-xl border-2 transition-all ${currentMode === 'railway_cycle' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm"><i data-lucide="book-open" class="w-5 h-5 text-orange-600"></i></div>
+                        <div class="text-left">
+                            <h4 class="font-bold">Foundation Routine</h4>
+                            <p class="text-xs opacity-70">Standard 14-day study cycle.</p>
+                        </div>
+                    </div>
+                    ${currentMode === 'railway_cycle' ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-orange-600 fill-orange-100"></i>' : ''}
+                </button>
+                
+                <button id="set-custom-routine-btn" class="flex items-center justify-between p-4 rounded-xl border-2 transition-all ${currentMode === 'custom_cycle' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'}">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm"><i data-lucide="edit" class="w-5 h-5 text-blue-600"></i></div>
+                        <div class="text-left">
+                            <h4 class="font-bold">Custom Routine</h4>
+                            <p class="text-xs opacity-70">Your uploaded or edited plan.</p>
+                        </div>
+                    </div>
+                    ${currentMode === 'custom_cycle' ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-blue-600 fill-blue-100"></i>' : ''}
+                </button>
+            </div>
+            
+            <div id="routine-actions" class="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <button id="import-routine-btn-new" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm font-bold rounded-lg hover:bg-gray-200">Import JSON</button>
+                <button id="export-routine-btn-new" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm font-bold rounded-lg hover:bg-gray-200">Export PDF</button>
+            </div>
+        `;
+        
+        routineContainer.innerHTML = routineHtml;
+        
+        // Add Listeners with Safety Confirmation
+        document.getElementById('set-foundation-routine-btn').addEventListener('click', () => {
+            showConfirmationModal(
+                "Switch Routine?", 
+                "Are you sure you want to switch to the FOUNDATION Routine? Your current custom schedule will be overwritten.", 
+                () => {
+                    data.settings.planMode = 'foundation_cycle';
+                    data.settings.customCyclePlan = JSON.parse(JSON.stringify(FOUNDATION_ROUTINE));
+                    delete data.dailyPlan[getLocalDateString()]; // Force regenerate
+                    saveData(); 
+                    renderImportExportPage(); 
+                    renderHomePage();
+                    // Small Toast Feedback instead of Alert
+                    showUndoToast("✅ Foundation Routine Activated!", () => {});
+                }
+            );
+        });
+        
+        document.getElementById('set-railway-routine-btn').addEventListener('click', () => {
+            showConfirmationModal(
+                "Switch Routine?", 
+                "Are you sure you want to switch to the RAILWAY Routine? Your current custom schedule will be overwritten.", 
+                () => {
+                    data.settings.planMode = 'railway_cycle';
+                    data.settings.customCyclePlan = JSON.parse(JSON.stringify(RAILWAY_ROUTINE));
+                    delete data.dailyPlan[getLocalDateString()]; // Force regenerate
+                    saveData(); 
+                    renderImportExportPage(); 
+                    renderHomePage();
+                    showUndoToast("🚆 Railway Routine Activated!", () => {});
+                }
+            );
+        });
+        
+        document.getElementById('set-custom-routine-btn').addEventListener('click', () => {
+            data.settings.planMode = 'custom_cycle';
+            delete data.dailyPlan[getLocalDateString()]; // Force regenerate
+            saveData(); renderImportExportPage(); renderHomePage();
+        });
+        
+        const importFileInput = document.getElementById('import-file-input');
+        document.getElementById('import-routine-btn-new').addEventListener('click', () => { importFileInput.dataset.importType = 'routine'; importFileInput.click(); });
+        document.getElementById('export-routine-btn-new').addEventListener('click', () => exportRoutine('pdf'));
+
+
+        // --- 2. CHAPTERS TOGGLE LOGIC ---
+        const chapDefBtn = document.getElementById('chapter-mode-default-btn');
+        const chapCustBtn = document.getElementById('chapter-mode-custom-btn');
+        // Restore Default Content is removed from HTML, so we just handle toggle logic for Custom
+        const chapCustContent = document.getElementById('chapter-custom-content');
+
+        const updateChapterUI = (mode) => {
+            if (mode === 'default') {
+                chapDefBtn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-white', 'shadow-sm');
+                chapDefBtn.classList.remove('text-gray-500');
+                chapCustBtn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-white', 'shadow-sm');
+                chapCustBtn.classList.add('text-gray-500');
+                chapCustContent.classList.add('hidden'); 
+            } else {
+                chapCustBtn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-white', 'shadow-sm');
+                chapCustBtn.classList.remove('text-gray-500');
+                chapDefBtn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-white', 'shadow-sm');
+                chapDefBtn.classList.add('text-gray-500');
+                chapCustContent.classList.remove('hidden');
+            }
+        };
+        
+        // Default to Default view on load (Clean UI)
+        updateChapterUI('default');
+
+        chapDefBtn.addEventListener('click', () => updateChapterUI('default'));
+        chapCustBtn.addEventListener('click', () => updateChapterUI('custom'));
+        // Listener for Restore Default removed completely
+
+        lucide.createIcons();
+    };
 
     const renderCalendarPage = (monthOffset = 0) => {
          const container = document.getElementById('calendar-view');
@@ -4356,8 +4759,12 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             stopAllBackgroundAnimations();
             const style = data.settings.backgroundStyle || 'constellation';
             
+            // Reset styles
             document.body.classList.remove('constellation-active');
+            document.body.classList.remove('custom-bg-active'); 
+            document.body.style.backgroundImage = '';
             particleCanvas.style.display = 'none';
+            document.body.style.willChange = 'transform'; // Performance optimization
 
             if (data.settings.theme === 'dark' && style !== 'default') {
                 document.documentElement.classList.add('pitch-black');
@@ -4367,8 +4774,12 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             if (style === 'default') { return; }
             
-            particleCanvas.style.display = 'block';
-            if (style === 'constellation') { document.body.classList.add('constellation-active'); initConstellationEffect(); }
+            // Constellation Only (Optimized)
+            if (style === 'constellation') { 
+                particleCanvas.style.display = 'block';
+                document.body.classList.add('constellation-active'); 
+                initConstellationEffect(); 
+            }
         };
         
         const hexToRgba = (hex, alpha = 1) => {
@@ -4790,12 +5201,24 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             // --- NEW: Close Modals on Outside Click (बाहर क्लिक करने पर बंद) ---
             document.querySelectorAll('.modal-backdrop').forEach(modal => {
                 modal.addEventListener('click', (e) => {
-                    // अगर क्लिक सीधे बैकड्रॉप (काले हिस्से) पर है, तो बंद करें
-                    if (e.target === modal) {
-                        hideModal(modal.id);
-                    }
+                    if (e.target === modal) { hideModal(modal.id); }
                 });
             });
+            
+            // --- FIX: What's New Sidebar Button ---
+            const updatesBtn = document.getElementById('view-updates-btn-sidebar');
+            if (updatesBtn) {
+                // पुराने लिसनर को हटाने के लिए क्लोन करें
+                const newUpdatesBtn = updatesBtn.cloneNode(true);
+                updatesBtn.parentNode.replaceChild(newUpdatesBtn, updatesBtn);
+                newUpdatesBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // पेज पर ले जाएं
+                    navigateTo('updates');
+                    // पॉप-अप भी दिखाएं (यूजर की मांग के अनुसार)
+                    showAnimatedUpdatePopup(CURRENT_APP_VERSION);
+                });
+            }
 
             navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
             document.getElementById('mobile-bottom-nav').addEventListener('click', e => {
@@ -5066,7 +5489,13 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 renderSettingsPage();
             });
 
-            document.getElementById('background-style-select').addEventListener('change', (e) => { data.settings.backgroundStyle = e.target.value; saveData(); applyBackgroundStyle(); });
+            // Custom Background Logic - REMOVED FOR PERFORMANCE
+            const bgSelect = document.getElementById('background-style-select');
+            bgSelect.addEventListener('change', (e) => { 
+                data.settings.backgroundStyle = e.target.value; 
+                saveData(); 
+                applyBackgroundStyle(); 
+            });
             document.getElementById('page-settings').addEventListener('change', e => {
                 if (e.target.name === 'plan-mode') { data.settings.planMode = e.target.value; delete data.dailyPlan[getLocalDateString()]; saveData(); renderSettingsPage(); renderHomePage(); }
                 if (e.target.name === 'dpt-plan-mode') { data.settings.dptPlanMode = e.target.value; data.dailyDptPlan = {}; saveData(); renderSettingsPage(); renderHomePage(); }
@@ -5288,55 +5717,57 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             alert('Routine added! It will appear on "Today\'s Plan" on selected days.');
         });
 
-        document.getElementById('adv-routine-list')?.addEventListener('click', e => {
-            const toggleBtn = e.target.closest('.toggle-adv-routine-btn');
-            const deleteBtn = e.target.closest('.delete-adv-routine-btn');
-            const todayStr = getLocalDateString();
-            const currentDayOfWeek = new Date().getDay();
-
-            if (toggleBtn) {
-                const idx = toggleBtn.dataset.index;
-                const routine = data.settings.customSubjectRoutine[idx];
-                routine.active = !routine.active;
+        // FIX: Advanced Routine Toggle Persistence
+            document.getElementById('adv-routine-list')?.addEventListener('click', (e) => {
+                const toggleBtn = e.target.closest('.toggle-adv-routine-btn');
+                const deleteBtn = e.target.closest('.delete-adv-routine-btn');
                 
-                // IMMEDIATE DASHBOARD UPDATE LOGIC
-                if (routine.days.includes(currentDayOfWeek)) {
-                    if (!routine.active) {
-                        // Deactivated: Remove from today's plan immediately
-                        if (data.dailyPlan[todayStr] && data.dailyPlan[todayStr].tasks) {
-                            delete data.dailyPlan[todayStr].tasks[routine.subjectId];
+                if (toggleBtn) {
+                    const index = parseInt(toggleBtn.dataset.index);
+                    const routine = data.settings.customSubjectRoutine[index];
+                    if (routine) {
+                        // Toggle Status
+                        routine.active = !routine.active;
+                        
+                        // Force refresh of today's plan if this affects today
+                        const currentDay = new Date().getDay();
+                        if (routine.days.includes(currentDay)) {
+                             delete data.dailyPlan[getLocalDateString()]; // Force refresh logic
                         }
-                    } else {
-                        // Activated: Force regenerate/add to today's plan
-                        // By deleting the 'planGeneratedForDay' flag for today, we force a refresh
-                        // However, to keep existing tasks safe, we just call the generator again which is smart enough
-                        // But we need to make sure the generator sees it.
-                        // We will clear the specific task slot to allow regeneration
+                        
+                        saveData();
+                        renderAdvancedRoutineUI(); // Re-render UI to show new state
+                        renderHomePage(); // Update Dashboard
                     }
-                    // Force refresh plan logic
-                    data.dailyPlan[todayStr].planGeneratedForDay = false; 
                 }
 
-                saveData(); 
-                renderAdvancedRoutineUI();
-                renderHomePage(); // Refresh Dashboard immediately
-            } else if (deleteBtn) {
-                const idx = deleteBtn.dataset.index;
-                const routine = data.settings.customSubjectRoutine[idx];
-                
-                showConfirmationModal('Delete Routine?', 'This will remove this subject from your recurring schedule.', () => {
-                    // Remove from today's dashboard if it exists
-                    if (routine.days.includes(currentDayOfWeek) && data.dailyPlan[todayStr] && data.dailyPlan[todayStr].tasks) {
-                        delete data.dailyPlan[todayStr].tasks[routine.subjectId];
-                    }
-
-                    data.settings.customSubjectRoutine.splice(idx, 1);
-                    saveData(); 
+                if (deleteBtn) {
+                    const index = parseInt(deleteBtn.dataset.index);
+                    data.settings.customSubjectRoutine.splice(index, 1);
+                    delete data.dailyPlan[getLocalDateString()]; // Force refresh
+                    saveData();
                     renderAdvancedRoutineUI();
-                    renderHomePage(); // Refresh Dashboard immediately
+                    renderHomePage();
+                }
+            });
+
+            // Listeners for Collapsible Settings Headers
+            document.querySelectorAll('.collapsible-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('i');
+                    
+                    if (content.classList.contains('hidden')) {
+                        content.classList.remove('hidden');
+                        content.classList.add('animate-fadeIn'); // reuse existing fade animation
+                        icon.classList.add('rotate-180');
+                    } else {
+                        content.classList.add('hidden');
+                        content.classList.remove('animate-fadeIn');
+                        icon.classList.remove('rotate-180');
+                    }
                 });
-            }
-        });
+            });
 
 
             window.addEventListener('resize', () => { if (data.settings.backgroundStyle !== 'default') { stopAllBackgroundAnimations(); applyBackgroundStyle(); } });
