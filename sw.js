@@ -1,72 +1,51 @@
-// --- SERVICE WORKER: V6 (Crash Fix & Auto Update) ---
-const CACHE_NAME = 'pravej-study-tracker-v6-stable';
+ // A simple service worker for PWA functionality
 
-// Relative paths are safer for GitHub Pages (./ instead of /)
-const URLS_TO_CACHE = [
-    './',
-    './index.html',
-    './manifest.json'
+const CACHE_NAME = 'pravej-study-tracker-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  // आप यहां अन्य महत्वपूर्ण फाइलें (जैसे CSS, JS) भी जोड़ सकते हैं
 ];
 
-// 1. INSTALL: Cache core files & Force activation
+// Install a service worker
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Forces this new SW to take control immediately
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(URLS_TO_CACHE);
-            })
-            .catch(err => console.error('Cache addAll error:', err))
-    );
+  // Perform install steps
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-// 2. ACTIVATE: Delete OLD caches to prevent Crash due to mismatched versions
-self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName); // Wipe old data
-                    }
-                })
-            );
-        }).then(() => {
-            console.log('Service Worker Activated & Claiming Clients');
-            return self.clients.claim(); // Take control of all open tabs
-        })
-    );
-});
-
-// 3. FETCH: Network First Strategy for HTML (Prevents loading old buggy code)
+// Cache and return requests
 self.addEventListener('fetch', event => {
-    
-    // For the HTML page (Navigation), always try Network first
-    if (event.request.mode === 'navigate') {
-        event.respondWith(
-            fetch(event.request)
-                .then(networkResponse => {
-                    // Update cache with the new fresh version
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseClone);
-                    });
-                    return networkResponse;
-                })
-                .catch(() => {
-                    // If offline, use cached version
-                    return caches.match('./index.html');
-                })
-        );
-        return;
-    }
-
-    // For other assets (images, scripts), try Cache first, then Network
-    event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-        })
-    );
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
+  );
 });
+
+// Update a service worker
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});```
