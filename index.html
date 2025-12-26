@@ -1829,14 +1829,22 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "8.8"; // Mobile UI & Settings Fixes
+    const CURRENT_APP_VERSION = "8.9"; // Exams & Mobile UX Fixes
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Last 10 Updates)
     const updateNotes = {
-        "8.8": {
+        "8.9": {
             date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "Exam Filters Fixed 🎯", "note": "Exams पेज पर 'Upcoming', 'Applied', और 'History' बटन अब सही से काम कर रहे हैं।" },
+                { "title": "Save Exam Issue Solved ✅", "note": "परीक्षा एडिट करने पर 'Save Exam' बटन काम नहीं कर रहा था, उसे ठीक कर दिया गया है।" },
+                { "title": "Smart Mobile Menu 📱", "note": "नीचे वाले मेनू में नए यूजर को बताने के लिए एक स्मार्ट एनीमेशन जोड़ा गया है कि स्लाइड करने पर और भी ऑप्शन मौजूद हैं।" }
+            ]
+        },
+        "8.8": {
+            date: "2024-12-28",
             features: [
                 { "title": "Mobile UI Optimized 📱", "note": "मोबाइल में नीचे वाला मेनू (Navigation Bar) अब पतला और स्लीक कर दिया गया है। आइकॉन का साइज भी छोटा किया गया है ताकि स्क्रीन ज्यादा बड़ी दिखे।" },
                 { "title": "Advanced Routine Fixed 🛠️", "note": "सेटिंग्स में 'Advanced Subject Routine' अब 100% सही काम कर रहा है। Subject List अब खाली नहीं दिखेगी और Days (Mon, Tue...) पर क्लिक सही से होगा।" },
@@ -4289,21 +4297,34 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
     }
 
     const renderExamsPage = () => {
+        // UI Update for Filter Buttons
+        document.querySelectorAll('.exam-filter-btn').forEach(btn => {
+            if(btn.dataset.filter === currentExamFilter) {
+                btn.classList.add('active', 'bg-primary', 'text-white');
+                btn.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+            } else {
+                btn.classList.remove('active', 'bg-primary', 'text-white');
+                btn.classList.add('bg-gray-200', 'dark:bg-gray-700');
+            }
+        });
+
         const container = document.getElementById('exams-list-container');
         const today = getLocalDateString();
         let examsToRender = [...(data.exams || [])];
         let emptyMessage = _('no_exams_added');
         if (currentExamFilter === 'upcoming') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate >= today); emptyMessage = _('no_upcoming_exams_filter'); } 
-        else if (currentExamFilter === 'applied') { examsToRender = examsToRender.filter(exam => exam.status === 'Applied'); emptyMessage = _('no_applied_filter'); } 
+        else if (currentExamFilter === 'applied') { examsToRender = examsToRender.filter(exam => exam.status === 'Applied'); emptyMessage = _('no_applied_forms_filter'); } 
         else if (currentExamFilter === 'history') { examsToRender = examsToRender.filter(exam => exam.examDate && exam.examDate < today); emptyMessage = _('no_history_exams'); }
+        
         if (examsToRender.length === 0) { container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="file-text" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${emptyMessage}</h3></div>`; lucide.createIcons(); return; }
+        
         container.innerHTML = examsToRender.sort((a,b) => new Date(b.applicationDate || 0) - new Date(a.applicationDate || 0)).map(exam => {
             const locale = data.settings.language === 'hi' ? 'hi-IN' : 'en-GB';
             const appDate = exam.applicationDate ? new Date(exam.applicationDate).toLocaleDateString(locale) : 'N/A';
             const exDate = exam.examDate ? new Date(exam.examDate).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
             const daysRemaining = exam.examDate ? Math.ceil((new Date(exam.examDate) - new Date()) / 86400000) : null;
             const statusColors = { "Applied": "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300", "Admit Card Out": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300", "Exam Done": "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300", "Result Out": "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300" };
-            const receiptLink = exam.receipt ? `<a href="${exam.receipt}" target="_blank" download="receipt" class="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"><<i data-lucide="paperclip" class="w-3 h-3"></i> ${_('receipt_attached')}</a>` : '';
+            const receiptLink = exam.receipt ? `<a href="${exam.receipt}" target="_blank" download="receipt" class="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"><i data-lucide="paperclip" class="w-3 h-3"></i> ${_('receipt_attached')}</a>` : '';
             const borderColorClass = exam.examDate && exam.examDate < today ? 'border-gray-400/50' : 'border-primary/50';
             return `<div class="p-4 rounded-lg bg-card-light dark:bg-card-dark shadow-sm border-l-4 ${borderColorClass} animate-list-item"><div class="flex flex-col md:flex-row justify-between items-start gap-3"><div class="flex-grow"><h3 class="font-bold text-lg">${exam.name}</h3><div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1"><span>${_('applied_on')}: <strong>${appDate}</strong></span><span>${_('exam_date')}: <strong>${exDate}</strong></span>${receiptLink ? `<span>${receiptLink}</span>` : ''}</div><p class="text-sm mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md whitespace-pre-wrap">${exam.notes || 'No notes.'}</p></div><div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto self-stretch"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColors[exam.status]}">${_(('status_'+exam.status).toLowerCase().replace(/\s/g, '_'))}</span><div class="flex gap-1"><button class="edit-exam-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200" data-exam-id="${exam.id}"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button class="delete-exam-btn p-2 rounded-lg bg-red-100 dark:bg-red-900/50 hover:bg-red-200" data-exam-id="${exam.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button></div></div>${daysRemaining !== null && daysRemaining >= 0 ? `<div class="text-right mt-auto"><div class="text-2xl font-bold text-primary">${daysRemaining}</div><p class="text-xs -mt-1">${_('days_remaining')}</p></div>` : ''}</div></div></div>`;
         }).join('');
@@ -4330,7 +4351,8 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
     const saveExam = () => {
         const id = document.getElementById('exam-id').value;
         const file = document.getElementById('exam-receipt').files[0];
-        const examData = { name: document.getElementById('exam-name').value.trim(), applicationDate: document.getElementById('application-date').value, examDate: document.getElementById('exam-date').value, status: document.getElementById('exam-status').value, notes: documentgetElementById('exam-notes').value.trim() };
+        // Fix: Added dot in document.getElementById for notes
+        const examData = { name: document.getElementById('exam-name').value.trim(), applicationDate: document.getElementById('application-date').value, examDate: document.getElementById('exam-date').value, status: document.getElementById('exam-status').value, notes: document.getElementById('exam-notes').value.trim() };
         if (!examData.name) return;
         const processSave = (receiptDataUrl = null) => {
             if (receiptDataUrl) { examData.receipt = receiptDataUrl; }
@@ -5619,8 +5641,27 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 if (target.closest('#add-task-choice-btn')) { showModal('add-task-choice-modal'); return; }
                 if (target.closest('#manual-add-dpt-btn')) { openManualAddModal('dpt'); return; }
                 
+                // Mobile Nav Click with Auto-Scroll Hint
                 const navBtn = target.closest('.mobile-nav-btn');
-                if (navBtn && navBtn.dataset.page) { e.preventDefault(); navigateTo(navBtn.dataset.page); return; }
+                if (navBtn && navBtn.dataset.page) { 
+                    e.preventDefault(); 
+                    navigateTo(navBtn.dataset.page); 
+                    
+                    // ONE-TIME SCROLL HINT
+                    if (!localStorage.getItem('mobile_nav_hint_shown')) {
+                        localStorage.setItem('mobile_nav_hint_shown', 'true');
+                        const scroller = document.getElementById('mobile-nav-scroller');
+                        if(scroller) {
+                            setTimeout(() => {
+                                scroller.scroll({ left: 200, behavior: 'smooth' }); // Slide Right
+                                setTimeout(() => {
+                                    scroller.scroll({ left: 0, behavior: 'smooth' }); // Slide Back
+                                }, 800);
+                            }, 500);
+                        }
+                    }
+                    return; 
+                }
 
                 const collapsibleHeader = target.closest('.collapsible-header');
                 if (collapsibleHeader) {
@@ -5636,13 +5677,25 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             });
 
-            // --- 2. SETTINGS PAGE LISTENERS (FIX FOR UI UPDATES) ---
+            // --- 2. EXAM FILTER LISTENER (NEW) ---
+            const examFilterContainer = document.getElementById('exam-filter-buttons');
+            if (examFilterContainer) {
+                examFilterContainer.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.exam-filter-btn');
+                    if (btn) {
+                        currentExamFilter = btn.dataset.filter;
+                        renderExamsPage();
+                    }
+                });
+            }
+
+            // --- 3. SETTINGS PAGE LISTENERS ---
             const planModeRadios = document.querySelectorAll('input[name="plan-mode"]');
             planModeRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     data.settings.planMode = e.target.value;
                     saveData();
-                    renderSettingsPage(); // Re-render to show/hide custom cycle container
+                    renderSettingsPage(); 
                 });
             });
 
@@ -5651,7 +5704,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 radio.addEventListener('change', (e) => {
                     data.settings.dptPlanMode = e.target.value;
                     saveData();
-                    renderSettingsPage(); // Re-render to show/hide custom cycle container
+                    renderSettingsPage(); 
                 });
             });
 
@@ -5678,7 +5731,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             });
 
             // --- DATE COMPLETION MODAL LOGIC (FIXED) ---
-            // 1. Subject Select Change Handler
             document.getElementById('date-completion-subject-select').addEventListener('change', (e) => {
                 const subjectId = e.target.value;
                 const list = document.getElementById('date-completion-chapter-list');
@@ -5702,7 +5754,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 `).join('');
             });
 
-            // 2. Save Button Handler
             document.getElementById('save-date-completion-btn').addEventListener('click', () => {
                 const modal = document.getElementById('date-completion-modal');
                 const completionDate = modal.dataset.date;
@@ -5714,13 +5765,12 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
                 selectedCheckboxes.forEach(cb => {
                     const chapterId = cb.value;
-                    // Force complete on specific date
                     updateChapterStatus(subjectId, chapterId, 'Completed', false, completionDate);
                 });
 
                 logActivity('calendar-check-2', `Manually marked ${selectedCheckboxes.length} chapters as completed on ${completionDate}`);
                 saveData();
-                renderCalendarPage(); // Refresh calendar to show green dots
+                renderCalendarPage();
                 hideModal('date-completion-modal');
             });
 
@@ -5766,7 +5816,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             });
 
-            // FIX: Event Delegation on the Wrapper to catch both Pending and Completed DPT clicks
             const dptWrapper = document.getElementById('todays-dpt-container-wrapper');
             if (dptWrapper) {
                 dptWrapper.addEventListener('click', e => {
@@ -5791,7 +5840,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                             saveData(); renderHomePage();
                         }
                     } else if (viewBtn) {
-                        // THIS FIXES THE EYE BUTTON
                         e.stopPropagation();
                         showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, parseInt(viewBtn.dataset.testId));
                     }
