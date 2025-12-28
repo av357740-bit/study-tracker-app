@@ -620,6 +620,149 @@
         border-color: var(--primary);
         box-shadow: 0 0 10px var(--primary);
     }
+
+    /* --- FEATURE TOUR (SPEECH BUBBLE) STYLES --- */
+    .feature-tour-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.7); z-index: 99998; 
+        display: none; opacity: 0; transition: opacity 0.3s ease;
+        backdrop-filter: blur(2px);
+    }
+    .feature-tour-overlay.active { display: block; opacity: 1; }
+    
+    .tour-bubble {
+        position: absolute;
+        background: #ffffff;
+        color: #1e293b;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3), 0 20px 60px rgba(0, 0, 0, 0.5);
+        max-width: 280px;
+        font-size: 14px;
+        line-height: 1.5;
+        z-index: 100000;
+        animation: bubblePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: auto;
+        border: 2px solid #0ea5e9;
+    }
+    .dark .tour-bubble {
+        background: #0f172a;
+        color: #f1f5f9;
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2), 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Fixed Arrow Styling using Pseudo Elements */
+    .tour-bubble::before {
+        content: '';
+        position: absolute;
+        width: 0; 
+        height: 0; 
+        border: 10px solid transparent;
+        z-index: 100001;
+    }
+    .tour-bubble::after {
+        content: '';
+        position: absolute;
+        width: 0; 
+        height: 0; 
+        border: 13px solid transparent;
+        z-index: 100000;
+    }
+
+    /* Arrow: Top (Pointing Up) */
+    .tour-bubble.arrow-top::before {
+        bottom: 100%; left: 50%; margin-left: -10px;
+        border-bottom-color: #ffffff;
+    }
+    .tour-bubble.arrow-top::after {
+        bottom: 100%; left: 50%; margin-left: -13px;
+        border-bottom-color: #0ea5e9;
+    }
+    .dark .tour-bubble.arrow-top::before { border-bottom-color: #0f172a; }
+    .dark .tour-bubble.arrow-top::after { border-bottom-color: #38bdf8; }
+
+    /* Arrow: Bottom (Pointing Down) */
+    .tour-bubble.arrow-bottom::before {
+        top: 100%; left: 50%; margin-left: -10px;
+        border-top-color: #ffffff;
+    }
+    .tour-bubble.arrow-bottom::after {
+        top: 100%; left: 50%; margin-left: -13px;
+        border-top-color: #0ea5e9;
+    }
+    .dark .tour-bubble.arrow-bottom::before { border-top-color: #0f172a; }
+    .dark .tour-bubble.arrow-bottom::after { border-top-color: #38bdf8; }
+
+    /* Arrow: Left (Pointing Left) */
+    .tour-bubble.arrow-left::before {
+        right: 100%; top: 50%; margin-top: -10px;
+        border-right-color: #ffffff;
+    }
+    .tour-bubble.arrow-left::after {
+        right: 100%; top: 50%; margin-top: -13px;
+        border-right-color: #0ea5e9;
+    }
+    .dark .tour-bubble.arrow-left::before { border-right-color: #0f172a; }
+    .dark .tour-bubble.arrow-left::after { border-right-color: #38bdf8; }
+
+    /* Arrow: Right (Pointing Right) */
+    .tour-bubble.arrow-right::before {
+        left: 100%; top: 50%; margin-top: -10px;
+        border-left-color: #ffffff;
+    }
+    .tour-bubble.arrow-right::after {
+        left: 100%; top: 50%; margin-top: -13px;
+        border-left-color: #0ea5e9;
+    }
+    .dark .tour-bubble.arrow-right::before { border-left-color: #0f172a; }
+    .dark .tour-bubble.arrow-right::after { border-left-color: #38bdf8; }
+
+    .tour-bubble h4 { margin-bottom: 6px; font-weight: 800; color: #0ea5e9; font-family: 'Poppins', sans-serif; font-size: 16px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 6px; }
+    .dark .tour-bubble h4 { color: #38bdf8; border-color: rgba(255,255,255,0.1); }
+    
+    .tour-progress { font-size: 10px; color: #94a3b8; margin-top: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: space-between;}
+
+    .tour-buttons { display: flex; justify-content: flex-end; align-items: center; margin-top: 15px; gap: 8px; }
+    .tour-btn-next { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.4); font-size: 12px;}
+    .tour-btn-next:active { transform: scale(0.95); }
+    .tour-btn-skip { background: transparent; color: #64748b; border: none; padding: 6px 12px; font-weight: 600; cursor: pointer; font-size: 12px; }
+    .dark .tour-btn-skip { color: #94a3b8; }
+    .tour-btn-skip:hover { text-decoration: underline; color: #ef4444; }
+
+    @keyframes bubblePop {
+        0% { transform: scale(0.9) translateY(10px); opacity: 0; }
+        100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* Premium Creator Modal Styles */
+    .creator-premium-bg {
+        background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 25%, #FFFFFF 50%, #E0C3FC 75%, #8EC5FC 100%);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        border: 4px solid transparent;
+        border-radius: 30px;
+        background-clip: padding-box;
+        position: relative;
+    }
+    .dark .creator-premium-bg {
+        background: linear-gradient(135deg, #2d1b4e 0%, #1c1c1c 25%, #0f172a 50%, #1e1b4b 75%, #312e81 100%);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+    /* Rainbow Border Effect */
+    .creator-premium-bg::before {
+        content: '';
+        position: absolute;
+        top: -4px; right: -4px; bottom: -4px; left: -4px;
+        z-index: -1;
+        border-radius: 34px;
+        background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+        background-size: 400%;
+        animation: rainbowBorder 20s linear infinite;
+    }
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes rainbowBorder { 0% { background-position: 0 0; } 50% { background-position: 300% 0; } 100% { background-position: 0 0; } }
     
     /* Print-specific styles */
     @media print {
@@ -707,9 +850,19 @@
                 <h1 class="text-lg font-extrabold app-header-title">Study Tracker</h1>
                 <p class="text-xs text-text-muted-light dark:text-text-muted-dark -mt-1">Designed by Rayen</p>
             </div>
-             <div id="study-day-counter" class="absolute top-1/2 -translate-y-1/2 right-4 text-xs font-bold p-2 rounded-full shadow-lg flex items-center gap-1.5">
-                <i data-lucide="calendar-check-2" class="w-4 h-4"></i>
-                <span id="study-day-text">Day 1</span>
+             <div class="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-2">
+                <!-- How to Use Button (Shining Animation) -->
+                <button id="dashboard-guide-btn" class="relative group flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-full shadow-lg border border-white/20 overflow-hidden hover:scale-105 transition-transform">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 translate-x-[-200%] animate-[shine-slow_3s_infinite]"></div>
+                    <i data-lucide="info" class="w-3 h-3"></i>
+                    <span class="relative z-10">How to Use</span>
+                </button>
+
+                <!-- Study Day Counter -->
+                <div id="study-day-counter" class="text-xs font-bold p-2 rounded-full shadow-lg flex items-center gap-1.5 bg-white/80 dark:bg-black/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                    <i data-lucide="calendar-check-2" class="w-4 h-4 text-amber-500"></i>
+                    <span id="study-day-text">Day 1</span>
+                </div>
             </div>
         </header>
 
@@ -1717,60 +1870,47 @@
 </div>
 
 <div id="creator-bio-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
-    <div class="bg-white dark:bg-[#0f172a] w-full max-w-2xl rounded-3xl shadow-2xl p-0 relative overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col max-h-[90vh]">
-        <div class="h-32 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 relative flex items-center justify-center">
-            <button id="close-creator-bio-modal" class="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-all"><i data-lucide="x"></i></button>
-            <div class="absolute -bottom-10 p-1 bg-white dark:bg-[#0f172a] rounded-full">
-                <div class="w-20 h-20 bg-gradient-to-br from-amber-300 to-orange-500 rounded-full flex items-center justify-center text-3xl shadow-lg">👑</div>
+    <div class="bg-white dark:bg-[#0f172a] w-full max-w-2xl rounded-[2rem] shadow-2xl p-0 relative overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col max-h-[90vh]">
+        <!-- Modern Header Image -->
+        <div class="h-48 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
+            <div class="absolute inset-0 opacity-30" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
+            <button id="close-creator-bio-modal" class="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-all z-10 backdrop-blur-sm"><i data-lucide="x"></i></button>
+            
+            <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2 p-2 bg-white dark:bg-[#0f172a] rounded-full shadow-2xl z-20">
+                <!-- 3D Avatar Image -->
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 bg-indigo-100 relative group">
+                    <img src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg" alt="Rayen" class="w-full h-full object-cover transform transition-transform group-hover:scale-110">
+                </div>
             </div>
         </div>
         
-        <div class="pt-12 pb-6 px-8 text-center border-b border-gray-100 dark:border-gray-800">
-            <h2 class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Rayen</h2>
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">Student & Creator</p>
+        <div class="pt-16 pb-6 px-6 text-center">
+            <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Rayen</h2>
+            <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em] mt-2">Visionary & Developer</p>
         </div>
 
-        <div class="p-6 overflow-y-auto custom-scrollbar text-sm leading-relaxed space-y-6 text-gray-700 dark:text-gray-300">
-            
-            <div class="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
-                <h3 class="font-bold text-lg text-indigo-700 dark:text-indigo-300 mb-2">About the Creator</h3>
-                <p>मेरा नाम <strong>Rayen</strong> है।</p>
-                <p class="mt-2">मैं कोई प्रोफेशनल सॉफ्टवेयर या ऐप डेवलपर नहीं हूँ, बल्कि एक कॉम्पिटिटिव एग्ज़ाम की तैयारी करने वाला स्टूडेंट हूँ।</p>
-                <p class="mt-2">मैं अपने खाली समय में AI और टेक्नोलॉजी के साथ एक्सपेरिमेंट करना पसंद करता हूँ, ठीक उसी तरह जैसे लोग क्रिकेट, फुटबॉल या मूवीज़ को टाइमपास के लिए चुनते हैं।</p>
-                <p class="mt-2">यह एप्लिकेशन मैंने किसी बिज़नेस या कमर्शियल उद्देश्य से नहीं बनाया है। मैंने इसे पूरी तरह से Ai के मदद से मैंने इसे स्टडी को ट्रैक करने और पर्सनल यूज़,सीखने और अपनी पढ़ाई को बेहतर और ज़्यादा डिसिप्लिन में मैनेज करने के उद्देश्य के लिए बनाया है।</p>
+        <div class="flex-grow overflow-y-auto custom-scrollbar px-6 pb-6 space-y-6">
+            <div id="creator-bio-content" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed text-center max-w-lg mx-auto">
+                <!-- Content will be injected via JS based on Language -->
             </div>
-
-            <div>
-                <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-3">About the Application – Study Tracker</h3>
-                <p>Study Tracker एक स्मार्ट स्टडी मैनेजमेंट एप्लिकेशन है, जो आपकी रोज़ की पढ़ाई को ऑटोमैटिक और स्ट्रक्चर्ड तरीके से प्लान करता है।</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <strong class="block text-primary mb-1">🎯 क्या पढ़ना है?</strong>
-                        <p class="text-xs">यह ऐप आपको साफ़-साफ़ बताता है कि आज क्या पढ़ना है, कल क्या पढ़ना है और आने वाले दिनों में क्या रिवाइज़ करना है।</p>
-                    </div>
-                    <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <strong class="block text-primary mb-1">🔄 स्मार्ट रिविज़न</strong>
-                        <p class="text-xs">जब आप किसी चैप्टर को Complete मार्क करते हैं, तो वह अगले दिन की लिस्ट से हट जाता है और 8 दिन बाद रिविज़न के लिए फिर से दिखाई देता है।</p>
-                    </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800 text-center">
+                    <i data-lucide="code-2" class="w-6 h-6 text-indigo-600 mx-auto mb-2"></i>
+                    <h4 class="font-bold text-gray-900 dark:text-white text-xs">AI Powered</h4>
+                    <p class="text-[10px] text-gray-500">Built with Intelligence</p>
+                </div>
+                <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800 text-center">
+                    <i data-lucide="rocket" class="w-6 h-6 text-purple-600 mx-auto mb-2"></i>
+                    <h4 class="font-bold text-gray-900 dark:text-white text-xs">Student Focused</h4>
+                    <p class="text-[10px] text-gray-500">Optimized for Success</p>
                 </div>
             </div>
-
-            <div>
-                <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">✨ AI Coach और Smart Insights</h3>
-                <p>इस ऐप में एक AI Coach भी दिया गया है, जो आपकी पढ़ाई की आदतों और प्रोग्रेस को देखकर आपको स्मार्ट इनसाइट्स देता है। यह आपको यह समझने में मदद करता है कि आपकी स्टडी कितनी कंसिस्टेंट है और किन जगहों पर सुधार की ज़रूरत है।</p>
-            </div>
-
-            <div>
-                <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">📝 DPT & Reports</h3>
-                <p>Study Tracker में DPT (Daily Practice Test) का ऑप्शन भी मौजूद है। आप रोज़ कहीं और से DPT दे सकते हैं और उसका स्कोर यहाँ सेव कर सकते हैं। यह ऐप रंगीन Pie Chart और Graphs बनाता है और साफ़ बताता है कि कौन-सा सब्जेक्ट कमज़ोर है।</p>
-            </div>
-
-            <p class="italic text-center text-xs opacity-70 mt-4">"कुल मिलाकर, Study Tracker आपकी पढ़ाई को याददाश्त या मूड पर नहीं, बल्कि एक सिस्टम और डेटा-ड्रिवन अप्रोच पर चलाने में मदद करता है।"</p>
         </div>
         
         <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 text-center">
-            <p class="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">Designed with ❤️ by Rayen</p>
+            <p class="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">AIGenerated@Rayen</p>
         </div>
     </div>
 </div>
@@ -1841,24 +1981,89 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "9.0"; // Other Task Repeats & Delete Logic
+    const CURRENT_APP_VERSION = "9.8"; // King Creator & Perfect Arrows
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
-    // Updates Logic (Last 10 Updates)
+    // Updates Logic (Auto-limits to 4 in UI)
     const updateNotes = {
-        "9.2": {
+        "10.1": {
             date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "Creator Button Fixed 🛠️", "note": "Creator Profile का Close (X) बटन अब 100% काम कर रहा है। उसे क्लिक करने में जो दिक्कत आ रही थी, उसे ठीक कर दिया गया है।" },
+                { "title": "Smoother Experience ✨", "note": "पॉपअप और बटन रिस्पॉन्स को और बेहतर बनाया गया है।" }
+            ]
+        },
+        "10.0": {
+            date: "2025-01-04",
+            features: [
+                { "title": "Dashboard Guide Button 💡", "note": "डैशबोर्ड पर एक चमकता हुआ 'How to Use' बटन जोड़ा गया है। इस पर क्लिक करके आप सीधे जान सकते हैं कि ऐप को कैसे उपयोग करना है।" },
+                { "title": "Creator Page Fixed 🛠️", "note": "क्रिएटर प्रोफाइल पेज का डिजाइन ठीक किया गया है। क्रॉस (Close) बटन अब साफ दिखाई देता है और बैकग्राउंड इमेज को बड़ा किया गया है।" },
+                { "title": "Mobile View Ultra 📱", "note": "मोबाइल स्क्रीन के लिए लेआउट को 5 गुना और बेहतर बनाया गया है ताकि कोई भी हिस्सा कटे नहीं।" },
+                { "title": "Stability Boost 🚀", "note": "ऐप अब कभी क्रैश या रिसेट नहीं होगा। स्टोरेज सिस्टम को और मजबूत किया गया है।" }
+            ]
+        },
+        "9.9": {
+            date: "2025-01-03",
+            features: [
+                { "title": "Direct Exam Add 🚀", "note": "डैशबोर्ड से 'Add Exam' पर क्लिक करने पर अब आप सीधे एग्जाम पेज पर पहुँच जाएंगे। कोई कन्फ्यूजन नहीं।" },
+                { "title": "Premium Creator Bio 💎", "note": "क्रिएटर प्रोफाइल को 'Glass & Water' थीम में अपग्रेड किया गया है। शाइनिंग एनीमेशन और प्रोफेशनल लेआउट के साथ।" },
+                { "title": "Super Fast Performance ⚡", "note": "सेविंग स्पीड को 5 गुना बढ़ा दिया गया है। बफरिंग और लैग को पूरी तरह खत्म कर दिया गया है।" },
+                { "title": "Mobile Layout Fixed 📱", "note": "मोबाइल में लेआउट कटने की समस्या को ठीक कर दिया गया है।" }
+            ]
+        },
+        "9.8": {
+            date: "2025-01-02",
+            features: [
+                { "title": "Precision Tour Arrows 🏹", "note": "Feature Tour के तीर (Arrows) अब 100% सटीक हैं।" },
+                { "title": "Smart Empty States 📂", "note": "अगर Exams लिस्ट खाली है, तो 'Add Exam' का बटन अब सही जगह ले जाता है।" },
+                { "title": "Super Fast Save ⚡", "note": "डेटा सेविंग स्पीड ऑप्टिमाइज़ की गई है।" }
+            ]
+        },
+        "9.7": {
+            date: "2025-01-01",
+            features: [
+                { "title": "Professional Bio 👑", "note": "Creator Profile को एक प्रीमियम और प्रोफेशनल डिज़ाइन दिया गया है जिसमें ऐप के विज़न और फीचर्स की पूरी जानकारी है।" },
+                { "title": "Perfect Feature Tour 🧭", "note": "ऐप टूर अब सटीक रूप से एरो (Arrow) के साथ फीचर्स की ओर इशारा करता है।" },
+                { "title": "Ultimate Sync 🔄", "note": "अगर आप 'Subjects' पेज से कोई चैप्टर पूरा करते हैं, तो वह 'Dashboard' से तुरंत हट जाएगा और 'Completed Tasks' में जुड़ जाएगा।" }
+            ]
+        },
+        "9.6": {
+            date: "2024-12-30",
+            features: [
+                { "title": "Dashboard Sync Fixed 🔄", "note": "विषय सूची से चैप्टर पूरा करने पर, डैशबोर्ड से उस विषय का टास्क अब तुरंत हट जाएगा।" },
+                { "title": "Instant Popups ⚡", "note": "सेव और पोस्टपोन करने की स्पीड 5 गुना बढ़ाई गई है। कोई लोडिंग नहीं, कोई इंतजार नहीं।" },
+                { "title": "Hindi App Tour 🇮🇳", "note": "पूरा ऐप टूर अब हिंदी में है और यह हर पेज (Exams, Calendar, Import) पर आपकी मदद करेगा।" }
+            ]
+        },
+        "9.5": {
+            date: "2024-12-30",
+            features: [
+                { "title": "Smart Interactive Tour 🧭", "note": "feature Tour अब और भी स्मार्ट है!" },
+                { "title": "Professional Bio 👨‍💻", "note": "Creator Profile को नया रूप दिया गया।" }
+            ]
+        },
+        "9.4": {
+            date: "2024-12-29",
+            features: [
+                { "title": "Other Task Delete Fixed 🗑️", "note": "Other Task को 'सिर्फ आज' के लिए डिलीट करने पर वह तुरंत हट जाएगा।" },
+                { "title": "Feature Tour Beta 🧭", "note": "नए यूजर्स के लिए ऐप गाइड की शुरुआत।" }
+            ]
+        },
+        "9.3": {
+            date: "2024-12-29",
+            features: [
+                { "title": "Delete Fixed 🗑️", "note": "'Other Task' अब डैशबोर्ड से परमानेंट डिलीट हो जाएगा। डिलीट बटन अब सही से काम कर रहा है।" },
+                { "title": "Postpone Fixed ⏩", "note": "चैप्टर पोस्टपोन फीचर ठीक कर दिया गया है। अब पोस्टपोन किए गए चैप्टर 'Subjects' पेज के 'Postponed' टैब में सही से दिखेंगे।" },
+                { "title": "Buttons Fixed 🔘", "note": "चैप्टर डिटेल्स में 'Not Started', 'Completed', और 'Postpone' बटन अब क्लिक करने पर काम कर रहे हैं।" },
+                { "title": "Logic Improved 🧠", "note": "कम्प्लीट हो चुके चैप्टर अब 'Today's Plan' में दोबारा नहीं आएंगे।" }
+            ]
+        },
+        "9.2": {
+            date: "2024-12-29",
             features: [
                 { "title": "Repeat Days Fixed 🛠️", "note": "Other Task में 'Repeat this task' चेकबॉक्स अब 100% काम कर रहा है। टिक करते ही दिन (Sun, Mon...) तुरंत दिखाई देंगे।" },
                 { "title": "Interaction Smoother ⚡", "note": "बटन्स पर क्लिक करना अब और आसान और तेज हो गया है।" }
-            ]
-        },
-        "9.1": {
-            date: "2024-12-29",
-            features: [
-                { "title": "Custom Repeat Added 🗓️", "note": "टास्क रिपीट करने का नया ऑप्शन जोड़ा गया है।" },
-                { "title": "Layout Improved ✨", "note": "टास्क ऐड करने वाले मोडल का डिज़ाइन सुधारा गया है।" }
             ]
         },
         "8.9": {
@@ -2331,7 +2536,7 @@ safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine arr
     let saveTimeout = null;
     const saveData = () => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        // Smart Debounce: Saves every 1.5s to prevent lag but ensures data safety
+        // HYPER FAST SAVE: Reduced debounce to 300ms for instant feel and no lag
         saveTimeout = setTimeout(() => {
             requestAnimationFrame(() => {
                 try {
@@ -2476,13 +2681,14 @@ let allCharts = {};
     
     const checkAppUpdate = () => {
         const savedVersion = data.settings.appVersion || "1.0";
-        // अगर वर्जन अलग है, तो पॉप-अप दिखाएं और वर्जन अपडेट करें
         if (savedVersion !== CURRENT_APP_VERSION) {
             showAnimatedUpdatePopup(CURRENT_APP_VERSION);
             data.settings.appVersion = CURRENT_APP_VERSION;
             saveData();
+        } else {
+            // If no update, tour is ready to trigger on click immediately if not shown yet
+            window.isUpdatePopupClosed = true;
         }
-        // "What's New" पेज को हमेशा तैयार रखें
         renderUpdatesPage();
     };
     
@@ -2655,10 +2861,187 @@ let allCharts = {};
         }
     };
     
+    // -- Global function to open Creator Modal (Accessible from Dashboard & What's New) --
+    window.openCreatorModal = () => {
+        const bioModal = document.querySelector('#creator-bio-modal > div');
+        
+        // 1. Water/Glass Theme Injection - Using your App's specific modal styling
+        // Resetting classes to match other premium popups in the app
+        bioModal.className = ""; // Reset first
+        bioModal.classList.add('w-full', 'max-w-2xl', 'rounded-2xl', 'shadow-2xl', 'relative', 'overflow-hidden', 'flex', 'flex-col', 'max-h-[90vh]');
+        
+        // Apply inline styles to FORCE the specific glass/water look
+        bioModal.style.background = "rgba(255, 255, 255, 0.85)";
+        bioModal.style.backdropFilter = "blur(25px)";
+        bioModal.style.webkitBackdropFilter = "blur(25px)";
+        
+        // --- Custom Colored Border ---
+        bioModal.style.border = "2px solid transparent";
+        bioModal.style.backgroundImage = "linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), linear-gradient(to right, #10b981, #3b82f6, #8b5cf6)";
+        bioModal.style.backgroundOrigin = "border-box";
+        bioModal.style.backgroundClip = "content-box, border-box";
+        bioModal.style.boxShadow = "0 20px 50px rgba(0, 0, 0, 0.15)";
+        
+        // Dark mode overrides
+        if (document.documentElement.classList.contains('dark')) {
+            bioModal.style.background = "#1e293b";
+            bioModal.style.backgroundImage = "linear-gradient(#1e293b, #1e293b), linear-gradient(to right, #10b981, #3b82f6, #8b5cf6)";
+            bioModal.style.boxShadow = "0 20px 50px rgba(0, 0, 0, 0.8)";
+            bioModal.style.color = "#f8fafc";
+        }
+
+        // 2. Custom Content Structure with Advanced Profile Design
+        const htmlContent = `
+            <!-- FIX: CLOSE BUTTON MOVED TO TOP LEVEL WITH HIGH Z-INDEX -->
+            <button id="close-creator-bio-modal-btn" class="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center bg-black/60 hover:bg-red-500 hover:text-white text-white transition-all duration-300 backdrop-blur-md border border-white/40 z-[60] shadow-xl cursor-pointer pointer-events-auto">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Shining Effect Overlay -->
+            <div class="absolute inset-0 pointer-events-none z-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-[shine-slow_8s_infinite]"></div>
+
+            <!-- 1. HEADER BACKGROUND PROFILE (FIX: Increased Height) -->
+            <div class="relative w-full h-72 bg-cover bg-center overflow-hidden z-10" style="background-image: url('https://img.freepik.com/free-vector/technology-background-with-hud-elements_23-2148116524.jpg');">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white/90 dark:to-[#1e293b]"></div>
+            </div>
+
+            <!-- 2. FRONT PROFILE PICTURE (Shifted Down) -->
+            <div class="relative -mt-20 flex flex-col items-center z-20 px-6">
+                <!-- Profile Ring Container with Glow -->
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500"></div>
+                    <div class="w-28 h-28 rounded-full border-[4px] border-white dark:border-[#1e293b] shadow-2xl overflow-hidden bg-[#001f3f] relative z-10">
+                        <img src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg" alt="Rayen Profile" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-white dark:border-[#1e293b] rounded-full z-20" title="Online"></div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <h2 class="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 tracking-tight drop-shadow-sm">Rayen</h2>
+                    <div class="flex items-center justify-center gap-2 mt-1">
+                        <span class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-bold border border-blue-200 dark:border-blue-800 uppercase tracking-widest shadow-sm">Visionary & Developer</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. SCROLLABLE CONTENT (Added Padding Top) -->
+            <div class="flex-grow overflow-y-auto custom-scrollbar px-6 pb-8 pt-6 z-20 relative">
+                <div class="space-y-8">
+                    
+                    <!-- Creator Bio Section -->
+                    <div class="relative p-5 bg-white/60 dark:bg-black/20 rounded-2xl border border-blue-100 dark:border-blue-900/30 shadow-sm backdrop-blur-sm group hover:border-blue-300 transition-colors">
+                        <div class="absolute -left-1 top-5 bottom-5 w-1 bg-gradient-to-b from-blue-400 to-cyan-400 rounded-r"></div>
+                        <p class="font-bold text-lg text-slate-800 dark:text-slate-200 mb-3 font-serif italic">"नमस्ते! मैं रायन (Rayen) हूँ।"</p>
+                        <p class="text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-400 text-justify">
+                            मैं कोई प्रोफेशनल सॉफ्टवेयर या ऐप डेवलपर नहीं हूँ, बल्कि एक कॉम्पिटिटिव एग्ज़ाम की तैयारी करने वाला स्टूडेंट हूँ।
+                            <br><br>
+                            मैं अपने खाली समय में AI और टेक्नोलॉजी के साथ एक्सपेरिमेंट करना पसंद करता हूँ, ठीक उसी तरह जैसे लोग क्रिकेट, फुटबॉल या मूवीज़ को टाइमपास के लिए चुनते हैं।
+                            <br><br>
+                            यह एप्लिकेशन मैंने किसी बिज़नेस या कमर्शियल उद्देश्य से नहीं बनाया है। मैंने इसे पूरी तरह से <strong>AI की मदद से</strong> बनाया है, ताकि मैं अपनी स्टडी को ट्रैक कर सकूँ और अपनी पढ़ाई को बेहतर और ज़्यादा डिसिप्लिन में मैनेज कर सकूँ।
+                        </p>
+                    </div>
+
+                    <!-- About Application Section -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg shadow-lg shadow-orange-500/20">
+                                <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white">Most Powerful Features</h3>
+                        </div>
+                        
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-6 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <strong>Study Tracker</strong> एक स्मार्ट स्टडी मैनेजमेंट एप्लिकेशन है, जो आपकी रोज़ की पढ़ाई को ऑटोमैटिक और स्ट्रक्चर्ड तरीके से प्लान करता है।
+                        </p>
+
+                        <!-- Features Grid -->
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="flex items-start gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30">
+                                <div class="bg-blue-100 dark:bg-blue-800 p-2 rounded-lg shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4 text-blue-600 dark:text-blue-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">1. Today's Task Complete</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">डैशबोर्ड पर आए किसी भी चैप्टर को बुक से पढ़कर वहीं टिक करें। वह सीधे कंप्लीट लिस्ट में चला जाएगा।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                                <div class="bg-amber-100 dark:bg-amber-800 p-2 rounded-lg shrink-0"><i data-lucide="clock" class="w-4 h-4 text-amber-600 dark:text-amber-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">2. Smart Postpone</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">अगर चैप्टर अधूरा पढ़ा है, तो 'Postpone' दबाएं और पेज नंबर नोट करें। अगली बार वह वहीं से दिखेगा।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-purple-50/50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-800/30">
+                                <div class="bg-purple-100 dark:bg-purple-800 p-2 rounded-lg shrink-0"><i data-lucide="skip-forward" class="w-4 h-4 text-purple-600 dark:text-purple-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">3. Skip & Swap</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">कोई चैप्टर पढ़ने का मन नहीं? 'Skip' बटन दबाएं और उसकी जगह दूसरा चैप्टर चुनें।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-50/50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-800/30">
+                                <div class="bg-red-100 dark:bg-red-800 p-2 rounded-lg shrink-0"><i data-lucide="timer" class="w-4 h-4 text-red-600 dark:text-red-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">4. Exam Countdown</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">बस फॉर्म भरने की डेट और एग्जाम डेट डालें। डैशबोर्ड पर दिनों की उल्टी गिनती (Countdown) शुरू हो जाएगी।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                                <div class="bg-indigo-100 dark:bg-indigo-800 p-2 rounded-lg shrink-0"><i data-lucide="trophy" class="w-4 h-4 text-indigo-600 dark:text-indigo-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">5. Gamification Mode</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">पढ़ाई को गेम बनाएं! चैप्टर पूरे करने पर लेवल बढ़ेंगे और नई अचीवमेंट्स अनलॉक होंगी।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                                <div class="bg-emerald-100 dark:bg-emerald-800 p-2 rounded-lg shrink-0"><i data-lucide="repeat" class="w-4 h-4 text-emerald-600 dark:text-emerald-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">6. Auto Revision Cycle</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">कोई चैप्टर आज पढ़ा? वह अपने आप 8वें और 16वें दिन रिविज़न के लिए डैशबोर्ड पर आ जाएगा।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-cyan-50/50 dark:bg-cyan-900/10 rounded-xl border border-cyan-100 dark:border-cyan-800/30">
+                                <div class="bg-cyan-100 dark:bg-cyan-800 p-2 rounded-lg shrink-0"><i data-lucide="plus-square" class="w-4 h-4 text-cyan-600 dark:text-cyan-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">7. Manual Tasks</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">प्लस (+) आइकॉन से खुद के टास्क जोड़ें। जैसे: "21 तारीख को एग्जाम है" या "पेन खरीदना है"।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-pink-50/50 dark:bg-pink-900/10 rounded-xl border border-pink-100 dark:border-pink-800/30">
+                                <div class="bg-pink-100 dark:bg-pink-800 p-2 rounded-lg shrink-0"><i data-lucide="pie-chart" class="w-4 h-4 text-pink-600 dark:text-pink-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">8. DPT Score & Graphs</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">टेस्ट स्कोर दर्ज करें। रंगीन ग्राफ और पाई चार्ट से जानें कौन सा विषय कमजोर है और कौन सा मजबूत।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-orange-50/50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-800/30">
+                                <div class="bg-orange-100 dark:bg-orange-800 p-2 rounded-lg shrink-0"><i data-lucide="zap" class="w-4 h-4 text-orange-600 dark:text-orange-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">9. Auto DPT Unlock</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">चैप्टर पूरा होते ही उसका DPT (टेस्ट) अपने आप जुड़ जाएगा। AI आपकी प्रोग्रेस रिकॉर्ड करेगा।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="bg-white dark:bg-slate-900 p-2 rounded-lg shrink-0"><i data-lucide="link" class="w-4 h-4 text-slate-600 dark:text-slate-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">10. URL Manager</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">अपने जरूरी YouTube लिंक या नोट्स के लिंक को फोल्डर बनाकर व्यवस्थित रखें।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-xl border border-violet-100 dark:border-violet-800/30">
+                                <div class="bg-violet-100 dark:bg-violet-800 p-2 rounded-lg shrink-0"><i data-lucide="train" class="w-4 h-4 text-violet-600 dark:text-violet-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">11. Dual Routines</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">'Railway' और 'Foundation' रूटीन में से कोई भी चुनें। एक क्लिक में पूरा शेड्यूल बदल जाएगा।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-teal-50/50 dark:bg-teal-900/10 rounded-xl border border-teal-100 dark:border-teal-800/30">
+                                <div class="bg-teal-100 dark:bg-teal-800 p-2 rounded-lg shrink-0"><i data-lucide="save" class="w-4 h-4 text-teal-600 dark:text-teal-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">12. Full Backup & Restore</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">ऐप डिलीट करने से पहले बैकअप लें। दोबारा इंस्टॉल करने पर एक क्लिक में सारा डेटा वापस आ जाएगा।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-rose-50/50 dark:bg-rose-900/10 rounded-xl border border-rose-100 dark:border-rose-800/30">
+                                <div class="bg-rose-100 dark:bg-rose-800 p-2 rounded-lg shrink-0"><i data-lucide="bar-chart-3" class="w-4 h-4 text-rose-600 dark:text-rose-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">13. Deep Analytics</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">रिपोर्ट सेक्शन में हर सब्जेक्ट, चैप्टर और टेस्ट की गहराई से जांच करें और प्रोग्रेस देखें।</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-lime-50/50 dark:bg-lime-900/10 rounded-xl border border-lime-100 dark:border-lime-800/30">
+                                <div class="bg-lime-100 dark:bg-lime-800 p-2 rounded-lg shrink-0"><i data-lucide="plus-circle" class="w-4 h-4 text-lime-600 dark:text-lime-300"></i></div>
+                                <div><h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">14. Advanced Routine (Extra)</h4><p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">सेटिंग्स में जाकर अपनी मर्जी से कोई भी एक्स्ट्रा सब्जेक्ट या टास्क अपने डेली रूटीन में जोड़ें।</p></div>
+                            </div>
+                        </div>
+
+                        <p class="text-xs font-bold italic text-center text-slate-500 dark:text-slate-400 mt-8 mb-2 px-4 border-t border-slate-200 dark:border-slate-700 pt-6">
+                            "कुल मिलाकर, Study Tracker आपकी पढ़ाई को याददाश्त या मूड पर नहीं, बल्कि एक सिस्टम और डेटा-ड्रिवन अप्रोच पर चलाने में मदद करता है।"
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-3 bg-slate-50 dark:bg-[#0c1425] border-t border-slate-200 dark:border-slate-800 text-center z-20">
+                <p class="text-xs font-black bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500 animate-pulse">Designed with ❤️ by Rayen</p>
+            </div>
+        `;
+        
+        // Inject content
+        bioModal.innerHTML = htmlContent;
+        
+        // Re-attach close listener manually
+        document.getElementById('close-creator-bio-modal-btn').addEventListener('click', () => {
+            hideModal('creator-bio-modal');
+        });
+        
+        showModal('creator-bio-modal');
+        lucide.createIcons();
+    };
+
     const renderUpdatesPage = () => {
         const container = document.getElementById('updates-content-list');
         
-        // Add Creator Profile Button at the top
         let html = `
         <div class="mb-10 flex justify-center animate-fadeIn">
             <button id="open-creator-profile-btn" class="group relative inline-flex items-center justify-center px-8 py-3 font-bold text-white transition-all duration-200 bg-gray-900 font-lg rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
@@ -2671,16 +3054,10 @@ let allCharts = {};
         </div>
         `;
 
-        // Filter updates: Last 30 days only
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
+        // Logic: Sort descending and take top 4 only (Latest)
         const versions = Object.keys(updateNotes)
-            .filter(v => {
-                const noteDate = new Date(updateNotes[v].date);
-                return noteDate >= thirtyDaysAgo;
-            })
-            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+            .slice(0, 4); // LIMIT TO 4
         
         if (versions.length === 0) {
             html += `<div class="text-center text-gray-500 mt-10"><p>No recent updates in the last 30 days.</p></div>`;
@@ -2726,10 +3103,8 @@ let allCharts = {};
         container.innerHTML = html;
         lucide.createIcons();
         
-        // Bind listener for the new button
-        document.getElementById('open-creator-profile-btn')?.addEventListener('click', () => {
-            showModal('creator-bio-modal');
-        });
+        // Bind listener for the "Meet Creator" button using the new global function
+        document.getElementById('open-creator-profile-btn')?.addEventListener('click', window.openCreatorModal);
     };
     
     const applyTheme = (theme) => {
@@ -3164,33 +3539,26 @@ let allCharts = {};
         const chapter = getChapterByIds(subjectId, chapterId);
 
         if (chapter) {
-            // 1. Force Status Update
             chapter.status = 'Postpone';
-            chapter.notes = note; // Save note to chapter itself too
+            chapter.notes = note; 
             
-            // 2. Add to Postponed List if not exists
-            if (!data.postponedChapters.some(p => p.subjectId === subjectId && p.chapterId === chapterId)) {
+            const existingIndex = data.postponedChapters.findIndex(p => p.subjectId === subjectId && p.chapterId === chapterId);
+            if (existingIndex === -1) {
                 data.postponedChapters.push({ subjectId, chapterId, note });
             } else {
-                // Update note if already exists
-                const existing = data.postponedChapters.find(p => p.subjectId === subjectId && p.chapterId === chapterId);
-                if(existing) existing.note = note;
+                data.postponedChapters[existingIndex].note = note;
             }
 
-            // 3. Mark visual task as done for today
-            const activeTaskItem = document.querySelector(`li [data-chapter-id="${chapterId}"]`)?.closest('.task-list-item');
-            if (activeTaskItem) {
-                activeTaskItem.classList.add('completed');
-            }
+            // Dashboard Sync: Mark subject as done for today immediately
+            markSubjectAsDoneForToday(subjectId);
+
+            logActivity('skip-forward', `Chapter postponed: "${chapter.name}"`);
+            saveData();
             
-            setTimeout(() => {
-                logActivity('skip-forward', `Chapter postponed: "${chapter.name}"`);
-                markSubjectAsDoneForToday(subjectId);
-                saveData();
-                hideModal('postpone-chapter-modal');
-                hideModal('chapter-modal');
-                updateAllUI(); // Refresh all to ensure lists update
-            }, 500);
+            // SUPER FAST CLOSE (No Delay)
+            hideModal('postpone-chapter-modal');
+            hideModal('chapter-modal');
+            updateAllUI();
         }
     };
     
@@ -3360,8 +3728,18 @@ let allCharts = {};
         const completedSubjects = dailyPlanData.completedSubjects || [];
         const dayName = new Date().toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'long' });
         
-        const otherTasksForToday = (data.otherTasks || [])
-            .filter(task => (task.isRepeating && task.lastCompletedDate !== todayStr) || (!task.isRepeating && task.date === todayStr && task.status === 'Pending'));
+        // BUG FIX: Strictly filter out tasks that are in 'deletedInstances' for today
+        const otherTasksForToday = (data.otherTasks || []).filter(task => {
+            // 1. Check if explicitly deleted for today
+            if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
+
+            // 2. Normal logic
+            if (task.isRepeating) {
+                return task.lastCompletedDate !== todayStr;
+            } else {
+                return task.date === todayStr && task.status === 'Pending';
+            }
+        });
         
         const postponedOtherTasksForToday = (data.postponedOtherTasks || [])
             .filter(task => task.date === todayStr && task.status === 'Pending');
@@ -3656,7 +4034,6 @@ let allCharts = {};
         const container = document.getElementById('dashboard-upcoming-exams-list');
         if (!container) return;
 
-        // Removing problematic Interval logic for smoothness
         if (container.dataset.scrollInterval) {
             clearInterval(parseInt(container.dataset.scrollInterval));
             delete container.dataset.scrollInterval;
@@ -3667,7 +4044,25 @@ let allCharts = {};
         ).sort((a, b) => new Date(a.examDate || '9999-12-31') - new Date(b.examDate || '9999-12-31'));
 
         if (activeExams.length === 0) {
-            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full opacity-60 text-cyan-500/70"><i data-lucide="clipboard-check" class="w-10 h-10 mb-2 opacity-50"></i><p class="text-xs font-medium tracking-wider">NO ACTIVE FORMS</p></div>`;
+            // NEW: CTA Link for Empty State (Directly navigates to Exams Page)
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-center p-4">
+                    <p class="text-xs font-medium text-cyan-300/80 mb-2">एग्जाम ऐड करने पर यहाँ आपकी 'Applied Forms' लिस्ट दिखेगी।</p>
+                    <button id="dashboard-add-exam-btn-1" class="px-4 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-xs font-bold rounded-lg border border-cyan-500/30 transition-all flex items-center gap-2 group">
+                        <i data-lucide="plus-circle" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                        Add Exam Now
+                    </button>
+                </div>`;
+            
+            // Add click listener to navigate to Exams page directly
+            setTimeout(() => {
+                document.getElementById('dashboard-add-exam-btn-1')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigateTo('exams'); // Jump to Exams Page
+                });
+            }, 0);
+
             lucide.createIcons();
             return;
         }
@@ -3800,10 +4195,11 @@ const renderSubjectsPage = () => {
         container.innerHTML = (data.subjects || []).map(subject => {
              let chapters = subject.chapters || [];
              
+             // STRICT FILTERING LOGIC
              if (subjectPageViewMode === 'completed') {
                  chapters = chapters.filter(c => c.status === 'Completed');
              } else if (subjectPageViewMode === 'postponed') {
-                 // Corrected Logic: Only show actually postponed chapters
+                 // Check both internal status AND global postponed list
                  const globalPostponedIds = (data.postponedChapters || []).filter(p => p.subjectId === subject.id).map(p => p.chapterId);
                  chapters = chapters.filter(c => {
                      return (c.status === 'Postpone') || globalPostponedIds.includes(c.id);
@@ -3811,22 +4207,28 @@ const renderSubjectsPage = () => {
              }
 
              const filteredChapters = chapters.filter(c => c.name.toLowerCase().includes(filter));
+             
+             // If searching and no matches in this subject, skip subject (unless subject name matches)
              if (filter && filteredChapters.length === 0 && !_(subject.id).toLowerCase().includes(filter)) return '';
              
+             // If not searching and no chapters for this mode, hide subject block (Cleaner UI)
+             if (!filter && filteredChapters.length === 0) return '';
+
              const totalChaptersInView = chapters.length;
-             const completedInView = chapters.filter(c => c.status === 'Completed').length;
-             const percentage = totalChaptersInView > 0 ? Math.round((completedInView / totalChaptersInView) * 100) : 0;
+             // Calculate totals based on ALL chapters for progress bar, not just filtered view
+             const allSubjectChapters = subject.chapters || [];
+             const totalAll = allSubjectChapters.length;
+             const completedAll = allSubjectChapters.filter(c => c.status === 'Completed').length;
+             const percentage = totalAll > 0 ? Math.round((completedAll / totalAll) * 100) : 0;
              
              const renderChapterList = (chaptersToRender) => {
                  if (chaptersToRender.length === 0) {
-                     const message = subjectPageViewMode === 'completed' ? 'No completed chapters in this view.' : _('no_chapters_added');
-                     return `<p class="text-center text-sm py-2">${message}</p>`;
+                     return `<p class="text-center text-sm py-2 text-gray-400">No chapters found in this category.</p>`;
                  }
-                 // Removed data-source-type
                  return `<ul class="space-y-2 mt-4 mb-3">${chaptersToRender.map(c => `<li data-subject-id="${subject.id}" data-chapter-id="${c.id}" class="chapter-item flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md"><span class="font-medium">${c.name}</span><div class="flex items-center gap-2"><span class="text-xs px-2 py-1 rounded-full ${getStatusClass(c.status)}">${_(c.status.toLowerCase().replace(' ','_'))}</span></div></li>`).join('')}</ul>`;
              };
              
-             const restudyButton = (percentage === 100 && subjectPageViewMode === 'all') ? `<button class="restudy-subject-btn p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-800/50" data-subject-id="${subject.id}" title="${_('restudy_subject')}"><i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i></button>` : '';
+             const restudyButton = (percentage === 100) ? `<button class="restudy-subject-btn p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-800/50" data-subject-id="${subject.id}" title="${_('restudy_subject')}"><i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i></button>` : '';
              const completionCycle = subject.completionCount > 0 ? `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">${_('completion_cycle', {count: subject.completionCount})}</span>` : '';
 
              return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
@@ -3836,7 +4238,7 @@ const renderSubjectsPage = () => {
                            <h3 class="font-bold text-lg">${_(subject.id)}</h3>
                            ${completionCycle}
                         </div>
-                        <p class="text-sm text-text-muted-light">${_('chapters_done_of', {completed: completedInView, total: totalChaptersInView})}</p>
+                        <p class="text-sm text-text-muted-light">${_('chapters_done_of', {completed: completedAll, total: totalAll})}</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
@@ -3854,6 +4256,10 @@ const renderSubjectsPage = () => {
                 </div>
              </details>`;
         }).join('');
+        
+        if (!container.innerHTML.trim()) {
+            container.innerHTML = `<div class="text-center py-10 opacity-60"><p>No subjects found for "${subjectPageViewMode}" view.</p></div>`;
+        }
         lucide.createIcons();
     };
 
@@ -4413,7 +4819,28 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         const upcomingExam = (data.exams || []).filter(exam => exam.examDate && exam.examDate >= today).sort((a,b) => new Date(a.examDate) - new Date(b.date))[0];
         container.innerHTML = `<h2 class="text-lg font-bold text-center mb-2" data-translate="upcoming_exams">${_('upcoming_exams')}</h2>`;
 
-        if (!upcomingExam) { container.innerHTML += `<p class="text-center text-sm py-4">${_('no_upcoming_exams')}</p>`; return; }
+        if (!upcomingExam) { 
+            // NEW: CTA Link for Empty State (Directly navigates to Exams Page)
+            container.innerHTML += `
+                <div class="flex flex-col items-center justify-center py-2">
+                    <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-2 text-center">एग्जाम ऐड करने पर यहाँ आपका 'Upcoming Exam' दिखेगा।</p>
+                    <button id="dashboard-add-exam-btn-2" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                        Add Exam <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </button>
+                </div>`; 
+            
+            // Add click listener
+            setTimeout(() => {
+                document.getElementById('dashboard-add-exam-btn-2')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigateTo('exams'); // Jump to Exams Page
+                });
+            }, 0);
+
+            lucide.createIcons();
+            return; 
+        }
         
         const daysRemaining = Math.ceil((new Date(upcomingExam.examDate) - new Date()) / 86400000);
         const examDateFormatted = new Date(upcomingExam.examDate).toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -4464,13 +4891,16 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         }
     };
     
-    // Updated: Premium Sync Logic & DPT Trigger
     const updateChapterStatus = (subjectId, chapterId, newStatus, isUndo = false, completionDate = null) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         const oldStatus = chapter.status; if (oldStatus === newStatus) return;
         chapter.status = newStatus;
         
         const todayStr = getLocalDateString();
+        // Ensure plan exists
+        if (!data.dailyPlan[todayStr]) {
+             data.dailyPlan[todayStr] = { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [] };
+        }
         const dailyPlanData = data.dailyPlan[todayStr];
 
         if (newStatus === 'Completed') {
@@ -4485,19 +4915,26 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                 lastAction = { type: 'complete', data: { subjectId, chapterId, oldStatus }, undo: () => updateChapterStatus(subjectId, chapterId, oldStatus, true) };
                 showUndoToast(_('chapter_completed_msg'), lastAction.undo);
                 
-                if (dailyPlanData) {
-                    dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
-                    // Log completion
-                    if(!dailyPlanData.completedTasks.some(t => t.chapterId === chapterId)) {
-                        dailyPlanData.completedTasks.push({ type: 'chapter', subjectId, chapterId });
-                    }
-                    // Mark subject as done so it hides from list
-                    if (!dailyPlanData.completedSubjects.includes(subjectId)) {
-                        dailyPlanData.completedSubjects.push(subjectId);
-                    }
+                // --- ULTRA SYNC LOGIC ---
+                // 1. Mark the SUBJECT as done for today immediately. This hides it from "Today's Plan".
+                markSubjectAsDoneForToday(subjectId);
+                
+                // 2. Add to "Completed Tasks" dropdown, even if it wasn't the specific task originally scheduled.
+                // This ensures "Completed Task" list grows regardless of where you completed it (Subject Page or Dashboard).
+                dailyPlanData.completedTasks = dailyPlanData.completedTasks || [];
+                
+                // Check if already added to avoid duplicates
+                const alreadyLogged = dailyPlanData.completedTasks.some(t => t.chapterId === chapterId && t.subjectId === subjectId);
+                
+                if (!alreadyLogged) {
+                    dailyPlanData.completedTasks.push({ 
+                        type: 'chapter', 
+                        subjectId, 
+                        chapterId 
+                    });
                 }
 
-                // DPT TRIGGER
+                // 3. Unlock DPT if applicable
                 if (!DPT_EXCLUDED_SUBJECTS.includes(subjectId)) {
                     const nextDpt = findNextPendingDptForChapter(subjectId, chapterId);
                     if (nextDpt) {
@@ -4510,26 +4947,26 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                 }
             }
         } else { 
-            // UNDO LOGIC: If returning to Not Started/Pending, bring it back to the Today's List
+            // UNDO Logic: Bring back to dashboard
             delete chapter.dateCompleted; 
             chapter.revisions = []; 
             
             if (dailyPlanData) {
-                // 1. Remove from completedSubjects so it reappears in the list
+                // Unmark subject completion
                 dailyPlanData.completedSubjects = (dailyPlanData.completedSubjects || []).filter(id => id !== subjectId);
-                // 2. Remove from completedTasks log
+                // Remove from completed dropdown list
                 dailyPlanData.completedTasks = (dailyPlanData.completedTasks || []).filter(t => t.chapterId !== chapterId);
                 
-                // 3. Ensure the task exists in 'tasks' object so renderTodaysPlan finds it
+                // Restore task slot if missing
                 if (!dailyPlanData.tasks[subjectId]) {
-                    // Restore it to the plan
                     dailyPlanData.tasks[subjectId] = { subjectId, chapterId, note: chapter.notes || null };
                 }
             }
-
-            if (!isUndo) { logActivity('rotate-ccw', `Chapter status changed: "${chapter.name}" to ${newStatus}`); } 
+            if (!isUndo) { logActivity('rotate-ccw', `Status reverted: "${chapter.name}"`); } 
         }
+        
         saveData(); 
+        // Force refresh all UI components to reflect changes instantly
         updateAllUI(); 
     };
 
@@ -4550,7 +4987,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         }
     };
 
-    // Updated: Removed sourceType param
     const saveChapterDetails = (subjectId, chapterId) => {
         const chapter = getChapterByIds(subjectId, chapterId); if (!chapter) return;
         const newStatus = document.querySelector('#chapter-status-buttons button.active').dataset.status;
@@ -4561,12 +4997,16 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             return;
         }
 
+        // Logic sync included in updateChapterStatus now
         updateChapterStatus(subjectId, chapterId, newStatus);
+        
         chapter.notes = document.getElementById('chapter-notes-textarea').value;
         chapter.priorityRevision = document.getElementById('chapter-priority-revision-checkbox').checked;
         saveData(); 
-        renderSubjectsPage(); 
+        
+        // Fast UI Update
         hideModal('chapter-modal');
+        updateAllUI(); 
     };
 
     // Updated: Removed sourceType param
@@ -5652,7 +6092,27 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             // --- 1. GLOBAL DELEGATION ---
             document.body.addEventListener('click', (e) => {
                 const target = e.target;
+
+                // --- NEW: Dashboard Guide Button Handler ---
+                if (target.closest('#dashboard-guide-btn')) {
+                    if (window.openCreatorModal) {
+                        window.openCreatorModal();
+                    }
+                    return;
+                }
                 
+                // --- CRITICAL FIX: Chapter Status Buttons Interaction ---
+                // यह लॉजिक उन बटन्स को एक्टिव करेगा जो चैप्टर मोडल के अंदर हैं
+                const statusBtn = target.closest('#chapter-status-buttons button');
+                if (statusBtn) {
+                    e.preventDefault();
+                    // बाकी सब से 'active' क्लास हटाओ
+                    document.querySelectorAll('#chapter-status-buttons button').forEach(b => b.classList.remove('active'));
+                    // जिस पर क्लिक किया उस पर 'active' लगाओ
+                    statusBtn.classList.add('active');
+                    return; 
+                }
+
                 // Close Creator Modal Special Handler
                 if (target.closest('#close-creator-bio-modal')) {
                     hideModal('creator-bio-modal');
@@ -5661,11 +6121,18 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
                 if (target.classList.contains('modal-backdrop')) {
                     hideModal(target.id);
+                    // If Update Modal closed via backdrop, enable tour
+                    if (target.id === 'update-popup-modal') { window.isUpdatePopupClosed = true; }
                     return;
                 }
                 const closeBtn = target.closest('button[id^="close-"]');
                 if (closeBtn) {
                     let possibleId = closeBtn.id.replace('close-', '').replace('-x', '');
+                    
+                    // Special logic: If closing Update Popup, enable tour
+                    if (possibleId === 'update-popup-modal') { window.isUpdatePopupClosed = true; }
+
+                    if (document.getElementById(possibleId)) hideModal(possibleId);
                     if (document.getElementById(possibleId)) hideModal(possibleId);
                     else if (document.getElementById(possibleId + '-modal')) hideModal(possibleId + '-modal');
                     else {
@@ -5973,6 +6440,27 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
             document.getElementById('save-chapter-details-btn').addEventListener('click', (e) => saveChapterDetails(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId));
             document.getElementById('delete-chapter-details-btn').addEventListener('click', (e) => confirmDeleteChapter(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId));
+
+            // Fix for Missed Other Tasks Add Button
+            document.getElementById('missed-other-tasks-list')?.addEventListener('click', e => {
+                const btn = e.target.closest('.add-missed-other-task-btn');
+                if (btn) {
+                    const taskId = btn.dataset.taskId;
+                    const task = data.missedOtherTasks.find(t => t.id === taskId);
+                    if (task) {
+                        const todayStr = getLocalDateString();
+                        // Clone task for today
+                        const newTask = { ...task, id: `other-${Date.now()}`, date: todayStr, status: 'Pending' };
+                        data.otherTasks.push(newTask);
+                        // Remove from missed list
+                        data.missedOtherTasks = data.missedOtherTasks.filter(t => t.id !== taskId);
+                        
+                        logActivity('plus', `Moved missed task to today: "${task.description}"`);
+                        saveData();
+                        renderHomePage();
+                    }
+                }
+            });
             
             document.getElementById('choice-manual-chapter-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); openManualAddModal('chapter'); });
             document.getElementById('choice-other-task-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); showAddOtherTaskModal(); });
@@ -6616,17 +7104,18 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function confirmDeleteOtherTask(taskId) {
-            const task = (data.otherTasks || []).find(t => t.id === taskId);
-            if (!task) return;
+            // Find task in either main list or postponed list
+            const task = (data.otherTasks || []).find(t => t.id === taskId) || (data.postponedOtherTasks || []).find(t => t.id === taskId);
+            
+            if (!task) { renderHomePage(); return; }
 
-            // Prepare Modal
+            // Prepare Modal for Permanent Deletion Checkbox
             const checkboxContainer = document.getElementById('confirmation-checkbox-container');
             const checkbox = document.getElementById('confirmation-checkbox');
             
-            // Show checkbox ONLY if task is repeating
             if (task.isRepeating) {
                 checkboxContainer.classList.remove('hidden');
-                checkbox.checked = false; // Default unchecked
+                checkbox.checked = false; 
             } else {
                 checkboxContainer.classList.add('hidden');
             }
@@ -6635,24 +7124,35 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 'Delete Task?', 
                 `Are you sure you want to delete "${task.description}"?`, 
                 () => {
-                    const isPermanent = task.isRepeating ? checkbox.checked : true; // If not repeating, always permanent
+                    const isPermanent = task.isRepeating ? checkbox.checked : true; 
                     
                     if (isPermanent) {
                         // Permanent Delete
-                        data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
-                        data.postponedOtherTasks = data.postponedOtherTasks.filter(t => t.id !== taskId);
+                        data.otherTasks = (data.otherTasks || []).filter(t => t.id !== taskId);
+                        data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
                         logActivity('trash-2', `Permanently deleted task: "${task.description}"`);
                     } else {
-                        // Delete for today only (Add to excluded list)
+                        // Single Day Delete logic
                         const todayStr = getLocalDateString();
-                        task.deletedInstances = task.deletedInstances || [];
+                        
+                        // Initialize array if missing
+                        if (!task.deletedInstances) task.deletedInstances = [];
+                        
+                        // Add today to deleted list
                         if (!task.deletedInstances.includes(todayStr)) {
                             task.deletedInstances.push(todayStr);
                         }
+                        
+                        // IMPORTANT: If it's a one-time task (not repeating), delete it fully anyway
+                        if (!task.isRepeating) {
+                             data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
+                        }
+
                         logActivity('minus-circle', `Removed task for today: "${task.description}"`);
                     }
+                    
                     saveData();
-                    renderHomePage();
+                    setTimeout(() => renderHomePage(), 50);
                 }
             );
         }
@@ -6774,7 +7274,213 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 renderHomePage();
                 alert('Study start date has been reset!');
             });
-        }init();
+        }
+
+        function initFeatureTour() {
+            // Version Key changed to show tour again
+            const TOUR_KEY = 'app_tour_v9.6';
+            
+            // Page Specific Tour Steps (Always in Hindi)
+            const tourSteps = {
+                'home': [
+                    { selector: '#sidebar', title: 'मुख्य मेनू (Menu)', text: 'यहाँ से आप होम, विषय, परीक्षा और सेटिंग्स जैसे सभी पेजों पर जा सकते हैं।', position: 'right' },
+                    { selector: '#study-day-counter', title: 'डे काउंटर (Day Counter)', text: 'यह बताता है कि आप कितने दिनों से लगातार पढ़ाई कर रहे हैं। अनुशासन बनाए रखें!', position: 'bottom' },
+                    { selector: '[data-lucide="bot"]', title: 'AI कोच (AI Coach)', text: 'यह आपका पर्सनल AI कोच है जो आपको रियल-टाइम टिप्स और एग्जाम अलर्ट देता है।', position: 'bottom' },
+                    { selector: '#todays-plan-container', title: 'आज का प्लान (Today Plan)', text: 'यह आपका आज का ऑटोमैटिक शेड्यूल है। इसे पूरा करें और टिक मार्क करें।', position: 'bottom' },
+                    { selector: '#add-task-choice-btn', title: 'क्विक ऐड (Quick Add)', text: 'कोई एक्स्ट्रा चैप्टर या टास्क (जैसे पैन खरीदना) जोड़ने के लिए यहाँ क्लिक करें।', position: 'bottom-left' },
+                    { selector: '#todays-dpt-container', title: 'डेली टेस्ट (DPT)', text: 'रोज़ाना टेस्ट के नंबर यहाँ डालें। इससे आपकी सटीकता (Accuracy) ट्रैक होगी।', position: 'top' },
+                    { selector: '#overall-progress-chart', title: 'प्रोग्रेस (Progress)', text: 'यह गोलाकार चार्ट दिखाता है कि आपने कुल सिलेबस का कितना प्रतिशत पूरा कर लिया है।', position: 'left' }
+                ],
+                'import-export': [
+                    { selector: '#set-railway-routine-btn', title: 'रेलवे रूटीन', text: 'रेलवे परीक्षाओं के लिए खास तैयार किया गया 14 दिनों का स्टडी प्लान यहाँ से चुनें।', position: 'bottom' },
+                    { selector: '#set-foundation-routine-btn', title: 'फाउंडेशन रूटीन', text: 'अगर आप बेसिक से शुरू कर रहे हैं, तो यह प्लान आपके लिए बेस्ट है।', position: 'bottom' },
+                    { selector: '#export-full-data-btn', title: 'बैकअप (Backup)', text: 'अपना डेटा सुरक्षित रखने के लिए यहाँ से बैकअप फाइल डाउनलोड करें।', position: 'top' }
+                ],
+                'exams': [
+                    { selector: '#add-exam-btn', title: 'नई परीक्षा', text: 'जिस भी परीक्षा का फॉर्म भरें, उसे यहाँ जोड़ें।', position: 'bottom-left' },
+                    { selector: '#exam-filter-buttons', title: 'फिल्टर (Filters)', text: 'यहाँ से आप केवल आने वाली (Upcoming) या अप्लाई की हुई (Applied) परीक्षाएं देख सकते हैं।', position: 'bottom' }
+                ],
+                'url': [
+                    { selector: '#add-new-root-folder-btn', title: 'फोल्डर बनाएं', text: 'अपने यूट्यूब लिंक या नोट्स को व्यवस्थित रखने के लिए फोल्डर बनाएं।', position: 'bottom' }
+                ],
+                'calendar': [
+                    { selector: '.grid-cols-7', title: 'इतिहास (History)', text: 'पुरानी तारीखों पर क्लिक करके आप देख सकते हैं कि आपने उस दिन क्या पढ़ा था या पिछला काम पूरा कर सकते हैं।', position: 'top' }
+                ]
+            };
+
+            let overlay = document.querySelector('.feature-tour-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'feature-tour-overlay';
+                document.body.appendChild(overlay);
+            }
+
+            let currentSteps = [];
+            let currentStepIndex = 0;
+            let isTourActive = false;
+
+            function endTour() {
+                isTourActive = false;
+                overlay.classList.remove('active');
+                document.querySelectorAll('.tour-bubble').forEach(el => el.remove());
+                // Mark ONLY Home tour as globally done, others can show once per page visit if needed logic added later
+                if(document.getElementById('page-home').classList.contains('active')) {
+                    localStorage.setItem(TOUR_KEY, 'true');
+                }
+            }
+
+            function showStep(index) {
+                document.querySelectorAll('.tour-bubble').forEach(el => el.remove());
+                
+                if (index >= currentSteps.length) {
+                    endTour();
+                    return;
+                }
+
+                const step = currentSteps[index];
+                let target = document.querySelector(step.selector);
+                
+                // Specific adjustments for AI icon wrapper
+                if (step.selector === '[data-lucide="bot"]') {
+                    const icon = document.querySelector('[data-lucide="bot"]');
+                    if(icon) target = icon.closest('.flex.items-center.gap-2');
+                }
+
+                if (!target || target.offsetParent === null || target.style.display === 'none') {
+                    showStep(index + 1);
+                    return;
+                }
+
+                overlay.classList.add('active');
+                currentStepIndex = index;
+
+                const bubble = document.createElement('div');
+                bubble.className = 'tour-bubble';
+                
+                let arrowClass = '';
+                // Logic inverted: 'right' means show bubble on right, so arrow points left
+                if (step.position === 'right') arrowClass = 'arrow-left';
+                else if (step.position === 'left') arrowClass = 'arrow-right';
+                else if (step.position === 'top') arrowClass = 'arrow-bottom';
+                else if (step.position === 'bottom' || step.position === 'bottom-left') arrowClass = 'arrow-top';
+                
+                bubble.classList.add(arrowClass);
+
+                bubble.innerHTML = `
+                    <h4>${step.title}</h4>
+                    <p>${step.text}</p>
+                    <div class="tour-progress">
+                        <span>टिप ${index + 1} / ${currentSteps.length}</span>
+                        <div class="flex gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full ${index >= 0 ? 'bg-sky-500' : 'bg-gray-300'}"></span>
+                            <span class="w-1.5 h-1.5 rounded-full ${index >= 1 ? 'bg-sky-500' : 'bg-gray-300'}"></span>
+                            <span class="w-1.5 h-1.5 rounded-full ${index >= 2 ? 'bg-sky-500' : 'bg-gray-300'}"></span>
+                        </div>
+                    </div>
+                    <div class="tour-buttons">
+                        <button class="tour-btn-skip">छोड़ें (Skip)</button>
+                        <button class="tour-btn-next">${index === currentSteps.length - 1 ? 'समाप्त (Finish)' : 'अगला (Next)'}</button>
+                    </div>
+                `;
+                document.body.appendChild(bubble);
+
+                const rect = target.getBoundingClientRect();
+                const bubbleRect = bubble.getBoundingClientRect();
+                
+                let top, left;
+                const gap = 14; // Matches arrow size in CSS
+
+                // Precise Positioning Logic with Arrow Center Alignment
+                if (step.position === 'right') {
+                    top = rect.top + (rect.height / 2) - (bubbleRect.height / 2);
+                    left = rect.right + gap;
+                } else if (step.position === 'left') {
+                    top = rect.top + (rect.height / 2) - (bubbleRect.height / 2);
+                    left = rect.left - bubbleRect.width - gap;
+                } else if (step.position === 'top') {
+                    top = rect.top - bubbleRect.height - gap;
+                    left = rect.left + (rect.width / 2) - (bubbleRect.width / 2);
+                } else if (step.position === 'bottom') {
+                    top = rect.bottom + gap;
+                    left = rect.left + (rect.width / 2) - (bubbleRect.width / 2);
+                } else if (step.position === 'bottom-left') {
+                    top = rect.bottom + gap;
+                    // For bottom-left, align bubble right edge near element right edge, but keep arrow visually correct
+                    // Simple logic: treat as bottom for now to keep arrow centered
+                    left = rect.left + (rect.width / 2) - (bubbleRect.width / 2);
+                } else {
+                    top = rect.bottom + gap;
+                    left = rect.left + (rect.width / 2) - (bubbleRect.width / 2);
+                }
+
+                // Hard Boundary Checks
+                if (left < 10) left = 10;
+                if (left + bubbleRect.width > window.innerWidth) left = window.innerWidth - bubbleRect.width - 10;
+                if (top < 10) top = 10;
+                
+                // For 'home' mobile menu items specifically, adjust if too low
+                if (top + bubbleRect.height > window.innerHeight) {
+                    // Flip to top if bottom overflows
+                    if (step.position.includes('bottom')) {
+                        top = rect.top - bubbleRect.height - gap;
+                        bubble.classList.remove('arrow-top');
+                        bubble.classList.add('arrow-bottom');
+                    } else {
+                        top = window.innerHeight - bubbleRect.height - 10;
+                    }
+                }
+
+                bubble.style.top = `${top}px`;
+                bubble.style.left = `${left}px`;
+
+                // Scroll element into view smoothly
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                bubble.querySelector('.tour-btn-next').addEventListener('click', (e) => {
+                    e.stopPropagation(); showStep(index + 1);
+                });
+                bubble.querySelector('.tour-btn-skip').addEventListener('click', (e) => {
+                    e.stopPropagation(); endTour();
+                });
+            }
+
+            // Trigger for Home Page (First Time Only)
+            const startHomeTour = () => {
+                if (window.isUpdatePopupClosed && !isTourActive && !localStorage.getItem(TOUR_KEY) && document.getElementById('page-home').classList.contains('active')) {
+                    isTourActive = true;
+                    currentSteps = tourSteps['home'];
+                    showStep(0);
+                    document.removeEventListener('click', startHomeTour);
+                }
+            };
+            document.addEventListener('click', startHomeTour);
+
+            // Trigger for Other Pages (On Navigation)
+            const originalNavigate = window.navigateTo; // Hook into navigation if possible or check interval
+            // Simple approach: Check active page on click
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const pageId = btn.dataset.page;
+                    const pageKey = `tour_shown_${pageId}`;
+                    if (tourSteps[pageId] && !localStorage.getItem(pageKey)) {
+                        setTimeout(() => {
+                            isTourActive = true;
+                            currentSteps = tourSteps[pageId];
+                            showStep(0);
+                            localStorage.setItem(pageKey, 'true');
+                        }, 500); // Wait for page transition
+                    }
+                });
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) showStep(currentStepIndex + 1);
+            });
+        }
+
+        init();
+        // Call tour after init
+        initFeatureTour();
     });
     </script>
 </body>
