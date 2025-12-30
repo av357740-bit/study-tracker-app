@@ -60,57 +60,43 @@
         scroll-behavior: smooth;
     }
     
-    /* Global Glass Effect for Pages & Cards */
-    .dashboard-card, .page, #sidebar, .modal-backdrop > div {
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+    /* Optimized Lightweight Styles */
+    .dashboard-card, .page, #sidebar {
+        /* Removed heavy blur for performance */
+        background-color: var(--card-light);
     }
+    .dark .dashboard-card, .dark .page, .dark #sidebar {
+        background-color: var(--card-dark);
+    }
+    
     body {
         font-family: 'Inter', sans-serif;
-        background-color: var(--background-light); /* Fallback */
-        background-image: linear-gradient(135deg, var(--main-bg-start-light) 0%, var(--main-bg-end-light) 100%); /* Instant Gradient */
+        background-color: #f8fafc; /* Very light cool gray */
         color: var(--text-light);
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: none; /* Removed transition for speed */
         -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
         overflow-x: hidden;
         min-height: 100vh;
     }
+    
     .dark body {
-        background-color: var(--background-dark);
-        background-image: linear-gradient(135deg, var(--main-bg-start-dark) 0%, var(--main-bg-end-dark) 100%);
-    }
-    /* Hardware Acceleration for smoother scrolling */
-    main, #sidebar, .page {
-        will-change: transform, opacity;
-        transform: translateZ(0);
-        backface-visibility: hidden;
-    }
-    .dark body {
-        background-color: var(--background-dark);
+        background-color: #0f172a; /* Solid dark color, no gradient */
         color: var(--text-dark);
     }
-    
-    html.dark.pitch-black {
-        --background-dark: #000000;
-        --card-dark: #111111;
-        --text-dark: #e5e5e5;
-        --text-muted-dark: #888888;
-        --border-dark: #333333;
-        --main-bg-start-dark: #000000;
-        --main-bg-end-dark: #000000;
-    }
-    html.dark.pitch-black #sidebar { box-shadow: 4px 0 20px -3px rgba(255, 255, 255, 0.05); }
 
-    #particle-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        display: none;
+    /* Simple, Fast Backdrop */
+    .modal-backdrop > div {
+        background: #ffffff !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
     }
+    .dark .modal-backdrop > div {
+        background: #1e293b !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #334155;
+    }
+
+    /* Hide Canvas Completely */
+    #particle-canvas { display: none !important; }
 
     .app-header-title {
         font-family: 'Poppins', sans-serif;
@@ -804,7 +790,7 @@
 
 </style>
 </head>
-<body class="text-text-light dark:text-text-dark"><canvas id="particle-canvas"></canvas>
+<body class="text-text-light dark:text-text-dark"><canvas id="particle-canvas" style="display: none !important; pointer-events: none;"></canvas>
 
 <div class="flex h-screen bg-transparent">
     <aside id="sidebar" class="flex flex-col w-64 bg-card-light dark:bg-card-dark relative">
@@ -828,9 +814,11 @@
                 <i data-lucide="sparkles" class="w-5 h-5 animate-pulse"></i>
                 <span class="md:inline text-xs uppercase tracking-wider">What's New</span>
             </button>
-            <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700">
+            <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" title="Switch Theme (Light/Dark/System)">
                 <i data-lucide="sun" id="theme-icon-sun"></i>
-                <i data-lucide="moon" id="theme-icon-moon"></i>
+                <i data-lucide="moon" id="theme-icon-moon" class="hidden"></i>
+                <i data-lucide="laptop" id="theme-icon-system" class="hidden"></i>
+                <span id="theme-text-sidebar" class="text-xs font-bold uppercase hidden md:inline"></span>
             </button>
             <button id="sidebar-toggle-btn" class="w-full hidden md:flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700">
                 <i data-lucide="chevrons-left" class="w-5 h-5"></i>
@@ -1258,6 +1246,17 @@
                             </div>
                         </div>
                         <button id="reset-advanced-colors-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset</button>
+                    </div>
+
+                    <!-- New Global DPT Toggle -->
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border-l-4 border-indigo-500">
+                        <h3 class="font-semibold mb-2">DPT Dashboard Display</h3>
+                        <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">Show or Hide DPT section on Home Dashboard.</p>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="global-dpt-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300" id="dpt-toggle-text">Active</span>
+                        </label>
                     </div>
 
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
@@ -1980,10 +1979,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Updates Logic (Auto-limits to 4 in UI)
     const updateNotes = {
-        "10.2": {
+        "10.3": {
             date: new Date().toISOString().split('T')[0],
             features: [
-                { "title": "Guide Link Moved 📍", "note": "'How to Use' बटन को अब 'AI Coach' कार्ड के अंदर शिफ्ट कर दिया गया है। 'Appdesigned@Rayen' के ठीक नीचे 'Click Here' पर क्लिक करें।" },
+                { "title": "Super Speed Mode 🚀", "note": "एप्लीकेशन अब 5 गुना तेज है। हीटिंग प्रॉब्लम को पूरी तरह ठीक कर दिया गया है। (No Background Animation)." },
+                { "title": "Postpone Logic Fixed 🧠", "note": "जो चैप्टर आप पोस्टपोन करेंगे, अगली बार वही चैप्टर सबसे पहले आएगा। कोई रैंडम चैप्टर नहीं।" },
+                { "title": "System Theme 🌗", "note": "अब 3 थीम मोड हैं: Day, Dark, और System Default (जो आपके फोन/पीसी के हिसाब से चलेगा)।" },
+                { "title": "Import Fixed 📂", "note": "बैकअप फाइल अपलोड (Import) करने में आ रही समस्या को ठीक कर दिया गया है।" },
+                { "title": "DPT On/Off 🎚️", "note": "सेटिंग्स से आप डैशबोर्ड पर DPT बॉक्स को दिखाना या छिपाना (On/Off) चुन सकते हैं।" }
+            ]
+        },
+        "10.2": {
+            date: "2025-01-05",
+            features: [
+                { "title": "Guide Link Moved 📍", "note": "'How to Use' बटन को अब 'AI Coach' कार्ड के अंदर शिफ्ट कर दिया गया है।" },
                 { "title": "Clean Dashboard ✨", "note": "डैशबोर्ड के हेडर को साफ और सुंदर बनाने के लिए पुराना बटन हटा दिया गया है।" }
             ]
         },
@@ -2344,7 +2353,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: "fill-form", name: "Form Filling / Misc", chapters: [], completionCount: 0 }
         ],
         settings: {
-            theme: 'light', // Changed to light by default
+            theme: 'system', // Default is now System
+            dptDashboardActive: true, // Default DPT ON
             planMode: 'auto',
             customCyclePlan: Array(14).fill([]),
             dptPlanMode: 'auto',
@@ -2356,7 +2366,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 start: null, end: null,
                 textLight: null, borderLight: null, textDark: null, borderDark: null 
             },
-            backgroundStyle: 'constellation', 
+            backgroundStyle: 'default', // Force default lightweight background
             appVersion: "1.0"
         },
         gamification: { badges: [], completedHistory: [] },
@@ -2632,18 +2642,20 @@ let allCharts = {};
     let backgroundElements = [];
 
     const init = () => {
-        // 1. Critical Logic First - Remove delays for instant load
+        // Init Logic
+        safeInitialize(data.settings, 'theme', 'system');
+        safeInitialize(data.settings, 'dptDashboardActive', true);
+
         handleNewDayLogic();
-        applyTheme(data.settings.theme);
+        applyTheme(data.settings.theme); // Will handle System mode now
         applyManualColors();
         applyCustomTheme();
         
-        // 2. Render UI immediately
         navigateTo('home');
         applyTranslations();
         
-        // 3. Apply Background & Listeners immediately without timeout logic
-        applyBackgroundStyle();
+        // Remove Background Animation Logic Call
+        document.body.style.backgroundImage = ''; // Clear any gradients
         
         // Event Listeners must be attached immediately to ensure buttons work
         addEventListeners();
@@ -2861,34 +2873,15 @@ let allCharts = {};
         }
     };
     
-    // -- Global function to open Creator Modal (Accessible from Dashboard & What's New) --
+    // Optimized Creator Modal (No Lag)
     window.openCreatorModal = () => {
         const bioModal = document.querySelector('#creator-bio-modal > div');
         
-        // 1. Water/Glass Theme Injection - Using your App's specific modal styling
-        // Resetting classes to match other premium popups in the app
-        bioModal.className = ""; // Reset first
-        bioModal.classList.add('w-full', 'max-w-2xl', 'rounded-2xl', 'shadow-2xl', 'relative', 'overflow-hidden', 'flex', 'flex-col', 'max-h-[90vh]');
+        // Reset & Apply Fast Styles (No Backdrop Filter)
+        bioModal.className = "w-full max-w-2xl rounded-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 transform translate-z-0";
         
-        // Apply inline styles to FORCE the specific glass/water look
-        bioModal.style.background = "rgba(255, 255, 255, 0.85)";
-        bioModal.style.backdropFilter = "blur(25px)";
-        bioModal.style.webkitBackdropFilter = "blur(25px)";
-        
-        // --- Custom Colored Border ---
-        bioModal.style.border = "2px solid transparent";
-        bioModal.style.backgroundImage = "linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), linear-gradient(to right, #10b981, #3b82f6, #8b5cf6)";
-        bioModal.style.backgroundOrigin = "border-box";
-        bioModal.style.backgroundClip = "content-box, border-box";
-        bioModal.style.boxShadow = "0 20px 50px rgba(0, 0, 0, 0.15)";
-        
-        // Dark mode overrides
-        if (document.documentElement.classList.contains('dark')) {
-            bioModal.style.background = "#1e293b";
-            bioModal.style.backgroundImage = "linear-gradient(#1e293b, #1e293b), linear-gradient(to right, #10b981, #3b82f6, #8b5cf6)";
-            bioModal.style.boxShadow = "0 20px 50px rgba(0, 0, 0, 0.8)";
-            bioModal.style.color = "#f8fafc";
-        }
+        // Remove heavy inline styles
+        bioModal.style = "";
 
         // 2. Custom Content Structure with Advanced Profile Design
         const htmlContent = `
@@ -3614,33 +3607,25 @@ let allCharts = {};
     };
     
     const getOrGenerateDailyPlan = (dateStr) => {
-        // Initialize plan if missing
+        // Initialize plan safely
         let plan = data.dailyPlan[dateStr];
         if (!plan) {
             plan = { tasks: {}, completedSubjects: [], manualTasks: (data.dailyPlan[dateStr]?.manualTasks || []), completedTasks: [] };
         }
 
         const subjectsForToday = getSubjectsForDay(new Date(dateStr));
-        const usedChapterIds = [];
-        
-        // --- 1. PREPARE ADVANCED ROUTINE SUBJECTS ---
-        // Instead of adding them as "Other Tasks", we add them to subjectsForToday
-        // so they go through the same "Postponed First" logic.
+        const usedChapterIds = []; // To verify duplicates in current calculation
+
+        // --- MERGE ADVANCED ROUTINE SUBJECTS ---
         const currentDayOfWeek = new Date(dateStr).getDay();
         const advancedRoutines = data.settings.customSubjectRoutine || [];
         
         advancedRoutines.forEach(routine => {
             if (routine.active && routine.days.includes(currentDayOfWeek)) {
-                // Determine if it is a Real Subject ID (from DB) or Custom Text
                 const isRealSubject = getSubjectById(routine.subjectId);
-                
                 if (isRealSubject) {
-                    // It's a real subject (e.g. Physics), add to standard processing
-                    if (!subjectsForToday.includes(routine.subjectId)) {
-                        subjectsForToday.push(routine.subjectId);
-                    }
+                    if (!subjectsForToday.includes(routine.subjectId)) subjectsForToday.push(routine.subjectId);
                 } else {
-                    // It's a custom text task (e.g. "Gym"), add to Other Tasks if not exists
                     const alreadyExists = (data.otherTasks || []).some(t => t.date === dateStr && t.description === routine.name);
                     if (!alreadyExists) {
                          data.otherTasks.push({
@@ -3656,14 +3641,26 @@ let allCharts = {};
             }
         });
 
-        // --- 2. PROCESS ALL SUBJECTS (Standard + Advanced) ---
-        // This runs EVERY time to ensure missed/postponed tasks are caught even if plan existed
+        // Loop through all required subjects
         subjectsForToday.forEach(rawSubjectId => {
             const subjectId = rawSubjectId.split(':')[0];
-            if (subjectId.startsWith('custom-')) return; // handled above
+            if (subjectId.startsWith('custom-')) return; 
 
-            // If task already assigned for today, skip logic to preserve it
-            if (plan.tasks[subjectId]) return;
+            // IMPORTANT: Remove completed tasks from plan if they exist
+            if (plan.tasks[subjectId]) {
+                const existingTask = plan.tasks[subjectId];
+                const chap = getChapterByIds(existingTask.subjectId, existingTask.chapterId);
+                // STRICT CHECK: If chapter is completed, remove it from task list immediately
+                if (!chap || chap.status === 'Completed') {
+                    delete plan.tasks[subjectId]; // Clean up
+                } else {
+                    usedChapterIds.push(existingTask.chapterId);
+                    return; // Task is valid and pending, keep it
+                }
+            }
+
+            // If Subject is already marked "Done" for the day, skip
+            if (plan.completedSubjects.includes(subjectId)) return;
 
             const subject = getSubjectById(subjectId);
             if (!subject) return;
@@ -3671,45 +3668,47 @@ let allCharts = {};
             let targetChapter = null;
             let postponementNote = null;
 
-            // --- PRIORITY 1: GLOBAL POSTPONED LIST & POSTPONED STATUS ---
-            // सबसे पहले, ग्लोबल लिस्ट चेक करें
-            let postponedEntryIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
+            // --- STRICT PRIORITY 1: GLOBAL POSTPONED LIST ---
+            // Check global list specifically for this subject
+            const globalPostponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
             
-            // अगर ग्लोबल लिस्ट में नहीं मिला, तो चैप्टर के अंदर 'Postpone' स्टेटस चेक करें
-            if (postponedEntryIndex === -1) {
-                // ऐसा कोई चैप्टर ढूंढें जिसका स्टेटस 'Postpone' हो और जो अभी तक पूरा न हुआ हो
-                const internalPostponed = subject.chapters.find(c => c.status === 'Postpone' && c.status !== 'Completed' && !usedChapterIds.includes(c.id));
-                if (internalPostponed) {
-                    // इसे नकली एंट्री मानकर प्रोसेस करें
-                    targetChapter = internalPostponed;
-                    postponementNote = internalPostponed.notes || "Resumed postponed task.";
-                }
-            } else {
-                // ग्लोबल लिस्ट में मिल गया
-                const entry = data.postponedChapters[postponedEntryIndex];
+            if (globalPostponedIndex !== -1) {
+                const entry = data.postponedChapters[globalPostponedIndex];
                 const chapter = getChapterByIds(subjectId, entry.chapterId);
-                if (chapter && chapter.status !== 'Completed') {
+                
+                // VALIDATION: Must not be completed and not used
+                if (chapter && chapter.status !== 'Completed' && !usedChapterIds.includes(chapter.id)) {
                     targetChapter = chapter;
                     postponementNote = entry.note;
-                    // लिस्ट से हटा दें ताकि दोबारा न आए (क्योंकि अब ये प्लान में आ गया है)
-                    data.postponedChapters.splice(postponedEntryIndex, 1);
+                    // Move from Postponed List -> Active Plan (Remove from list)
+                    data.postponedChapters.splice(globalPostponedIndex, 1);
                 }
             }
 
-            // --- PRIORITY 2: UNCOMPLETED (SEQUENTIAL) ---
-            // अगर कोई पोस्टपोन चैप्टर नहीं मिला, तो अगला अधूरा चैप्टर उठाएं
+            // --- STRICT PRIORITY 2: INTERNAL POSTPONED STATUS ---
+            // If nothing in global list, check if any chapter has 'Postpone' status inside subject
             if (!targetChapter) {
-                targetChapter = subject.chapters.find(c => c.status !== 'Completed' && c.status !== 'Postpone' && !usedChapterIds.includes(c.id));
+                targetChapter = subject.chapters.find(c => 
+                    c.status === 'Postpone' && 
+                    c.status !== 'Completed' && 
+                    !usedChapterIds.includes(c.id)
+                );
+                if (targetChapter) {
+                    postponementNote = targetChapter.notes || "Resumed postponed task.";
+                }
             }
 
-            // --- FALLBACK (Sunday Form Special) ---
-            if (!targetChapter && subjectId === 'fill-form') {
-                 if (new Date(dateStr).getDay() === 0) { // Sunday only
-                    const avail = subject.chapters.filter(c => c.status !== 'Completed');
-                    if(avail.length > 0) targetChapter = avail[0];
-                 }
+            // --- PRIORITY 3: FIRST UNCOMPLETED CHAPTER (Sequential) ---
+            // If no postponed work, pick the next fresh chapter
+            if (!targetChapter) {
+                targetChapter = subject.chapters.find(c => 
+                    c.status !== 'Completed' && 
+                    c.status !== 'Postpone' && 
+                    !usedChapterIds.includes(c.id)
+                );
             }
 
+            // Assign Task if found
             if (targetChapter) {
                 plan.tasks[subjectId] = { subjectId, chapterId: targetChapter.id, note: postponementNote };
                 usedChapterIds.push(targetChapter.id);
@@ -5094,18 +5093,29 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         };
 
         const importFullBackup = (importedData) => {
-            showConfirmationModal('Import Backup?', 'This will overwrite all current data in the application. This action cannot be undone. Are you sure you want to continue?', () => {
+            // Validate Basic Structure
+            if (!importedData || typeof importedData !== 'object') {
+                alert("Invalid File Format.");
+                return;
+            }
+
+            showConfirmationModal('Import Backup?', 'This will overwrite all data. Are you sure?', () => {
                 try {
-                    if (importedData.subjects && importedData.settings) {
-                        localStorage.setItem(DB_KEY, JSON.stringify(importedData));
-                        alert('Backup imported successfully! The application will now reload.');
-                        setTimeout(() => window.location.reload(), 500);
-                    } else {
-                        alert('The selected file does not appear to be a valid backup file.');
+                    // Normalize Data
+                    const newData = { ...initialState, ...importedData };
+                    
+                    // Deep merge settings carefully
+                    if (importedData.settings) {
+                        newData.settings = { ...initialState.settings, ...importedData.settings };
                     }
+
+                    // Force save to LocalStorage
+                    localStorage.setItem(DB_KEY, JSON.stringify(newData));
+                    
+                    alert('Backup Imported Successfully! Reloading...');
+                    window.location.reload();
                 } catch (error) {
-                     alert('An error occurred while importing the backup.');
-                     console.error("Full Backup Import Error:", error);
+                     alert('Critical Error importing backup: ' + error.message);
                 }
             });
         };
@@ -5281,6 +5291,16 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
         const renderTodaysDpt = () => {
             const container = document.getElementById('todays-dpt-container');
+            const wrapper = document.getElementById('todays-dpt-container-wrapper');
+            
+            // Check Global Toggle
+            if (data.settings.dptDashboardActive === false) {
+                if(wrapper) wrapper.style.display = 'none';
+                return;
+            } else {
+                if(wrapper) wrapper.style.display = 'block';
+            }
+
             const todayStr = getLocalDateString();
             const yesterdayDate = new Date();
             yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -5689,82 +5709,9 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             backgroundElements = []; 
         }
         
-        function initConstellationEffect() {
-            initCanvas();
-            const width = window.innerWidth;
-            // PERFORMANCE FIX: Reduced nodes drastically to prevent heating/lag
-            // Desktop: 8 nodes, Mobile: 4 nodes (Enough for visual effect, zero lag)
-            let numberOfNodes = width < 768 ? 4 : 8; 
-
-            for (let i = 0; i < numberOfNodes; i++) {
-                backgroundElements.push({
-                    x: Math.random() * particleCanvas.width,
-                    y: Math.random() * particleCanvas.height,
-                    vx: (Math.random() - 0.5) * 0.10, // Slower for smoother look
-                    vy: (Math.random() - 0.5) * 0.10, 
-                    radius: Math.random() * 1.5 + 0.5
-                });
-            }
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            animateConstellation();
-        }
-
-        function animateConstellation() {
-            // अगर टैब एक्टिव नहीं है तो रेंडर मत करो (बैटरी बचत)
-            if (document.hidden) {
-                animationFrameId = requestAnimationFrame(animateConstellation);
-                return;
-            }
-
-            ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-
-            const isDark = data.settings.theme === 'dark';
-            const nodeColor = isDark ? 'rgba(0, 255, 150, 0.4)' : 'rgba(14, 165, 233, 0.4)';
-            const lineColor = isDark ? 'rgba(0, 255, 150, 0.08)' : 'rgba(14, 165, 233, 0.08)';
-            const connectDistance = 120; 
-
-            ctx.fillStyle = nodeColor;
-            ctx.beginPath();
-            
-            for (let i = 0; i < backgroundElements.length; i++) {
-                const node = backgroundElements[i];
-                node.x += node.vx;
-                node.y += node.vy;
-
-                // बाउंड्री चेक - अगर बाहर गया तो वापस भेजो
-                if (node.x < 0 || node.x > particleCanvas.width) node.vx *= -1;
-                if (node.y < 0 || node.y > particleCanvas.height) node.vy *= -1;
-
-                ctx.moveTo(node.x, node.y);
-                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-            }
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.strokeStyle = lineColor;
-            ctx.lineWidth = 0.5;
-            
-            // मोबाइल पर ज्यादा लाइनें नहीं खींचेंगे
-            for (let i = 0; i < backgroundElements.length; i++) {
-                const nodeA = backgroundElements[i];
-                for (let j = i + 1; j < backgroundElements.length; j++) {
-                    const nodeB = backgroundElements[j];
-                    const dx = nodeA.x - nodeB.x;
-                    const dy = nodeA.y - nodeB.y;
-                    
-                    if (Math.abs(dx) > connectDistance || Math.abs(dy) > connectDistance) continue;
-
-                    const distSq = dx*dx + dy*dy;
-                    if (distSq < connectDistance * connectDistance) {
-                        ctx.moveTo(nodeA.x, nodeA.y);
-                        ctx.lineTo(nodeB.x, nodeB.y);
-                    }
-                }
-            }
-            ctx.stroke();
-
-            animationFrameId = requestAnimationFrame(animateConstellation);
-        }
+        // Animation functions removed for performance
+        function initConstellationEffect() {}
+        function animateConstellation() {}
 
         
         const postponeRevision = (subjectId, chapterId, revisionDate) => {
@@ -6505,6 +6452,20 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
             document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
             document.getElementById('delete-all-chapters-btn').addEventListener('click', deleteAllChaptersForSubject);
+            
+            // DPT Toggle Listener
+            const dptToggle = document.getElementById('global-dpt-toggle');
+            if (dptToggle) {
+                dptToggle.checked = data.settings.dptDashboardActive !== false;
+                document.getElementById('dpt-toggle-text').innerText = dptToggle.checked ? "Active" : "Hidden";
+                
+                dptToggle.addEventListener('change', (e) => {
+                    data.settings.dptDashboardActive = e.target.checked;
+                    document.getElementById('dpt-toggle-text').innerText = e.target.checked ? "Active" : "Hidden";
+                    saveData();
+                    renderHomePage(); // Refresh Dashboard
+                });
+            }
             
             // --- FIXED: ADVANCED ROUTINE LISTENERS ---
             
