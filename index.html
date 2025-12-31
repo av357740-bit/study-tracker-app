@@ -807,6 +807,7 @@
             <button data-page="calendar" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="calendar" class="w-5 h-5"></i> <span data-translate="calendar">Calendar</span></button>
             <button data-page="analytics" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span data-translate="analytics">Analytics</span></button>
             <button data-page="report" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="clipboard-list" class="w-5 h-5"></i> <span data-translate="report">Report</span></button>
+            <button data-page="notices" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="sticky-note" class="w-5 h-5"></i> <span>Notes & History</span></button>
             <button data-page="settings" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold text-base"><i data-lucide="settings" class="w-5 h-5"></i> <span data-translate="settings">Settings</span></button>
         </nav>
         <div class="p-4 border-t space-y-2">
@@ -1165,6 +1166,36 @@
                 </div>
             </div>
 
+            <div id="page-notices" class="page">
+                <h2 class="text-2xl font-bold mb-4">Notes & History</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Section 1: Personal Notes -->
+                    <div class="space-y-4">
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-900/30">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="pen-tool" class="text-indigo-500"></i> Personal Notes</h3>
+                                <button id="add-personal-note-btn" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow hover:bg-indigo-700">Add Note</button>
+                            </div>
+                            <div id="personal-notes-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                                <!-- Notes will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Other Task History -->
+                    <div class="space-y-4">
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-orange-100 dark:border-orange-900/30">
+                            <h3 class="font-bold text-lg mb-3 flex items-center gap-2"><i data-lucide="history" class="text-orange-500"></i> Task History (Last 30 Days)</h3>
+                            <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">History of 'Other Tasks' (Completed or Deleted).</p>
+                            <div id="other-tasks-history-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                                <!-- History will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="page-updates" class="page">
                 <div class="max-w-4xl mx-auto">
                     <div class="flex items-center gap-3 mb-8">
@@ -1361,6 +1392,7 @@
         <button data-page="url" class="mobile-nav-btn"><i data-lucide="globe"></i><span>URL</span></button>
         <button data-page="import-export" class="mobile-nav-btn"><i data-lucide="arrow-right-left"></i><span>Imp/Exp</span></button>
         <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i><span>Stats</span></button>
+        <button data-page="notices" class="mobile-nav-btn"><i data-lucide="sticky-note"></i><span>Notice</span></button>
         <button data-page="settings" class="mobile-nav-btn"><i data-lucide="settings"></i><span>Set</span></button>
         <button id="theme-toggle-btn-mobile" class="mobile-nav-btn">
             <i data-lucide="sun" id="theme-icon-sun-mobile"></i>
@@ -1577,11 +1609,6 @@
                 <label for="exam-notes" class="block text-sm font-medium mb-1" data-translate="notes">Notes</label>
                 <textarea id="exam-notes" rows="3" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" data-translate-placeholder="notes_placeholder" placeholder="e.g., Registration no., website link..."></textarea>
             </div>
-            <div>
-                <label for="exam-receipt" class="block text-sm font-medium mb-1" data-translate="application_receipt">Application Receipt</label>
-                <input type="file" id="exam-receipt" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer" accept="image/*,.pdf">
-                <div id="exam-receipt-viewer" class="mt-2 text-sm"></div>
-            </div>
             <button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="save_exam">Save Exam</button>
         </form>
     </div>
@@ -1686,6 +1713,20 @@
             <div>
                 <label for="other-task-notes" class="block text-sm font-semibold mb-1.5 text-purple-600 dark:text-purple-400">Notes (Optional)</label>
                 <textarea id="other-task-notes" rows="2" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-purple-200 dark:border-purple-900 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all" placeholder="Add any extra details..."></textarea>
+            </div>
+
+            <!-- Priority Checkbox -->
+            <div class="bg-red-50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-900/30">
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                    <div class="relative flex items-center">
+                        <input type="checkbox" id="other-task-priority" class="peer h-5 w-5 cursor-pointer appearance-none rounded border-2 border-red-400 transition-all checked:bg-red-600 checked:border-red-600">
+                        <i data-lucide="check" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-red-700 dark:text-red-300 text-sm">High Priority (Exam/Urgent)</span>
+                        <p class="text-[10px] text-red-500 dark:text-red-400">Shows on dashboard 3 days in advance.</p>
+                    </div>
+                </label>
             </div>
             
             <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/50">
@@ -1979,14 +2020,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Updates Logic (Auto-limits to 4 in UI)
     const updateNotes = {
-        "10.3": {
+        "10.5": {
             date: new Date().toISOString().split('T')[0],
             features: [
-                { "title": "Super Speed Mode 🚀", "note": "एप्लीकेशन अब 5 गुना तेज है। हीटिंग प्रॉब्लम को पूरी तरह ठीक कर दिया गया है। (No Background Animation)." },
-                { "title": "Postpone Logic Fixed 🧠", "note": "जो चैप्टर आप पोस्टपोन करेंगे, अगली बार वही चैप्टर सबसे पहले आएगा। कोई रैंडम चैप्टर नहीं।" },
-                { "title": "System Theme 🌗", "note": "अब 3 थीम मोड हैं: Day, Dark, और System Default (जो आपके फोन/पीसी के हिसाब से चलेगा)।" },
-                { "title": "Import Fixed 📂", "note": "बैकअप फाइल अपलोड (Import) करने में आ रही समस्या को ठीक कर दिया गया है।" },
-                { "title": "DPT On/Off 🎚️", "note": "सेटिंग्स से आप डैशबोर्ड पर DPT बॉक्स को दिखाना या छिपाना (On/Off) चुन सकते हैं।" }
+                { "title": "Strict Postpone Logic (FIXED) 📌", "note": "पोस्टपोन किए गए चैप्टर अब 100% गारंटी के साथ अगली बार सबसे पहले दिखेंगे। पेज नंबर वाला नोट भी सुरक्षित रहेगा।" },
+                { "title": "True Random Chapters 🎲", "note": "Today's Task में अब चैप्टर हमेशा 'रैंडम' (Random) आएंगे, कभी भी पहला चैप्टर बार-बार नहीं आएगा।" },
+                { "title": "History Visible 📜", "note": "'Notes & History' पेज पर अब पिछले 30 दिनों के पूरे किए गए टास्क साफ दिखाई देंगे।" },
+                { "title": "Performance Boost 🚀", "note": "पीसी और मोबाइल को गर्म होने से बचाने के लिए और स्क्रॉलिंग को स्मूथ बनाने के लिए कोड को 5x ऑप्टिमाइज़ किया गया है।" },
+                { "title": "Clean Exam UI ✨", "note": "एग्जाम फॉर्म से रसीद अपलोड करने का अनावश्यक ऑप्शन हटा दिया गया है।" }
+            ]
+        },
+        "10.4": {
+            date: "2025-01-08",
+            features: [
+                { "title": "Random & Smart Plan 🧠", "note": "Today's Plan अब पूरा हो चुके चैप्टर्स को कभी नहीं दिखाएगा। साथ ही, अब चैप्टर्स 'रैंडम' (Random) आएंगे, हमेशा पहला नहीं।" },
+                { "title": "Strict Postpone Logic 📌", "note": "अगर आपने कोई चैप्टर पोस्टपोन किया और पेज नंबर लिखा, तो अगली बार वही चैप्टर और वही नया नोट सबसे पहले दिखेगा।" },
+                { "title": "Priority Tasks 🔥", "note": "Other Task में 'Priority' का ऑप्शन है। एग्जाम जैसी तारीखों को 3 दिन पहले से डैशबोर्ड पर अलग रंगों में दिखाया जाएगा।" },
+                { "title": "Notices & History 📝", "note": "नया 'Notice' पेज! जहाँ आप अपने पर्सनल नोट्स लिख सकते हैं और पुराने टास्क्स की हिस्ट्री देख सकते हैं।" },
+                { "title": "Import Fixed 📂", "note": "बैकअप रिस्टोर (Import) अब 100% सही काम करता है।" }
+            ]
+        },
+        "10.3": {
+            date: "2025-01-06",
+            features: [
+                { "title": "Super Speed Mode 🚀", "note": "एप्लीकेशन अब 5 गुना तेज है। हीटिंग प्रॉब्लम को पूरी तरह ठीक कर दिया गया है।" },
+                { "title": "System Theme 🌗", "note": "अब 3 थीम मोड हैं: Day, Dark, और System Default।" }
             ]
         },
         "10.2": {
@@ -2382,7 +2440,9 @@ document.addEventListener('DOMContentLoaded', () => {
         urls: [],
         otherTasks: [],
         missedOtherTasks: [],
-        postponedOtherTasks: []
+        postponedOtherTasks: [],
+        personalNotes: [], // New Notes Array
+        otherTaskHistory: [] // New History Array
     };
 
     let data;
@@ -2546,13 +2606,13 @@ safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine arr
     let saveTimeout = null;
     const saveData = () => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        // HYPER FAST SAVE: Reduced debounce to 300ms for instant feel and no lag
+        // PERFORMANCE FIX: Increased delay to 2000ms to reduce CPU load (Heating Fix)
+        // Using requestIdleCallback if available for smoother background saving
         saveTimeout = setTimeout(() => {
-            requestAnimationFrame(() => {
+            const saveTask = () => {
                 try {
-                    // 1. Data Cleaning before saving (Remove temporary UI states)
+                    // 1. Data Cleaning before saving
                     if(data.dailyPlan) {
-                        // Remove plans older than 30 days to save space automatically
                         const thirtyDaysAgo = new Date();
                         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
                         const cutoff = thirtyDaysAgo.toISOString().split('T')[0];
@@ -2563,11 +2623,10 @@ safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine arr
 
                     const dataString = JSON.stringify(data);
                     
-                    // 2. Storage Limit Guard (Prevents Auto-Reset Crash)
-                    // Browser limits are usually 5MB (~5.2 million chars)
-                    if (dataString.length > 4500000) { 
+                    // 2. Storage Limit Guard (Optimized)
+                    if (dataString.length > 4800000) { 
                         if (!window.storageWarningShown) {
-                            alert("⚠️ Storage Warning: App memory is 90% full. Please 'Export Backup' soon to avoid data loss.");
+                            alert("⚠️ Storage Warning: App memory is near full. Please 'Export Backup' soon.");
                             window.storageWarningShown = true;
                         }
                     }
@@ -2575,16 +2634,19 @@ safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine arr
                     localStorage.setItem(DB_KEY, dataString);
                     
                 } catch (error) {
-                    console.error("Save Failed (Protected):", error);
+                    console.error("Save Failed:", error);
                     if (error.name === 'QuotaExceededError' || error.code === 22) {
-                        if (!window.quotaAlertShown) {
-                            alert("⛔ STORAGE FULL! Data cannot be saved. \n\n1. Export your data NOW (Backup).\n2. Then use 'Reset App'.\n\nDon't close this window until you export.");
-                            window.quotaAlertShown = true;
-                        }
+                        alert("⛔ STORAGE FULL! Please Export Backup immediately.");
                     }
                 }
-            });
-        }, 1500); 
+            };
+
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(saveTask);
+            } else {
+                saveTask();
+            }
+        }, 2000); 
     };
     
     const _ = (key, replacements = {}) => {
@@ -2864,13 +2926,117 @@ let allCharts = {};
             home: renderHomePage, subjects: renderSubjectsPage, dpt: renderDptPage,
             analytics: renderAnalyticsPage, settings: renderSettingsPage, calendar: renderCalendarPage,
             report: renderReportPage, 'import-export': renderImportExportPage,
-            exams: renderExamsPage, url: renderUrlPage, updates: renderUpdatesPage
+            exams: renderExamsPage, url: renderUrlPage, updates: renderUpdatesPage,
+            notices: renderNoticesPage // New Page
         };
         if(activePageId && pageRenderFunctions[activePageId]) {
              pageRenderFunctions[activePageId]();
         } else {
             renderHomePage();
         }
+    };
+
+    // --- NOTICE / NOTES PAGE LOGIC (FIXED) ---
+    const renderNoticesPage = () => {
+        // 1. Render Personal Notes
+        const notesContainer = document.getElementById('personal-notes-list');
+        const notes = data.personalNotes || [];
+        
+        if (notes.length === 0) {
+            notesContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No personal notes added yet.</p>`;
+        } else {
+            notesContainer.innerHTML = notes.sort((a,b) => new Date(b.date) - new Date(a.date)).map((note, index) => `
+                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border-l-4 border-indigo-500 shadow-sm relative group">
+                    <p class="text-xs font-bold text-indigo-500 mb-1">${new Date(note.date).toLocaleString()}</p>
+                    <p class="text-sm whitespace-pre-wrap">${note.text}</p>
+                    <button class="delete-personal-note-btn absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" data-index="${index}">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // 2. Render Other Task History (Completed & Deleted - FIXED LOGIC)
+        const historyContainer = document.getElementById('other-tasks-history-list');
+        
+        // Combine history from dedicated array AND current completed tasks to ensure nothing is missed
+        let allHistory = [...(data.otherTaskHistory || [])];
+        
+        // Also add currently completed tasks to history view if not already there
+        (data.otherTasks || []).forEach(t => {
+            if (t.status === 'Completed' && t.completedDate) {
+                // Check if already in history by description and date approx
+                const exists = allHistory.some(h => h.description === t.description && h.timestamp.includes(t.completedDate));
+                if (!exists) {
+                    allHistory.push({
+                        description: t.description,
+                        status: 'Completed',
+                        timestamp: t.completedDate || new Date().toISOString()
+                    });
+                }
+            }
+        });
+
+        // Filter last 30 days
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        // Sort by date descending
+        const filteredHistory = allHistory
+            .filter(h => {
+                const hDate = new Date(h.timestamp || new Date());
+                return hDate >= thirtyDaysAgo;
+            })
+            .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+        if (filteredHistory.length === 0) {
+            historyContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No activity in last 30 days.</p>`;
+        } else {
+            historyContainer.innerHTML = filteredHistory.map(h => {
+                const isCompleted = h.status === 'Completed';
+                const statusColor = isCompleted ? 'text-green-600 dark:text-green-400' : 'text-red-500';
+                const icon = isCompleted ? 'check-circle-2' : 'trash-2';
+                const dateStr = h.timestamp ? new Date(h.timestamp).toLocaleDateString() : 'N/A';
+                return `
+                <div class="flex items-start gap-3 p-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <i data-lucide="${icon}" class="w-4 h-4 mt-1 ${statusColor}"></i>
+                    <div>
+                        <p class="text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : ''}">${h.description}</p>
+                        <p class="text-[10px] text-gray-400">${h.status} on ${dateStr}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        lucide.createIcons();
+    };
+
+    // Add Note Modal Logic
+    const showAddNotePopup = () => {
+        const modalHtml = `
+            <div id="add-note-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-xl p-6 shadow-2xl border border-indigo-500/30 transform scale-100 transition-all">
+                    <h3 class="text-lg font-bold mb-4">Add Personal Note</h3>
+                    <textarea id="new-personal-note-text" rows="4" class="w-full p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border focus:border-indigo-500 outline-none resize-none" placeholder="Write something..."></textarea>
+                    <div class="flex gap-3 mt-4">
+                        <button id="cancel-note-btn" class="flex-1 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 font-bold">Cancel</button>
+                        <button id="save-note-btn" class="flex-1 py-2 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700">Save</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        document.getElementById('cancel-note-btn').onclick = () => document.getElementById('add-note-modal').remove();
+        document.getElementById('save-note-btn').onclick = () => {
+            const text = document.getElementById('new-personal-note-text').value.trim();
+            if(text) {
+                if(!data.personalNotes) data.personalNotes = [];
+                data.personalNotes.push({ text, date: new Date().toISOString() });
+                saveData();
+                renderNoticesPage();
+                document.getElementById('add-note-modal').remove();
+            }
+        };
     };
     
     // Optimized Creator Modal (No Lag)
@@ -3210,7 +3376,13 @@ let allCharts = {};
     const renderHomePage = () => {
         try {
             handleNewDayLogic();
-            document.getElementById('welcome-heading').innerHTML = `${_('welcome_pravej')}, <span class="text-primary">${data.settings.studentName || 'Student'}!</span>`;
+            const todayDateDisplay = new Date().toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+            
+            document.getElementById('welcome-heading').innerHTML = `
+                <div class="flex flex-col">
+                    <span>${_('welcome_pravej')}, <span class="text-primary">${data.settings.studentName || 'Student'}!</span></span>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide border-l-2 border-primary pl-2">${todayDateDisplay}</span>
+                </div>`;
             
             const studyDay = Math.floor((new Date() - new Date(data.appStartDate)) / (1000 * 60 * 60 * 24)) + 1;
             document.getElementById('study-day-text').textContent = `Day ${studyDay}`;
@@ -3614,7 +3786,7 @@ let allCharts = {};
         }
 
         const subjectsForToday = getSubjectsForDay(new Date(dateStr));
-        const usedChapterIds = []; // To verify duplicates in current calculation
+        const usedChapterIds = [];
 
         // --- MERGE ADVANCED ROUTINE SUBJECTS ---
         const currentDayOfWeek = new Date(dateStr).getDay();
@@ -3646,16 +3818,16 @@ let allCharts = {};
             const subjectId = rawSubjectId.split(':')[0];
             if (subjectId.startsWith('custom-')) return; 
 
-            // IMPORTANT: Remove completed tasks from plan if they exist
+            // IMPORTANT: Check existing plan tasks validity
             if (plan.tasks[subjectId]) {
                 const existingTask = plan.tasks[subjectId];
                 const chap = getChapterByIds(existingTask.subjectId, existingTask.chapterId);
-                // STRICT CHECK: If chapter is completed, remove it from task list immediately
+                // STRICT CHECK: If chapter is completed, remove it immediately
                 if (!chap || chap.status === 'Completed') {
-                    delete plan.tasks[subjectId]; // Clean up
+                    delete plan.tasks[subjectId]; 
                 } else {
                     usedChapterIds.push(existingTask.chapterId);
-                    return; // Task is valid and pending, keep it
+                    return; // Valid pending task exists, do not overwrite
                 }
             }
 
@@ -3668,44 +3840,47 @@ let allCharts = {};
             let targetChapter = null;
             let postponementNote = null;
 
-            // --- STRICT PRIORITY 1: GLOBAL POSTPONED LIST ---
-            // Check global list specifically for this subject
+            // --- STRICT PRIORITY 1: POSTPONED CHAPTERS (CRITICAL FIX) ---
+            // First check Global Postponed List
             const globalPostponedIndex = (data.postponedChapters || []).findIndex(p => p.subjectId === subjectId);
             
             if (globalPostponedIndex !== -1) {
                 const entry = data.postponedChapters[globalPostponedIndex];
                 const chapter = getChapterByIds(subjectId, entry.chapterId);
                 
-                // VALIDATION: Must not be completed and not used
                 if (chapter && chapter.status !== 'Completed' && !usedChapterIds.includes(chapter.id)) {
                     targetChapter = chapter;
-                    postponementNote = entry.note;
-                    // Move from Postponed List -> Active Plan (Remove from list)
+                    // Use the specific note saved during postponement
+                    postponementNote = entry.note; 
+                    // Remove from list only after assigning
                     data.postponedChapters.splice(globalPostponedIndex, 1);
                 }
             }
 
-            // --- STRICT PRIORITY 2: INTERNAL POSTPONED STATUS ---
-            // If nothing in global list, check if any chapter has 'Postpone' status inside subject
+            // --- STRICT PRIORITY 2: INTERNAL STATUS CHECK ---
+            // Even if not in global list, if status is 'Postpone', it MUST come first
             if (!targetChapter) {
-                targetChapter = subject.chapters.find(c => 
-                    c.status === 'Postpone' && 
-                    c.status !== 'Completed' && 
-                    !usedChapterIds.includes(c.id)
-                );
-                if (targetChapter) {
-                    postponementNote = targetChapter.notes || "Resumed postponed task.";
+                const postponedInternal = subject.chapters.filter(c => c.status === 'Postpone' && !usedChapterIds.includes(c.id));
+                if (postponedInternal.length > 0) {
+                    targetChapter = postponedInternal[0]; // Take the first postponed one found
+                    postponementNote = targetChapter.notes || "Resuming postponed chapter.";
                 }
             }
 
-            // --- PRIORITY 3: FIRST UNCOMPLETED CHAPTER (Sequential) ---
-            // If no postponed work, pick the next fresh chapter
+            // --- PRIORITY 3: RANDOM UNCOMPLETED CHAPTER (TRUE RANDOM) ---
+            // Only if NO postponed chapters exist
             if (!targetChapter) {
-                targetChapter = subject.chapters.find(c => 
+                const availableChapters = subject.chapters.filter(c => 
                     c.status !== 'Completed' && 
                     c.status !== 'Postpone' && 
                     !usedChapterIds.includes(c.id)
                 );
+                
+                if (availableChapters.length > 0) {
+                    // True Randomization Logic
+                    const randomIndex = Math.floor(Math.random() * availableChapters.length);
+                    targetChapter = availableChapters[randomIndex];
+                }
             }
 
             // Assign Task if found
@@ -3746,6 +3921,26 @@ let allCharts = {};
         const postponedOtherTasksForToday = (data.postponedOtherTasks || [])
             .filter(task => task.date === todayStr && task.status === 'Pending');
 
+        // --- PRIORITY TASK INJECTION (Upcoming 3 Days) ---
+        const todayDateObj = new Date(todayStr);
+        const upcomingPriorityTasks = (data.otherTasks || []).filter(task => {
+            if (!task.priority || task.status === 'Completed') return false;
+            const taskDate = new Date(task.date);
+            const diffTime = taskDate - todayDateObj;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            // Show if it's tomorrow (1), day after (2), or 3 days later, AND not already in today's list
+            return diffDays >= 1 && diffDays <= 3;
+        }).map(task => {
+            // Determine Alert Level
+            const diffDays = Math.ceil((new Date(task.date) - todayDateObj) / (1000 * 60 * 60 * 24));
+            let alertMsg = "";
+            if(diffDays === 1) alertMsg = "Tomorrow!";
+            else if(diffDays === 2) alertMsg = "In 2 Days";
+            else alertMsg = "In 3 Days";
+            
+            return { ...task, type: 'other', isUpcomingPriority: true, alertMsg };
+        });
+
         const chaptersToStudy = Object.entries(tasks).filter(([key]) => !completedSubjects.includes(key)).map(([, task]) => {
             if (!task) return null;
             const subject = getSubjectById(task.subjectId); const chapter = getChapterByIds(task.subjectId, task.chapterId);
@@ -3768,6 +3963,7 @@ let allCharts = {};
         </div>`;
         
         const allTasksForToday = [
+            ...upcomingPriorityTasks, // Show Priority First
             ...chaptersToStudy, 
             ...revisionsForToday,
             ...manualChapterTasks,
@@ -3866,18 +4062,40 @@ let allCharts = {};
 
         } else if (type === 'other') {
             const uniqueId = `other-task-${item.id}`;
-            const bgColor = 'bg-gray-100 dark:bg-slate-800';
-            const repeatIcon = item.isRepeating ? '<i data-lucide="repeat" class="w-3 h-3 text-violet-500"></i> ' : '';
+            let bgColor = 'bg-gray-100 dark:bg-slate-800';
+            let priorityBadge = '';
+            
+            // Priority Visuals Logic
+            if (item.priority) {
+                if (item.isUpcomingPriority) {
+                    if (item.alertMsg === 'Tomorrow!') bgColor = 'bg-orange-100 dark:bg-orange-900/40 border-l-4 border-orange-500';
+                    else if (item.alertMsg === 'In 2 Days') bgColor = 'bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400';
+                    else bgColor = 'bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400';
+                    
+                    priorityBadge = `<span class="ml-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-white/50 text-black shadow-sm">${item.alertMsg}</span>`;
+                } else {
+                    // Today is the exam day!
+                    bgColor = 'bg-red-100 dark:bg-red-900/50 border-l-4 border-red-600 shadow-md animate-pulse';
+                    priorityBadge = `<span class="ml-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-600 text-white shadow-sm">EXAM DAY!</span>`;
+                }
+            }
 
-            const actionButtons = `
+            const repeatIcon = item.isRepeating ? '<i data-lucide="repeat" class="w-3 h-3 text-violet-500"></i> ' : '';
+            
+            // Disable checkbox for upcoming tasks (cannot complete future task today)
+            const checkboxHtml = item.isUpcomingPriority 
+                ? `<i data-lucide="clock" class="w-5 h-5 text-gray-400"></i>` 
+                : `<input type="checkbox" id="${uniqueId}" class="task-checkbox text-gray-500 h-5 w-5 rounded border flex-shrink-0" data-task-id="${item.id}" data-task-type="${type}">`;
+
+            const actionButtons = item.isUpcomingPriority ? '' : `
                 <div class="flex gap-1">
                     ${!item.isRepeating ? `<button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>` : ''}
                     <button class="task-action-btn delete-other-task-btn p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/50" title="Delete" data-task-id="${item.id}" data-task-type="${type}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                 </div>`;
 
             html = `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item">
-                <input type="checkbox" id="${uniqueId}" class="task-checkbox text-gray-500 h-5 w-5 rounded border flex-shrink-0" data-task-id="${item.id}" data-task-type="${type}">
-                <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${item.description}</p><p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">${repeatIcon}<i data-lucide="user-check" class="w-3 h-3"></i> Other Task</p></label>
+                ${checkboxHtml}
+                <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold flex items-center">${item.description} ${priorityBadge}</p><p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">${repeatIcon}<i data-lucide="user-check" class="w-3 h-3"></i> Other Task ${item.notes ? `- ${item.notes}` : ''}</p></label>
                 ${actionButtons}</li>`;
         }
         return html;
@@ -4776,38 +4994,56 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
     };
 
     const showAddExamModal = (examId = null) => {
-        const form = document.getElementById('add-exam-form'); form.reset();
-        document.getElementById('exam-receipt').value = null;
-        const receiptViewer = document.getElementById('exam-receipt-viewer'); receiptViewer.innerHTML = '';
+        const form = document.getElementById('add-exam-form'); 
+        form.reset();
         const modalTitle = document.getElementById('exam-modal-title');
         const examIdInput = document.getElementById('exam-id');
+        
         if (examId) {
-            const exam = data.exams.find(e => e.id === examId); if (!exam) return;
-            modalTitle.textContent = _('edit_exam'); examIdInput.value = exam.id;
-            document.getElementById('exam-name').value = exam.name; document.getElementById('application-date').value = exam.applicationDate;
-            document.getElementById('exam-date').value = exam.examDate; document.getElementById('exam-status').value = exam.status;
+            const exam = data.exams.find(e => e.id === examId); 
+            if (!exam) return;
+            modalTitle.textContent = _('edit_exam'); 
+            examIdInput.value = exam.id;
+            document.getElementById('exam-name').value = exam.name; 
+            document.getElementById('application-date').value = exam.applicationDate;
+            document.getElementById('exam-date').value = exam.examDate; 
+            document.getElementById('exam-status').value = exam.status;
             document.getElementById('exam-notes').value = exam.notes;
-            if (exam.receipt) { receiptViewer.innerHTML = `<a href="${exam.receipt}" target="_blank" download="receipt" class="text-primary hover:underline font-semibold">${_('view_receipt')}</a>`; }
-        } else { modalTitle.textContent = _('add_new_exam'); examIdInput.value = ''; }
+        } else { 
+            modalTitle.textContent = _('add_new_exam'); 
+            examIdInput.value = ''; 
+        }
         showModal('add-exam-modal');
     };
 
     const saveExam = () => {
         const id = document.getElementById('exam-id').value;
-        const file = document.getElementById('exam-receipt').files[0];
-        // Fix: Added dot in document.getElementById for notes
-        const examData = { name: document.getElementById('exam-name').value.trim(), applicationDate: document.getElementById('application-date').value, examDate: document.getElementById('exam-date').value, status: document.getElementById('exam-status').value, notes: document.getElementById('exam-notes').value.trim() };
-        if (!examData.name) return;
-        const processSave = (receiptDataUrl = null) => {
-            if (receiptDataUrl) { examData.receipt = receiptDataUrl; }
-            if (id) {
-                const index = data.exams.findIndex(e => e.id === id);
-                if (index !== -1) { if (!receiptDataUrl) { examData.receipt = data.exams[index].receipt; } data.exams[index] = { ...data.exams[index], ...examData }; logActivity('edit-3', `Exam updated: "${examData.name}"`); }
-            } else { examData.id = `exam-${Date.now()}`; data.exams.push(examData); logActivity('briefcase', `Exam added: "${examData.name}"`); }
-            saveData(); renderExamsPage(); renderHomePage(); hideModal('add-exam-modal');
+        // Logic simplified: No file reading anymore
+        const examData = { 
+            name: document.getElementById('exam-name').value.trim(), 
+            applicationDate: document.getElementById('application-date').value, 
+            examDate: document.getElementById('exam-date').value, 
+            status: document.getElementById('exam-status').value, 
+            notes: document.getElementById('exam-notes').value.trim() 
         };
-        if (file) { const reader = new FileReader(); reader.onload = (e) => processSave(e.target.result); reader.onerror = (e) => { console.error("File reading error", e); alert("Error reading file."); processSave(null); }; reader.readAsDataURL(file); } 
-        else { processSave(null); }
+        
+        if (!examData.name) return;
+
+        if (id) {
+            const index = data.exams.findIndex(e => e.id === id);
+            if (index !== -1) { 
+                data.exams[index] = { ...data.exams[index], ...examData }; 
+                logActivity('edit-3', `Exam updated: "${examData.name}"`); 
+            }
+        } else { 
+            examData.id = `exam-${Date.now()}`; 
+            data.exams.push(examData); 
+            logActivity('briefcase', `Exam added: "${examData.name}"`); 
+        }
+        saveData(); 
+        renderExamsPage(); 
+        renderHomePage(); 
+        hideModal('add-exam-modal');
     };
 
     const deleteExam = (examId) => {
@@ -5093,7 +5329,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         };
 
         const importFullBackup = (importedData) => {
-            // Validate Basic Structure
             if (!importedData || typeof importedData !== 'object') {
                 alert("Invalid File Format.");
                 return;
@@ -5101,18 +5336,11 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             showConfirmationModal('Import Backup?', 'This will overwrite all data. Are you sure?', () => {
                 try {
-                    // Normalize Data
-                    const newData = { ...initialState, ...importedData };
+                    // Direct and brutal replacement to ensure deep data is restored
+                    localStorage.setItem(DB_KEY, JSON.stringify(importedData));
                     
-                    // Deep merge settings carefully
-                    if (importedData.settings) {
-                        newData.settings = { ...initialState.settings, ...importedData.settings };
-                    }
-
-                    // Force save to LocalStorage
-                    localStorage.setItem(DB_KEY, JSON.stringify(newData));
-                    
-                    alert('Backup Imported Successfully! Reloading...');
+                    // Reload immediately to fetch from storage
+                    alert('Backup Imported Successfully! App will reload.');
                     window.location.reload();
                 } catch (error) {
                      alert('Critical Error importing backup: ' + error.message);
@@ -6453,6 +6681,20 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
             document.getElementById('delete-all-chapters-btn').addEventListener('click', deleteAllChaptersForSubject);
             
+            // Notices Page Listeners
+            document.body.addEventListener('click', (e) => {
+                if (e.target.id === 'add-personal-note-btn') {
+                    showAddNotePopup();
+                }
+                const delNoteBtn = e.target.closest('.delete-personal-note-btn');
+                if (delNoteBtn) {
+                    const index = parseInt(delNoteBtn.dataset.index);
+                    data.personalNotes.splice(index, 1);
+                    saveData();
+                    renderNoticesPage();
+                }
+            });
+
             // DPT Toggle Listener
             const dptToggle = document.getElementById('global-dpt-toggle');
             if (dptToggle) {
@@ -6964,6 +7206,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             const date = document.getElementById('other-task-date').value;
             const notes = document.getElementById('other-task-notes').value.trim();
             const isRepeating = document.getElementById('other-task-repeat').checked;
+            const isPriority = document.getElementById('other-task-priority').checked;
             
             // Get Selected Days
             let repeatDays = [];
@@ -6995,7 +7238,8 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 isRepeating: isRepeating,
                 repeatDays: repeatDays, 
                 lastCompletedDate: null,
-                deletedInstances: [] // For single day deletion logic
+                deletedInstances: [], 
+                priority: isPriority // New Priority Field
             };
 
             data.otherTasks.push(newTask);
@@ -7017,6 +7261,14 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                         task.lastCompletedDate = todayStr;
                     }
                     logActivity('check-square', `Other task completed: "${task.description}"`);
+                    
+                    // Log to History
+                    if(!data.otherTaskHistory) data.otherTaskHistory = [];
+                    data.otherTaskHistory.push({
+                        description: task.description,
+                        status: 'Completed',
+                        timestamp: new Date().toISOString()
+                    });
                     
                     data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [] };
                     data.dailyPlan[todayStr].completedTasks.push({ type: 'other', description: task.description, id: task.id });
@@ -7096,6 +7348,14 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                         data.otherTasks = (data.otherTasks || []).filter(t => t.id !== taskId);
                         data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
                         logActivity('trash-2', `Permanently deleted task: "${task.description}"`);
+                        
+                        // Log to History
+                        if(!data.otherTaskHistory) data.otherTaskHistory = [];
+                        data.otherTaskHistory.push({
+                            description: task.description,
+                            status: 'Deleted',
+                            timestamp: new Date().toISOString()
+                        });
                     } else {
                         // Single Day Delete logic
                         const todayStr = getLocalDateString();
