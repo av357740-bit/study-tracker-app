@@ -788,9 +788,97 @@
         }
     }
 
+    /* --- SPLASH SCREEN STYLES (INTRO) --- */
+    #app-splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #0f172a; /* Dark Blue base */
+        z-index: 1000000; /* Highest priority */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    }
+    
+    .light #app-splash-screen {
+        background-color: #f0f9ff; /* Light Blue base for light mode */
+    }
+
+    .splash-content {
+        text-align: center;
+        animation: splashEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .splash-logo-icon {
+        width: 80px;
+        height: 80px;
+        color: #0ea5e9;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.5));
+        animation: pulse-splash 2s infinite;
+    }
+
+    .splash-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 900;
+        background: linear-gradient(to right, #0ea5e9, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+        letter-spacing: -1px;
+    }
+
+    .splash-subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #94a3b8;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0;
+        animation: fadeInSubtitle 1s ease-out 0.5s forwards;
+    }
+
+    @keyframes splashEntry {
+        0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+        100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInSubtitle {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse-splash {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.5)); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 25px rgba(139, 92, 246, 0.6)); }
+    }
+
+    /* Hide scrollbar during splash */
+    body.splash-active {
+        overflow: hidden !important;
+    }
+
 </style>
 </head>
-<body class="text-text-light dark:text-text-dark"><canvas id="particle-canvas" style="display: none !important; pointer-events: none;"></canvas>
+<body class="text-text-light dark:text-text-dark splash-active">
+    
+<!-- SPLASH SCREEN INTRO -->
+<div id="app-splash-screen">
+    <div class="splash-content">
+        <!-- SVG Icon manually for instant load -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="splash-logo-icon mx-auto"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <h1 class="splash-title">Study Tracker</h1>
+        <p class="splash-subtitle">Designed by Rayen</p>
+    </div>
+</div>
+
+<canvas id="particle-canvas" style="display: none !important; pointer-events: none;"></canvas>
 
 <div class="flex h-screen bg-transparent">
     <aside id="sidebar" class="flex flex-col w-64 bg-card-light dark:bg-card-dark relative">
@@ -1392,7 +1480,7 @@
         <button data-page="url" class="mobile-nav-btn"><i data-lucide="globe"></i><span>URL</span></button>
         <button data-page="import-export" class="mobile-nav-btn"><i data-lucide="arrow-right-left"></i><span>Imp/Exp</span></button>
         <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i><span>Stats</span></button>
-        <button data-page="notices" class="mobile-nav-btn"><i data-lucide="sticky-note"></i><span>Notice</span></button>
+        <button data-page="notices" class="mobile-nav-btn"><i data-lucide="sticky-note"></i><span>Notes</span></button>
         <button data-page="settings" class="mobile-nav-btn"><i data-lucide="settings"></i><span>Set</span></button>
         <button id="theme-toggle-btn-mobile" class="mobile-nav-btn">
             <i data-lucide="sun" id="theme-icon-sun-mobile"></i>
@@ -2014,20 +2102,35 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "9.8"; // King Creator & Perfect Arrows
+    const CURRENT_APP_VERSION = "11.1"; // Mega Popup & History Fix
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
-    // Updates Logic (Auto-limits to 4 in UI)
+    // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "10.5": {
+        "11.1": {
             date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "History Fix (100% Solved) 📜", "note": "अब 'Other Task' को Complete या Delete करने पर वह तुरंत 'Notes & History' पेज पर रिकॉर्ड हो जाएगा। यह अब कभी मिस नहीं होगा।" },
+                { "title": "Mega Update Popup 🚀", "note": "अपडेट पॉप-अप अब पिछले 10 बदलावों को दिखाता है। आप पॉप-अप के अंदर ही स्क्रॉल करके सब कुछ पढ़ सकते हैं।" },
+                { "title": "Notes UI Fix 📱", "note": "मोबाइल मेनू में नाम अब सही 'Notes' दिखाई देगा।" }
+            ]
+        },
+        "11.0": {
+            date: "2025-01-09",
+            features: [
+                { "title": "Splash Screen Intro ✨", "note": "ऐप खोलते ही अब एक प्रीमियम एनिमेटेड इंट्रो दिखेगा। Professional Look!" },
+                { "title": "System Default Theme 🌗", "note": "नया 'System' मोड जोड़ा गया है जो आपके फोन/पीसी की सेटिंग के अनुसार अपने आप डार्क या लाइट हो जाएगा।" },
+                { "title": "Mobile Name Fix 📱", "note": "मोबाइल मेनू में 'Notics' को बदलकर 'Notes' कर दिया गया है।" }
+            ]
+        },
+        "10.5": {
+            date: "2025-01-08",
             features: [
                 { "title": "Strict Postpone Logic (FIXED) 📌", "note": "पोस्टपोन किए गए चैप्टर अब 100% गारंटी के साथ अगली बार सबसे पहले दिखेंगे। पेज नंबर वाला नोट भी सुरक्षित रहेगा।" },
                 { "title": "True Random Chapters 🎲", "note": "Today's Task में अब चैप्टर हमेशा 'रैंडम' (Random) आएंगे, कभी भी पहला चैप्टर बार-बार नहीं आएगा।" },
                 { "title": "History Visible 📜", "note": "'Notes & History' पेज पर अब पिछले 30 दिनों के पूरे किए गए टास्क साफ दिखाई देंगे।" },
-                { "title": "Performance Boost 🚀", "note": "पीसी और मोबाइल को गर्म होने से बचाने के लिए और स्क्रॉलिंग को स्मूथ बनाने के लिए कोड को 5x ऑप्टिमाइज़ किया गया है।" },
-                { "title": "Clean Exam UI ✨", "note": "एग्जाम फॉर्म से रसीद अपलोड करने का अनावश्यक ऑप्शन हटा दिया गया है।" }
+                { "title": "Performance Boost 🚀", "note": "पीसी और मोबाइल को गर्म होने से बचाने के लिए और स्क्रॉलिंग को स्मूथ बनाने के लिए कोड को 5x ऑप्टिमाइज़ किया गया है।" }
             ]
         },
         "10.4": {
@@ -2036,8 +2139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 { "title": "Random & Smart Plan 🧠", "note": "Today's Plan अब पूरा हो चुके चैप्टर्स को कभी नहीं दिखाएगा। साथ ही, अब चैप्टर्स 'रैंडम' (Random) आएंगे, हमेशा पहला नहीं।" },
                 { "title": "Strict Postpone Logic 📌", "note": "अगर आपने कोई चैप्टर पोस्टपोन किया और पेज नंबर लिखा, तो अगली बार वही चैप्टर और वही नया नोट सबसे पहले दिखेगा।" },
                 { "title": "Priority Tasks 🔥", "note": "Other Task में 'Priority' का ऑप्शन है। एग्जाम जैसी तारीखों को 3 दिन पहले से डैशबोर्ड पर अलग रंगों में दिखाया जाएगा।" },
-                { "title": "Notices & History 📝", "note": "नया 'Notice' पेज! जहाँ आप अपने पर्सनल नोट्स लिख सकते हैं और पुराने टास्क्स की हिस्ट्री देख सकते हैं।" },
-                { "title": "Import Fixed 📂", "note": "बैकअप रिस्टोर (Import) अब 100% सही काम करता है।" }
+                { "title": "Notices & History 📝", "note": "नया 'Notice' पेज! जहाँ आप अपने पर्सनल नोट्स लिख सकते हैं और पुराने टास्क्स की हिस्ट्री देख सकते हैं।" }
             ]
         },
         "10.3": {
@@ -2045,154 +2147,6 @@ document.addEventListener('DOMContentLoaded', () => {
             features: [
                 { "title": "Super Speed Mode 🚀", "note": "एप्लीकेशन अब 5 गुना तेज है। हीटिंग प्रॉब्लम को पूरी तरह ठीक कर दिया गया है।" },
                 { "title": "System Theme 🌗", "note": "अब 3 थीम मोड हैं: Day, Dark, और System Default।" }
-            ]
-        },
-        "10.2": {
-            date: "2025-01-05",
-            features: [
-                { "title": "Guide Link Moved 📍", "note": "'How to Use' बटन को अब 'AI Coach' कार्ड के अंदर शिफ्ट कर दिया गया है।" },
-                { "title": "Clean Dashboard ✨", "note": "डैशबोर्ड के हेडर को साफ और सुंदर बनाने के लिए पुराना बटन हटा दिया गया है।" }
-            ]
-        },
-        "10.1": {
-            date: "2025-01-05",
-            features: [
-                { "title": "Creator Button Fixed 🛠️", "note": "Creator Profile का Close (X) बटन अब 100% काम कर रहा है। उसे क्लिक करने में जो दिक्कत आ रही थी, उसे ठीक कर दिया गया है।" },
-                { "title": "Smoother Experience ✨", "note": "पॉपअप और बटन रिस्पॉन्स को और बेहतर बनाया गया है।" }
-            ]
-        },
-        "10.0": {
-            date: "2025-01-04",
-            features: [
-                { "title": "Dashboard Guide Button 💡", "note": "डैशबोर्ड पर एक चमकता हुआ 'How to Use' बटन जोड़ा गया है। इस पर क्लिक करके आप सीधे जान सकते हैं कि ऐप को कैसे उपयोग करना है।" },
-                { "title": "Creator Page Fixed 🛠️", "note": "क्रिएटर प्रोफाइल पेज का डिजाइन ठीक किया गया है। क्रॉस (Close) बटन अब साफ दिखाई देता है और बैकग्राउंड इमेज को बड़ा किया गया है।" },
-                { "title": "Mobile View Ultra 📱", "note": "मोबाइल स्क्रीन के लिए लेआउट को 5 गुना और बेहतर बनाया गया है ताकि कोई भी हिस्सा कटे नहीं।" },
-                { "title": "Stability Boost 🚀", "note": "ऐप अब कभी क्रैश या रिसेट नहीं होगा। स्टोरेज सिस्टम को और मजबूत किया गया है।" }
-            ]
-        },
-        "9.9": {
-            date: "2025-01-03",
-            features: [
-                { "title": "Direct Exam Add 🚀", "note": "डैशबोर्ड से 'Add Exam' पर क्लिक करने पर अब आप सीधे एग्जाम पेज पर पहुँच जाएंगे। कोई कन्फ्यूजन नहीं।" },
-                { "title": "Premium Creator Bio 💎", "note": "क्रिएटर प्रोफाइल को 'Glass & Water' थीम में अपग्रेड किया गया है। शाइनिंग एनीमेशन और प्रोफेशनल लेआउट के साथ।" },
-                { "title": "Super Fast Performance ⚡", "note": "सेविंग स्पीड को 5 गुना बढ़ा दिया गया है। बफरिंग और लैग को पूरी तरह खत्म कर दिया गया है।" },
-                { "title": "Mobile Layout Fixed 📱", "note": "मोबाइल में लेआउट कटने की समस्या को ठीक कर दिया गया है।" }
-            ]
-        },
-        "9.8": {
-            date: "2025-01-02",
-            features: [
-                { "title": "Precision Tour Arrows 🏹", "note": "Feature Tour के तीर (Arrows) अब 100% सटीक हैं।" },
-                { "title": "Smart Empty States 📂", "note": "अगर Exams लिस्ट खाली है, तो 'Add Exam' का बटन अब सही जगह ले जाता है।" },
-                { "title": "Super Fast Save ⚡", "note": "डेटा सेविंग स्पीड ऑप्टिमाइज़ की गई है।" }
-            ]
-        },
-        "9.7": {
-            date: "2025-01-01",
-            features: [
-                { "title": "Professional Bio 👑", "note": "Creator Profile को एक प्रीमियम और प्रोफेशनल डिज़ाइन दिया गया है जिसमें ऐप के विज़न और फीचर्स की पूरी जानकारी है।" },
-                { "title": "Perfect Feature Tour 🧭", "note": "ऐप टूर अब सटीक रूप से एरो (Arrow) के साथ फीचर्स की ओर इशारा करता है।" },
-                { "title": "Ultimate Sync 🔄", "note": "अगर आप 'Subjects' पेज से कोई चैप्टर पूरा करते हैं, तो वह 'Dashboard' से तुरंत हट जाएगा और 'Completed Tasks' में जुड़ जाएगा।" }
-            ]
-        },
-        "9.6": {
-            date: "2024-12-30",
-            features: [
-                { "title": "Dashboard Sync Fixed 🔄", "note": "विषय सूची से चैप्टर पूरा करने पर, डैशबोर्ड से उस विषय का टास्क अब तुरंत हट जाएगा।" },
-                { "title": "Instant Popups ⚡", "note": "सेव और पोस्टपोन करने की स्पीड 5 गुना बढ़ाई गई है। कोई लोडिंग नहीं, कोई इंतजार नहीं।" },
-                { "title": "Hindi App Tour 🇮🇳", "note": "पूरा ऐप टूर अब हिंदी में है और यह हर पेज (Exams, Calendar, Import) पर आपकी मदद करेगा।" }
-            ]
-        },
-        "9.5": {
-            date: "2024-12-30",
-            features: [
-                { "title": "Smart Interactive Tour 🧭", "note": "feature Tour अब और भी स्मार्ट है!" },
-                { "title": "Professional Bio 👨‍💻", "note": "Creator Profile को नया रूप दिया गया।" }
-            ]
-        },
-        "9.4": {
-            date: "2024-12-29",
-            features: [
-                { "title": "Other Task Delete Fixed 🗑️", "note": "Other Task को 'सिर्फ आज' के लिए डिलीट करने पर वह तुरंत हट जाएगा।" },
-                { "title": "Feature Tour Beta 🧭", "note": "नए यूजर्स के लिए ऐप गाइड की शुरुआत।" }
-            ]
-        },
-        "9.3": {
-            date: "2024-12-29",
-            features: [
-                { "title": "Delete Fixed 🗑️", "note": "'Other Task' अब डैशबोर्ड से परमानेंट डिलीट हो जाएगा। डिलीट बटन अब सही से काम कर रहा है।" },
-                { "title": "Postpone Fixed ⏩", "note": "चैप्टर पोस्टपोन फीचर ठीक कर दिया गया है। अब पोस्टपोन किए गए चैप्टर 'Subjects' पेज के 'Postponed' टैब में सही से दिखेंगे।" },
-                { "title": "Buttons Fixed 🔘", "note": "चैप्टर डिटेल्स में 'Not Started', 'Completed', और 'Postpone' बटन अब क्लिक करने पर काम कर रहे हैं।" },
-                { "title": "Logic Improved 🧠", "note": "कम्प्लीट हो चुके चैप्टर अब 'Today's Plan' में दोबारा नहीं आएंगे।" }
-            ]
-        },
-        "9.2": {
-            date: "2024-12-29",
-            features: [
-                { "title": "Repeat Days Fixed 🛠️", "note": "Other Task में 'Repeat this task' चेकबॉक्स अब 100% काम कर रहा है। टिक करते ही दिन (Sun, Mon...) तुरंत दिखाई देंगे।" },
-                { "title": "Interaction Smoother ⚡", "note": "बटन्स पर क्लिक करना अब और आसान और तेज हो गया है।" }
-            ]
-        },
-        "8.9": {
-            date: "2024-12-28",
-            features: [
-                { "title": "Exam Filters Fixed 🎯", "note": "Exams पेज पर 'Upcoming', 'Applied', और 'History' बटन अब सही से काम कर रहे हैं।" },
-                { "title": "Save Exam Issue Solved ✅", "note": "परीक्षा एडिट करने पर 'Save Exam' बटन काम नहीं कर रहा था, उसे ठीक कर दिया गया है।" },
-                { "title": "Smart Mobile Menu 📱", "note": "नीचे वाले मेनू में नए यूजर को बताने के लिए एक स्मार्ट एनीमेशन जोड़ा गया है कि स्लाइड करने पर और भी ऑप्शन मौजूद हैं।" }
-            ]
-        },
-        "8.8": {
-            date: "2024-12-28",
-            features: [
-                { "title": "Mobile UI Optimized 📱", "note": "मोबाइल में नीचे वाला मेनू (Navigation Bar) अब पतला और स्लीक कर दिया गया है। आइकॉन का साइज भी छोटा किया गया है ताकि स्क्रीन ज्यादा बड़ी दिखे।" },
-                { "title": "Advanced Routine Fixed 🛠️", "note": "सेटिंग्स में 'Advanced Subject Routine' अब 100% सही काम कर रहा है। Subject List अब खाली नहीं दिखेगी और Days (Mon, Tue...) पर क्लिक सही से होगा।" },
-                { "title": "Dashboard Sync 🔄", "note": "एडवांस रूटीन में जोड़े गए एक्स्ट्रा सब्जेक्ट्स अब 'Today's Plan' में तुरंत दिखाई देंगे।" }
-            ]
-        },
-        "8.7": {
-            date: "2024-12-28",
-            features: [
-                { "title": "Auto DPT Added ⚡", "note": "अब आपको हर चैप्टर में DPT मैन्युअल रूप से जोड़ने की जरूरत नहीं है। सभी मुख्य विषयों के लिए 2-2 DPT अपने आप जुड़ जाएंगे।" },
-                { "title": "Settings UI Fixed 🛠️", "note": "सेटिंग्स में 'Custom Cycle' वाला ऑप्शन ठीक कर दिया गया है। अब क्लिक करते ही 14 दिनों का शेड्यूल ड्रॉपडाउन (Dropdown) में सही से दिखाई देगा।" }
-            ]
-        },
-        "8.6": {
-            date: "2024-12-28",
-            features: [
-                { "title": "DPT Eye Button Fixed 👁️", "note": "Completed DPT लिस्ट में हरे रंग का Eye (View) बटन अब काम कर रहा है। आप अपने पुराने टेस्ट के स्कोर देख सकते हैं।" },
-                { "title": "Instant App Load 🚀", "note": "ऐप अब 10x तेजी से खुलता है। सफेद स्क्रीन (White Flash) की समस्या को पूरी तरह हटा दिया गया है।" },
-                { "title": "Zero Heating 🔥", "note": "बैकग्राउंड एनीमेशन को ऑप्टिमाइज़ किया गया है जिससे बैटरी बचेगी और फोन/पीसी गर्म नहीं होगा।" }
-            ]
-        },
-        "8.5": {
-            date: "2024-12-27",
-            features: [
-                { "title": "Past Date Completion Fixed 🗓️", "note": "कैलेंडर में पुरानी तारीख पर क्लिक करके चैप्टर पूरा करने वाला फीचर अब 100% सही काम कर रहा है। ड्रॉपडाउन और सेव बटन फिक्स कर दिया गया है।" },
-                { "title": "Routine Name Swap 🔄", "note": "इंपोर्ट/एक्सपोर्ट पेज पर फाउंडेशन और रेलवे रूटीन के नाम सही कर दिए गए हैं।" },
-                { "title": "Creator Profile 👑", "note": "What's New पेज पर क्रिएटर (Rayen) के बारे में जानने के लिए एक नया सेक्शन जोड़ा गया है।" },
-                { "title": "Auto-Cleanup 🧹", "note": "अपडेट लिस्ट अब अपने आप मैनेज होती है, केवल पिछले 30 दिनों के अपडेट ही दिखेंगे।" }
-            ]
-        },
-        "8.4": {
-            date: "2024-12-26",
-            features: [
-                { "title": "New Railway Routine 🚆", "note": "रेलवे का नया स्टडी रूटीन अपडेट कर दिया गया है। अब यह बिलकुल सही क्रम में काम करेगा।" },
-                { "title": "Smart Routine Switching 🧠", "note": "एक बार में केवल एक ही रूटीन (Railway या Foundation) एक्टिव रहेगा। Tomorrow's Topics में अब केवल सही 4 विषय ही दिखेंगे।" }
-            ]
-        },
-        "8.3": {
-            date: "2024-12-26",
-            features: [
-                { "title": "New Foundation Routine 📅", "note": "फाउंडेशन बैच का नया स्टडी रूटीन (26 Dec) अपडेट कर दिया गया है।" },
-                { "title": "Active Routine Logic 🧠", "note": "रूटीन लॉजिक को बेहतर बनाया गया है।" }
-            ]
-        },
-        "8.2": {
-            date: "2024-12-26",
-            features: [
-                { "title": "DPT Skip Fixed ⏩", "note": "डैशबोर्ड पर टुडे DPT कार्ड में स्किप (>>) बटन अब सही से काम कर रहा है।" },
-                { "title": "Settings Menu Fixed ⚙️", "note": "सेटिंग्स में 'Advanced Subject Routine' और अन्य मेनू अब क्लिक करने पर आसानी से खुल रहे हैं।" },
-                { "title": "Performance Boost 🚀", "note": "ऐप के कोड में सुधार किया गया है जिससे बटन रिस्पॉन्स तेज हो गया है।" }
             ]
         }
     };
@@ -2289,18 +2243,18 @@ document.addEventListener('DOMContentLoaded', () => {
             "delete_all": "Delete All", "delete_all_chapters_confirm": "Are you sure you want to delete ALL chapters for this subject? This cannot be undone.",
             "custom_cycle": "Custom Cycle", "custom_study_plan": "Custom Study Plan (2 Week Cycle)", "save_custom_plan": "Save Custom Plan",
             "dpt_plan_mode": "Daily DPT Plan Mode", "dpt_plan_subtitle": "Choose how you want to generate your daily DPT schedule.", "dpt_auto_mode": "Automatic (Follows Study Plan)", "custom_dpt_plan": "Custom DPT Plan (2 Week Cycle)",
-            "dpt_report_title": "DPT Summary", "dpt_subject_breakdown": "DPT Subject Breakdown", "no_dpt_data_report": "No DPT data logged yet.",
-            "sunday": "Sunday", "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "week": "Week",
-            "delete_subject": "Delete Subject", "delete_subject_confirm": "This will delete the subject '{subjectName}' and all its chapters and DPTs. This action cannot be undone.",
-            "delete_dpt": "Delete DPT", "delete_dpt_confirm": "Are you sure you want to delete {dptName}? This will remove its data permanently.",
-            "routine_management": "Routine Management", "routine_management_desc": "Export your 14-day study cycle or import a new one from a JSON file.", "import_routine": "Import Routine (JSON)", "export_json": "Export as JSON", "export_pdf": "Export as PDF",
-            "exams_data_management": "Exams Data Management", "exams_data_management_desc": "Import or export your list of exams.",
-            "complete_yesterdays_task": "Complete Yesterday's Task", "complete_yesterdays_dpt": "Complete Yesterday's DPT",
-            "delete_all_dpts": "Delete All DPTs", "delete_all_dpts_confirm": "Are you sure you want to delete ALL DPTs for {subjectName}? This cannot be undone.",
-            "restudy_subject": "Re-study Subject", "restudy_subject_confirm": "This will reset all chapter progress for '{subjectName}' and mark it as completed once. Are you sure? This is great for revision!",
-            "completion_cycle": "Cycle {count}",
-            "url_title": "Saved URLs", "add_new_folder": "Add New Folder", "folder_name": "Folder Name", "add_new_link": "Add New Link", "link_name": "Link Name", "link_url": "URL", "save": "Save", "edit": "Edit", "delete": "Delete", "no_links_in_folder": "No links saved in this folder yet.", "no_folders_created": "No folders created yet. Add one to get started!", "delete_folder_confirm": "Are you sure you want to delete the folder '{folderName}' and everything inside it?", "delete_link_confirm": "Are you sure you want to delete the link '{linkName}'?", "add_sub_folder": "Add Sub-folder",
-            "completed_other_tasks": "Completed Other Tasks (Last 30 Days)", "no_completed_other_tasks": "No other tasks have been completed in the last 30 days."
+            "dpt_report_title": "DPT Summary", "dpt_subject_breakdown": "DPT विषयवार विश्लेषण", "no_dpt_data_report": "अभी तक कोई DPT डेटा लॉग नहीं किया गया है।",
+            "sunday": "रविवार", "monday": "सोमवार", "tuesday": "मंगलवार", "wednesday": "बुधवार", "thursday": "गुरुवार", "friday": "शुक्रवार", "saturday": "शनिवार", "week": "सप्ताह",
+            "delete_subject": "विषय हटाएं", "delete_subject_confirm": "यह विषय '{subjectName}' और इसके सभी चैप्टर्स और DPTs को हटा देगा। यह कार्रवाई पूर्ववत् नहीं की जा सकती।",
+            "delete_dpt": "DPT हटाएं", "delete_dpt_confirm": "क्या आप वाकई {dptName} को हटाना चाहते हैं? इसका डेटा स्थायी रूप से हट जाएगा।",
+            "routine_management": "रूटीन प्रबंधन", "routine_management_desc": "अपनी 14-दिवसीय अध्ययन योजना को एक्सपोर्ट करें या JSON फ़ाइल से एक नई योजना इंपोर्ट करें।", "import_routine": "रूटीन इंपोर्ट करें (JSON)", "export_json": "JSON एक्सपोर्ट करें", "export_pdf": "PDF एक्सपोर्ट करें",
+            "exams_data_management": "परीक्षा डेटा प्रबंधन", "exams_data_management_desc": "अपनी परीक्षाओं की सूची इंपोर्ट या एक्सपोर्ट करें।",
+            "complete_yesterdays_task": "कल का टास्क पूरा करें", "complete_yesterdays_dpt": "कल का DPT पूरा करें",
+            "delete_all_dpts": "सभी DPT हटाएं", "delete_all_dpts_confirm": "{subjectName} के सभी DPT को हटाने के लिए क्या आप निश्चित हैं? इसे पूर्ववत नहीं किया जा सकता।",
+            "restudy_subject": "विषय को दोबारा पढ़ें", "restudy_subject_confirm": "यह '{subjectName}' के सभी चैप्टर की प्रगति को रीसेट कर देगा और इसे एक बार पूरा हुआ चिह्नित करेगा। क्या आप निश्चित हैं? यह रिवीजन के लिए बहुत अच्छा है!",
+            "completion_cycle": "चक्र {count}",
+            "url_title": "सहेजे गए यूआरएल", "add_new_folder": "नया फ़ोल्डर जोड़ें", "folder_name": "फ़ोल्डर का नाम", "add_new_link": "नया लिंक जोड़ें", "link_name": "लिंक का नाम", "link_url": "यूआरएल", "save": "सहेजें", "edit": "संपादित करें", "delete": "हटाएं", "no_links_in_folder": "इस फ़ोल्डर में अभी तक कोई लिंक नहीं सहेजा गया है।", "no_folders_created": "अभी तक कोई फ़ोल्डर नहीं बनाया गया है। आरंभ करने के लिए एक जोड़ें!", "delete_folder_confirm": "क्या आप वाकई फ़ोल्डर '{folderName}' और उसके अंदर की सभी चीज़ें हटाना चाहते हैं?", "delete_link_confirm": "क्या आप वाकई लिंक '{linkName}' हटाना चाहते हैं?", "add_sub_folder": "सब-फ़ोल्डर जोड़ें",
+            "completed_other_tasks": "पूर्ण हुए अन्य कार्य (पिछले 30 दिन)", "no_completed_other_tasks": "पिछले 30 दिनों में कोई अन्य कार्य पूरा नहीं हुआ है।"
         },
         hi: {
             "physics": "भौतिकी", "polity": "राजनीति", "chemistry": "रसायन विज्ञान", "hindi": "हिंदी",
@@ -2389,7 +2343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             "restudy_subject": "विषय को दोबारा पढ़ें", "restudy_subject_confirm": "यह '{subjectName}' के सभी चैप्टर की प्रगति को रीसेट कर देगा और इसे एक बार पूरा हुआ चिह्नित करेगा। क्या आप निश्चित हैं? यह रिवीजन के लिए बहुत अच्छा है!",
             "completion_cycle": "चक्र {count}",
             "url_title": "सहेजे गए यूआरएल", "add_new_folder": "नया फ़ोल्डर जोड़ें", "folder_name": "फ़ोल्डर का नाम", "add_new_link": "नया लिंक जोड़ें", "link_name": "लिंक का नाम", "link_url": "यूआरएल", "save": "सहेजें", "edit": "संपादित करें", "delete": "हटाएं", "no_links_in_folder": "इस फ़ोल्डर में अभी तक कोई लिंक नहीं सहेजा गया है।", "no_folders_created": "अभी तक कोई फ़ोल्डर नहीं बनाया गया है। आरंभ करने के लिए एक जोड़ें!", "delete_folder_confirm": "क्या आप वाकई फ़ोल्डर '{folderName}' और उसके अंदर की सभी चीज़ें हटाना चाहते हैं?", "delete_link_confirm": "क्या आप वाकई लिंक '{linkName}' हटाना चाहते हैं?", "add_sub_folder": "सब-फ़ोल्डर जोड़ें",
-            "completed_other_tasks": "पूर्ण हुए अन्य कार्य (पिछले 30 दिन)", "no_completed_other_tasks": "पिछले 30 दिनों में कोई अन्य कार्य पूरा नहीं हुआ है।"
+            "completed_other_tasks": "पूर्ण हुए अन्य कार्य (पिछले 30 दिन)", "no_completed_other_tasks": "पिछले 30 दिनों में कोई अन्य कार्य पूरा नहीं हुआ है."
         }
     };
 
@@ -2412,7 +2366,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         settings: {
             theme: 'system', // Default is now System
-            dptDashboardActive: true, // Default DPT ON
+            dptDashboardActive: true, 
             planMode: 'auto',
             customCyclePlan: Array(14).fill([]),
             dptPlanMode: 'auto',
@@ -2424,7 +2378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 start: null, end: null,
                 textLight: null, borderLight: null, textDark: null, borderDark: null 
             },
-            backgroundStyle: 'default', // Force default lightweight background
+            backgroundStyle: 'default',
             appVersion: "1.0"
         },
         gamification: { badges: [], completedHistory: [] },
@@ -2441,8 +2395,8 @@ document.addEventListener('DOMContentLoaded', () => {
         otherTasks: [],
         missedOtherTasks: [],
         postponedOtherTasks: [],
-        personalNotes: [], // New Notes Array
-        otherTaskHistory: [] // New History Array
+        personalNotes: [], 
+        otherTaskHistory: [] 
     };
 
     let data;
@@ -2708,37 +2662,50 @@ let allCharts = {};
         safeInitialize(data.settings, 'theme', 'system');
         safeInitialize(data.settings, 'dptDashboardActive', true);
 
+        // SPLASH SCREEN LOGIC
+        const splash = document.getElementById('app-splash-screen');
+        if(splash) {
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                document.body.classList.remove('splash-active');
+            }, 3000); // Show for 3 seconds
+        }
+
         handleNewDayLogic();
-        applyTheme(data.settings.theme); // Will handle System mode now
+        applyTheme(data.settings.theme); // Handles System/Light/Dark
         applyManualColors();
-        applyCustomTheme();
+        // applyCustomTheme is called inside applyTheme now with correct effective theme
         
         navigateTo('home');
         applyTranslations();
         
-        // Remove Background Animation Logic Call
-        document.body.style.backgroundImage = ''; // Clear any gradients
+        document.body.style.backgroundImage = ''; 
         
-        // Event Listeners must be attached immediately to ensure buttons work
         addEventListeners();
         checkAppUpdate();
         lucide.createIcons();
 
-        // HEATING FIX: Pause animation when tab is not visible
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (data.settings.theme === 'system') {
+                applyTheme('system');
+            }
+        });
+
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                stopAllBackgroundAnimations(); // Pause to cool down CPU
+                stopAllBackgroundAnimations(); 
             } else {
                 if (data.settings.backgroundStyle === 'constellation') {
-                    initConstellationEffect(); // Resume
+                    initConstellationEffect(); 
                 }
             }
         });
 
         if ('Notification' in window && Notification.permission !== 'denied') {
-            setTimeout(() => Notification.requestPermission(), 5000); // Delay permission request
+            setTimeout(() => Notification.requestPermission(), 5000); 
         }
-        // Check date change less frequently to save battery
         setInterval(checkDateChange, 60000); 
     };
 
@@ -2766,35 +2733,54 @@ let allCharts = {};
         renderUpdatesPage();
     };
     
-    const showAnimatedUpdatePopup = (version) => {
-        const updateData = updateNotes[version];
-        const features = Array.isArray(updateData) ? updateData : (updateData?.features || []);
-        
-        if (!features || features.length === 0) return;
+    const showAnimatedUpdatePopup = (currentVersion) => {
+        // Get top 10 latest versions
+        const versions = Object.keys(updateNotes)
+            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+            .slice(0, 10);
+
+        if (versions.length === 0) return;
 
         const headerEl = document.getElementById('update-popup-header');
         const contentEl = document.getElementById('update-popup-content');
         
         // पॉप-अप हेडर
         headerEl.innerHTML = `<h2 class="text-xl font-bold mb-1 text-white flex items-center justify-center gap-2"><i data-lucide="sparkles" class="text-amber-300"></i> नया अपडेट!</h2>
-            <p class="text-xs text-indigo-300">संस्करण: ${version} | Rayen's Tracker</p>`;
+            <p class="text-xs text-indigo-300">संस्करण: ${currentVersion} | Rayen's Tracker</p>`;
         
         contentEl.innerHTML = '';
         
-        // फीचर्स लिस्ट
-        features.forEach((item, index) => {
-            const noteContainer = document.createElement('div');
-            noteContainer.className = 'p-3 bg-white/10 rounded-lg update-note-item border border-white/10';
-            noteContainer.style.animationDelay = `${index * 100}ms`;
-            const titleEl = document.createElement('h4');
-            titleEl.className = 'font-bold text-amber-300 flex items-center gap-2 mb-1';
-            titleEl.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> ${item.title}`;
-            const noteEl = document.createElement('p');
-            noteEl.className = 'ml-6 text-indigo-100 text-xs leading-relaxed';
-            noteEl.innerHTML = item.note;
-            noteContainer.appendChild(titleEl);
-            noteContainer.appendChild(noteEl);
-            contentEl.appendChild(noteContainer);
+        // लूप चलाकर 10 अपडेट्स दिखाएं
+        let globalDelay = 0;
+        
+        versions.forEach((ver) => {
+            const data = updateNotes[ver];
+            const features = Array.isArray(data) ? data : (data?.features || []);
+            
+            // Version Divider
+            const versionHeader = document.createElement('div');
+            versionHeader.className = 'mt-4 mb-2 flex items-center gap-2 text-xs font-bold text-indigo-200 uppercase tracking-widest border-b border-indigo-500/30 pb-1';
+            versionHeader.innerHTML = `<span>v${ver}</span> <span class="text-[9px] opacity-70">${data.date || ''}</span>`;
+            contentEl.appendChild(versionHeader);
+
+            features.forEach((item) => {
+                const noteContainer = document.createElement('div');
+                noteContainer.className = 'p-3 bg-white/10 rounded-lg update-note-item border border-white/10 mb-2';
+                noteContainer.style.animationDelay = `${globalDelay * 50}ms`; // Staggered animation
+                
+                const titleEl = document.createElement('h4');
+                titleEl.className = 'font-bold text-amber-300 flex items-center gap-2 mb-1';
+                titleEl.innerHTML = `<i data-lucide="zap" class="w-4 h-4 flex-shrink-0"></i> ${item.title}`;
+                
+                const noteEl = document.createElement('p');
+                noteEl.className = 'ml-6 text-indigo-100 text-xs leading-relaxed';
+                noteEl.innerHTML = item.note;
+                
+                noteContainer.appendChild(titleEl);
+                noteContainer.appendChild(noteEl);
+                contentEl.appendChild(noteContainer);
+                globalDelay++;
+            });
         });
         
         showModal('update-popup-modal');
@@ -2940,7 +2926,9 @@ let allCharts = {};
     const renderNoticesPage = () => {
         // 1. Render Personal Notes
         const notesContainer = document.getElementById('personal-notes-list');
-        const notes = data.personalNotes || [];
+        // Ensure array exists
+        data.personalNotes = data.personalNotes || [];
+        const notes = data.personalNotes;
         
         if (notes.length === 0) {
             notesContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No personal notes added yet.</p>`;
@@ -2959,30 +2947,15 @@ let allCharts = {};
         // 2. Render Other Task History (Completed & Deleted - FIXED LOGIC)
         const historyContainer = document.getElementById('other-tasks-history-list');
         
-        // Combine history from dedicated array AND current completed tasks to ensure nothing is missed
-        let allHistory = [...(data.otherTaskHistory || [])];
+        // Strict Initialization
+        data.otherTaskHistory = data.otherTaskHistory || [];
         
-        // Also add currently completed tasks to history view if not already there
-        (data.otherTasks || []).forEach(t => {
-            if (t.status === 'Completed' && t.completedDate) {
-                // Check if already in history by description and date approx
-                const exists = allHistory.some(h => h.description === t.description && h.timestamp.includes(t.completedDate));
-                if (!exists) {
-                    allHistory.push({
-                        description: t.description,
-                        status: 'Completed',
-                        timestamp: t.completedDate || new Date().toISOString()
-                    });
-                }
-            }
-        });
-
         // Filter last 30 days
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         
-        // Sort by date descending
-        const filteredHistory = allHistory
+        // Sort by date descending (Newest first)
+        const filteredHistory = data.otherTaskHistory
             .filter(h => {
                 const hDate = new Date(h.timestamp || new Date());
                 return hDate >= thirtyDaysAgo;
@@ -2990,19 +2963,19 @@ let allCharts = {};
             .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
         if (filteredHistory.length === 0) {
-            historyContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No activity in last 30 days.</p>`;
+            historyContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No other task activity yet.</p>`;
         } else {
             historyContainer.innerHTML = filteredHistory.map(h => {
                 const isCompleted = h.status === 'Completed';
                 const statusColor = isCompleted ? 'text-green-600 dark:text-green-400' : 'text-red-500';
                 const icon = isCompleted ? 'check-circle-2' : 'trash-2';
-                const dateStr = h.timestamp ? new Date(h.timestamp).toLocaleDateString() : 'N/A';
+                const dateStr = h.timestamp ? new Date(h.timestamp).toLocaleString() : 'N/A';
                 return `
                 <div class="flex items-start gap-3 p-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <i data-lucide="${icon}" class="w-4 h-4 mt-1 ${statusColor}"></i>
+                    <i data-lucide="${icon}" class="w-4 h-4 mt-1 flex-shrink-0 ${statusColor}"></i>
                     <div>
-                        <p class="text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : ''}">${h.description}</p>
-                        <p class="text-[10px] text-gray-400">${h.status} on ${dateStr}</p>
+                        <p class="text-sm font-medium ${isCompleted ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 line-through'}">${h.description}</p>
+                        <p class="text-[10px] text-gray-400 font-bold">${h.status} • ${dateStr}</p>
                     </div>
                 </div>`;
             }).join('');
@@ -3213,10 +3186,10 @@ let allCharts = {};
         </div>
         `;
 
-        // Logic: Sort descending and take top 4 only (Latest)
+        // Logic: Sort descending and take top 10 (Latest)
         const versions = Object.keys(updateNotes)
             .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
-            .slice(0, 4); // LIMIT TO 4
+            .slice(0, 10); // LIMIT TO 10
         
         if (versions.length === 0) {
             html += `<div class="text-center text-gray-500 mt-10"><p>No recent updates in the last 30 days.</p></div>`;
@@ -3267,11 +3240,41 @@ let allCharts = {};
     };
     
     const applyTheme = (theme) => {
-        document.documentElement.className = theme;
-        const isDark = theme === 'dark';
-        ['theme-icon-sun', 'theme-icon-sun-mobile'].forEach(id => document.getElementById(id).style.display = isDark ? 'none' : 'block');
-        ['theme-icon-moon', 'theme-icon-moon-mobile'].forEach(id => document.getElementById(id).style.display = isDark ? 'block' : 'none');
-        applyCustomTheme();
+        // System Theme Logic
+        let effectiveTheme = theme;
+        if (theme === 'system') {
+            effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        document.documentElement.className = effectiveTheme;
+        
+        // Icons Update Logic (3-way)
+        const sunIcons = ['theme-icon-sun', 'theme-icon-sun-mobile'];
+        const moonIcons = ['theme-icon-moon', 'theme-icon-moon-mobile'];
+        const sysIcons = ['theme-icon-system']; // PC only has system icon ID, mobile reuses toggle
+
+        // Reset all
+        [...sunIcons, ...moonIcons, ...sysIcons].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
+        });
+
+        // Show relevant icon
+        if (theme === 'light') sunIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+        else if (theme === 'dark') moonIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+        else {
+            // For System
+            sysIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+            // On mobile, show Laptop/System icon if available or just fallback to Sun/Moon based on effective
+            const mobileIcon = document.getElementById('theme-icon-system');
+            if(mobileIcon) mobileIcon.classList.remove('hidden');
+        }
+
+        // Text label update
+        const label = document.getElementById('theme-text-sidebar');
+        if(label) label.textContent = theme === 'system' ? 'Auto' : theme;
+
+        applyCustomTheme(effectiveTheme);
         applyBackgroundStyle();
         if (document.getElementById('page-analytics').classList.contains('active')) renderAnalyticsPage();
     };
@@ -3292,10 +3295,12 @@ let allCharts = {};
         }
     };
     
-    const applyCustomTheme = () => {
+    const applyCustomTheme = (currentEffectiveTheme) => {
         const { start, end } = data.settings.customThemeColors;
         const root = document.documentElement;
-        const isDark = data.settings.theme === 'dark';
+        // Determine isDark based on what is currently applied to DOM
+        const isDark = currentEffectiveTheme === 'dark'; 
+        
         const startProp = isDark ? '--main-bg-start-dark' : '--main-bg-start-light';
         const endProp = isDark ? '--main-bg-end-dark' : '--main-bg-end-light';
         if (start && end) {
@@ -3308,9 +3313,15 @@ let allCharts = {};
     };
 
     const toggleTheme = () => {
-        data.settings.theme = (data.settings.theme === 'light') ? 'dark' : 'light';
+        const current = data.settings.theme;
+        let next = 'light';
+        if (current === 'light') next = 'dark';
+        else if (current === 'dark') next = 'system';
+        else next = 'light';
+        
+        data.settings.theme = next;
         saveData();
-        applyTheme(data.settings.theme);
+        applyTheme(next);
     };
     
     const toggleSidebar = () => {
@@ -7262,7 +7273,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     }
                     logActivity('check-square', `Other task completed: "${task.description}"`);
                     
-                    // Log to History
+                    // CRITICAL FIX: Push to History Array
                     if(!data.otherTaskHistory) data.otherTaskHistory = [];
                     data.otherTaskHistory.push({
                         description: task.description,
@@ -7271,6 +7282,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     });
                     
                     data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [] };
+                    if(!data.dailyPlan[todayStr].completedTasks) data.dailyPlan[todayStr].completedTasks = [];
                     data.dailyPlan[todayStr].completedTasks.push({ type: 'other', description: task.description, id: task.id });
                 } else {
                     task.completedDate = null;
@@ -7326,7 +7338,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             
             if (!task) { renderHomePage(); return; }
 
-            // Prepare Modal for Permanent Deletion Checkbox
             const checkboxContainer = document.getElementById('confirmation-checkbox-container');
             const checkbox = document.getElementById('confirmation-checkbox');
             
@@ -7343,36 +7354,27 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 () => {
                     const isPermanent = task.isRepeating ? checkbox.checked : true; 
                     
+                    // CRITICAL FIX: Push to History Array BEFORE deleting
+                    if(!data.otherTaskHistory) data.otherTaskHistory = [];
+                    data.otherTaskHistory.push({
+                        description: task.description,
+                        status: 'Deleted',
+                        timestamp: new Date().toISOString()
+                    });
+
                     if (isPermanent) {
-                        // Permanent Delete
                         data.otherTasks = (data.otherTasks || []).filter(t => t.id !== taskId);
                         data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
                         logActivity('trash-2', `Permanently deleted task: "${task.description}"`);
-                        
-                        // Log to History
-                        if(!data.otherTaskHistory) data.otherTaskHistory = [];
-                        data.otherTaskHistory.push({
-                            description: task.description,
-                            status: 'Deleted',
-                            timestamp: new Date().toISOString()
-                        });
                     } else {
-                        // Single Day Delete logic
                         const todayStr = getLocalDateString();
-                        
-                        // Initialize array if missing
                         if (!task.deletedInstances) task.deletedInstances = [];
-                        
-                        // Add today to deleted list
                         if (!task.deletedInstances.includes(todayStr)) {
                             task.deletedInstances.push(todayStr);
                         }
-                        
-                        // IMPORTANT: If it's a one-time task (not repeating), delete it fully anyway
                         if (!task.isRepeating) {
                              data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
                         }
-
                         logActivity('minus-circle', `Removed task for today: "${task.description}"`);
                     }
                     
