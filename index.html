@@ -1482,9 +1482,10 @@
         <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i><span>Stats</span></button>
         <button data-page="notices" class="mobile-nav-btn"><i data-lucide="sticky-note"></i><span>Notes</span></button>
         <button data-page="settings" class="mobile-nav-btn"><i data-lucide="settings"></i><span>Set</span></button>
-        <button id="theme-toggle-btn-mobile" class="mobile-nav-btn">
+        <button id="theme-toggle-btn-mobile" class="mobile-nav-btn" title="Switch Mode">
             <i data-lucide="sun" id="theme-icon-sun-mobile"></i>
-            <i data-lucide="moon" id="theme-icon-moon-mobile" style="display: none;"></i>
+            <i data-lucide="moon" id="theme-icon-moon-mobile" class="hidden"></i>
+            <i data-lucide="laptop" id="theme-icon-system-mobile" class="hidden"></i>
             <span>Mode</span>
         </button>
         <button data-page="updates" class="mobile-nav-btn"><i data-lucide="sparkles" class="text-amber-500"></i><span class="text-amber-600 font-bold">New</span></button>
@@ -3248,29 +3249,31 @@ let allCharts = {};
 
         document.documentElement.className = effectiveTheme;
         
-        // Icons Update Logic (3-way)
+        // Icons Update Logic (3-way) - Fixed for Mobile
         const sunIcons = ['theme-icon-sun', 'theme-icon-sun-mobile'];
         const moonIcons = ['theme-icon-moon', 'theme-icon-moon-mobile'];
-        const sysIcons = ['theme-icon-system']; // PC only has system icon ID, mobile reuses toggle
+        const sysIcons = ['theme-icon-system', 'theme-icon-system-mobile']; 
 
-        // Reset all
+        // Reset all (Hide everything first)
         [...sunIcons, ...moonIcons, ...sysIcons].forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.classList.add('hidden');
+            if(el) {
+                el.classList.add('hidden');
+                el.style.display = ''; // Clear inline styles if any
+            }
         });
 
-        // Show relevant icon
-        if (theme === 'light') sunIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
-        else if (theme === 'dark') moonIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
-        else {
-            // For System
+        // Show relevant icon set based on CURRENT setting (not effective theme)
+        if (theme === 'light') {
+            sunIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+        } else if (theme === 'dark') {
+            moonIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+        } else {
+            // For System Default
             sysIcons.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
-            // On mobile, show Laptop/System icon if available or just fallback to Sun/Moon based on effective
-            const mobileIcon = document.getElementById('theme-icon-system');
-            if(mobileIcon) mobileIcon.classList.remove('hidden');
         }
 
-        // Text label update
+        // Text label update (Sidebar)
         const label = document.getElementById('theme-text-sidebar');
         if(label) label.textContent = theme === 'system' ? 'Auto' : theme;
 
