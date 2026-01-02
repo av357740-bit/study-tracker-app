@@ -2103,14 +2103,29 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "11.1"; // Mega Popup & History Fix
+    const CURRENT_APP_VERSION = "11.3"; // Big Grid Exam Dashboard
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "11.1": {
+        "11.3": {
             date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "Big Exam Grid 🔢", "note": "डैशबोर्ड पर अब 4 एग्जाम **Side-by-Side (Grid)** में दिखेंगे। काउंटडाउन नंबर (दिन) अब बहुत बड़े दिखेंगे ताकि नज़र तुरंत पड़े।" },
+                { "title": "Exam Alert Colors 🚨", "note": "एग्जाम पास आने पर रंग अपने आप बदलेंगे: 2 दिन पहले (पीला), 1 दिन पहले (नारंगी), और परीक्षा वाले दिन (लाल)।" },
+                { "title": "Backup & Revision Fix ✅", "note": "बैकअप इंपोर्ट और 8/23 दिन वाला रिवीजन साइकिल पूरी तरह सेट है।" }
+            ]
+        },
+        "11.2": {
+            date: "2025-01-11",
+            features: [
+                { "title": "New Revision Cycle 🧠", "note": "रिवीजन का तरीका बदल दिया गया है। अब रिवीजन ठीक **8वें दिन** और **23वें दिन** आएगा।" },
+                { "title": "Backup Import Fixed 🛠️", "note": "Full Backup Import वाली समस्या को ठीक कर दिया गया है।" }
+            ]
+        },
+        "11.1": {
+            date: "2025-01-10",
             features: [
                 { "title": "History Fix (100% Solved) 📜", "note": "अब 'Other Task' को Complete या Delete करने पर वह तुरंत 'Notes & History' पेज पर रिकॉर्ड हो जाएगा। यह अब कभी मिस नहीं होगा।" },
                 { "title": "Mega Update Popup 🚀", "note": "अपडेट पॉप-अप अब पिछले 10 बदलावों को दिखाता है। आप पॉप-अप के अंदर ही स्क्रॉल करके सब कुछ पढ़ सकते हैं।" },
@@ -4044,17 +4059,38 @@ let allCharts = {};
             if (!subject || !chapter) return '';
 
             const uniqueId = isManual ? `manual-${item.id}` : (isRevision ? `revision-${subject.id}-${chapter.id}-${revision.date}` : `task-${subject.id}-${chapter.id}`);
-            // Removed sourceBadge
-            const bgColor = isManual ? 'bg-indigo-50 dark:bg-indigo-900/40' : (isRevision ? 'bg-amber-50 dark:bg-amber-900/40' : 'bg-card-light dark:bg-card-dark shadow-sm');
-            const checkboxClass = isRevision ? 'revision-checkbox text-amber-500' : 'task-checkbox text-primary';
-            const labelText = isRevision ? _('revision_task', {chapterName: chapter.name}) : chapter.name;
+            
+            // --- Custom Styling for 8th and 23rd Day Revisions ---
+            let bgColor = 'bg-card-light dark:bg-card-dark shadow-sm';
+            let revisionBadge = '';
+            let checkboxClass = 'task-checkbox text-primary';
+            
+            if (isManual) {
+                bgColor = 'bg-indigo-50 dark:bg-indigo-900/40';
+            } else if (isRevision) {
+                checkboxClass = 'revision-checkbox text-amber-500';
+                
+                // Identify revision type (8th or 23rd)
+                if (revision.cycle === 8) {
+                    bgColor = 'bg-purple-50 dark:bg-purple-900/30 border-l-4 border-purple-400';
+                    revisionBadge = `<span class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-purple-200 text-purple-800 dark:bg-purple-800 dark:text-purple-200 uppercase tracking-wide">8th Day Rev.</span>`;
+                } else if (revision.cycle === 23) {
+                    bgColor = 'bg-pink-50 dark:bg-pink-900/30 border-l-4 border-pink-400';
+                    revisionBadge = `<span class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-pink-200 text-pink-800 dark:bg-pink-800 dark:text-pink-200 uppercase tracking-wide">23rd Day Rev.</span>`;
+                } else {
+                    // Fallback for old data or other cycles
+                    bgColor = 'bg-amber-50 dark:bg-amber-900/40';
+                    revisionBadge = `<span class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-800 dark:bg-amber-800 dark:text-amber-200 uppercase">Rev.</span>`;
+                }
+            }
 
-            let subText = `<p class="text-sm ${isRevision ? 'text-amber-600 dark:text-amber-300' : 'text-sky-600 dark:text-sky-300'} flex items-center gap-1.5">${isRevision ? '<i data-lucide="repeat" class="w-3 h-3"></i> ' : ''}${_(subject.id)}</p>`;
+            const labelText = isRevision ? chapter.name : chapter.name;
+
+            let subText = `<p class="text-sm ${isRevision ? 'text-gray-600 dark:text-gray-400' : 'text-sky-600 dark:text-sky-300'} flex items-center gap-1.5">${isRevision ? '<i data-lucide="repeat" class="w-3 h-3"></i> ' : ''}${_(subject.id)}</p>`;
             if(isManual) subText = `<p class="text-sm text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5"><i data-lucide="hand" class="w-3 h-3"></i> ${_(subject.id)}</p>`;
             
             const noteHtml = item.note ? `<div class="mt-2 pl-7"><p class="text-xs text-yellow-700 dark:text-yellow-300 p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-md flex items-start gap-2"><i data-lucide="notebook-text" class="w-4 h-4 flex-shrink-0 mt-0.5"></i><span>${item.note}</span></p></div>` : '';
             
-            // Removed data-source-type from buttons
             const actionButtons = `
                 <div class="flex gap-1">
                     <button class="task-action-btn postpone-btn p-1.5 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/50" title="${_('postpone_task')}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} data-task-type="${type}"><i data-lucide="skip-forward" class="w-4 h-4 text-yellow-600"></i></button>
@@ -4064,11 +4100,10 @@ let allCharts = {};
                     }
                 </div>`;
 
-            // Removed data-source-type from checkbox
             html = `<li class="task-list-item p-3 rounded-lg flex flex-col items-start ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
                 <div class="w-full flex items-center gap-3">
                     <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-id-only="${subject.id}"`} data-task-type="${type}">
-                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold">${labelText}</p>${subText}</label>
+                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold flex items-center flex-wrap gap-1">${labelText} ${revisionBadge}</p>${subText}</label>
                     ${actionButtons}
                 </div>
                 ${noteHtml}
@@ -4079,7 +4114,6 @@ let allCharts = {};
             let bgColor = 'bg-gray-100 dark:bg-slate-800';
             let priorityBadge = '';
             
-            // Priority Visuals Logic
             if (item.priority) {
                 if (item.isUpcomingPriority) {
                     if (item.alertMsg === 'Tomorrow!') bgColor = 'bg-orange-100 dark:bg-orange-900/40 border-l-4 border-orange-500';
@@ -4088,15 +4122,12 @@ let allCharts = {};
                     
                     priorityBadge = `<span class="ml-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-white/50 text-black shadow-sm">${item.alertMsg}</span>`;
                 } else {
-                    // Today is the exam day!
                     bgColor = 'bg-red-100 dark:bg-red-900/50 border-l-4 border-red-600 shadow-md animate-pulse';
                     priorityBadge = `<span class="ml-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-600 text-white shadow-sm">EXAM DAY!</span>`;
                 }
             }
 
             const repeatIcon = item.isRepeating ? '<i data-lucide="repeat" class="w-3 h-3 text-violet-500"></i> ' : '';
-            
-            // Disable checkbox for upcoming tasks (cannot complete future task today)
             const checkboxHtml = item.isUpcomingPriority 
                 ? `<i data-lucide="clock" class="w-5 h-5 text-gray-400"></i>` 
                 : `<input type="checkbox" id="${uniqueId}" class="task-checkbox text-gray-500 h-5 w-5 rounded border flex-shrink-0" data-task-id="${item.id}" data-task-type="${type}">`;
@@ -5068,35 +5099,90 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
     const renderUpcomingExamsOnDashboard = () => {
         const container = document.getElementById('dashboard-exams-container');
         const today = getLocalDateString();
-        const upcomingExam = (data.exams || []).filter(exam => exam.examDate && exam.examDate >= today).sort((a,b) => new Date(a.examDate) - new Date(b.date))[0];
-        container.innerHTML = `<h2 class="text-lg font-bold text-center mb-2" data-translate="upcoming_exams">${_('upcoming_exams')}</h2>`;
+        
+        // Filter and get TOP 4 exams
+        const upcomingExams = (data.exams || [])
+            .filter(exam => exam.examDate && exam.examDate >= today)
+            .sort((a,b) => new Date(a.examDate) - new Date(b.examDate))
+            .slice(0, 4); // Limit to 4
 
-        if (!upcomingExam) { 
-            // NEW: CTA Link for Empty State (Directly navigates to Exams Page)
-            container.innerHTML += `
-                <div class="flex flex-col items-center justify-center py-2">
-                    <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-2 text-center">एग्जाम ऐड करने पर यहाँ आपका 'Upcoming Exam' दिखेगा।</p>
-                    <button id="dashboard-add-exam-btn-2" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
-                        Add Exam <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                    </button>
+        // Container Style (Glassmorphism)
+        container.className = "md:col-span-2 p-3 rounded-xl shadow-lg animate-fadeIn border border-white/20 relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-white/5 dark:to-white/0 backdrop-blur-md flex flex-col";
+        
+        let content = `<h2 class="text-sm font-black mb-2 flex items-center gap-2 text-gray-700 dark:text-gray-200 uppercase tracking-wider relative z-10"><i data-lucide="timer" class="w-4 h-4"></i> Exams</h2>`;
+
+        if (upcomingExams.length === 0) { 
+            content += `
+                <div class="flex-grow flex flex-col items-center justify-center py-2 relative z-10">
+                    <p class="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">No exams scheduled</p>
+                    <button id="dashboard-add-exam-btn-2" class="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg hover:shadow-cyan-500/30 transition-all transform hover:scale-105">Add New Exam</button>
                 </div>`; 
+        } else {
+            // GRID LAYOUT: 2 Columns (Side-by-Side)
+            content += `<div class="grid grid-cols-2 gap-2 relative z-10 h-full">`;
             
-            // Add click listener
-            setTimeout(() => {
-                document.getElementById('dashboard-add-exam-btn-2')?.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigateTo('exams'); // Jump to Exams Page
-                });
-            }, 0);
+            // Unique Color Palettes for the 4 slots (Normal Days)
+            const palettes = [
+                "bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
+                "bg-violet-500/10 border-violet-500/30 text-violet-600 dark:text-violet-400",
+                "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
+                "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
+            ];
 
-            lucide.createIcons();
-            return; 
+            upcomingExams.forEach((exam, index) => {
+                const daysRemaining = Math.ceil((new Date(exam.examDate) - new Date()) / 86400000);
+                const examDateFormatted = new Date(exam.examDate).toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-GB', { day: 'numeric', month: 'short' });
+                
+                let cardStyle = "";
+                let dayDisplay = "";
+                let subLabel = "Days Left";
+
+                // URGENCY LOGIC (Smart Colors)
+                if (daysRemaining === 0) {
+                    // TODAY - High Alert (Red)
+                    cardStyle = "bg-red-600 border-red-500 text-white animate-pulse shadow-red-500/40 shadow-lg";
+                    dayDisplay = "TODAY";
+                    subLabel = "Good Luck!";
+                } else if (daysRemaining === 1) {
+                    // TOMORROW - High Priority (Orange)
+                    cardStyle = "bg-orange-500 border-orange-400 text-white shadow-orange-500/30 shadow-md";
+                    dayDisplay = "01";
+                    subLabel = "Tomorrow";
+                } else if (daysRemaining === 2) {
+                    // 2 DAYS - Warning (Yellow)
+                    cardStyle = "bg-yellow-400 border-yellow-300 text-black shadow-yellow-400/30 shadow-md";
+                    dayDisplay = "02";
+                    subLabel = "Prepare!";
+                } else {
+                    // NORMAL - Cycle Colors
+                    cardStyle = `${palettes[index % 4]} border shadow-sm hover:bg-white/20 transition-colors`;
+                    dayDisplay = String(daysRemaining).padStart(2, '0');
+                }
+
+                // If days > 99, adjust font size
+                const numSize = daysRemaining > 99 ? "text-2xl" : (daysRemaining === 0 ? "text-xl" : "text-4xl");
+
+                content += `
+                <div class="flex flex-col items-center justify-center p-2 rounded-xl border ${cardStyle} min-h-[80px]">
+                    <span class="${numSize} font-black leading-none tracking-tighter">${dayDisplay}</span>
+                    <span class="text-[9px] font-bold opacity-80 uppercase tracking-wide mb-1">${subLabel}</span>
+                    <p class="text-[10px] font-medium truncate w-full text-center border-t border-current/20 pt-1 mt-auto opacity-90">${exam.name}</p>
+                </div>`;
+            });
+            content += `</div>`;
         }
         
-        const daysRemaining = Math.ceil((new Date(upcomingExam.examDate) - new Date()) / 86400000);
-        const examDateFormatted = new Date(upcomingExam.examDate).toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
-        container.innerHTML += `<div class="text-center p-3 bg-amber-50 dark:bg-amber-900/50 rounded-lg animate-list-item"><p class="text-sm font-semibold">${upcomingExam.name}</p><div class="text-5xl font-bold text-warning">${daysRemaining >= 0 ? daysRemaining : '0'}</div><p class="text-xs -mt-1">${_('days_remaining')}</p><p class="text-xs font-semibold text-amber-600 dark:text-amber-300 mt-1">${examDateFormatted}</p></div>`;
+        container.innerHTML = content;
+        
+        // Navigation Listener
+        setTimeout(() => {
+            document.getElementById('dashboard-add-exam-btn-2')?.addEventListener('click', (e) => {
+                e.preventDefault(); e.stopPropagation();
+                navigateTo('exams');
+            });
+        }, 0);
+
+        lucide.createIcons();
     };
 
     // Updated: Removed sourceType param
@@ -5274,11 +5360,22 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
     };
     
     const scheduleRevisions = (chapter) => {
-        const revisionDays = [8, 16, 30];
+        // CHANGED: Only 8th Day and 23rd Day revisions as requested
+        const revisionCycles = [8, 23]; 
+        
+        // Remove old auto revisions to avoid duplicates if re-completed
         chapter.revisions = chapter.revisions.filter(r => r.type === 'manual');
-        revisionDays.forEach(days => {
-            const revisionDate = new Date(chapter.dateCompleted); revisionDate.setDate(revisionDate.getDate() + days);
-            chapter.revisions.push({ date: getLocalDateString(revisionDate), status: 'Pending', type: 'auto' });
+        
+        revisionCycles.forEach(days => {
+            const revisionDate = new Date(chapter.dateCompleted); 
+            revisionDate.setDate(revisionDate.getDate() + days);
+            // Added 'cycle' property to identify which revision it is (for coloring)
+            chapter.revisions.push({ 
+                date: getLocalDateString(revisionDate), 
+                status: 'Pending', 
+                type: 'auto',
+                cycle: days 
+            });
         });
     };
 const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_data'), () => { localStorage.removeItem(DB_KEY); window.location.reload(); });
@@ -5308,56 +5405,62 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             a.click(); URL.revokeObjectURL(url);
         };
         
-        const handleFileUpload = (event, importType) => {
+        const handleFileUpload = (event) => {
+             // Import Type is stored in the input element itself
+             const importType = event.target.dataset.importType;
              const file = event.target.files[0];
+             
              if (!file) return;
+             if (!importType) { alert("System Error: Import type missing."); return; }
+
              const reader = new FileReader();
              reader.onload = (e) => {
                  try {
-                     const importedData = JSON.parse(e.target.result);
-                     switch(importType) {
-                        case 'full_backup':
-                            importFullBackup(importedData);
-                            break;
-                        case 'chapters':
-                            importAllChapters(importedData);
-                            break;
-                        case 'routine':
-                            importRoutine(importedData);
-                            break;
-                        case 'exams':
-                            importExams(importedData);
-                            break;
-                        case 'urls':
-                            importUrls(importedData);
-                            break;
+                     const jsonString = e.target.result;
+                     const importedData = JSON.parse(jsonString);
+                     
+                     // Direct Routing
+                     if (importType === 'full_backup') {
+                         importFullBackup(importedData, jsonString);
+                     } else if (importType === 'chapters') {
+                         importAllChapters(importedData);
+                     } else if (importType === 'routine') {
+                         importRoutine(importedData);
+                     } else if (importType === 'exams') {
+                         importExams(importedData);
+                     } else if (importType === 'urls') {
+                         importUrls(importedData);
                      }
                  } catch (error) {
-                     alert("Error reading or parsing the JSON file.");
+                     alert("❌ Error: Invalid Backup File. Please check the file.");
                      console.error("Import Error:", error);
                  } finally {
-                     event.target.value = null; // Reset file input
+                     // Always reset input so same file can be selected again
+                     event.target.value = ''; 
                  }
              };
+             reader.onerror = () => alert("❌ Failed to read file.");
              reader.readAsText(file);
         };
 
-        const importFullBackup = (importedData) => {
-            if (!importedData || typeof importedData !== 'object') {
-                alert("Invalid File Format.");
+        const importFullBackup = (importedData, rawString) => {
+            // Strong Validation
+            if (!importedData || typeof importedData !== 'object' || !Array.isArray(importedData.subjects)) {
+                alert("❌ Invalid Backup File: This does not look like a Study Tracker backup.");
                 return;
             }
 
-            showConfirmationModal('Import Backup?', 'This will overwrite all data. Are you sure?', () => {
+            showConfirmationModal('Restore Full Backup?', '⚠️ WARNING: This will DELETE all current data and replace it with the backup. This cannot be undone.', () => {
                 try {
-                    // Direct and brutal replacement to ensure deep data is restored
-                    localStorage.setItem(DB_KEY, JSON.stringify(importedData));
+                    // Force Save directly to Storage
+                    const stringToSave = rawString || JSON.stringify(importedData);
+                    localStorage.setItem(DB_KEY, stringToSave);
                     
-                    // Reload immediately to fetch from storage
-                    alert('Backup Imported Successfully! App will reload.');
+                    // Force Reload
+                    alert('✅ Backup Restored Successfully! The app will now reload.');
                     window.location.reload();
                 } catch (error) {
-                     alert('Critical Error importing backup: ' + error.message);
+                     alert('❌ Import Failed: Storage might be full.');
                 }
             });
         };
@@ -6669,27 +6772,63 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             document.getElementById('dpt-subject-filter').addEventListener('change', renderDptPage);
 
+            // --- FIXED IMPORT/EXPORT LISTENERS ---
+            
+            // 1. Master File Input Listener (Must be attached properly)
+            const mainFileInput = document.getElementById('import-file-input');
+            // Remove old listeners by cloning (Fixes multi-trigger bug)
+            const newFileInput = mainFileInput.cloneNode(true);
+            mainFileInput.parentNode.replaceChild(newFileInput, mainFileInput);
+            
+            // Attach the ONE global listener
+            newFileInput.addEventListener('change', handleFileUpload);
+
+            // 2. Trigger Buttons
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
             
+            document.getElementById('import-full-backup-btn').addEventListener('click', () => { 
+                const input = document.getElementById('import-file-input');
+                input.dataset.importType = 'full_backup'; 
+                input.click(); 
+            });
+
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
             document.getElementById('import-exams-btn').addEventListener('click', () => { 
-                const fileInput = document.getElementById('import-file-input');
-                fileInput.dataset.importType = 'exams'; 
-                fileInput.click(); 
+                const input = document.getElementById('import-file-input');
+                input.dataset.importType = 'exams'; 
+                input.click(); 
             });
 
             document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
             document.getElementById('import-urls-btn').addEventListener('click', () => { 
-                const fileInput = document.getElementById('import-file-input');
-                fileInput.dataset.importType = 'urls'; 
-                fileInput.click(); 
+                const input = document.getElementById('import-file-input');
+                input.dataset.importType = 'urls'; 
+                input.click(); 
             });
             
-            document.getElementById('import-full-backup-btn').addEventListener('click', () => { 
-                const fileInput = document.getElementById('import-file-input');
-                fileInput.dataset.importType = 'full_backup'; 
-                fileInput.click(); 
-            });
+            // Re-attach listeners for Routine/Chapters Import buttons (Fixing context loss)
+            const btnImportRoutine = document.getElementById('import-routine-btn-new');
+            if(btnImportRoutine) {
+                // Clone to clear old listeners
+                const newBtn = btnImportRoutine.cloneNode(true);
+                btnImportRoutine.parentNode.replaceChild(newBtn, btnImportRoutine);
+                newBtn.addEventListener('click', () => { 
+                    const input = document.getElementById('import-file-input');
+                    input.dataset.importType = 'routine'; 
+                    input.click(); 
+                });
+            }
+
+            const btnImportChapters = document.getElementById('import-all-chapters-btn');
+            if(btnImportChapters) {
+                 const newBtn = btnImportChapters.cloneNode(true);
+                 btnImportChapters.parentNode.replaceChild(newBtn, btnImportChapters);
+                 newBtn.addEventListener('click', () => { 
+                    const input = document.getElementById('import-file-input');
+                    input.dataset.importType = 'chapters'; 
+                    input.click(); 
+                });
+            }
 
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
             document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
