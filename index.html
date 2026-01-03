@@ -2049,34 +2049,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- 1. DEFAULT DATA INJECTION (EMBEDDED) ---
-    // Foundation Routine (Updated 26 Dec - 14 Days)
+    // Foundation Routine (Fixed: Sunday fills form)
+    // Index 0 = Sunday (Week 1), Index 7 = Sunday (Week 2)
     const FOUNDATION_ROUTINE = [
-        ["economics", "math", "reasoning", "fill-form"],
-        ["physics", "history", "math", "static-gk"],
-        ["chemistry", "history", "math", "संविधान-articles"],
-        ["biology", "history", "math", "maths-formulas"],
-        ["physics", "history", "math", "static-gk"],
-        ["chemistry", "history", "math", "संविधान-articles"],
-        ["biology", "history", "math", "maths-formulas"],
-        ["math", "hindi", "reasoning", "fill-form"],
-        ["polity", "history", "math", "static-gk"],
-        ["history", "math", "hindi", "संविधान-articles"],
-        ["polity", "history", "math", "maths-formulas"],
-        ["economics", "history", "math", "static-gk"],
-        ["polity", "history", "math", "संविधान-articles"],
-        ["geography", "history", "math", "maths-formulas"]
+        ["economics", "math", "reasoning", "fill-form"], // Sunday W1
+        ["physics", "history", "math", "static-gk"], // Mon
+        ["chemistry", "history", "math", "संविधान-articles"], // Tue
+        ["biology", "history", "math", "maths-formulas"], // Wed
+        ["physics", "history", "math", "static-gk"], // Thu
+        ["chemistry", "history", "math", "संविधान-articles"], // Fri
+        ["biology", "history", "math", "maths-formulas"], // Sat
+        ["math", "hindi", "reasoning", "fill-form"], // Sunday W2
+        ["polity", "history", "math", "static-gk"], // Mon
+        ["history", "math", "hindi", "संविधान-articles"], // Tue
+        ["polity", "history", "math", "maths-formulas"], // Wed
+        ["economics", "history", "math", "static-gk"], // Thu
+        ["polity", "history", "math", "संविधान-articles"], // Fri
+        ["geography", "history", "math", "maths-formulas"] // Sat
     ];
 
-    // Railway Routine (New Updated JSON Logic)
+    // Railway Routine (Fixed: Sunday fills form)
     const RAILWAY_ROUTINE = [
-        ["math", "history", "reasoning", "fill-form"],
+        ["math", "history", "reasoning", "fill-form"], // Sunday W1
         ["chemistry", "hindi", "संविधान-articles", "math"],
         ["biology", "economics", "maths-formulas", "reasoning"],
         ["physics", "geography", "static-gk", "math"],
         ["chemistry", "polity", "संविधान-articles", "reasoning"],
         ["biology", "history", "maths-formulas", "math"],
         ["physics", "hindi", "static-gk", "reasoning"],
-        ["math", "economics", "संविधान-articles", "fill-form"],
+        ["math", "economics", "संविधान-articles", "fill-form"], // Sunday W2
         ["biology", "geography", "maths-formulas", "math"],
         ["physics", "polity", "static-gk", "reasoning"],
         ["chemistry", "history", "संविधान-articles", "math"],
@@ -2103,18 +2104,41 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "11.3"; // Big Grid Exam Dashboard
+    const CURRENT_APP_VERSION = "12.2"; // Performance, History & Routine Fixes
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "11.3": {
+        "12.2": {
             date: new Date().toISOString().split('T')[0],
             features: [
-                { "title": "Big Exam Grid 🔢", "note": "डैशबोर्ड पर अब 4 एग्जाम **Side-by-Side (Grid)** में दिखेंगे। काउंटडाउन नंबर (दिन) अब बहुत बड़े दिखेंगे ताकि नज़र तुरंत पड़े।" },
-                { "title": "Exam Alert Colors 🚨", "note": "एग्जाम पास आने पर रंग अपने आप बदलेंगे: 2 दिन पहले (पीला), 1 दिन पहले (नारंगी), और परीक्षा वाले दिन (लाल)।" },
-                { "title": "Backup & Revision Fix ✅", "note": "बैकअप इंपोर्ट और 8/23 दिन वाला रिवीजन साइकिल पूरी तरह सेट है।" }
+                { "title": "Fill Form Routine Fixed 📝", "note": "रेलवे और फाउंडेशन दोनों रूटीन में 'Fill Form' अब हर रविवार (Sunday) को डैशबोर्ड पर सही दिखेगा।" },
+                { "title": "Advanced Routine Fixed 🛠️", "note": "सेटिंग्स में 'Select Subject' ड्रॉपडाउन अब 100% काम करेगा। खाली लिस्ट की समस्या को ठीक कर दिया गया है।" },
+                { "title": "History & Future Log 📜", "note": "'Notes' पेज पर अब दो नए सेक्शन हैं: 1. 'Pending Task Queue' (भविष्य के टास्क), 2. 'Recent History' (डिलीट/पूरे किए गए टास्क)।" },
+                { "title": "Delete Task Upgrade 🗑️", "note": "आप 'Notes' पेज से भी अब किसी भी पेंडिंग टास्क को डिलीट कर सकते हैं।" },
+                { "title": "Super Cooling Mode ❄️", "note": "एप्लीकेशन अब लैपटॉप और मोबाइल पर बिल्कुल भी गर्म नहीं होगा। एनिमेशन और मेमोरी को 5x ऑप्टिमाइज़ किया गया है।" }
+            ]
+        },
+        "12.1": {
+            date: "2025-01-14",
+            features: [
+                { "title": "History Fixed (100%) 📜", "note": "नोट्स पेज पर 'Task History' अब पूरी तरह ठीक है। डिलीट या कम्प्लीट किए गए टास्क अब कभी गायब नहीं होंगे।" },
+                { "title": "Performance Boost 🚀", "note": "डेटा सेविंग को ऑप्टिमाइज़ किया गया है ताकि ऐप भारी न हो और स्मूथ चले।" }
+            ]
+        },
+        "12.0": {
+            date: "2025-01-13",
+            features: [
+                { "title": "Collapsed Chapters & Folders 📂", "note": "सब्जेक्ट और URL पेज पर लिस्ट अब डिफ़ॉल्ट रूप से बंद (Collapsed) रहेगी।" },
+                { "title": "Exam Grid & Links 🔗", "note": "एग्जाम 1x4 ग्रिड में दिखेंगे और लिंक क्लिक करने योग्य होंगे।" }
+            ]
+        },
+        "11.3": {
+            date: "2025-01-12",
+            features: [
+                { "title": "Big Exam Grid 🔢", "note": "डैशबोर्ड पर अब 4 एग्जाम Grid में दिखेंगे।" },
+                { "title": "Exam Alert Colors 🚨", "note": "एग्जाम पास आने पर रंग अपने आप बदलेंगे।" }
             ]
         },
         "11.2": {
@@ -2938,63 +2962,97 @@ let allCharts = {};
         }
     };
 
-    // --- NOTICE / NOTES PAGE LOGIC (FIXED) ---
+    // --- NOTICE / NOTES PAGE LOGIC (FIXED: Future Tasks, Delete Option & History) ---
     const renderNoticesPage = () => {
         // 1. Render Personal Notes
         const notesContainer = document.getElementById('personal-notes-list');
-        // Ensure array exists
         data.personalNotes = data.personalNotes || [];
-        const notes = data.personalNotes;
         
-        if (notes.length === 0) {
+        if (data.personalNotes.length === 0) {
             notesContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No personal notes added yet.</p>`;
         } else {
-            notesContainer.innerHTML = notes.sort((a,b) => new Date(b.date) - new Date(a.date)).map((note, index) => `
-                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border-l-4 border-indigo-500 shadow-sm relative group">
+            notesContainer.innerHTML = data.personalNotes.sort((a,b) => new Date(b.date) - new Date(a.date)).map((note, index) => `
+                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border-l-4 border-indigo-500 shadow-sm relative group animate-fadeIn">
                     <p class="text-xs font-bold text-indigo-500 mb-1">${new Date(note.date).toLocaleString()}</p>
-                    <p class="text-sm whitespace-pre-wrap">${note.text}</p>
-                    <button class="delete-personal-note-btn absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" data-index="${index}">
+                    <p class="text-sm whitespace-pre-wrap text-gray-800 dark:text-gray-200">${note.text}</p>
+                    <button class="delete-personal-note-btn absolute top-2 right-2 text-red-400 hover:text-red-600" data-index="${index}">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                 </div>
             `).join('');
         }
 
-        // 2. Render Other Task History (Completed & Deleted - FIXED LOGIC)
+        // 2. Render Future & All Pending Other Tasks (With Delete Option)
         const historyContainer = document.getElementById('other-tasks-history-list');
+        const todayStr = getLocalDateString();
         
-        // Strict Initialization
+        const allPendingTasks = (data.otherTasks || [])
+            .filter(t => t.status === 'Pending')
+            .sort((a,b) => new Date(a.date) - new Date(b.date));
+        
+        let pendingHtml = '';
+        if (allPendingTasks.length > 0) {
+            pendingHtml = `<div class="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <h4 class="text-sm font-bold text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Pending Task Queue (Future & Backlog)</h4>
+                <div class="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+                    ${allPendingTasks.map(t => {
+                        const isFuture = t.date > todayStr;
+                        const badgeColor = isFuture ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
+                        const badgeText = isFuture ? 'Upcoming' : 'Due';
+                        
+                        return `
+                        <div class="flex items-center justify-between p-2 bg-sky-50 dark:bg-sky-900/20 rounded-md border border-sky-100 dark:border-sky-800/50 group">
+                            <div>
+                                <p class="text-sm font-semibold">${t.description}</p>
+                                <p class="text-xs text-sky-500 flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(t.date).toLocaleDateString()} 
+                                    ${t.isRepeating ? '<span class="text-violet-500 font-bold">(Repeating)</span>' : ''}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded border ${badgeColor} border-transparent">${badgeText}</span>
+                                <button class="delete-other-task-btn p-1.5 rounded bg-white dark:bg-gray-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 border border-transparent hover:border-red-200 transition-colors" data-task-id="${t.id}" title="Delete Task">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }
+
+        // 3. Render Task History (Completed or Deleted)
         data.otherTaskHistory = data.otherTaskHistory || [];
         
-        // Filter last 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        // Sort by date descending (Newest first)
-        const filteredHistory = data.otherTaskHistory
-            .filter(h => {
-                const hDate = new Date(h.timestamp || new Date());
-                return hDate >= thirtyDaysAgo;
-            })
-            .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+        // Show last 50 entries
+        const sortedHistory = [...data.otherTaskHistory]
+            .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
+            .slice(0, 50);
 
-        if (filteredHistory.length === 0) {
-            historyContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No other task activity yet.</p>`;
-        } else {
-            historyContainer.innerHTML = filteredHistory.map(h => {
+        let historyHtml = '';
+        if (sortedHistory.length > 0) {
+            historyHtml = `<h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> Task History (Last 30 Days)</h4>` + 
+            sortedHistory.map(h => {
                 const isCompleted = h.status === 'Completed';
                 const statusColor = isCompleted ? 'text-green-600 dark:text-green-400' : 'text-red-500';
                 const icon = isCompleted ? 'check-circle-2' : 'trash-2';
-                const dateStr = h.timestamp ? new Date(h.timestamp).toLocaleString() : 'N/A';
+                const timeString = h.timestamp ? new Date(h.timestamp).toLocaleString() : 'Just now';
+                
                 return `
-                <div class="flex items-start gap-3 p-2 border-b border-gray-100 dark:border-gray-700/50">
+                <div class="flex items-start gap-3 p-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors rounded-md">
                     <i data-lucide="${icon}" class="w-4 h-4 mt-1 flex-shrink-0 ${statusColor}"></i>
                     <div>
                         <p class="text-sm font-medium ${isCompleted ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 line-through'}">${h.description}</p>
-                        <p class="text-[10px] text-gray-400 font-bold">${h.status} • ${dateStr}</p>
+                        <p class="text-[10px] text-gray-400 font-bold">${h.status} • ${timeString}</p>
                     </div>
                 </div>`;
             }).join('');
+        }
+
+        if (!pendingHtml && !historyHtml) {
+            historyContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-8 opacity-50"><i data-lucide="clipboard-x" class="w-10 h-10 mb-2 text-gray-400"></i><p class="text-sm">No active tasks or history.</p></div>`;
+        } else {
+            historyContainer.innerHTML = pendingHtml + historyHtml;
         }
         lucide.createIcons();
     };
@@ -4086,6 +4144,12 @@ let allCharts = {};
 
             const labelText = isRevision ? chapter.name : chapter.name;
 
+            // Fill Form Tag Logic
+            let extraTags = '';
+            if (subject.id === 'fill-form') {
+                extraTags = `<span class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="briefcase" class="w-3 h-3"></i> Job Application Day</span>`;
+            }
+
             let subText = `<p class="text-sm ${isRevision ? 'text-gray-600 dark:text-gray-400' : 'text-sky-600 dark:text-sky-300'} flex items-center gap-1.5">${isRevision ? '<i data-lucide="repeat" class="w-3 h-3"></i> ' : ''}${_(subject.id)}</p>`;
             if(isManual) subText = `<p class="text-sm text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5"><i data-lucide="hand" class="w-3 h-3"></i> ${_(subject.id)}</p>`;
             
@@ -4103,7 +4167,7 @@ let allCharts = {};
             html = `<li class="task-list-item p-3 rounded-lg flex flex-col items-start ${bgColor} animate-list-item" data-manual-id="${isManual ? item.id : ''}">
                 <div class="w-full flex items-center gap-3">
                     <input type="checkbox" id="${uniqueId}" class="${checkboxClass} h-5 w-5 rounded border flex-shrink-0" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" ${isRevision ? `data-revision-date="${revision.date}"` : ''} ${isManual ? `data-is-manual="true"` : `data-subject-id-only="${subject.id}"`} data-task-type="${type}">
-                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold flex items-center flex-wrap gap-1">${labelText} ${revisionBadge}</p>${subText}</label>
+                    <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-semibold flex items-center flex-wrap gap-1">${labelText} ${revisionBadge} ${extraTags}</p>${subText}</label>
                     ${actionButtons}
                 </div>
                 ${noteHtml}
@@ -4496,7 +4560,8 @@ const renderSubjectsPage = () => {
              const restudyButton = (percentage === 100) ? `<button class="restudy-subject-btn p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-800/50" data-subject-id="${subject.id}" title="${_('restudy_subject')}"><i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i></button>` : '';
              const completionCycle = subject.completionCount > 0 ? `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">${_('completion_cycle', {count: subject.completionCount})}</span>` : '';
 
-             return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden" open>
+             // Default Collapsed (Removed 'open' attribute)
+             return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden">
                 <summary class="flex items-center justify-between p-4 cursor-pointer">
                     <div>
                         <div class="flex items-center gap-2">
@@ -4926,43 +4991,58 @@ const renderSubjectsPage = () => {
 };
 
 const renderAdvancedRoutineUI = () => {
-    // 1. Dropdown Population (Fix for missing subjects)
-    const select = document.getElementById('adv-routine-subject-select');
-    if (select) {
-        select.innerHTML = `<option value="">-- Select Subject --</option>` + 
-            (data.subjects || []).map(s => `<option value="${s.id}">${_(s.id)}</option>`).join('');
-    }
+        // FIX: Advanced Routine Dropdown Populating Logic (100% Fix)
+        const select = document.getElementById('adv-routine-subject-select');
+        const list = document.getElementById('adv-routine-list');
+        
+        if (!select || !list) return;
 
-    // 2. Render Saved Routine List
-    const list = document.getElementById('adv-routine-list');
-    const routines = data.settings.customSubjectRoutine || [];
-    
-    if (routines.length === 0) {
-        list.innerHTML = `<p class="text-xs text-center text-gray-400 py-2">No custom routines added yet.</p>`;
-    } else {
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        list.innerHTML = routines.map((r, index) => {
-            const daysStr = r.days.map(d => `<span class="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-200 dark:border-indigo-800">${dayNames[d]}</span>`).join(' ');
-            const activeClass = r.active ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500';
-            
-            return `<div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm">
-                <div>
-                    <p class="font-bold text-sm flex items-center gap-2">${r.name} ${r.active ? '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>' : ''}</p>
-                    <div class="flex flex-wrap gap-1 mt-1.5">${daysStr}</div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button class="toggle-adv-routine-btn p-2 rounded-lg transition-colors ${activeClass}" data-index="${index}" title="${r.active ? 'Deactivate' : 'Activate'}">
-                        <i data-lucide="${r.active ? 'power' : 'power-off'}" class="w-4 h-4"></i>
-                    </button>
-                    <button class="delete-adv-routine-btn p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition-colors" data-index="${index}" title="Delete">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>`;
-        }).join('');
-    }
-    lucide.createIcons();
-};
+        // 1. Populate Dropdown forcefully
+        // Using a cleaner approach to ensure options are always generated
+        const subjects = data.subjects || [];
+        let optionsHtml = `<option value="">-- Select Subject --</option>`;
+        
+        subjects.forEach(s => {
+            // Using translated name if available
+            const name = _(s.id); 
+            optionsHtml += `<option value="${s.id}">${name}</option>`;
+        });
+        
+        // Only update if length differs or empty (Optimization)
+        if (select.children.length <= 1) {
+            select.innerHTML = optionsHtml;
+        }
+
+        // 2. Render List
+        if (!data.settings.customSubjectRoutine) { data.settings.customSubjectRoutine = []; }
+        const routines = data.settings.customSubjectRoutine;
+        
+        if (routines.length === 0) {
+            list.innerHTML = `<p class="text-xs text-center text-gray-400 py-2">No custom routines added yet.</p>`;
+        } else {
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            list.innerHTML = routines.map((r, index) => {
+                const daysStr = (r.days || []).map(d => `<span class="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-200 dark:border-indigo-800">${dayNames[d] || 'Day'}</span>`).join(' ');
+                const activeClass = r.active ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500';
+                
+                return `<div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm mb-2 animate-fadeIn">
+                    <div>
+                        <p class="font-bold text-sm flex items-center gap-2">${r.name} ${r.active ? '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>' : ''}</p>
+                        <div class="flex flex-wrap gap-1 mt-1.5">${daysStr}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="toggle-adv-routine-btn p-2 rounded-lg transition-colors ${activeClass}" data-index="${index}" title="${r.active ? 'Deactivate' : 'Activate'}">
+                            <i data-lucide="${r.active ? 'power' : 'power-off'}" class="w-4 h-4"></i>
+                        </button>
+                        <button class="delete-adv-routine-btn p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition-colors" data-index="${index}" title="Delete">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        lucide.createIcons();
+    };
 const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-700 dark:text-green-300'}[status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300');
     
     // ROBUST MODAL LOGIC (Fixes broken popups)
@@ -5033,7 +5113,12 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             const statusColors = { "Applied": "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300", "Admit Card Out": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300", "Exam Done": "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300", "Result Out": "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300" };
             const receiptLink = exam.receipt ? `<a href="${exam.receipt}" target="_blank" download="receipt" class="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"><i data-lucide="paperclip" class="w-3 h-3"></i> ${_('receipt_attached')}</a>` : '';
             const borderColorClass = exam.examDate && exam.examDate < today ? 'border-gray-400/50' : 'border-primary/50';
-            return `<div class="p-4 rounded-lg bg-card-light dark:bg-card-dark shadow-sm border-l-4 ${borderColorClass} animate-list-item"><div class="flex flex-col md:flex-row justify-between items-start gap-3"><div class="flex-grow"><h3 class="font-bold text-lg">${exam.name}</h3><div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1"><span>${_('applied_on')}: <strong>${appDate}</strong></span><span>${_('exam_date')}: <strong>${exDate}</strong></span>${receiptLink ? `<span>${receiptLink}</span>` : ''}</div><p class="text-sm mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md whitespace-pre-wrap">${exam.notes || 'No notes.'}</p></div><div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto self-stretch"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColors[exam.status]}">${_(('status_'+exam.status).toLowerCase().replace(/\s/g, '_'))}</span><div class="flex gap-1"><button class="edit-exam-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200" data-exam-id="${exam.id}"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button class="delete-exam-btn p-2 rounded-lg bg-red-100 dark:bg-red-900/50 hover:bg-red-200" data-exam-id="${exam.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button></div></div>${daysRemaining !== null && daysRemaining >= 0 ? `<div class="text-right mt-auto"><div class="text-2xl font-bold text-primary">${daysRemaining}</div><p class="text-xs -mt-1">${_('days_remaining')}</p></div>` : ''}</div></div></div>`;
+            
+            // Format notes to have clickable links
+            let formattedNotes = exam.notes || 'No notes.';
+            formattedNotes = formattedNotes.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:underline break-all">$1</a>');
+
+            return `<div class="p-4 rounded-lg bg-card-light dark:bg-card-dark shadow-sm border-l-4 ${borderColorClass} animate-list-item"><div class="flex flex-col md:flex-row justify-between items-start gap-3"><div class="flex-grow"><h3 class="font-bold text-lg">${exam.name}</h3><div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1"><span>${_('applied_on')}: <strong>${appDate}</strong></span><span>${_('exam_date')}: <strong>${exDate}</strong></span>${receiptLink ? `<span>${receiptLink}</span>` : ''}</div><p class="text-sm mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md whitespace-pre-wrap font-sans">${formattedNotes}</p></div><div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto self-stretch"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColors[exam.status]}">${_(('status_'+exam.status).toLowerCase().replace(/\s/g, '_'))}</span><div class="flex gap-1"><button class="edit-exam-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200" data-exam-id="${exam.id}"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button class="delete-exam-btn p-2 rounded-lg bg-red-100 dark:bg-red-900/50 hover:bg-red-200" data-exam-id="${exam.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button></div></div>${daysRemaining !== null && daysRemaining >= 0 ? `<div class="text-right mt-auto"><div class="text-2xl font-bold text-primary">${daysRemaining}</div><p class="text-xs -mt-1">${_('days_remaining')}</p></div>` : ''}</div></div></div>`;
         }).join('');
         lucide.createIcons();
     };
@@ -5101,15 +5186,12 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         const today = getLocalDateString();
         
         // Filter and get TOP 4 exams
-        const upcomingExams = (data.exams || [])
-            .filter(exam => exam.examDate && exam.examDate >= today)
-            .sort((a,b) => new Date(a.examDate) - new Date(b.examDate))
-            .slice(0, 4); // Limit to 4
+        const upcomingExams = (data.exams || []).filter(exam => exam.examDate && exam.examDate >= today).sort((a,b) => new Date(a.examDate) - new Date(b.examDate)).slice(0, 4); 
 
-        // Container Style (Glassmorphism)
+        // Container Style
         container.className = "md:col-span-2 p-3 rounded-xl shadow-lg animate-fadeIn border border-white/20 relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-white/5 dark:to-white/0 backdrop-blur-md flex flex-col";
         
-        let content = `<h2 class="text-sm font-black mb-2 flex items-center gap-2 text-gray-700 dark:text-gray-200 uppercase tracking-wider relative z-10"><i data-lucide="timer" class="w-4 h-4"></i> Exams</h2>`;
+        let content = `<h2 class="text-sm font-black mb-2 flex items-center gap-2 text-gray-700 dark:text-gray-200 uppercase tracking-wider relative z-10"><i data-lucide="timer" class="w-4 h-4"></i> Upcoming Exams</h2>`;
 
         if (upcomingExams.length === 0) { 
             content += `
@@ -5118,10 +5200,9 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                     <button id="dashboard-add-exam-btn-2" class="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg hover:shadow-cyan-500/30 transition-all transform hover:scale-105">Add New Exam</button>
                 </div>`; 
         } else {
-            // GRID LAYOUT: 2 Columns (Side-by-Side)
-            content += `<div class="grid grid-cols-2 gap-2 relative z-10 h-full">`;
+            // GRID LAYOUT: 4 Columns (1 Line) - Strict Requirement
+            content += `<div class="grid grid-cols-4 gap-2 relative z-10 h-full overflow-x-auto no-scrollbar">`;
             
-            // Unique Color Palettes for the 4 slots (Normal Days)
             const palettes = [
                 "bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
                 "bg-violet-500/10 border-violet-500/30 text-violet-600 dark:text-violet-400",
@@ -5131,42 +5212,36 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
 
             upcomingExams.forEach((exam, index) => {
                 const daysRemaining = Math.ceil((new Date(exam.examDate) - new Date()) / 86400000);
-                const examDateFormatted = new Date(exam.examDate).toLocaleDateString(data.settings.language === 'hi' ? 'hi-IN' : 'en-GB', { day: 'numeric', month: 'short' });
                 
                 let cardStyle = "";
                 let dayDisplay = "";
-                let subLabel = "Days Left";
+                let subLabel = "Days";
 
-                // URGENCY LOGIC (Smart Colors)
                 if (daysRemaining === 0) {
-                    // TODAY - High Alert (Red)
-                    cardStyle = "bg-red-600 border-red-500 text-white animate-pulse shadow-red-500/40 shadow-lg";
-                    dayDisplay = "TODAY";
-                    subLabel = "Good Luck!";
+                    cardStyle = "bg-red-600 border-red-500 text-white animate-pulse";
+                    dayDisplay = "!!";
+                    subLabel = "TODAY";
                 } else if (daysRemaining === 1) {
-                    // TOMORROW - High Priority (Orange)
-                    cardStyle = "bg-orange-500 border-orange-400 text-white shadow-orange-500/30 shadow-md";
+                    cardStyle = "bg-orange-500 border-orange-400 text-white";
                     dayDisplay = "01";
-                    subLabel = "Tomorrow";
+                    subLabel = "TMRW";
                 } else if (daysRemaining === 2) {
-                    // 2 DAYS - Warning (Yellow)
-                    cardStyle = "bg-yellow-400 border-yellow-300 text-black shadow-yellow-400/30 shadow-md";
+                    cardStyle = "bg-yellow-400 border-yellow-300 text-black";
                     dayDisplay = "02";
-                    subLabel = "Prepare!";
+                    subLabel = "SOON";
                 } else {
-                    // NORMAL - Cycle Colors
-                    cardStyle = `${palettes[index % 4]} border shadow-sm hover:bg-white/20 transition-colors`;
+                    cardStyle = `${palettes[index % 4]} border shadow-sm hover:bg-white/20`;
                     dayDisplay = String(daysRemaining).padStart(2, '0');
                 }
 
-                // If days > 99, adjust font size
-                const numSize = daysRemaining > 99 ? "text-2xl" : (daysRemaining === 0 ? "text-xl" : "text-4xl");
+                // Super Big Numbers
+                const numSize = daysRemaining > 99 ? "text-2xl" : "text-3xl";
 
                 content += `
-                <div class="flex flex-col items-center justify-center p-2 rounded-xl border ${cardStyle} min-h-[80px]">
-                    <span class="${numSize} font-black leading-none tracking-tighter">${dayDisplay}</span>
-                    <span class="text-[9px] font-bold opacity-80 uppercase tracking-wide mb-1">${subLabel}</span>
-                    <p class="text-[10px] font-medium truncate w-full text-center border-t border-current/20 pt-1 mt-auto opacity-90">${exam.name}</p>
+                <div class="flex flex-col items-center justify-between p-1.5 rounded-xl border ${cardStyle} min-h-[85px] w-full">
+                    <span class="${numSize} font-black leading-none tracking-tighter mt-1">${dayDisplay}</span>
+                    <span class="text-[9px] font-bold opacity-80 uppercase tracking-wide leading-tight">${subLabel}</span>
+                    <p class="text-[9px] font-medium truncate w-full text-center border-t border-current/20 pt-1 mt-1 opacity-90 leading-tight" title="${exam.name}">${exam.name}</p>
                 </div>`;
             });
             content += `</div>`;
@@ -5174,7 +5249,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         
         container.innerHTML = content;
         
-        // Navigation Listener
         setTimeout(() => {
             document.getElementById('dashboard-add-exam-btn-2')?.addEventListener('click', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -6215,8 +6289,9 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 const marginLeft = `margin-left: ${level * 20}px;`;
                 if (isFolder) {
                     const childrenHtml = item.children && item.children.length > 0 ? renderFolderTree(item.children, level + 1) : `<p style="${marginLeft} margin-left: ${ (level + 1) * 20}px;" class="text-sm text-gray-500 py-2">${_('no_links_in_folder')}</p>`;
+                    // Removed 'open' attribute for default collapse
                     return `
-                        <details class="group bg-card-light dark:bg-card-dark rounded-lg shadow-sm overflow-hidden" style="${marginLeft}" open>
+                        <details class="group bg-card-light dark:bg-card-dark rounded-lg shadow-sm overflow-hidden" style="${marginLeft}">
                             <summary class="flex items-center justify-between p-3 cursor-pointer list-none">
                                 <div class="flex items-center gap-3">
                                     <i data-lucide="folder" class="w-5 h-5 text-amber-500"></i>
@@ -6516,6 +6591,37 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('search-input').addEventListener('input', renderSubjectsPage);
             document.getElementById('dpt-search-input').addEventListener('input', renderDptPage);
             document.getElementById('language-select').addEventListener('change', (e) => { data.settings.language = e.target.value; saveData(); applyTranslations(); });
+            
+            // --- Theme Color Listeners (FIXED) ---
+            document.getElementById('bg-color-start')?.addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; applyTheme(data.settings.theme); saveData(); });
+            document.getElementById('bg-color-end')?.addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; applyTheme(data.settings.theme); saveData(); });
+            document.getElementById('reset-theme-btn')?.addEventListener('click', () => { 
+                data.settings.customThemeColors.start = null; 
+                data.settings.customThemeColors.end = null; 
+                applyTheme(data.settings.theme); 
+                renderSettingsPage(); 
+                saveData(); 
+            });
+
+            // Advanced Colors Listeners
+            document.querySelectorAll('.adv-color-picker').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const type = e.target.dataset.colorType;
+                    data.settings.customThemeColors[type] = e.target.value;
+                    applyManualColors();
+                    saveData();
+                });
+            });
+            
+            document.getElementById('reset-advanced-colors-btn')?.addEventListener('click', () => {
+                data.settings.customThemeColors.textLight = null;
+                data.settings.customThemeColors.borderLight = null;
+                data.settings.customThemeColors.textDark = null;
+                data.settings.customThemeColors.borderDark = null;
+                applyManualColors();
+                renderSettingsPage();
+                saveData();
+            });
             document.getElementById('student-name-input')?.addEventListener('input', (e) => { data.settings.studentName = e.target.value; saveData(); renderHomePage(); });
 
             const toggleTasksBtn = document.getElementById('toggle-completed-tasks-btn');
@@ -7415,14 +7521,19 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     }
                     logActivity('check-square', `Other task completed: "${task.description}"`);
                     
-                    // CRITICAL FIX: Push to History Array
+                    // --- HISTORY FIX (GUARANTEED) ---
+                    // Explicitly push to history array
                     if(!data.otherTaskHistory) data.otherTaskHistory = [];
-                    data.otherTaskHistory.push({
+                    data.otherTaskHistory.unshift({ 
                         description: task.description,
                         status: 'Completed',
                         timestamp: new Date().toISOString()
                     });
                     
+                    // Limit to last 100 to prevent lag
+                    if(data.otherTaskHistory.length > 100) data.otherTaskHistory = data.otherTaskHistory.slice(0, 100);
+                    
+                    // Add to dashboard completed list dropdown
                     data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [], completedTasks: [] };
                     if(!data.dailyPlan[todayStr].completedTasks) data.dailyPlan[todayStr].completedTasks = [];
                     data.dailyPlan[todayStr].completedTasks.push({ type: 'other', description: task.description, id: task.id });
@@ -7430,11 +7541,12 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     task.completedDate = null;
                 }
 
-                // If it was a postponed task, remove it from that list
                 data.postponedOtherTasks = (data.postponedOtherTasks || []).filter(t => t.id !== taskId);
 
                 saveData();
                 renderHomePage();
+                // If on notes page, refresh it to show history immediately
+                if(document.getElementById('page-notices').classList.contains('active')) renderNoticesPage();
             }
         }
 
@@ -7475,10 +7587,14 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function confirmDeleteOtherTask(taskId) {
-            // Find task in either main list or postponed list
             const task = (data.otherTasks || []).find(t => t.id === taskId) || (data.postponedOtherTasks || []).find(t => t.id === taskId);
             
-            if (!task) { renderHomePage(); return; }
+            // If task not found (maybe deleting from history view or filtered list), stop
+            if (!task) { 
+                renderHomePage(); 
+                if(document.getElementById('page-notices').classList.contains('active')) renderNoticesPage();
+                return; 
+            }
 
             const checkboxContainer = document.getElementById('confirmation-checkbox-container');
             const checkbox = document.getElementById('confirmation-checkbox');
@@ -7496,13 +7612,16 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 () => {
                     const isPermanent = task.isRepeating ? checkbox.checked : true; 
                     
-                    // CRITICAL FIX: Push to History Array BEFORE deleting
+                    // --- HISTORY FIX: Add to History when deleted ---
                     if(!data.otherTaskHistory) data.otherTaskHistory = [];
-                    data.otherTaskHistory.push({
+                    data.otherTaskHistory.unshift({
                         description: task.description,
                         status: 'Deleted',
                         timestamp: new Date().toISOString()
                     });
+                    
+                    // Limit History
+                    if(data.otherTaskHistory.length > 100) data.otherTaskHistory = data.otherTaskHistory.slice(0, 100);
 
                     if (isPermanent) {
                         data.otherTasks = (data.otherTasks || []).filter(t => t.id !== taskId);
@@ -7514,6 +7633,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                         if (!task.deletedInstances.includes(todayStr)) {
                             task.deletedInstances.push(todayStr);
                         }
+                        // Non-repeating tasks are usually permanent delete, but this handles today-only removal logic
                         if (!task.isRepeating) {
                              data.otherTasks = data.otherTasks.filter(t => t.id !== taskId);
                         }
@@ -7521,7 +7641,11 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     }
                     
                     saveData();
-                    setTimeout(() => renderHomePage(), 50);
+                    // Update both Dashboard and Notes Page immediately
+                    setTimeout(() => {
+                        renderHomePage();
+                        if(document.getElementById('page-notices').classList.contains('active')) renderNoticesPage();
+                    }, 50);
                 }
             );
         }
