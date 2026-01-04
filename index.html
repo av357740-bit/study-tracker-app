@@ -131,14 +131,25 @@
         100% { background-position: 200% center; }
     }
     
-    /* --- ULTRA PREMIUM GLASSMORPHISM & WATER EFFECT --- */
+    /* --- ULTRA PREMIUM GLASSMORPHISM (OPTIMIZED FOR COOLING) --- */
     .dashboard-card {
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        /* Performance Boost */
+        /* Reduced blur significantly to prevent GPU heating */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease; /* Removed complex bezier */
         content-visibility: auto; 
+        will-change: transform; /* Hint to browser for optimization */
+    }
+    
+    /* Disable heavy animations on low-power mode preference if available */
+    @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
     }
 
     /* Custom Background Image Styles Removed for Performance */
@@ -1258,26 +1269,38 @@
                 <h2 class="text-2xl font-bold mb-4">Notes & History</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Section 1: Personal Notes -->
-                    <div class="space-y-4">
+                    <!-- Left Column: Personal Notes & Future Queue -->
+                    <div class="space-y-6">
+                        <!-- Personal Notes Box -->
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-900/30">
-                            <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center justify-between mb-3">
                                 <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="pen-tool" class="text-indigo-500"></i> Personal Notes</h3>
                                 <button id="add-personal-note-btn" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow hover:bg-indigo-700">Add Note</button>
                             </div>
-                            <div id="personal-notes-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                            <div id="personal-notes-list" class="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
                                 <!-- Notes will be injected here -->
+                            </div>
+                        </div>
+
+                        <!-- NEW: Future Task Queue Box (Red Box Area) -->
+                        <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-purple-100 dark:border-purple-900/30">
+                            <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                                <i data-lucide="calendar-clock" class="w-5 h-5"></i> Future Task Queue
+                            </h3>
+                            <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">Upcoming tasks scheduled for later dates.</p>
+                            <div id="future-tasks-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                                <!-- Future Tasks will be injected here -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- Section 2: Other Task History -->
+                    <!-- Right Column: Task History (Today + Overdue + Past) -->
                     <div class="space-y-4">
                         <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-orange-100 dark:border-orange-900/30">
-                            <h3 class="font-bold text-lg mb-3 flex items-center gap-2"><i data-lucide="history" class="text-orange-500"></i> Task History (Last 30 Days)</h3>
-                            <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">History of 'Other Tasks' (Completed or Deleted).</p>
-                            <div id="other-tasks-history-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
-                                <!-- History will be injected here -->
+                            <h3 class="font-bold text-lg mb-3 flex items-center gap-2"><i data-lucide="history" class="text-orange-500"></i> Task History & Today</h3>
+                            <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">Today's pending tasks and history (Last 30 Days).</p>
+                            <div id="other-tasks-history-list" class="space-y-2 max-h-[750px] overflow-y-auto pr-1 custom-scrollbar">
+                                <!-- History & Today will be injected here -->
                             </div>
                         </div>
                     </div>
@@ -1787,8 +1810,9 @@
 <div id="add-other-task-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative border border-gray-200 dark:border-gray-700 flex flex-col max-h-[90vh]">
         <button id="close-add-other-task-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors"><i data-lucide="x"></i></button>
-        <h2 class="text-xl font-bold mb-4 text-primary">Add Other Task</h2>
+        <h2 id="add-other-task-title" class="text-xl font-bold mb-4 text-primary">Add Other Task</h2>
         <form id="add-other-task-form" class="space-y-4 flex-grow overflow-y-auto pr-1 custom-scrollbar">
+            <input type="hidden" id="edit-other-task-id">
             <div>
                 <label for="other-task-description" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Task Description</label>
                 <input type="text" id="other-task-description" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" required placeholder="e.g., Buy new notebook">
@@ -1797,6 +1821,15 @@
                 <div>
                     <label for="other-task-date" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Date</label>
                     <input type="date" id="other-task-date" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" required>
+                </div>
+                <div>
+                    <label for="other-task-tag" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Tag (e.g. Job)</label>
+                    <input type="text" id="other-task-tag" list="tag-suggestions" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" placeholder="Optional tag...">
+                    <datalist id="tag-suggestions">
+                        <option value="Job">
+                        <option value="Exam">
+                        <option value="Personal">
+                    </datalist>
                 </div>
             </div>
             <div>
@@ -2104,14 +2137,28 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "12.2"; // Performance, History & Routine Fixes
+    const CURRENT_APP_VERSION = "12.4"; // Future List Split & Job Tags
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "12.2": {
+        "12.4": {
             date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "Future Task Separation 📅", "note": "भविष्य (Future) के टास्क अब 'Notes' पेज पर बाईं तरफ (Left Side) एक अलग लिस्ट में दिखेंगे। दाहिनी तरफ केवल आज के और अधूरे (Overdue) टास्क रहेंगे।" },
+                { "title": "Job/Tag Tracker 🏷️", "note": "'Add Other Task' में अब 'Tag' का ऑप्शन है। 'Job' टैग वाले टास्क अलग लिस्ट में दिखेंगे।" },
+                { "title": "Postpone Note Fix 📌", "note": "पोस्टपोन नोट अब हमेशा सुरक्षित रहेगा और अगली बार सही दिखेगा।" }
+            ]
+        },
+        "12.3": {
+            date: "2025-01-16",
+            features: [
+                { "title": "Anti-Heating Engine ❄️", "note": "पीसी और मोबाइल को गर्म होने से बचाने के लिए ग्राफिक्स को हल्का किया गया है।" }
+            ]
+        },
+        "12.2": {
+            date: "2025-01-15",
             features: [
                 { "title": "Fill Form Routine Fixed 📝", "note": "रेलवे और फाउंडेशन दोनों रूटीन में 'Fill Form' अब हर रविवार (Sunday) को डैशबोर्ड पर सही दिखेगा।" },
                 { "title": "Advanced Routine Fixed 🛠️", "note": "सेटिंग्स में 'Select Subject' ड्रॉपडाउन अब 100% काम करेगा। खाली लिस्ट की समस्या को ठीक कर दिया गया है।" },
@@ -2962,9 +3009,9 @@ let allCharts = {};
         }
     };
 
-    // --- NOTICE / NOTES PAGE LOGIC (FIXED: Future Tasks, Delete Option & History) ---
+    // --- NOTICE / NOTES PAGE LOGIC (UPDATED: Separation of Future & Current) ---
     const renderNoticesPage = () => {
-        // 1. Render Personal Notes
+        // 1. Render Personal Notes (Left Column - Top)
         const notesContainer = document.getElementById('personal-notes-list');
         data.personalNotes = data.personalNotes || [];
         
@@ -2982,37 +3029,78 @@ let allCharts = {};
             `).join('');
         }
 
-        // 2. Render Future & All Pending Other Tasks (With Delete Option)
-        const historyContainer = document.getElementById('other-tasks-history-list');
         const todayStr = getLocalDateString();
-        
-        const allPendingTasks = (data.otherTasks || [])
-            .filter(t => t.status === 'Pending')
+        const allPendingTasks = (data.otherTasks || []).filter(t => t.status === 'Pending');
+
+        // --- 2. Render Future Tasks (Left Column - Bottom) ---
+        const futureContainer = document.getElementById('future-tasks-list');
+        const futureTasks = allPendingTasks
+            .filter(t => t.date > todayStr)
             .sort((a,b) => new Date(a.date) - new Date(b.date));
-        
-        let pendingHtml = '';
-        if (allPendingTasks.length > 0) {
-            pendingHtml = `<div class="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <h4 class="text-sm font-bold text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Pending Task Queue (Future & Backlog)</h4>
-                <div class="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
-                    ${allPendingTasks.map(t => {
-                        const isFuture = t.date > todayStr;
-                        const badgeColor = isFuture ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
-                        const badgeText = isFuture ? 'Upcoming' : 'Due';
-                        
+
+        if (futureTasks.length === 0) {
+            futureContainer.innerHTML = `<div class="text-center py-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg"><p class="text-xs text-gray-400">No upcoming tasks found.</p></div>`;
+        } else {
+            futureContainer.innerHTML = futureTasks.map(t => {
+                const tagBadge = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 ml-1 border border-purple-200 dark:border-purple-800">${t.tag}</span>` : '';
+                return `
+                <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 border-purple-500 group hover:translate-x-1 transition-all">
+                    <div>
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center">${t.description} ${tagBadge}</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded flex items-center gap-1">
+                                <i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(t.date).toLocaleDateString()}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="edit-other-task-btn p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors" data-task-id="${t.id}" title="Edit">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button class="delete-other-task-btn p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors" data-task-id="${t.id}" title="Delete">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- 3. Render Today + History (Right Column) ---
+        const historyContainer = document.getElementById('other-tasks-history-list');
+        const currentTasks = allPendingTasks
+            .filter(t => t.date <= todayStr)
+            .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+        let currentHtml = '';
+        if (currentTasks.length > 0) {
+            currentHtml = `<div class="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 animate-fadeIn">
+                <h4 class="text-sm font-bold text-sky-600 dark:text-sky-400 mb-3 flex items-center gap-2">
+                    <i data-lucide="bell-ring" class="w-4 h-4"></i> Today & Overdue
+                </h4>
+                <div class="space-y-2">
+                    ${currentTasks.map(t => {
+                        const isOverdue = t.date < todayStr;
+                        const borderColor = isOverdue ? 'border-red-500' : 'border-green-500';
+                        const badgeHtml = isOverdue 
+                            ? `<span class="text-[10px] font-bold bg-red-100 text-red-700 px-1.5 py-0.5 rounded">Overdue</span>`
+                            : `<span class="text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded">Today</span>`;
+                        const tagBadge = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 ml-1">${t.tag}</span>` : '';
+
                         return `
-                        <div class="flex items-center justify-between p-2 bg-sky-50 dark:bg-sky-900/20 rounded-md border border-sky-100 dark:border-sky-800/50 group">
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 ${borderColor}">
                             <div>
-                                <p class="text-sm font-semibold">${t.description}</p>
-                                <p class="text-xs text-sky-500 flex items-center gap-1">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(t.date).toLocaleDateString()} 
-                                    ${t.isRepeating ? '<span class="text-violet-500 font-bold">(Repeating)</span>' : ''}
-                                </p>
+                                <p class="text-sm font-bold text-gray-800 dark:text-gray-200">${t.description} ${tagBadge}</p>
+                                <div class="flex items-center gap-2 mt-1">
+                                    ${badgeHtml}
+                                    <span class="text-[10px] text-gray-400">${new Date(t.date).toLocaleDateString()}</span>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded border ${badgeColor} border-transparent">${badgeText}</span>
-                                <button class="delete-other-task-btn p-1.5 rounded bg-white dark:bg-gray-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 border border-transparent hover:border-red-200 transition-colors" data-task-id="${t.id}" title="Delete Task">
-                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                            <div class="flex gap-1">
+                                <button class="edit-other-task-btn p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors" data-task-id="${t.id}" title="Edit">
+                                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                                </button>
+                                <button class="delete-other-task-btn p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors" data-task-id="${t.id}" title="Delete">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>`;
@@ -3021,39 +3109,32 @@ let allCharts = {};
             </div>`;
         }
 
-        // 3. Render Task History (Completed or Deleted)
+        // History List
         data.otherTaskHistory = data.otherTaskHistory || [];
-        
-        // Show last 50 entries
         const sortedHistory = [...data.otherTaskHistory]
             .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
-            .slice(0, 50);
+            .slice(0, 30);
 
         let historyHtml = '';
         if (sortedHistory.length > 0) {
-            historyHtml = `<h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> Task History (Last 30 Days)</h4>` + 
+            historyHtml = `<h4 class="text-sm font-bold text-gray-400 dark:text-gray-500 mb-2 flex items-center gap-2 pt-2"><i data-lucide="history" class="w-4 h-4"></i> Task History (Last 30 Days)</h4>` + 
             sortedHistory.map(h => {
                 const isCompleted = h.status === 'Completed';
-                const statusColor = isCompleted ? 'text-green-600 dark:text-green-400' : 'text-red-500';
-                const icon = isCompleted ? 'check-circle-2' : 'trash-2';
-                const timeString = h.timestamp ? new Date(h.timestamp).toLocaleString() : 'Just now';
-                
+                const statusColor = isCompleted ? 'text-green-500' : 'text-red-400';
+                const icon = isCompleted ? 'check-circle-2' : 'x-circle';
+                const timeString = h.timestamp ? new Date(h.timestamp).toLocaleDateString() : '';
                 return `
-                <div class="flex items-start gap-3 p-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors rounded-md">
-                    <i data-lucide="${icon}" class="w-4 h-4 mt-1 flex-shrink-0 ${statusColor}"></i>
-                    <div>
-                        <p class="text-sm font-medium ${isCompleted ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 line-through'}">${h.description}</p>
-                        <p class="text-[10px] text-gray-400 font-bold">${h.status} • ${timeString}</p>
-                    </div>
+                <div class="flex items-center gap-3 p-2 text-xs border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors rounded">
+                    <i data-lucide="${icon}" class="w-4 h-4 ${statusColor}"></i>
+                    <span class="${isCompleted ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 line-through'}">${h.description}</span>
+                    <span class="ml-auto text-[9px] text-gray-400 font-mono">${timeString}</span>
                 </div>`;
             }).join('');
+        } else {
+            historyHtml = `<p class="text-center text-xs text-gray-400 pt-4">No history yet.</p>`;
         }
 
-        if (!pendingHtml && !historyHtml) {
-            historyContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-8 opacity-50"><i data-lucide="clipboard-x" class="w-10 h-10 mb-2 text-gray-400"></i><p class="text-sm">No active tasks or history.</p></div>`;
-        } else {
-            historyContainer.innerHTML = pendingHtml + historyHtml;
-        }
+        historyContainer.innerHTML = currentHtml + historyHtml;
         lucide.createIcons();
     };
 
@@ -3794,23 +3875,29 @@ let allCharts = {};
         const chapter = getChapterByIds(subjectId, chapterId);
 
         if (chapter) {
+            // 1. Force update status and internal note on the chapter itself
             chapter.status = 'Postpone';
-            chapter.notes = note; 
+            chapter.notes = note; // This is crucial for persistence
             
-            const existingIndex = data.postponedChapters.findIndex(p => p.subjectId === subjectId && p.chapterId === chapterId);
-            if (existingIndex === -1) {
-                data.postponedChapters.push({ subjectId, chapterId, note });
-            } else {
-                data.postponedChapters[existingIndex].note = note;
-            }
+            // 2. Robust Postpone List Update
+            // Remove any old entry for this chapter
+            data.postponedChapters = (data.postponedChapters || []).filter(p => !(p.subjectId === subjectId && p.chapterId === chapterId));
+            
+            // Push the new entry with the FRESH note
+            data.postponedChapters.push({ 
+                subjectId, 
+                chapterId, 
+                note: note, // Explicitly save note here
+                dateAdded: getLocalDateString()
+            });
 
-            // Dashboard Sync: Mark subject as done for today immediately
+            // 3. Mark subject as done for TODAY
             markSubjectAsDoneForToday(subjectId);
 
             logActivity('skip-forward', `Chapter postponed: "${chapter.name}"`);
             saveData();
             
-            // SUPER FAST CLOSE (No Delay)
+            // Immediate UI Refresh
             hideModal('postpone-chapter-modal');
             hideModal('chapter-modal');
             updateAllUI();
@@ -3937,8 +4024,11 @@ let allCharts = {};
                 
                 if (chapter && chapter.status !== 'Completed' && !usedChapterIds.includes(chapter.id)) {
                     targetChapter = chapter;
-                    // Use the specific note saved during postponement
-                    postponementNote = entry.note; 
+                    // PRIORITY LOGIC FOR NOTE:
+                    // 1. Use note from postponedChapters array (most recent)
+                    // 2. Use note directly from chapter object
+                    postponementNote = entry.note || chapter.notes || "Resuming postponed chapter.";
+                    
                     // Remove from list only after assigning
                     data.postponedChapters.splice(globalPostponedIndex, 1);
                 }
@@ -7113,7 +7203,17 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 if(modal.dataset.type === 'dpt') { populateManualItemList(e.target.value, 'dpt'); }
             });
 
-             document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
+             // Global listener for Edit Other Task Buttons (Dashboard & Notes Page)
+            document.body.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-other-task-btn');
+                if (editBtn) {
+                    e.stopPropagation();
+                    const taskId = editBtn.dataset.taskId;
+                    showAddOtherTaskModal(taskId);
+                }
+            });
+
+            document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
                 const checkbox = e.target;
                 if (!checkbox.classList.contains('task-checkbox') && !checkbox.classList.contains('revision-checkbox')) return;
                 const listItem = checkbox.closest('.task-list-item');
@@ -7412,22 +7512,38 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             }, 100);
         }
 
-        function showAddOtherTaskModal() {
+        function showAddOtherTaskModal(editTaskId = null) {
             const form = document.getElementById('add-other-task-form');
             form.reset();
+            const modalTitle = document.getElementById('add-other-task-title');
+            const editIdInput = document.getElementById('edit-other-task-id');
+            editIdInput.value = editTaskId || '';
+
+            // Default Reset
             document.getElementById('other-task-date').value = getLocalDateString();
-            
-            // Direct Logic for Show/Hide
             const container = document.getElementById('day-selection-container');
             const repeatCheckbox = document.getElementById('other-task-repeat');
             
+            // Reset Day Buttons Visuals
+            document.querySelectorAll('.day-selector-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'active', 'bg-white', 'dark:bg-gray-900');
+                btn.classList.add('bg-white', 'dark:bg-gray-900');
+                // Re-bind click
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('bg-indigo-600');
+                    this.classList.toggle('text-white');
+                    this.classList.toggle('active');
+                    this.classList.toggle('bg-white');
+                    this.classList.toggle('dark:bg-gray-900');
+                }
+            });
+
             if (repeatCheckbox && container) {
-                // Reset initial state
                 repeatCheckbox.checked = false;
                 container.style.display = 'none';
                 container.classList.add('hidden');
-
-                // Attach Force Listener
+                
                 repeatCheckbox.onclick = function() {
                     if (this.checked) {
                         container.style.display = 'block';
@@ -7440,44 +7556,63 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     }
                 };
             }
-            
-            // Clear day selections visual state
-            document.querySelectorAll('.day-selector-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white', 'active', 'bg-white', 'dark:bg-gray-900');
-                btn.classList.add('bg-white', 'dark:bg-gray-900');
-                // Ensure click listener is active (re-attaching just in case)
-                btn.onclick = function(e) {
-                    e.preventDefault();
-                    this.classList.toggle('bg-indigo-600');
-                    this.classList.toggle('text-white');
-                    this.classList.toggle('active');
-                    this.classList.toggle('bg-white');
-                    this.classList.toggle('dark:bg-gray-900');
+
+            // --- IF EDITING: Pre-fill Data ---
+            if (editTaskId) {
+                const task = (data.otherTasks || []).find(t => t.id === editTaskId) || (data.postponedOtherTasks || []).find(t => t.id === editTaskId);
+                if (task) {
+                    modalTitle.textContent = "Edit Task";
+                    document.getElementById('other-task-description').value = task.description;
+                    document.getElementById('other-task-date').value = task.date;
+                    document.getElementById('other-task-notes').value = task.notes || '';
+                    if (document.getElementById('other-task-tag')) document.getElementById('other-task-tag').value = task.tag || '';
+                    document.getElementById('other-task-priority').checked = task.priority || false;
+                    
+                    if (task.isRepeating) {
+                        repeatCheckbox.checked = true;
+                        container.style.display = 'block';
+                        container.classList.remove('hidden');
+                        
+                        // Select correct days
+                        if (task.repeatDays) {
+                            task.repeatDays.forEach(dayIndex => {
+                                const btn = document.querySelector(`.day-selector-btn[data-day="${dayIndex}"]`);
+                                if (btn) {
+                                    btn.classList.add('bg-indigo-600', 'text-white', 'active');
+                                    btn.classList.remove('bg-white', 'dark:bg-gray-900');
+                                }
+                            });
+                        }
+                    }
                 }
-            });
+            } else {
+                modalTitle.textContent = "Add Other Task";
+            }
 
             showModal('add-other-task-modal');
         }
 
         function saveOtherTask(e) {
             e.preventDefault();
+            const editId = document.getElementById('edit-other-task-id').value;
             const description = document.getElementById('other-task-description').value.trim();
             const date = document.getElementById('other-task-date').value;
             const notes = document.getElementById('other-task-notes').value.trim();
+            const tagInput = document.getElementById('other-task-tag');
+            const tag = tagInput ? tagInput.value.trim() : ''; 
+            
             const isRepeating = document.getElementById('other-task-repeat').checked;
             const isPriority = document.getElementById('other-task-priority').checked;
             
-            // Get Selected Days
             let repeatDays = [];
             if (isRepeating) {
                 document.querySelectorAll('.day-selector-btn').forEach(btn => {
-                    // Check logic based on background color or data attribute logic used in listeners
                     if(btn.classList.contains('bg-indigo-600') || btn.classList.contains('active')) {
                         repeatDays.push(parseInt(btn.dataset.day));
                     }
                 });
                 if (repeatDays.length === 0) {
-                    alert('Please select at least one day for repetition (e.g., Mon, Wed).');
+                    alert('Please select at least one day for repetition.');
                     return;
                 }
             }
@@ -7487,25 +7622,34 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 return;
             }
 
-            const newTask = {
-                id: `other-${Date.now()}`,
-                description,
-                date,
-                notes,
-                status: 'Pending',
-                completedDate: null,
-                isRepeating: isRepeating,
-                repeatDays: repeatDays, 
-                lastCompletedDate: null,
-                deletedInstances: [], 
-                priority: isPriority // New Priority Field
-            };
+            if (editId) {
+                // UPDATE EXISTING TASK
+                const taskIndex = data.otherTasks.findIndex(t => t.id === editId);
+                if (taskIndex !== -1) {
+                    data.otherTasks[taskIndex] = {
+                        ...data.otherTasks[taskIndex],
+                        description, date, notes, tag, isRepeating, repeatDays, priority
+                    };
+                    logActivity('edit-3', `Task updated: "${description}"`);
+                }
+            } else {
+                // CREATE NEW TASK
+                const newTask = {
+                    id: `other-${Date.now()}`,
+                    description, date, notes, tag,
+                    status: 'Pending', completedDate: null,
+                    isRepeating, repeatDays, lastCompletedDate: null, deletedInstances: [], priority
+                };
+                data.otherTasks.push(newTask);
+                logActivity('clipboard-list', `New task added: "${description}"`);
+            }
 
-            data.otherTasks.push(newTask);
-            logActivity('clipboard-list', `New other task added: "${description}"`);
             saveData();
             hideModal('add-other-task-modal');
             renderHomePage();
+            if(document.getElementById('page-notices').classList.contains('active')) {
+                renderNoticesPage();
+            }
         }
 
         function updateOtherTaskStatus(taskId, newStatus) {
