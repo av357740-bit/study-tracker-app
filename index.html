@@ -22,6 +22,9 @@
 <!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
+<!-- SortableJS (For Drag & Drop) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
 <!-- jsPDF and html2canvas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1806,43 +1809,58 @@
     </div>
 </div>
 
-<!-- MODAL FOR ADDING 'OTHER' TASK -->
-<div id="add-other-task-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+<!-- MODAL FOR ADDING 'OTHER' TASK (Fixed Suggestions & Visibility) -->
+<div id="add-other-task-modal" class="fixed inset-0 z-[10000] items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative border border-gray-200 dark:border-gray-700 flex flex-col max-h-[90vh]">
-        <button id="close-add-other-task-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors"><i data-lucide="x"></i></button>
+        <button id="close-add-other-task-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors z-20"><i data-lucide="x"></i></button>
         <h2 id="add-other-task-title" class="text-xl font-bold mb-4 text-primary">Add Other Task</h2>
+        
         <form id="add-other-task-form" class="space-y-4 flex-grow overflow-y-auto pr-1 custom-scrollbar">
             <input type="hidden" id="edit-other-task-id">
-            <div>
+            
+            <!-- Description with Google-like Suggestions -->
+            <div class="relative">
                 <label for="other-task-description" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Task Description</label>
-                <input type="text" id="other-task-description" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" required placeholder="e.g., Buy new notebook">
+                <input type="text" id="other-task-description" autocomplete="off" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" required placeholder="e.g., SSC GD Practice Set...">
+                <!-- Suggestions Container -->
+                <div id="task-suggestions-container" class="hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-b-xl shadow-lg z-50 max-h-40 overflow-y-auto mt-1">
+                    <!-- Suggestions injected by JS -->
+                </div>
             </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="other-task-date" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Date</label>
                     <input type="date" id="other-task-date" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" required>
                 </div>
-                <div>
-                    <label for="other-task-tag" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Tag (e.g. Job)</label>
-                    <input type="text" id="other-task-tag" list="tag-suggestions" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" placeholder="Optional tag...">
-                    <datalist id="tag-suggestions">
+                <div class="relative">
+                    <label for="other-task-tag" class="block text-sm font-semibold mb-1.5 text-sky-600 dark:text-sky-400">Tag</label>
+                    <div class="relative">
+                        <input type="text" id="other-task-tag" list="tag-options-list" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-sky-200 dark:border-sky-900 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all pr-10" placeholder="Select or Type...">
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                    <datalist id="tag-options-list">
+                        <option value="Form-filling">
+                        <option value="Upcoming Exam">
+                        <option value="Other Task">
+                        <option value="Urgent">
                         <option value="Job">
-                        <option value="Exam">
-                        <option value="Personal">
                     </datalist>
                 </div>
             </div>
+            
             <div>
                 <label for="other-task-notes" class="block text-sm font-semibold mb-1.5 text-purple-600 dark:text-purple-400">Notes (Optional)</label>
                 <textarea id="other-task-notes" rows="2" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-purple-200 dark:border-purple-900 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all" placeholder="Add any extra details..."></textarea>
             </div>
 
-            <!-- Priority Checkbox -->
+            <!-- Priority Checkbox (Fixed Light Mode Visibility) -->
             <div class="bg-red-50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-900/30">
                 <label class="flex items-center gap-3 cursor-pointer select-none">
                     <div class="relative flex items-center">
-                        <input type="checkbox" id="other-task-priority" class="peer h-5 w-5 cursor-pointer appearance-none rounded border-2 border-red-400 transition-all checked:bg-red-600 checked:border-red-600">
-                        <i data-lucide="check" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100"></i>
+                        <input type="checkbox" id="other-task-priority" class="peer h-6 w-6 cursor-pointer appearance-none rounded border-2 border-red-400 transition-all checked:bg-red-600 checked:border-red-600">
+                        <!-- Icon Color Forced White on Check -->
+                        <i data-lucide="check" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 z-10 font-bold"></i>
                     </div>
                     <div>
                         <span class="font-bold text-red-700 dark:text-red-300 text-sm">High Priority (Exam/Urgent)</span>
@@ -1851,10 +1869,10 @@
                 </label>
             </div>
             
+            <!-- Repeat Checkbox -->
             <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/50">
-                <label class="flex items-center gap-3 cursor-pointer w-full select-none" style="display: flex; align-items: center; cursor: pointer;">
+                <label class="flex items-center gap-3 cursor-pointer w-full select-none">
                     <div class="relative flex items-center">
-                        <!-- Removed ID from here to prevent duplicate firing, logic moved to JS function -->
                         <input type="checkbox" id="other-task-repeat" class="peer h-6 w-6 cursor-pointer appearance-none rounded-lg border-2 border-indigo-400 transition-all checked:bg-indigo-600 checked:border-indigo-600 hover:border-indigo-500">
                         <i data-lucide="check" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                     </div>
@@ -1864,19 +1882,17 @@
                     </div>
                 </label>
                 
-                <!-- Added inline style default display none to ensure hidden initially -->
                 <div id="day-selection-container" style="display: none;" class="mt-4 pt-3 border-t border-indigo-200 dark:border-indigo-800/50">
                     <p class="text-xs font-bold text-indigo-600 dark:text-indigo-300 mb-3 uppercase tracking-wider text-center bg-white/50 dark:bg-black/20 py-1 rounded">Select Days to Repeat</p>
                     <div class="grid grid-cols-7 gap-1">
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 hover:scale-105 transition-all" data-day="1">Mon</button>
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 hover:scale-105 transition-all" data-day="2">Tue</button>
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 hover:scale-105 transition-all" data-day="3">Wed</button>
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 hover:scale-105 transition-all" data-day="4">Thu</button>
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 hover:scale-105 transition-all" data-day="5">Fri</button>
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 hover:scale-105 transition-all" data-day="6">Sat</button>
-                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-red-500 text-red-500 hover:scale-105 transition-all" data-day="0">Sun</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 transition-all" data-day="1">Mon</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 transition-all" data-day="2">Tue</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 transition-all" data-day="3">Wed</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 transition-all" data-day="4">Thu</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 transition-all" data-day="5">Fri</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-indigo-500 transition-all" data-day="6">Sat</button>
+                        <button type="button" class="day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-800 border shadow-sm hover:border-red-500 text-red-500 transition-all" data-day="0">Sun</button>
                     </div>
-                    <p class="text-[10px] text-center text-gray-500 dark:text-gray-400 mt-2">Tap days to select (Blue = Active)</p>
                 </div>
             </div>
 
@@ -2137,18 +2153,26 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "12.4"; // Future List Split & Job Tags
+    const CURRENT_APP_VERSION = "13.0"; // Advanced URL Manager & Drag-Drop
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "12.4": {
+        "13.0": {
             date: new Date().toISOString().split('T')[0],
             features: [
-                { "title": "Future Task Separation 📅", "note": "भविष्य (Future) के टास्क अब 'Notes' पेज पर बाईं तरफ (Left Side) एक अलग लिस्ट में दिखेंगे। दाहिनी तरफ केवल आज के और अधूरे (Overdue) टास्क रहेंगे।" },
-                { "title": "Job/Tag Tracker 🏷️", "note": "'Add Other Task' में अब 'Tag' का ऑप्शन है। 'Job' टैग वाले टास्क अलग लिस्ट में दिखेंगे।" },
-                { "title": "Postpone Note Fix 📌", "note": "पोस्टपोन नोट अब हमेशा सुरक्षित रहेगा और अगली बार सही दिखेगा।" }
+                { "title": "Advanced URL Manager 📂", "note": "URL पेज को पूरी तरह नया बनाया गया है। अब 'Clean View' में फोल्डर खुलेंगे (Main फोल्डर छिप जाएगा)।" },
+                { "title": "Drag & Drop Sorting ✋", "note": "किसी भी फोल्डर या लिंक को दबाकर रखें (Touch & Hold) और ऊपर-नीचे स्लाइड करके मूव करें।" },
+                { "title": "Infinite Sub-Folders 🗂️", "note": "फोल्डर के अंदर फोल्डर, उसके अंदर और फोल्डर... अब कोई सीमा नहीं है।" },
+                { "title": "Color Coding 🎨", "note": "Main फोल्डर और Sub-फोल्डर्स के लिए अलग-अलग और प्रीमियम रंग डिजाइन किए गए हैं।" }
+            ]
+        },
+        "12.4": {
+            date: "2025-02-01",
+            features: [
+                { "title": "Future Task Separation 📅", "note": "भविष्य (Future) के टास्क अब 'Notes' पेज पर बाईं तरफ (Left Side) एक अलग लिस्ट में दिखेंगे।" },
+                { "title": "Job/Tag Tracker 🏷️", "note": "'Add Other Task' में अब 'Tag' का ऑप्शन है। 'Job' टैग वाले टास्क अलग लिस्ट में दिखेंगे।" }
             ]
         },
         "12.3": {
@@ -3009,24 +3033,29 @@ let allCharts = {};
         }
     };
 
-    // --- NOTICE / NOTES PAGE LOGIC (UPDATED: Separation of Future & Current) ---
+    // --- NOTICE / NOTES PAGE LOGIC (FIXED: Clean History & Delete) ---
     const renderNoticesPage = () => {
+        // Force initialization
+        data.personalNotes = data.personalNotes || [];
+        data.otherTasks = data.otherTasks || [];
+        data.otherTaskHistory = data.otherTaskHistory || [];
+
         // 1. Render Personal Notes (Left Column - Top)
         const notesContainer = document.getElementById('personal-notes-list');
-        data.personalNotes = data.personalNotes || [];
-        
-        if (data.personalNotes.length === 0) {
-            notesContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No personal notes added yet.</p>`;
-        } else {
-            notesContainer.innerHTML = data.personalNotes.sort((a,b) => new Date(b.date) - new Date(a.date)).map((note, index) => `
-                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border-l-4 border-indigo-500 shadow-sm relative group animate-fadeIn">
-                    <p class="text-xs font-bold text-indigo-500 mb-1">${new Date(note.date).toLocaleString()}</p>
-                    <p class="text-sm whitespace-pre-wrap text-gray-800 dark:text-gray-200">${note.text}</p>
-                    <button class="delete-personal-note-btn absolute top-2 right-2 text-red-400 hover:text-red-600" data-index="${index}">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            `).join('');
+        if (notesContainer) {
+            if (data.personalNotes.length === 0) {
+                notesContainer.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">No personal notes added yet.</p>`;
+            } else {
+                notesContainer.innerHTML = data.personalNotes.sort((a,b) => new Date(b.date) - new Date(a.date)).map((note, index) => `
+                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border-l-4 border-indigo-500 shadow-sm relative group animate-fadeIn">
+                        <p class="text-xs font-bold text-indigo-500 mb-1">${new Date(note.date).toLocaleString()}</p>
+                        <p class="text-sm whitespace-pre-wrap text-gray-800 dark:text-gray-200">${note.text}</p>
+                        <button class="delete-personal-note-btn absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 bg-white dark:bg-gray-700 rounded-full" data-index="${index}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
         }
 
         const todayStr = getLocalDateString();
@@ -3034,107 +3063,69 @@ let allCharts = {};
 
         // --- 2. Render Future Tasks (Left Column - Bottom) ---
         const futureContainer = document.getElementById('future-tasks-list');
-        const futureTasks = allPendingTasks
-            .filter(t => t.date > todayStr)
-            .sort((a,b) => new Date(a.date) - new Date(b.date));
+        if (futureContainer) {
+            // Show ALL pending tasks that are in future OR today but not completed
+            // Actually, user wants Future Queue. 
+            const futureTasks = allPendingTasks
+                .filter(t => t.date > todayStr)
+                .sort((a,b) => new Date(a.date) - new Date(b.date));
 
-        if (futureTasks.length === 0) {
-            futureContainer.innerHTML = `<div class="text-center py-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg"><p class="text-xs text-gray-400">No upcoming tasks found.</p></div>`;
-        } else {
-            futureContainer.innerHTML = futureTasks.map(t => {
-                const tagBadge = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 ml-1 border border-purple-200 dark:border-purple-800">${t.tag}</span>` : '';
-                return `
-                <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 border-purple-500 group hover:translate-x-1 transition-all">
-                    <div>
-                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center">${t.description} ${tagBadge}</p>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded flex items-center gap-1">
-                                <i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(t.date).toLocaleDateString()}
-                            </span>
+            if (futureTasks.length === 0) {
+                futureContainer.innerHTML = `<div class="text-center py-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg"><p class="text-xs text-gray-400">No upcoming tasks scheduled.</p></div>`;
+            } else {
+                futureContainer.innerHTML = futureTasks.map(t => {
+                    const tagBadge = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 ml-1 border border-purple-200 dark:border-purple-800">${t.tag}</span>` : '';
+                    return `
+                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 border-purple-500 group hover:translate-x-1 transition-all animate-fadeIn">
+                        <div>
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center">${t.description} ${tagBadge}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(t.date).toLocaleDateString()}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex gap-1">
-                        <button class="edit-other-task-btn p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors" data-task-id="${t.id}" title="Edit">
-                            <i data-lucide="pencil" class="w-4 h-4"></i>
-                        </button>
-                        <button class="delete-other-task-btn p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors" data-task-id="${t.id}" title="Delete">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
+                        <div class="flex gap-1">
+                            <button class="edit-other-task-btn p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors" data-task-id="${t.id}" title="Edit">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button class="delete-other-task-btn p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors" data-task-id="${t.id}" title="Delete">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
         }
 
-        // --- 3. Render Today + History (Right Column) ---
+        // --- 3. Render ONLY History (Right Column) - REMOVED TODAY/OVERDUE ---
         const historyContainer = document.getElementById('other-tasks-history-list');
-        const currentTasks = allPendingTasks
-            .filter(t => t.date <= todayStr)
-            .sort((a,b) => new Date(a.date) - new Date(b.date));
+        if (historyContainer) {
+            // Sort History: Newest First
+            const sortedHistory = [...data.otherTaskHistory]
+                .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
+                .slice(0, 30); // Limit to 30
 
-        let currentHtml = '';
-        if (currentTasks.length > 0) {
-            currentHtml = `<div class="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 animate-fadeIn">
-                <h4 class="text-sm font-bold text-sky-600 dark:text-sky-400 mb-3 flex items-center gap-2">
-                    <i data-lucide="bell-ring" class="w-4 h-4"></i> Today & Overdue
-                </h4>
-                <div class="space-y-2">
-                    ${currentTasks.map(t => {
-                        const isOverdue = t.date < todayStr;
-                        const borderColor = isOverdue ? 'border-red-500' : 'border-green-500';
-                        const badgeHtml = isOverdue 
-                            ? `<span class="text-[10px] font-bold bg-red-100 text-red-700 px-1.5 py-0.5 rounded">Overdue</span>`
-                            : `<span class="text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded">Today</span>`;
-                        const tagBadge = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 ml-1">${t.tag}</span>` : '';
+            let historyHtml = '';
+            if (sortedHistory.length > 0) {
+                historyHtml = sortedHistory.map(h => {
+                    const isCompleted = h.status === 'Completed';
+                    const statusColor = isCompleted ? 'text-green-500' : 'text-red-400';
+                    const icon = isCompleted ? 'check-circle-2' : 'trash-2';
+                    const timeString = h.timestamp ? new Date(h.timestamp).toLocaleDateString() : '';
+                    return `
+                    <div class="flex items-center gap-3 p-2 text-xs border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors rounded animate-fadeIn">
+                        <i data-lucide="${icon}" class="w-4 h-4 ${statusColor}"></i>
+                        <span class="${isCompleted ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 line-through'} flex-grow">${h.description}</span>
+                        <span class="text-[9px] text-gray-400 font-mono whitespace-nowrap ml-2">${timeString}</span>
+                    </div>`;
+                }).join('');
+            } else {
+                historyHtml = `<div class="flex flex-col items-center justify-center py-10 opacity-50"><i data-lucide="history" class="w-8 h-8 mb-2"></i><p class="text-xs">No completed or deleted tasks in last 30 days.</p></div>`;
+            }
 
-                        return `
-                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 ${borderColor}">
-                            <div>
-                                <p class="text-sm font-bold text-gray-800 dark:text-gray-200">${t.description} ${tagBadge}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    ${badgeHtml}
-                                    <span class="text-[10px] text-gray-400">${new Date(t.date).toLocaleDateString()}</span>
-                                </div>
-                            </div>
-                            <div class="flex gap-1">
-                                <button class="edit-other-task-btn p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors" data-task-id="${t.id}" title="Edit">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                                </button>
-                                <button class="delete-other-task-btn p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors" data-task-id="${t.id}" title="Delete">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>
-            </div>`;
+            historyContainer.innerHTML = historyHtml;
         }
-
-        // History List
-        data.otherTaskHistory = data.otherTaskHistory || [];
-        const sortedHistory = [...data.otherTaskHistory]
-            .sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
-            .slice(0, 30);
-
-        let historyHtml = '';
-        if (sortedHistory.length > 0) {
-            historyHtml = `<h4 class="text-sm font-bold text-gray-400 dark:text-gray-500 mb-2 flex items-center gap-2 pt-2"><i data-lucide="history" class="w-4 h-4"></i> Task History (Last 30 Days)</h4>` + 
-            sortedHistory.map(h => {
-                const isCompleted = h.status === 'Completed';
-                const statusColor = isCompleted ? 'text-green-500' : 'text-red-400';
-                const icon = isCompleted ? 'check-circle-2' : 'x-circle';
-                const timeString = h.timestamp ? new Date(h.timestamp).toLocaleDateString() : '';
-                return `
-                <div class="flex items-center gap-3 p-2 text-xs border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors rounded">
-                    <i data-lucide="${icon}" class="w-4 h-4 ${statusColor}"></i>
-                    <span class="${isCompleted ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 line-through'}">${h.description}</span>
-                    <span class="ml-auto text-[9px] text-gray-400 font-mono">${timeString}</span>
-                </div>`;
-            }).join('');
-        } else {
-            historyHtml = `<p class="text-center text-xs text-gray-400 pt-4">No history yet.</p>`;
-        }
-
-        historyContainer.innerHTML = currentHtml + historyHtml;
         lucide.createIcons();
     };
 
@@ -3507,6 +3498,7 @@ let allCharts = {};
             'import-export': renderImportExportPage,
             exams: renderExamsPage,
             url: renderUrlPage,
+            notices: renderNoticesPage, // ✅ Fixed: Added Notices Page Render Logic
             analytics: () => requestAnimationFrame(renderAnalyticsPage)
         };
         renderFunctions[pageId]?.();
@@ -6362,70 +6354,207 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             });
         }
 
+        // GLOBAL VARIABLE FOR NAVIGATION STATE
+        let currentUrlFolderId = null; 
+
         function renderUrlPage() {
             const container = document.getElementById('url-container');
-            if (!data.urls || data.urls.length === 0) {
-                container.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl"><i data-lucide="folder-x" class="w-12 h-12 mx-auto text-text-muted-light mb-4"></i><h3 class="font-bold">${_('no_folders_created')}</h3></div>`;
-                lucide.createIcons();
-                return;
-            }
-            container.innerHTML = renderFolderTree(data.urls);
-            lucide.createIcons();
-        }
+            container.innerHTML = ''; // Clear existing
 
-        function renderFolderTree(folders, level = 0) {
-            return folders.map(item => {
-                const isFolder = item.type === 'folder';
-                const marginLeft = `margin-left: ${level * 20}px;`;
-                if (isFolder) {
-                    const childrenHtml = item.children && item.children.length > 0 ? renderFolderTree(item.children, level + 1) : `<p style="${marginLeft} margin-left: ${ (level + 1) * 20}px;" class="text-sm text-gray-500 py-2">${_('no_links_in_folder')}</p>`;
-                    // Removed 'open' attribute for default collapse
-                    return `
-                        <details class="group bg-card-light dark:bg-card-dark rounded-lg shadow-sm overflow-hidden" style="${marginLeft}">
-                            <summary class="flex items-center justify-between p-3 cursor-pointer list-none">
-                                <div class="flex items-center gap-3">
-                                    <i data-lucide="folder" class="w-5 h-5 text-amber-500"></i>
-                                    <h3 class="font-bold">${item.name}</h3>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button class="add-sub-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${item.id}" title="${_('add_sub_folder')}"><i data-lucide="folder-plus" class="w-4 h-4 text-blue-500"></i></button>
-                                    <button class="add-link-to-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${item.id}" title="${_('add_new_link')}"><i data-lucide="plus" class="w-4 h-4 text-green-500"></i></button>
-                                    <button class="edit-folder-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-folder-id="${item.id}" title="${_('edit')}"><i data-lucide="folder-edit" class="w-4 h-4"></i></button>
-                                    <button class="delete-folder-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-folder-id="${item.id}" title="${_('delete')}"><i data-lucide="folder-x" class="w-4 h-4 text-red-500"></i></button>
-                                    <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
-                                </div>
-                            </summary>
-                            <div class="px-3 pb-3 border-t">
-                                ${childrenHtml}
-                            </div>
-                        </details>
-                    `;
-                } else { 
-                    return `
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg" style="${marginLeft}">
-                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="font-medium hover:text-primary flex items-center gap-2">
-                                <i data-lucide="link-2" class="w-4 h-4"></i>
-                                <span>${item.name}</span>
-                            </a>
-                            <div class="flex items-center gap-1">
-                                <button class="edit-link-btn p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" data-link-id="${item.id}" title="${_('edit')}"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                                <button class="delete-link-btn p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50" data-link-id="${item.id}" title="${_('delete')}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
-                            </div>
-                        </div>
-                    `;
+            // 1. Determine Current View Data
+            let currentItems = data.urls;
+            let parentFolder = null;
+            let folderName = "Root";
+
+            if (currentUrlFolderId) {
+                const result = findItem(data.urls, currentUrlFolderId);
+                if (result && result.item) {
+                    parentFolder = result.item;
+                    currentItems = parentFolder.children || [];
+                    folderName = parentFolder.name;
+                } else {
+                    // Fallback if ID invalid
+                    currentUrlFolderId = null;
                 }
-            }).join('<div class="my-2"></div>');
+            }
+
+            // 2. Render Header (Navigation & Breadcrumb)
+            const headerDiv = document.createElement('div');
+            headerDiv.className = "flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-[#f8fafc] dark:bg-[#0f172a] z-10 pt-1";
+            
+            let backButtonHtml = '';
+            if (currentUrlFolderId) {
+                // Find Grandparent for "Back" Logic logic needs finding parent of current
+                // Simple Back: Just reload parent finding logic or keep stack. 
+                // Robust: Find parent of currentUrlFolderId
+                backButtonHtml = `
+                <button id="url-back-btn" class="flex items-center gap-1 pr-3 py-1 text-sm font-bold text-gray-500 hover:text-primary transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+                </button>`;
+            }
+
+            // Header Title Styling
+            const titleColor = currentUrlFolderId ? "text-indigo-600 dark:text-indigo-400" : "text-gray-800 dark:text-gray-200";
+            headerDiv.innerHTML = `
+                <div class="flex items-center gap-2">
+                    ${backButtonHtml}
+                    <h2 class="text-xl font-bold ${titleColor} truncate max-w-[200px]">${folderName}</h2>
+                </div>
+                <!-- Dynamic Add Button based on level -->
+                <div class="flex gap-2">
+                     <button class="add-sub-folder-btn-top p-2 rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 hover:scale-105 transition-transform shadow-sm" title="New Folder">
+                        <i data-lucide="folder-plus" class="w-5 h-5"></i>
+                    </button>
+                    <button class="add-link-btn-top p-2 rounded-lg bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300 hover:scale-105 transition-transform shadow-sm" title="New Link">
+                        <i data-lucide="link" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(headerDiv);
+
+            // 3. Render List (Sortable Area)
+            const listData = document.createElement('div');
+            listData.id = "sortable-url-list";
+            listData.className = "space-y-3 min-h-[200px] pb-20"; // Padding bottom for ease
+
+            if (currentItems.length === 0) {
+                listData.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl border border-dashed border-gray-300 dark:border-gray-700"><i data-lucide="folder-open" class="w-12 h-12 mx-auto text-text-muted-light mb-4 opacity-50"></i><h3 class="font-bold text-gray-400">Empty Folder</h3><p class="text-xs text-gray-500">Add content using buttons above.</p></div>`;
+            } else {
+                currentItems.forEach(item => {
+                    const el = document.createElement('div');
+                    // Data ID for Sortable
+                    el.dataset.id = item.id;
+                    el.className = "url-item relative group select-none"; 
+                    
+                    if (item.type === 'folder') {
+                        // FOLDER DESIGN (Advanced)
+                        // If Root: Darker Blue. If Sub: Lighter/Different.
+                        const isRootLevel = (currentUrlFolderId === null);
+                        const folderBg = isRootLevel 
+                            ? "bg-gradient-to-r from-slate-100 to-white dark:from-slate-800 dark:to-[#1e293b] border-l-4 border-indigo-500" 
+                            : "bg-gradient-to-r from-blue-50 to-white dark:from-blue-900/20 dark:to-[#1e293b] border-l-4 border-cyan-500";
+                        
+                        const iconColor = isRootLevel ? "text-indigo-500 dark:text-indigo-400" : "text-cyan-500 dark:text-cyan-400";
+                        const itemCount = item.children ? item.children.length : 0;
+
+                        el.innerHTML = `
+                            <div class="flex items-center justify-between p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer enter-folder-trigger ${folderBg}" data-folder-id="${item.id}">
+                                <div class="flex items-center gap-4 overflow-hidden">
+                                    <div class="p-2 bg-white dark:bg-black/20 rounded-lg shadow-sm">
+                                        <i data-lucide="folder" class="w-6 h-6 ${iconColor} fill-current opacity-80"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h3 class="font-bold text-base text-gray-800 dark:text-gray-100 truncate">${item.name}</h3>
+                                        <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wider">${itemCount} Items</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                    <button class="edit-folder-btn p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500" data-folder-id="${item.id}"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                    <button class="delete-folder-btn p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-500" data-folder-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    <i data-lucide="grip-vertical" class="w-5 h-5 text-gray-300 dark:text-gray-600 cursor-move ml-1"></i>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // LINK DESIGN
+                        el.innerHTML = `
+                            <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 hover:border-green-200 dark:hover:border-green-900/50 transition-all">
+                                <a href="${item.url}" target="_blank" class="flex items-center gap-3 flex-grow min-w-0 group-hover:text-primary transition-colors">
+                                    <div class="p-2 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
+                                        <i data-lucide="link-2" class="w-4 h-4"></i>
+                                    </div>
+                                    <span class="font-medium text-sm truncate">${item.name}</span>
+                                </a>
+                                <div class="flex items-center gap-1">
+                                    <button class="edit-link-btn p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400" data-link-id="${item.id}"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                                    <button class="delete-link-btn p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500" data-link-id="${item.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    <i data-lucide="grip-vertical" class="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-move ml-1 handle"></i>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    listData.appendChild(el);
+                });
+            }
+            container.appendChild(listData);
+
+            // 4. Initialize SortableJS
+            if (currentItems.length > 0) {
+                new Sortable(listData, {
+                    animation: 150,
+                    delay: 200, // Touch and hold delay (200ms)
+                    delayOnTouchOnly: true,
+                    handle: '.url-item', // Whole item draggable, or use .handle class for specific
+                    ghostClass: 'bg-blue-50/50',
+                    onEnd: function (evt) {
+                        const oldIndex = evt.oldIndex;
+                        const newIndex = evt.newIndex;
+                        
+                        if (oldIndex !== newIndex) {
+                            // Move item in array
+                            const movedItem = currentItems.splice(oldIndex, 1)[0];
+                            currentItems.splice(newIndex, 0, movedItem);
+                            saveData(); // Save new order
+                        }
+                    },
+                });
+            }
+
+            lucide.createIcons();
+
+            // 5. Attach Listeners directly here for simplicity in drill-down logic
+            // Back Button
+            document.getElementById('url-back-btn')?.addEventListener('click', () => {
+                // Go Up Logic
+                if (currentUrlFolderId) {
+                    const result = findItem(data.urls, currentUrlFolderId);
+                    // Find parent of this item
+                    const parentRes = findParentOfItem(data.urls, currentUrlFolderId);
+                    currentUrlFolderId = parentRes ? parentRes.id : null;
+                    renderUrlPage();
+                }
+            });
+
+            // Enter Folder Listener
+            document.querySelectorAll('.enter-folder-trigger').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    // Ignore if clicked on buttons
+                    if(e.target.closest('button') || e.target.closest('.cursor-move')) return;
+                    currentUrlFolderId = el.dataset.folderId;
+                    renderUrlPage();
+                });
+            });
+
+            // Top Add Buttons
+            container.querySelector('.add-sub-folder-btn-top').addEventListener('click', () => {
+                showAddFolderModal(null, currentUrlFolderId);
+            });
+            container.querySelector('.add-link-btn-top').addEventListener('click', () => {
+                showAddLinkModal(currentUrlFolderId);
+            });
         }
 
+        // RECURSIVE FIND HELPERS (Cleaned Up)
         function findItem(items, id) {
             for (const item of items) {
                 if (item.id === id) return { item, parent: items };
                 if (item.type === 'folder' && item.children) {
                     const found = findItem(item.children, id);
-                    if (found) return found.item ? found : { item: found, parent: item.children };
+                    if (found) return found;
                 }
             }
             return null;
+        }
+
+        function findParentOfItem(items, childId) {
+            for (const item of items) {
+                if (item.type === 'folder' && item.children) {
+                    if (item.children.some(child => child.id === childId)) return item;
+                    const found = findParentOfItem(item.children, childId);
+                    if (found) return found;
+                }
+            }
+            return null; // Means Root is parent
         }
 
         function showAddFolderModal(editFolderId = null, parentId = null) {
@@ -6433,7 +6562,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             form.reset();
             const modalTitle = document.getElementById('folder-modal-title');
             document.getElementById('edit-folder-id').value = editFolderId || '';
-            document.getElementById('parent-folder-id').value = parentId || '';
+            document.getElementById('parent-folder-id').value = parentId || (currentUrlFolderId || ''); // Use current view if not specified
 
             if (editFolderId) {
                 const result = findItem(data.urls, editFolderId);
@@ -6450,7 +6579,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         function saveFolder(e) {
             e.preventDefault();
             const editId = document.getElementById('edit-folder-id').value;
-            const parentId = document.getElementById('parent-folder-id').value;
+            const parentId = document.getElementById('parent-folder-id').value; // Usually currentUrlFolderId
             const name = document.getElementById('new-folder-name').value.trim();
             if (!name) return;
 
@@ -6462,14 +6591,16 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             } else {
                 const newFolder = { id: `folder-${Date.now()}`, type: 'folder', name, children: [] };
+                
+                // Add to specific parent or root
+                let targetArray = data.urls;
                 if (parentId) {
                     const parentResult = findItem(data.urls, parentId);
                     if (parentResult && parentResult.item && parentResult.item.type === 'folder') {
-                        parentResult.item.children.push(newFolder);
+                        targetArray = parentResult.item.children;
                     }
-                } else {
-                    data.urls.push(newFolder);
                 }
+                targetArray.push(newFolder);
                 logActivity('folder-plus', `New folder created: "${name}"`);
             }
             saveData();
@@ -6549,79 +6680,71 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function addEventListeners() {
-            // --- 1. GLOBAL DELEGATION ---
+            // --- 1. GLOBAL DELEGATION (Optimized for Delete & Edit) ---
             document.body.addEventListener('click', (e) => {
                 const target = e.target;
 
-                // --- NEW: Dashboard Guide Link Handler ---
-                // Updated to support the new text link inside AI Coach card
+                // GLOBAL DELETE LISTENER (Fixes Delete Button in History/Future)
+                const deleteOtherBtn = target.closest('.delete-other-task-btn');
+                if (deleteOtherBtn) {
+                    e.stopPropagation();
+                    confirmDeleteOtherTask(deleteOtherBtn.dataset.taskId);
+                    return;
+                }
+
+                // GLOBAL EDIT LISTENER
+                const editOtherBtn = target.closest('.edit-other-task-btn');
+                if (editOtherBtn) {
+                    e.stopPropagation();
+                    showAddOtherTaskModal(editOtherBtn.dataset.taskId);
+                    return;
+                }
+
+                // AI Coach Link
                 if (target.closest('#ai-coach-guide-link') || target.closest('#dashboard-guide-btn')) {
-                    if (window.openCreatorModal) {
-                        window.openCreatorModal();
-                    }
+                    if (window.openCreatorModal) window.openCreatorModal();
                     return;
                 }
                 
-                // --- CRITICAL FIX: Chapter Status Buttons Interaction ---
-                // यह लॉजिक उन बटन्स को एक्टिव करेगा जो चैप्टर मोडल के अंदर हैं
+                // Chapter Status Buttons
                 const statusBtn = target.closest('#chapter-status-buttons button');
                 if (statusBtn) {
                     e.preventDefault();
-                    // बाकी सब से 'active' क्लास हटाओ
                     document.querySelectorAll('#chapter-status-buttons button').forEach(b => b.classList.remove('active'));
-                    // जिस पर क्लिक किया उस पर 'active' लगाओ
                     statusBtn.classList.add('active');
                     return; 
                 }
 
-                // Close Creator Modal Special Handler
-                if (target.closest('#close-creator-bio-modal')) {
-                    hideModal('creator-bio-modal');
-                    return;
-                }
-
+                // Close Buttons
+                if (target.closest('#close-creator-bio-modal')) { hideModal('creator-bio-modal'); return; }
                 if (target.classList.contains('modal-backdrop')) {
                     hideModal(target.id);
-                    // If Update Modal closed via backdrop, enable tour
-                    if (target.id === 'update-popup-modal') { window.isUpdatePopupClosed = true; }
+                    if (target.id === 'update-popup-modal') window.isUpdatePopupClosed = true;
                     return;
                 }
                 const closeBtn = target.closest('button[id^="close-"]');
                 if (closeBtn) {
                     let possibleId = closeBtn.id.replace('close-', '').replace('-x', '');
-                    
-                    // Special logic: If closing Update Popup, enable tour
-                    if (possibleId === 'update-popup-modal') { window.isUpdatePopupClosed = true; }
-
-                    if (document.getElementById(possibleId)) hideModal(possibleId);
+                    if (possibleId === 'update-popup-modal') window.isUpdatePopupClosed = true;
                     if (document.getElementById(possibleId)) hideModal(possibleId);
                     else if (document.getElementById(possibleId + '-modal')) hideModal(possibleId + '-modal');
-                    else {
-                        const parentModal = closeBtn.closest('.modal-backdrop');
-                        if (parentModal) hideModal(parentModal.id);
-                    }
+                    else { const parentModal = closeBtn.closest('.modal-backdrop'); if (parentModal) hideModal(parentModal.id); }
                     return;
                 }
+
                 if (target.closest('#add-task-choice-btn')) { showModal('add-task-choice-modal'); return; }
                 if (target.closest('#manual-add-dpt-btn')) { openManualAddModal('dpt'); return; }
                 
-                // Mobile Nav Click with Auto-Scroll Hint
+                // Mobile Nav
                 const navBtn = target.closest('.mobile-nav-btn');
                 if (navBtn && navBtn.dataset.page) { 
                     e.preventDefault(); 
                     navigateTo(navBtn.dataset.page); 
-                    
-                    // ONE-TIME SCROLL HINT
                     if (!localStorage.getItem('mobile_nav_hint_shown')) {
                         localStorage.setItem('mobile_nav_hint_shown', 'true');
                         const scroller = document.getElementById('mobile-nav-scroller');
                         if(scroller) {
-                            setTimeout(() => {
-                                scroller.scroll({ left: 200, behavior: 'smooth' }); // Slide Right
-                                setTimeout(() => {
-                                    scroller.scroll({ left: 0, behavior: 'smooth' }); // Slide Back
-                                }, 800);
-                            }, 500);
+                            setTimeout(() => { scroller.scroll({ left: 200, behavior: 'smooth' }); setTimeout(() => { scroller.scroll({ left: 0, behavior: 'smooth' }); }, 800); }, 500);
                         }
                     }
                     return; 
@@ -6641,37 +6764,19 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             });
 
-            // --- 2. EXAM FILTER LISTENER (NEW) ---
-            const examFilterContainer = document.getElementById('exam-filter-buttons');
-            if (examFilterContainer) {
-                examFilterContainer.addEventListener('click', (e) => {
-                    const btn = e.target.closest('.exam-filter-btn');
-                    if (btn) {
-                        currentExamFilter = btn.dataset.filter;
-                        renderExamsPage();
-                    }
-                });
-            }
-
-            // --- 3. SETTINGS PAGE LISTENERS ---
-            const planModeRadios = document.querySelectorAll('input[name="plan-mode"]');
-            planModeRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    data.settings.planMode = e.target.value;
-                    saveData();
-                    renderSettingsPage(); 
-                });
+            // --- 2. EXAM FILTER ---
+            document.getElementById('exam-filter-buttons')?.addEventListener('click', (e) => {
+                const btn = e.target.closest('.exam-filter-btn');
+                if (btn) { currentExamFilter = btn.dataset.filter; renderExamsPage(); }
             });
 
-            const dptPlanModeRadios = document.querySelectorAll('input[name="dpt-plan-mode"]');
-            dptPlanModeRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    data.settings.dptPlanMode = e.target.value;
-                    saveData();
-                    renderSettingsPage(); 
-                });
+            // --- 3. SETTINGS LISTENERS ---
+            document.querySelectorAll('input[name="plan-mode"]').forEach(radio => {
+                radio.addEventListener('change', (e) => { data.settings.planMode = e.target.value; saveData(); renderSettingsPage(); });
             });
-
+            document.querySelectorAll('input[name="dpt-plan-mode"]').forEach(radio => {
+                radio.addEventListener('change', (e) => { data.settings.dptPlanMode = e.target.value; saveData(); renderSettingsPage(); });
+            });
 
             navBtns.forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.page)));
             themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
@@ -6682,91 +6787,43 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('dpt-search-input').addEventListener('input', renderDptPage);
             document.getElementById('language-select').addEventListener('change', (e) => { data.settings.language = e.target.value; saveData(); applyTranslations(); });
             
-            // --- Theme Color Listeners (FIXED) ---
             document.getElementById('bg-color-start')?.addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; applyTheme(data.settings.theme); saveData(); });
             document.getElementById('bg-color-end')?.addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; applyTheme(data.settings.theme); saveData(); });
-            document.getElementById('reset-theme-btn')?.addEventListener('click', () => { 
-                data.settings.customThemeColors.start = null; 
-                data.settings.customThemeColors.end = null; 
-                applyTheme(data.settings.theme); 
-                renderSettingsPage(); 
-                saveData(); 
-            });
+            document.getElementById('reset-theme-btn')?.addEventListener('click', () => { data.settings.customThemeColors.start = null; data.settings.customThemeColors.end = null; applyTheme(data.settings.theme); renderSettingsPage(); saveData(); });
 
-            // Advanced Colors Listeners
             document.querySelectorAll('.adv-color-picker').forEach(input => {
-                input.addEventListener('input', (e) => {
-                    const type = e.target.dataset.colorType;
-                    data.settings.customThemeColors[type] = e.target.value;
-                    applyManualColors();
-                    saveData();
-                });
+                input.addEventListener('input', (e) => { data.settings.customThemeColors[e.target.dataset.colorType] = e.target.value; applyManualColors(); saveData(); });
             });
-            
             document.getElementById('reset-advanced-colors-btn')?.addEventListener('click', () => {
-                data.settings.customThemeColors.textLight = null;
-                data.settings.customThemeColors.borderLight = null;
-                data.settings.customThemeColors.textDark = null;
-                data.settings.customThemeColors.borderDark = null;
-                applyManualColors();
-                renderSettingsPage();
-                saveData();
+                data.settings.customThemeColors.textLight = null; data.settings.customThemeColors.borderLight = null;
+                data.settings.customThemeColors.textDark = null; data.settings.customThemeColors.borderDark = null;
+                applyManualColors(); renderSettingsPage(); saveData();
             });
             document.getElementById('student-name-input')?.addEventListener('input', (e) => { data.settings.studentName = e.target.value; saveData(); renderHomePage(); });
 
             const toggleTasksBtn = document.getElementById('toggle-completed-tasks-btn');
-            if(toggleTasksBtn) toggleTasksBtn.addEventListener('click', () => {
-                 document.getElementById('completed-tasks-list').classList.toggle('hidden');
-                 toggleTasksBtn.querySelector('i').classList.toggle('rotate-180');
-            });
+            if(toggleTasksBtn) toggleTasksBtn.addEventListener('click', () => { document.getElementById('completed-tasks-list').classList.toggle('hidden'); toggleTasksBtn.querySelector('i').classList.toggle('rotate-180'); });
             const toggleDptBtn = document.getElementById('toggle-completed-dpt-btn');
-            if(toggleDptBtn) toggleDptBtn.addEventListener('click', () => {
-                 document.getElementById('completed-dpt-list').classList.toggle('hidden');
-                 toggleDptBtn.querySelector('i').classList.toggle('rotate-180');
-            });
+            if(toggleDptBtn) toggleDptBtn.addEventListener('click', () => { document.getElementById('completed-dpt-list').classList.toggle('hidden'); toggleDptBtn.querySelector('i').classList.toggle('rotate-180'); });
 
-            // --- DATE COMPLETION MODAL LOGIC (FIXED) ---
+            // Date Completion
             document.getElementById('date-completion-subject-select').addEventListener('change', (e) => {
-                const subjectId = e.target.value;
-                const list = document.getElementById('date-completion-chapter-list');
-                if (!subjectId) {
-                    list.innerHTML = `<p class="text-center text-sm text-text-muted-light">Please select a subject first.</p>`;
-                    return;
-                }
+                const subjectId = e.target.value; const list = document.getElementById('date-completion-chapter-list');
+                if (!subjectId) { list.innerHTML = `<p class="text-center text-sm text-text-muted-light">Please select a subject first.</p>`; return; }
                 const subject = getSubjectById(subjectId);
                 const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
-
-                if (availableChapters.length === 0) {
-                    list.innerHTML = `<p class="text-center text-sm text-text-muted-light">All chapters completed for this subject.</p>`;
-                    return;
-                }
-
-                list.innerHTML = availableChapters.map(c => `
-                    <label class="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded cursor-pointer">
-                        <input type="checkbox" class="date-comp-chapter-checkbox form-checkbox h-4 w-4 text-primary rounded" value="${c.id}">
-                        <span>${c.name}</span>
-                    </label>
-                `).join('');
+                if (availableChapters.length === 0) { list.innerHTML = `<p class="text-center text-sm text-text-muted-light">All chapters completed.</p>`; return; }
+                list.innerHTML = availableChapters.map(c => `<label class="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded cursor-pointer"><input type="checkbox" class="date-comp-chapter-checkbox form-checkbox h-4 w-4 text-primary rounded" value="${c.id}"><span>${c.name}</span></label>`).join('');
             });
 
             document.getElementById('save-date-completion-btn').addEventListener('click', () => {
-                const modal = document.getElementById('date-completion-modal');
-                const completionDate = modal.dataset.date;
+                const modal = document.getElementById('date-completion-modal'); const completionDate = modal.dataset.date;
                 const subjectId = document.getElementById('date-completion-subject-select').value;
                 const selectedCheckboxes = document.querySelectorAll('.date-comp-chapter-checkbox:checked');
-                
-                if (!subjectId) { alert('Select a subject.'); return; }
-                if (selectedCheckboxes.length === 0) { alert('Select at least one chapter.'); return; }
-
-                selectedCheckboxes.forEach(cb => {
-                    const chapterId = cb.value;
-                    updateChapterStatus(subjectId, chapterId, 'Completed', false, completionDate);
-                });
-
+                if (!subjectId || selectedCheckboxes.length === 0) { alert('Select subject and at least one chapter.'); return; }
+                selectedCheckboxes.forEach(cb => { updateChapterStatus(subjectId, cb.value, 'Completed', false, completionDate); });
                 logActivity('calendar-check-2', `Manually marked ${selectedCheckboxes.length} chapters as completed on ${completionDate}`);
-                saveData();
-                renderCalendarPage();
-                hideModal('date-completion-modal');
+                saveData(); renderCalendarPage(); hideModal('date-completion-modal');
             });
 
             const subjectsContainer = document.getElementById('subjects-list-container');
@@ -6781,21 +6838,15 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 else if (restudyBtn) { e.preventDefault(); e.stopPropagation(); confirmRestudySubject(restudyBtn.dataset.subjectId); }
             });
 
-            // Optimized Add Event Listener - Faster Click Response
+            // Dashboard Actions
             const dashboardTasksContainer = document.getElementById('todays-plan-container');
             dashboardTasksContainer.addEventListener('click', e => {
-                const btn = e.target.closest('.task-action-btn');
-                if (!btn) return;
+                const btn = e.target.closest('.task-action-btn'); if (!btn) return;
                 e.stopPropagation(); e.preventDefault();
-                
-                // Immediate Visual Feedback
-                btn.style.transform = "scale(0.9)";
-                setTimeout(() => btn.style.transform = "scale(1)", 100);
+                btn.style.transform = "scale(0.9)"; setTimeout(() => btn.style.transform = "scale(1)", 100);
 
                 if (btn.classList.contains('skip-btn')) {
-                    btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>';
-                    lucide.createIcons();
-                    // Use requestAnimationFrame for smoother UI update
+                    btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>'; lucide.createIcons();
                     requestAnimationFrame(() => skipChapter(btn.dataset.subjectId, btn.dataset.chapterId));
                 } else if (btn.classList.contains('postpone-btn')) {
                     const { taskId, taskType, subjectId, chapterId, revisionDate } = btn.dataset;
@@ -6804,106 +6855,57 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     else openPostponeModal(subjectId, chapterId);
                 } else if (btn.classList.contains('delete-manual-task-btn')) {
                     const todayStr = getLocalDateString();
-                    if(data.dailyPlan[todayStr]?.manualTasks) {
-                        data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== btn.dataset.manualId);
-                        saveData(); renderHomePage();
-                    }
-                } else if (btn.classList.contains('delete-other-task-btn')) {
-                    confirmDeleteOtherTask(btn.dataset.taskId);
+                    if(data.dailyPlan[todayStr]?.manualTasks) { data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== btn.dataset.manualId); saveData(); renderHomePage(); }
                 }
             });
 
-            // Add Day Selector Logic for "Other Task" Modal
             document.querySelectorAll('.day-selector-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault(); 
-                    // Toggle visuals
-                    this.classList.toggle('bg-indigo-600');
-                    this.classList.toggle('text-white');
-                    this.classList.toggle('active'); // Important for logic
-                    this.classList.toggle('bg-white');
-                    this.classList.toggle('dark:bg-gray-900');
-                });
+                btn.addEventListener('click', function(e) { e.preventDefault(); this.classList.toggle('bg-indigo-600'); this.classList.toggle('text-white'); this.classList.toggle('active'); this.classList.toggle('bg-white'); this.classList.toggle('dark:bg-gray-900'); });
             });
-
-            // Toggle Day Selection Container Visibility based on Checkbox
             document.getElementById('other-task-repeat')?.addEventListener('change', (e) => {
                 const container = document.getElementById('day-selection-container');
-                if(e.target.checked) {
-                    container.classList.remove('hidden');
-                    container.classList.add('block', 'animate-fadeIn');
-                } else {
-                    container.classList.add('hidden');
-                    container.classList.remove('block', 'animate-fadeIn');
-                }
+                if(e.target.checked) { container.classList.remove('hidden'); container.classList.add('block', 'animate-fadeIn'); } else { container.classList.add('hidden'); container.classList.remove('block', 'animate-fadeIn'); }
             });
 
             const dptWrapper = document.getElementById('todays-dpt-container-wrapper');
             if (dptWrapper) {
                 dptWrapper.addEventListener('click', e => {
-                    const skipBtn = e.target.closest('.skip-dpt-btn');
-                    const completeBtn = e.target.closest('.mark-dpt-complete-btn');
-                    const deleteManualBtn = e.target.closest('.manual-dpt-delete-btn');
-                    const viewBtn = e.target.closest('.view-dpt-details-btn');
-                    
-                    if (skipBtn) {
-                        e.stopPropagation();
-                        skipBtn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>';
-                        lucide.createIcons();
-                        setTimeout(() => skipDpt(skipBtn.dataset.subjectId), 100);
-                    } else if (completeBtn) {
-                        e.stopPropagation();
-                        showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.chapterId, parseInt(completeBtn.dataset.testId));
-                    } else if (deleteManualBtn) {
-                        e.stopPropagation();
-                        const todayStr = getLocalDateString();
-                        if(data.dailyDptPlan[todayStr]) {
-                            data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(t => t.id !== deleteManualBtn.dataset.manualId);
-                            saveData(); renderHomePage();
-                        }
-                    } else if (viewBtn) {
-                        e.stopPropagation();
-                        showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, parseInt(viewBtn.dataset.testId));
-                    }
+                    const skipBtn = e.target.closest('.skip-dpt-btn'); const completeBtn = e.target.closest('.mark-dpt-complete-btn'); const deleteManualBtn = e.target.closest('.manual-dpt-delete-btn'); const viewBtn = e.target.closest('.view-dpt-details-btn');
+                    if (skipBtn) { e.stopPropagation(); skipBtn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>'; lucide.createIcons(); setTimeout(() => skipDpt(skipBtn.dataset.subjectId), 100); } 
+                    else if (completeBtn) { e.stopPropagation(); showDptDetailsModal(completeBtn.dataset.subjectId, completeBtn.dataset.chapterId, parseInt(completeBtn.dataset.testId)); } 
+                    else if (deleteManualBtn) { e.stopPropagation(); const todayStr = getLocalDateString(); if(data.dailyDptPlan[todayStr]) { data.dailyDptPlan[todayStr] = data.dailyDptPlan[todayStr].filter(t => t.id !== deleteManualBtn.dataset.manualId); saveData(); renderHomePage(); } } 
+                    else if (viewBtn) { e.stopPropagation(); showDptDetailsModal(viewBtn.dataset.subjectId, viewBtn.dataset.chapterId, parseInt(viewBtn.dataset.testId)); }
                 });
             }
 
             const dptContainer = document.getElementById('dpt-list-container');
             dptContainer.addEventListener('click', e => {
-                const target = e.target;
-                const dptItem = target.closest('.dpt-list-item');
-                const addBtn = target.closest('.add-dpt-to-chapter-btn');
-                const addAllBtn = target.closest('.add-dpt-to-all-chapters-btn');
-                const deleteAllSubBtn = target.closest('.delete-all-dpts-subject-btn');
+                const target = e.target; const dptItem = target.closest('.dpt-list-item'); const addBtn = target.closest('.add-dpt-to-chapter-btn'); const addAllBtn = target.closest('.add-dpt-to-all-chapters-btn'); const deleteAllSubBtn = target.closest('.delete-all-dpts-subject-btn');
                 if (dptItem) showDptDetailsModal(dptItem.dataset.subjectId, dptItem.dataset.chapterId, dptItem.dataset.testId);
                 else if (addBtn) showAddChapterDptModal(addBtn.dataset.subjectId, addBtn.dataset.chapterId);
                 else if (addAllBtn) showAddAllChaptersDptModal(addAllBtn.dataset.subjectId);
                 else if (deleteAllSubBtn) confirmDeleteAllDptsForSubject(deleteAllSubBtn.dataset.subjectId);
             });
-            document.getElementById('dpt-global-actions-container').addEventListener('click', e => {
-                if (e.target.closest('#delete-all-dpts-global-btn')) confirmDeleteAllDptsGlobally();
-            });
+            document.getElementById('dpt-global-actions-container').addEventListener('click', e => { if (e.target.closest('#delete-all-dpts-global-btn')) confirmDeleteAllDptsGlobally(); if (e.target.closest('#add-global-dpts-btn')) showAddGlobalDptModal(); });
+            document.getElementById('save-global-dpt-btn').addEventListener('click', saveGlobalDpt);
 
             document.getElementById('exams-list-container').addEventListener('click', e => {
-                const editBtn = e.target.closest('.edit-exam-btn');
-                const deleteBtn = e.target.closest('.delete-exam-btn');
-                if (editBtn) showAddExamModal(editBtn.dataset.examId);
-                else if (deleteBtn) deleteExam(deleteBtn.dataset.examId);
+                const editBtn = e.target.closest('.edit-exam-btn'); const deleteBtn = e.target.closest('.delete-exam-btn');
+                if (editBtn) showAddExamModal(editBtn.dataset.examId); else if (deleteBtn) deleteExam(deleteBtn.dataset.examId);
             });
 
             document.getElementById('url-container').addEventListener('click', e => {
-                const addSub = e.target.closest('.add-sub-folder-btn');
-                const addLink = e.target.closest('.add-link-to-folder-btn');
-                const editFolder = e.target.closest('.edit-folder-btn');
-                const delFolder = e.target.closest('.delete-folder-btn');
-                const editLink = e.target.closest('.edit-link-btn');
+                // Only Global Edit/Delete actions needed here
+                // Navigation logic is inside renderUrlPage now for cleaner scope access
+                const editFolder = e.target.closest('.edit-folder-btn'); 
+                const delFolder = e.target.closest('.delete-folder-btn'); 
+                const editLink = e.target.closest('.edit-link-btn'); 
                 const delLink = e.target.closest('.delete-link-btn');
-                if (addSub) showAddFolderModal(null, addSub.dataset.folderId);
-                else if (addLink) showAddLinkModal(addLink.dataset.folderId);
-                else if (editFolder) showAddFolderModal(editFolder.dataset.folderId);
-                else if (delFolder) deleteItem(delFolder.dataset.folderId);
-                else if (editLink) showAddLinkModal(e.target.closest('[data-folder-id]')?.dataset.folderId, editLink.dataset.linkId);
-                else if (delLink) deleteItem(delLink.dataset.linkId);
+                
+                if (editFolder) { e.stopPropagation(); showAddFolderModal(editFolder.dataset.folderId); }
+                else if (delFolder) { e.stopPropagation(); deleteItem(delFolder.dataset.folderId); }
+                else if (editLink) { e.stopPropagation(); showAddLinkModal(null, editLink.dataset.linkId); }
+                else if (delLink) { e.stopPropagation(); deleteItem(delLink.dataset.linkId); }
             });
 
             const handleForm = (id, handler) => {
@@ -6924,6 +6926,8 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             handleForm('add-all-chapters-dpt-form', handleAddDptToAllChapters);
             handleForm('add-folder-form', saveFolder);
             handleForm('add-link-form', saveLink);
+            
+            // --- FIX FOR OTHER TASK SAVE ---
             handleForm('add-other-task-form', saveOtherTask);
 
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
@@ -6933,23 +6937,17 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('save-chapter-details-btn').addEventListener('click', (e) => saveChapterDetails(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId));
             document.getElementById('delete-chapter-details-btn').addEventListener('click', (e) => confirmDeleteChapter(e.currentTarget.dataset.subjectId, e.currentTarget.dataset.chapterId));
 
-            // Fix for Missed Other Tasks Add Button
             document.getElementById('missed-other-tasks-list')?.addEventListener('click', e => {
                 const btn = e.target.closest('.add-missed-other-task-btn');
                 if (btn) {
-                    const taskId = btn.dataset.taskId;
-                    const task = data.missedOtherTasks.find(t => t.id === taskId);
+                    const taskId = btn.dataset.taskId; const task = data.missedOtherTasks.find(t => t.id === taskId);
                     if (task) {
                         const todayStr = getLocalDateString();
-                        // Clone task for today
                         const newTask = { ...task, id: `other-${Date.now()}`, date: todayStr, status: 'Pending' };
                         data.otherTasks.push(newTask);
-                        // Remove from missed list
                         data.missedOtherTasks = data.missedOtherTasks.filter(t => t.id !== taskId);
-                        
                         logActivity('plus', `Moved missed task to today: "${task.description}"`);
-                        saveData();
-                        renderHomePage();
+                        saveData(); renderHomePage();
                     }
                 }
             });
@@ -6957,283 +6955,91 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('choice-manual-chapter-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); openManualAddModal('chapter'); });
             document.getElementById('choice-other-task-btn').addEventListener('click', () => { hideModal('add-task-choice-modal'); showAddOtherTaskModal(); });
 
-            document.getElementById('subject-view-filter').addEventListener('click', (e) => {
-                const btn = e.target.closest('.filter-btn');
-                if (btn) { subjectPageViewMode = btn.dataset.view; renderSubjectsPage(); }
-            });
-            document.getElementById('dpt-view-filter').addEventListener('click', (e) => {
-                const btn = e.target.closest('.filter-btn');
-                if (btn) { dptPageViewMode = btn.dataset.view; renderDptPage(); }
-            });
-
+            document.getElementById('subject-view-filter').addEventListener('click', (e) => { const btn = e.target.closest('.filter-btn'); if (btn) { subjectPageViewMode = btn.dataset.view; renderSubjectsPage(); } });
+            document.getElementById('dpt-view-filter').addEventListener('click', (e) => { const btn = e.target.closest('.filter-btn'); if (btn) { dptPageViewMode = btn.dataset.view; renderDptPage(); } });
             document.getElementById('dpt-subject-filter').addEventListener('change', renderDptPage);
 
-            // --- FIXED IMPORT/EXPORT LISTENERS ---
-            
-            // 1. Master File Input Listener (Must be attached properly)
+            // Import/Export
             const mainFileInput = document.getElementById('import-file-input');
-            // Remove old listeners by cloning (Fixes multi-trigger bug)
             const newFileInput = mainFileInput.cloneNode(true);
             mainFileInput.parentNode.replaceChild(newFileInput, mainFileInput);
-            
-            // Attach the ONE global listener
             newFileInput.addEventListener('change', handleFileUpload);
 
-            // 2. Trigger Buttons
             document.getElementById('export-full-data-btn').addEventListener('click', () => exportData('full'));
-            
-            document.getElementById('import-full-backup-btn').addEventListener('click', () => { 
-                const input = document.getElementById('import-file-input');
-                input.dataset.importType = 'full_backup'; 
-                input.click(); 
-            });
-
+            document.getElementById('import-full-backup-btn').addEventListener('click', () => { const input = document.getElementById('import-file-input'); input.dataset.importType = 'full_backup'; input.click(); });
             document.getElementById('export-exams-btn').addEventListener('click', () => exportData('exams'));
-            document.getElementById('import-exams-btn').addEventListener('click', () => { 
-                const input = document.getElementById('import-file-input');
-                input.dataset.importType = 'exams'; 
-                input.click(); 
-            });
-
+            document.getElementById('import-exams-btn').addEventListener('click', () => { const input = document.getElementById('import-file-input'); input.dataset.importType = 'exams'; input.click(); });
             document.getElementById('export-urls-btn').addEventListener('click', () => exportData('urls'));
-            document.getElementById('import-urls-btn').addEventListener('click', () => { 
-                const input = document.getElementById('import-file-input');
-                input.dataset.importType = 'urls'; 
-                input.click(); 
-            });
+            document.getElementById('import-urls-btn').addEventListener('click', () => { const input = document.getElementById('import-file-input'); input.dataset.importType = 'urls'; input.click(); });
             
-            // Re-attach listeners for Routine/Chapters Import buttons (Fixing context loss)
             const btnImportRoutine = document.getElementById('import-routine-btn-new');
-            if(btnImportRoutine) {
-                // Clone to clear old listeners
-                const newBtn = btnImportRoutine.cloneNode(true);
-                btnImportRoutine.parentNode.replaceChild(newBtn, btnImportRoutine);
-                newBtn.addEventListener('click', () => { 
-                    const input = document.getElementById('import-file-input');
-                    input.dataset.importType = 'routine'; 
-                    input.click(); 
-                });
-            }
-
+            if(btnImportRoutine) { const newBtn = btnImportRoutine.cloneNode(true); btnImportRoutine.parentNode.replaceChild(newBtn, btnImportRoutine); newBtn.addEventListener('click', () => { const input = document.getElementById('import-file-input'); input.dataset.importType = 'routine'; input.click(); }); }
             const btnImportChapters = document.getElementById('import-all-chapters-btn');
-            if(btnImportChapters) {
-                 const newBtn = btnImportChapters.cloneNode(true);
-                 btnImportChapters.parentNode.replaceChild(newBtn, btnImportChapters);
-                 newBtn.addEventListener('click', () => { 
-                    const input = document.getElementById('import-file-input');
-                    input.dataset.importType = 'chapters'; 
-                    input.click(); 
-                });
-            }
+            if(btnImportChapters) { const newBtn = btnImportChapters.cloneNode(true); btnImportChapters.parentNode.replaceChild(newBtn, btnImportChapters); newBtn.addEventListener('click', () => { const input = document.getElementById('import-file-input'); input.dataset.importType = 'chapters'; input.click(); }); }
 
             document.getElementById('reset-app-btn').addEventListener('click', resetApp);
             document.getElementById('reset-study-date-btn').addEventListener('click', resetStudyDate);
             document.getElementById('delete-all-chapters-btn').addEventListener('click', deleteAllChaptersForSubject);
             
-            // Notices Page Listeners
             document.body.addEventListener('click', (e) => {
-                if (e.target.id === 'add-personal-note-btn') {
-                    showAddNotePopup();
-                }
+                if (e.target.id === 'add-personal-note-btn') showAddNotePopup();
                 const delNoteBtn = e.target.closest('.delete-personal-note-btn');
-                if (delNoteBtn) {
-                    const index = parseInt(delNoteBtn.dataset.index);
-                    data.personalNotes.splice(index, 1);
-                    saveData();
-                    renderNoticesPage();
-                }
+                if (delNoteBtn) { data.personalNotes.splice(parseInt(delNoteBtn.dataset.index), 1); saveData(); renderNoticesPage(); }
             });
 
-            // DPT Toggle Listener
             const dptToggle = document.getElementById('global-dpt-toggle');
-            if (dptToggle) {
-                dptToggle.checked = data.settings.dptDashboardActive !== false;
-                document.getElementById('dpt-toggle-text').innerText = dptToggle.checked ? "Active" : "Hidden";
-                
-                dptToggle.addEventListener('change', (e) => {
-                    data.settings.dptDashboardActive = e.target.checked;
-                    document.getElementById('dpt-toggle-text').innerText = e.target.checked ? "Active" : "Hidden";
-                    saveData();
-                    renderHomePage(); // Refresh Dashboard
-                });
-            }
+            if (dptToggle) { dptToggle.checked = data.settings.dptDashboardActive !== false; document.getElementById('dpt-toggle-text').innerText = dptToggle.checked ? "Active" : "Hidden"; dptToggle.addEventListener('change', (e) => { data.settings.dptDashboardActive = e.target.checked; document.getElementById('dpt-toggle-text').innerText = e.target.checked ? "Active" : "Hidden"; saveData(); renderHomePage(); }); }
             
-            // --- FIXED: ADVANCED ROUTINE LISTENERS ---
-            
-            // 1. Day Selection Logic (Robust Listener)
             document.querySelectorAll('.adv-day-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevent default button behavior
-                    // Toggle visuals manually to ensure it works on mobile/PC
-                    this.classList.toggle('bg-indigo-600');
-                    this.classList.toggle('text-white');
-                    this.classList.toggle('border-indigo-600');
-                    this.classList.toggle('shadow-md');
-                    // Toggle Off-State
-                    this.classList.toggle('bg-white');
-                    this.classList.toggle('dark:bg-gray-900');
-                    // Add a data attribute for logic checking
-                    if(this.classList.contains('bg-indigo-600')) {
-                        this.dataset.selected = "true";
-                    } else {
-                        this.dataset.selected = "false";
-                    }
-                });
+                btn.addEventListener('click', function(e) { e.preventDefault(); this.classList.toggle('bg-indigo-600'); this.classList.toggle('text-white'); this.classList.toggle('border-indigo-600'); this.classList.toggle('shadow-md'); this.classList.toggle('bg-white'); this.classList.toggle('dark:bg-gray-900'); this.dataset.selected = this.classList.contains('bg-indigo-600') ? "true" : "false"; });
             });
 
-            // 2. Toggle Input/Select
             document.getElementById('toggle-custom-name-btn')?.addEventListener('click', () => {
-                const select = document.getElementById('adv-routine-subject-select');
-                const input = document.getElementById('adv-routine-custom-name');
-                const btn = document.getElementById('toggle-custom-name-btn');
-                if (input.classList.contains('hidden')) { 
-                    input.classList.remove('hidden'); 
-                    select.classList.add('hidden'); 
-                    btn.textContent = 'Select Subject'; 
-                    select.value = ""; 
-                } else { 
-                    input.classList.add('hidden'); 
-                    select.classList.remove('hidden'); 
-                    btn.textContent = 'Type Custom'; 
-                    input.value = ""; 
-                }
+                const select = document.getElementById('adv-routine-subject-select'); const input = document.getElementById('adv-routine-custom-name'); const btn = document.getElementById('toggle-custom-name-btn');
+                if (input.classList.contains('hidden')) { input.classList.remove('hidden'); select.classList.add('hidden'); btn.textContent = 'Select Subject'; select.value = ""; } else { input.classList.add('hidden'); select.classList.remove('hidden'); btn.textContent = 'Type Custom'; input.value = ""; }
             });
 
-            // 3. Save Routine Logic (Fixed Day Detection)
             document.getElementById('save-adv-routine-btn')?.addEventListener('click', () => {
-                const select = document.getElementById('adv-routine-subject-select');
-                const input = document.getElementById('adv-routine-custom-name');
-                
-                // Collect Days from the dataset attribute we set in the click listener above
-                const days = [];
-                document.querySelectorAll('.adv-day-btn').forEach(btn => { 
-                    if (btn.dataset.selected === "true" || btn.classList.contains('bg-indigo-600')) {
-                        days.push(parseInt(btn.dataset.day)); 
-                    }
-                });
-
+                const select = document.getElementById('adv-routine-subject-select'); const input = document.getElementById('adv-routine-custom-name');
+                const days = []; document.querySelectorAll('.adv-day-btn').forEach(btn => { if (btn.dataset.selected === "true" || btn.classList.contains('bg-indigo-600')) { days.push(parseInt(btn.dataset.day)); } });
                 if (days.length === 0) { alert('Please select at least one day (Mon-Sun).'); return; }
-                
                 let subjectId, name;
-                // Custom Name Logic
-                if (!input.classList.contains('hidden') && input.value.trim()) { 
-                    name = input.value.trim(); 
-                    subjectId = `custom-${Date.now()}`; 
-                } 
-                // Dropdown Logic
-                else if (select.value) { 
-                    subjectId = select.value; 
-                    name = select.options[select.selectedIndex].text; 
-                } else { 
-                    alert('Please select a subject from the list or type a custom name.'); return; 
-                }
-
-                data.settings.customSubjectRoutine = data.settings.customSubjectRoutine || [];
-                data.settings.customSubjectRoutine.push({ subjectId, name, days, active: true });
-                
-                // Force Dashboard Update immediately
+                if (!input.classList.contains('hidden') && input.value.trim()) { name = input.value.trim(); subjectId = `custom-${Date.now()}`; } else if (select.value) { subjectId = select.value; name = select.options[select.selectedIndex].text; } else { alert('Please select a subject from the list or type a custom name.'); return; }
+                data.settings.customSubjectRoutine = data.settings.customSubjectRoutine || []; data.settings.customSubjectRoutine.push({ subjectId, name, days, active: true });
                 delete data.dailyPlan[getLocalDateString()];
-                
-                // Reset UI
-                document.querySelectorAll('.adv-day-btn').forEach(btn => {
-                    btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600', 'shadow-md');
-                    btn.classList.add('bg-white', 'dark:bg-gray-900');
-                    btn.dataset.selected = "false";
-                });
-                select.value = "";
-                input.value = "";
-
-                saveData(); 
-                renderAdvancedRoutineUI(); 
-                renderHomePage(); // Updates dashboard
-                alert("Routine added successfully! Check Today's Plan.");
+                document.querySelectorAll('.adv-day-btn').forEach(btn => { btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600', 'shadow-md'); btn.classList.add('bg-white', 'dark:bg-gray-900'); btn.dataset.selected = "false"; }); select.value = ""; input.value = "";
+                saveData(); renderAdvancedRoutineUI(); renderHomePage(); alert("Routine added successfully! Check Today's Plan.");
             });
 
-            // 4. Delete/Toggle Saved Routines
             document.getElementById('adv-routine-list')?.addEventListener('click', (e) => {
-                const toggleBtn = e.target.closest('.toggle-adv-routine-btn');
-                const deleteBtn = e.target.closest('.delete-adv-routine-btn');
-                
-                if (toggleBtn) {
-                    const index = parseInt(toggleBtn.dataset.index);
-                    const routine = data.settings.customSubjectRoutine[index];
-                    if (routine) {
-                        routine.active = !routine.active;
-                        delete data.dailyPlan[getLocalDateString()]; // Force Refresh
-                        saveData(); renderAdvancedRoutineUI(); renderHomePage();
-                    }
-                }
-                if (deleteBtn) {
-                    const index = parseInt(deleteBtn.dataset.index);
-                    data.settings.customSubjectRoutine.splice(index, 1);
-                    delete data.dailyPlan[getLocalDateString()]; // Force Refresh
-                    saveData(); renderAdvancedRoutineUI(); renderHomePage();
-                }
+                const toggleBtn = e.target.closest('.toggle-adv-routine-btn'); const deleteBtn = e.target.closest('.delete-adv-routine-btn');
+                if (toggleBtn) { const index = parseInt(toggleBtn.dataset.index); if (data.settings.customSubjectRoutine[index]) { data.settings.customSubjectRoutine[index].active = !data.settings.customSubjectRoutine[index].active; delete data.dailyPlan[getLocalDateString()]; saveData(); renderAdvancedRoutineUI(); renderHomePage(); } }
+                if (deleteBtn) { const index = parseInt(deleteBtn.dataset.index); data.settings.customSubjectRoutine.splice(index, 1); delete data.dailyPlan[getLocalDateString()]; saveData(); renderAdvancedRoutineUI(); renderHomePage(); }
             });
 
             document.getElementById('missed-chapters-list').addEventListener('click', e => {
                 const btn = e.target.closest('.complete-missed-chapter-btn');
-                if (btn) {
-                    const { subjectId, chapterId } = btn.dataset;
-                    const todayStr = getLocalDateString();
-                    data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [] };
-                    data.dailyPlan[todayStr].manualTasks.push({ subjectId, chapterId, id: `manual-${Date.now()}` });
-                    data.missedChapters = data.missedChapters.filter(c => c.chapterId !== chapterId);
-                    saveData(); renderHomePage();
-                }
+                if (btn) { const { subjectId, chapterId } = btn.dataset; const todayStr = getLocalDateString(); data.dailyPlan[todayStr] = data.dailyPlan[todayStr] || { tasks: {}, completedSubjects: [], manualTasks: [] }; data.dailyPlan[todayStr].manualTasks.push({ subjectId, chapterId, id: `manual-${Date.now()}` }); data.missedChapters = data.missedChapters.filter(c => c.chapterId !== chapterId); saveData(); renderHomePage(); }
             });
             document.getElementById('missed-revisions-list').addEventListener('click', e => {
                 const btn = e.target.closest('.complete-missed-revision-btn');
-                if (btn) {
-                    updateRevisionStatus(btn.dataset.subjectId, btn.dataset.chapterId, btn.dataset.revisionDate, true);
-                    data.missedRevisions = data.missedRevisions.filter(r => !(r.chapterId === btn.dataset.chapterId && r.revisionDate === btn.dataset.revisionDate));
-                    saveData(); renderHomePage();
-                }
+                if (btn) { updateRevisionStatus(btn.dataset.subjectId, btn.dataset.chapterId, btn.dataset.revisionDate, true); data.missedRevisions = data.missedRevisions.filter(r => !(r.chapterId === btn.dataset.chapterId && r.revisionDate === btn.dataset.revisionDate)); saveData(); renderHomePage(); }
             });
             
-            document.getElementById('dpt-global-actions-container').addEventListener('click', (e) => {
-                 if (e.target.closest('#delete-all-dpts-global-btn')) confirmDeleteAllDptsGlobally();
-                 if (e.target.closest('#add-global-dpts-btn')) showAddGlobalDptModal();
-            });
-            
-            document.getElementById('save-global-dpt-btn').addEventListener('click', saveGlobalDpt);
-
-            document.getElementById('manual-add-subject-select').addEventListener('change', (e) => {
-                const modal = document.getElementById('manual-add-modal');
-                if(modal.dataset.type === 'dpt') { populateManualItemList(e.target.value, 'dpt'); }
-            });
-
-             // Global listener for Edit Other Task Buttons (Dashboard & Notes Page)
-            document.body.addEventListener('click', (e) => {
-                const editBtn = e.target.closest('.edit-other-task-btn');
-                if (editBtn) {
-                    e.stopPropagation();
-                    const taskId = editBtn.dataset.taskId;
-                    showAddOtherTaskModal(taskId);
-                }
-            });
+            document.getElementById('manual-add-subject-select').addEventListener('change', (e) => { const modal = document.getElementById('manual-add-modal'); if(modal.dataset.type === 'dpt') { populateManualItemList(e.target.value, 'dpt'); } });
 
             document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
-                const checkbox = e.target;
-                if (!checkbox.classList.contains('task-checkbox') && !checkbox.classList.contains('revision-checkbox')) return;
-                const listItem = checkbox.closest('.task-list-item');
-                const taskType = checkbox.dataset.taskType;
+                const checkbox = e.target; if (!checkbox.classList.contains('task-checkbox') && !checkbox.classList.contains('revision-checkbox')) return;
+                const listItem = checkbox.closest('.task-list-item'); const taskType = checkbox.dataset.taskType;
                 if (checkbox.checked) {
                     listItem?.classList.add('completed');
                     setTimeout(() => {
-                        if (taskType === 'revision') {
-                                updateRevisionStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.revisionDate, true);
-                        } else if (taskType === 'other') {
-                            updateOtherTaskStatus(checkbox.dataset.taskId, 'Completed');
-                        } else { 
+                        if (taskType === 'revision') updateRevisionStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, checkbox.dataset.revisionDate, true);
+                        else if (taskType === 'other') updateOtherTaskStatus(checkbox.dataset.taskId, 'Completed');
+                        else { 
                             updateChapterStatus(checkbox.dataset.subjectId, checkbox.dataset.chapterId, 'Completed'); 
-                            if (taskType === 'chapter' && checkbox.dataset.subjectIdOnly) { markSubjectAsDoneForToday(checkbox.dataset.subjectIdOnly); }
-                            else if (taskType === 'manual_chapter') {
-                                    const todayStr = getLocalDateString();
-                                    const taskId = listItem.dataset.manualId;
-                                    data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId);
-                                    saveData(); renderHomePage();
-                            }
+                            if (taskType === 'chapter' && checkbox.dataset.subjectIdOnly) markSubjectAsDoneForToday(checkbox.dataset.subjectIdOnly);
+                            else if (taskType === 'manual_chapter') { const todayStr = getLocalDateString(); const taskId = listItem.dataset.manualId; data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== taskId); saveData(); renderHomePage(); }
                         }
                     }, 500);
                 }
@@ -7514,21 +7320,74 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
         function showAddOtherTaskModal(editTaskId = null) {
             const form = document.getElementById('add-other-task-form');
-            form.reset();
+            
+            // --- CRITICAL FIX: REMOVE OLD LISTENERS & ATTACH NEW ONE ---
+            // We clone the form to strip old event listeners that might be broken
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            // Attach the ONE robust save listener
+            newForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveOtherTask(e);
+            });
+
+            // Re-grab references from the NEW form (since we replaced the node)
             const modalTitle = document.getElementById('add-other-task-title');
             const editIdInput = document.getElementById('edit-other-task-id');
-            editIdInput.value = editTaskId || '';
-
-            // Default Reset
-            document.getElementById('other-task-date').value = getLocalDateString();
-            const container = document.getElementById('day-selection-container');
+            const descInput = document.getElementById('other-task-description');
+            const suggestionsContainer = document.getElementById('task-suggestions-container');
             const repeatCheckbox = document.getElementById('other-task-repeat');
+            const dayContainer = document.getElementById('day-selection-container');
+
+            newForm.reset(); 
+            editIdInput.value = editTaskId || '';
+            document.getElementById('other-task-date').value = getLocalDateString();
             
-            // Reset Day Buttons Visuals
+            // --- SMART SUGGESTIONS LOGIC (GOOGLE STYLE) ---
+            // Re-attach input listener since node was replaced
+            descInput.addEventListener('input', function() {
+                const val = this.value.toLowerCase();
+                if (!val) { suggestionsContainer.classList.add('hidden'); return; }
+                
+                const pastTasks = new Set([
+                    ...(data.otherTasks || []).map(t => t.description),
+                    ...(data.otherTaskHistory || []).map(t => t.description)
+                ]);
+                
+                const matches = [...pastTasks].filter(d => d.toLowerCase().includes(val)).slice(0, 5);
+                
+                if (matches.length > 0) {
+                    suggestionsContainer.innerHTML = matches.map(m => `
+                        <div class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm flex items-center gap-2 suggestion-item">
+                            <i data-lucide="history" class="w-3 h-3 text-gray-400"></i> ${m}
+                        </div>
+                    `).join('');
+                    suggestionsContainer.classList.remove('hidden');
+                    lucide.createIcons();
+                    
+                    document.querySelectorAll('.suggestion-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            descInput.value = item.innerText.trim();
+                            suggestionsContainer.classList.add('hidden');
+                        });
+                    });
+                } else {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#other-task-description')) {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            // Day Selector Logic - Re-attach
             document.querySelectorAll('.day-selector-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white', 'active', 'bg-white', 'dark:bg-gray-900');
-                btn.classList.add('bg-white', 'dark:bg-gray-900');
-                // Re-bind click
+                btn.className = "day-selector-btn h-10 rounded-lg text-xs font-bold flex flex-col items-center justify-center bg-white dark:bg-gray-900 border shadow-sm hover:border-indigo-500 transition-all";
+                if(btn.dataset.day === "0") btn.classList.add('hover:border-red-500', 'text-red-500');
+                
                 btn.onclick = function(e) {
                     e.preventDefault();
                     this.classList.toggle('bg-indigo-600');
@@ -7539,41 +7398,28 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             });
 
-            if (repeatCheckbox && container) {
+            if (repeatCheckbox) {
                 repeatCheckbox.checked = false;
-                container.style.display = 'none';
-                container.classList.add('hidden');
-                
+                dayContainer.style.display = 'none';
                 repeatCheckbox.onclick = function() {
-                    if (this.checked) {
-                        container.style.display = 'block';
-                        container.classList.remove('hidden');
-                        container.classList.add('animate-fadeIn');
-                    } else {
-                        container.style.display = 'none';
-                        container.classList.add('hidden');
-                        container.classList.remove('animate-fadeIn');
-                    }
+                    dayContainer.style.display = this.checked ? 'block' : 'none';
                 };
             }
 
-            // --- IF EDITING: Pre-fill Data ---
+            // Edit Mode Pre-fill
             if (editTaskId) {
                 const task = (data.otherTasks || []).find(t => t.id === editTaskId) || (data.postponedOtherTasks || []).find(t => t.id === editTaskId);
                 if (task) {
                     modalTitle.textContent = "Edit Task";
-                    document.getElementById('other-task-description').value = task.description;
+                    descInput.value = task.description;
                     document.getElementById('other-task-date').value = task.date;
                     document.getElementById('other-task-notes').value = task.notes || '';
-                    if (document.getElementById('other-task-tag')) document.getElementById('other-task-tag').value = task.tag || '';
+                    document.getElementById('other-task-tag').value = task.tag || '';
                     document.getElementById('other-task-priority').checked = task.priority || false;
                     
                     if (task.isRepeating) {
                         repeatCheckbox.checked = true;
-                        container.style.display = 'block';
-                        container.classList.remove('hidden');
-                        
-                        // Select correct days
+                        dayContainer.style.display = 'block';
                         if (task.repeatDays) {
                             task.repeatDays.forEach(dayIndex => {
                                 const btn = document.querySelector(`.day-selector-btn[data-day="${dayIndex}"]`);
@@ -7593,23 +7439,26 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function saveOtherTask(e) {
-            e.preventDefault();
+            // Safety check for event
+            if(e) e.preventDefault();
+            
             const editId = document.getElementById('edit-other-task-id').value;
             const description = document.getElementById('other-task-description').value.trim();
             const date = document.getElementById('other-task-date').value;
             const notes = document.getElementById('other-task-notes').value.trim();
-            const tagInput = document.getElementById('other-task-tag');
-            const tag = tagInput ? tagInput.value.trim() : ''; 
-            
+            const tag = document.getElementById('other-task-tag').value.trim();
             const isRepeating = document.getElementById('other-task-repeat').checked;
             const isPriority = document.getElementById('other-task-priority').checked;
             
+            if (!description || !date) {
+                alert('Please enter Task Description and Date.');
+                return;
+            }
+
             let repeatDays = [];
             if (isRepeating) {
-                document.querySelectorAll('.day-selector-btn').forEach(btn => {
-                    if(btn.classList.contains('bg-indigo-600') || btn.classList.contains('active')) {
-                        repeatDays.push(parseInt(btn.dataset.day));
-                    }
+                document.querySelectorAll('.day-selector-btn.active').forEach(btn => {
+                    repeatDays.push(parseInt(btn.dataset.day));
                 });
                 if (repeatDays.length === 0) {
                     alert('Please select at least one day for repetition.');
@@ -7617,25 +7466,26 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             }
 
-            if (!description || !date) {
-                alert('Please provide a task description and a date.');
-                return;
-            }
-
             if (editId) {
-                // UPDATE EXISTING TASK
-                const taskIndex = data.otherTasks.findIndex(t => t.id === editId);
-                if (taskIndex !== -1) {
-                    data.otherTasks[taskIndex] = {
-                        ...data.otherTasks[taskIndex],
-                        description, date, notes, tag, isRepeating, repeatDays, priority
-                    };
+                // Edit Logic
+                // Check both Main List and Postponed List
+                let task = data.otherTasks.find(t => t.id === editId);
+                if (!task) task = data.postponedOtherTasks.find(t => t.id === editId);
+
+                if (task) {
+                    task.description = description;
+                    task.date = date;
+                    task.notes = notes;
+                    task.tag = tag;
+                    task.isRepeating = isRepeating;
+                    task.repeatDays = repeatDays;
+                    task.priority = isPriority;
                     logActivity('edit-3', `Task updated: "${description}"`);
                 }
             } else {
-                // CREATE NEW TASK
+                // New Task Logic
                 const newTask = {
-                    id: `other-${Date.now()}`,
+                    id: `other-${Date.now()}-${Math.floor(Math.random()*1000)}`,
                     description, date, notes, tag,
                     status: 'Pending', completedDate: null,
                     isRepeating, repeatDays, lastCompletedDate: null, deletedInstances: [], priority
@@ -7646,10 +7496,11 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             saveData();
             hideModal('add-other-task-modal');
+            
+            // Immediate Refresh
             renderHomePage();
-            if(document.getElementById('page-notices').classList.contains('active')) {
-                renderNoticesPage();
-            }
+            // Force refresh Notices Page if it's active or even if in background to keep sync
+            renderNoticesPage();
         }
 
         function updateOtherTaskStatus(taskId, newStatus) {
