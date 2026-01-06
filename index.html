@@ -36,37 +36,34 @@
 
 <style>
     :root {
-        /* Glassmorphism Variables - More Transparent */
-        --background-light: #f0f9ff;
-        --background-dark: #0c1425;
-        --card-light: rgba(255, 255, 255, 0.65); /* Transparent White */
-        --card-dark: rgba(15, 23, 42, 0.65);     /* Transparent Dark Blue */
-        --text-light: #020617;
-        --text-dark: #f1f5f9;
-        --text-muted-light: #475569;
+        /* SOLID COLORS (No Transparency/Blur for Speed) */
+        --background-light: #f8fafc;
+        --background-dark: #020617;
+        --card-light: #ffffff;
+        --card-dark: #111827;
+        --text-light: #0f172a;
+        --text-dark: #f8fafc;
+        --text-muted-light: #64748b;
         --text-muted-dark: #94a3b8;
         --primary: #0ea5e9;
         --primary-hover: #0284c7;
         --accent: #8b5cf6;
         --danger: #ef4444;
         --warning: #f59e0b;
-        --main-bg-start-light: #cffafe;
-        --main-bg-end-light: #e0e7ff;
-        --main-bg-start-dark: #164e63;
-        --main-bg-end-dark: #312e81;
-        --border-light: rgba(229, 231, 235, 0.5);
-        --border-dark: rgba(55, 65, 81, 0.5);
+        --border-light: #e2e8f0;
+        --border-dark: #1e293b;
     }
 
-    /* Base styles */
+    /* Performance Optimizations */
     html {
-        scroll-behavior: smooth;
+        scroll-behavior: auto; /* Removed smooth scroll for instant response */
     }
     
-    /* Optimized Lightweight Styles */
+    /* NO BLUR, NO GLASSMORPHISM - PURE SPEED */
     .dashboard-card, .page, #sidebar {
-        /* Removed heavy blur for performance */
         background-color: var(--card-light);
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
     .dark .dashboard-card, .dark .page, .dark #sidebar {
         background-color: var(--card-dark);
@@ -74,75 +71,52 @@
     
     body {
         font-family: 'Inter', sans-serif;
-        background-color: #f8fafc; /* Very light cool gray */
+        background-color: var(--background-light);
         color: var(--text-light);
-        transition: none; /* Removed transition for speed */
-        -webkit-font-smoothing: antialiased;
+        transition: none !important;
+        -webkit-font-smoothing: auto; /* Reduced CPU load */
         overflow-x: hidden;
         min-height: 100vh;
     }
     
     .dark body {
-        background-color: #0f172a; /* Solid dark color, no gradient */
+        background-color: var(--background-dark);
         color: var(--text-dark);
     }
 
-    /* Simple, Fast Backdrop */
+    /* Solid Modals */
     .modal-backdrop > div {
         background: #ffffff !important;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: none !important;
     }
     .dark .modal-backdrop > div {
         background: #1e293b !important;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
         border: 1px solid #334155;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
     }
 
-    /* Hide Canvas Completely */
+    /* Disable Canvas */
     #particle-canvas { display: none !important; }
 
     .app-header-title {
         font-family: 'Poppins', sans-serif;
-        position: relative;
-        overflow: hidden;
-        color: var(--text-light); /* Default text color */
-        /* Light Mode: Subtle dark shine */
-        background: linear-gradient(to right, var(--text-light) 40%, #94a3b8 50%, var(--text-light) 60%);
-        background-size: 200% auto;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shine-slow 8s linear infinite; /* Very Slow */
-        font-weight: 900 !important;
-        letter-spacing: 0.5px;
+        font-weight: 800;
+        color: var(--primary);
     }
-    
-    .dark .app-header-title {
-        color: var(--text-dark);
-        /* Dark Mode: Needle thin white shine */
-        background: linear-gradient(to right, #94a3b8 45%, #ffffff 50%, #94a3b8 55%);
-        background-size: 200% auto;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        animation: shine-slow 10s linear infinite; /* Extremely Slow */
-    }
+    .dark .app-header-title { color: var(--primary); }
 
-    @keyframes shine-slow {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-    }
-    
-    /* --- ULTRA PREMIUM GLASSMORPHISM (OPTIMIZED FOR COOLING) --- */
+    /* --- ZERO LAG CARD --- */
     .dashboard-card {
-        /* Reduced blur significantly to prevent GPU heating */
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: transform 0.2s ease, box-shadow 0.2s ease; /* Removed complex bezier */
-        content-visibility: auto; 
-        will-change: transform; /* Hint to browser for optimization */
+        border: 1px solid var(--border-light);
+        transition: none !important; /* No hover animations for speed */
+        transform: none !important;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    .dark .dashboard-card {
+        border: 1px solid var(--border-dark);
+        box-shadow: none;
     }
     
     /* Disable heavy animations on low-power mode preference if available */
@@ -1393,16 +1367,7 @@
                         <button id="reset-advanced-colors-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset</button>
                     </div>
 
-                    <!-- New Global DPT Toggle -->
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm border-l-4 border-indigo-500">
-                        <h3 class="font-semibold mb-2">DPT Dashboard Display</h3>
-                        <p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">Show or Hide DPT section on Home Dashboard.</p>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="global-dpt-toggle" class="sr-only peer" checked>
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300" id="dpt-toggle-text">Active</span>
-                        </label>
-                    </div>
+                    <!-- DPT Toggle Moved to DPT Page for better UX -->
 
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
                         <h3 class="font-semibold mb-3" data-translate="daily_plan_mode">Daily Study Plan Mode</h3>
@@ -2153,14 +2118,23 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "13.0"; // Advanced URL Manager & Drag-Drop
+    const CURRENT_APP_VERSION = "13.1"; // DPT Revamp & Dashboard Fixes
     const DPT_EXCLUDED_SUBJECTS = ['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS = ['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "13.0": {
+        "13.1": {
             date: new Date().toISOString().split('T')[0],
+            features: [
+                { "title": "DPT Page 2.0 🚀", "note": "DPT पेज को पूरी तरह नया बनाया गया है। अब इसमें 'DPT गाइड' और 'डैशबोर्ड टॉगल' बटन भी यहीं मौजूद है।" },
+                { "title": "Delete Button Fixed 🛠️", "note": "डैशबोर्ड पर 'Other Tasks' के डिलीट बटन अब 100% काम करेंगे।" },
+                { "title": "Settings Dropdown Fix 🐞", "note": "एडवांस रूटीन में सब्जेक्ट लिस्ट अब अपने आप लोड हो जाएगी, क्लिक करने का इंतज़ार नहीं करना पड़ेगा।" },
+                { "title": "Performance Boost ❄️", "note": "लैपटॉप और मोबाइल में हीटिंग (गर्म होने) की समस्या को कम करने के लिए ग्राफिक्स को और हल्का किया गया है।" }
+            ]
+        },
+        "13.0": {
+            date: "2025-02-05",
             features: [
                 { "title": "Advanced URL Manager 📂", "note": "URL पेज को पूरी तरह नया बनाया गया है। अब 'Clean View' में फोल्डर खुलेंगे (Main फोल्डर छिप जाएगा)।" },
                 { "title": "Drag & Drop Sorting ✋", "note": "किसी भी फोल्डर या लिंक को दबाकर रखें (Touch & Hold) और ऊपर-नीचे स्लाइड करके मूव करें।" },
@@ -5047,76 +5021,90 @@ const renderSubjectsPage = () => {
         document.getElementById('color-text-dark').value = colors.textDark || '#f1f5f9';
         document.getElementById('color-border-dark').value = colors.borderDark || '#374151';
 
+        // Plan Mode Logic
         const planMode = data.settings.planMode || 'auto';
         document.querySelector(`input[name="plan-mode"][value="${planMode}"]`).checked = true;
         const customCycleContainer = document.getElementById('custom-cycle-plan-container');
+        
         if (planMode === 'custom_cycle') {
             customCycleContainer.classList.remove('hidden');
             const cycleSelector = document.getElementById('custom-cycle-subject-selector');
             const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), `${_('sunday')} (${_('week')} 2)`, `${_('monday')} (${_('week')} 2)`, `${_('tuesday')} (${_('week')} 2)`, `${_('wednesday')} (${_('week')} 2)`, `${_('thursday')} (${_('week')} 2)`, `${_('friday')} (${_('week')} 2)`, `${_('saturday')} (${_('week')} 2)` ];
-            // Updated: Removed source type checkboxes, now just subject checkboxes
             cycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2">${(data.subjects || []).map(s => `<label class="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-cycle-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}" ${((data.settings.customCyclePlan?.[i] || []).includes(s.id)) ? 'checked' : ''}><span>${_(s.id)}</span></label>`).join('')}</div></div>`).join('');
-            lucide.createIcons();
-        } else { customCycleContainer.classList.add('hidden'); }
+        } else { 
+            customCycleContainer.classList.add('hidden'); 
+        }
+
+        // DPT Plan Mode Logic
         const dptPlanMode = data.settings.dptPlanMode || 'auto';
         document.querySelector(`input[name="dpt-plan-mode"][value="${dptPlanMode}"]`).checked = true;
         const customDptContainer = document.getElementById('custom-dpt-plan-container');
+        
         if (dptPlanMode === 'custom_cycle') {
             customDptContainer.classList.remove('hidden');
             const dptCycleSelector = document.getElementById('dpt-custom-cycle-subject-selector');
             const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday'), `${_('sunday')} (${_('week')} 2)`, `${_('monday')} (${_('week')} 2)`, `${_('tuesday')} (${_('week')} 2)`, `${_('wednesday')} (${_('week')} 2)`, `${_('thursday')} (${_('week')} 2)`, `${_('friday')} (${_('week')} 2)`, `${_('saturday')} (${_('week')} 2)` ];
             dptCycleSelector.innerHTML = [...Array(14).keys()].map(i => `<div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"><h4 class="font-bold text-center mb-3">${dayNames[i]}</h4><div class="space-y-2 max-h-60 overflow-y-auto">${(data.subjects || []).filter(s => !DPT_EXCLUDED_SUBJECTS.includes(s.id)).map(s => `<label class="flex items-center gap-2 text-sm cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700/50"><input type="checkbox" class="custom-dpt-subject-checkbox form-checkbox h-4 w-4 text-primary" data-day="${i}" value="${s.id}" ${((data.settings.dptCyclePlan?.[i] || []).includes(s.id)) ? 'checked' : ''}><span>${_(s.id)}</span></label>`).join('')}</div></div>`).join('');
-        } else { customDptContainer.classList.add('hidden'); }
+        } else { 
+            customDptContainer.classList.add('hidden'); 
+        }
 
-        // --- RENDER ADVANCED ROUTINE UI (Added by Rayen) ---
-        renderAdvancedRoutineUI();
-};
+        // --- FIXED: FORCE RENDER ADVANCED ROUTINE UI ---
+        // We call this directly to ensure the dropdown populates immediately
+        setTimeout(renderAdvancedRoutineUI, 50); 
+        lucide.createIcons();
+    };
 
-const renderAdvancedRoutineUI = () => {
-        // FIX: Advanced Routine Dropdown Populating Logic (100% Fix)
+    const renderAdvancedRoutineUI = () => {
         const select = document.getElementById('adv-routine-subject-select');
         const list = document.getElementById('adv-routine-list');
         
-        if (!select || !list) return;
+        // Guard clause: If elements aren't in DOM yet, retry shortly
+        if (!select || !list) {
+            return;
+        }
 
-        // 1. Populate Dropdown forcefully
-        // Using a cleaner approach to ensure options are always generated
+        // 1. POPULATE DROPDOWN (The Core Fix)
+        // We build the HTML string completely fresh
         const subjects = data.subjects || [];
         let optionsHtml = `<option value="">-- Select Subject --</option>`;
         
-        subjects.forEach(s => {
-            // Using translated name if available
-            const name = _(s.id); 
-            optionsHtml += `<option value="${s.id}">${name}</option>`;
-        });
-        
-        // Only update if length differs or empty (Optimization)
-        if (select.children.length <= 1) {
-            select.innerHTML = optionsHtml;
+        if (subjects.length > 0) {
+            subjects.forEach(s => {
+                // Use translations to show Hindi names if applicable
+                const displayName = _(s.id) || s.name;
+                optionsHtml += `<option value="${s.id}">${displayName}</option>`;
+            });
+        } else {
+            optionsHtml += `<option value="" disabled>No subjects found</option>`;
         }
-
-        // 2. Render List
-        if (!data.settings.customSubjectRoutine) { data.settings.customSubjectRoutine = []; }
-        const routines = data.settings.customSubjectRoutine;
+        
+        // Force update innerHTML
+        select.innerHTML = optionsHtml;
+        
+        // 2. RENDER LIST OF EXISTING ROUTINES
+        const routines = data.settings.customSubjectRoutine || [];
         
         if (routines.length === 0) {
-            list.innerHTML = `<p class="text-xs text-center text-gray-400 py-2">No custom routines added yet.</p>`;
+            list.innerHTML = `<div class="text-center py-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50"><p class="text-xs text-gray-400">No custom routines added yet.<br>Select a subject above to add.</p></div>`;
         } else {
             const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             list.innerHTML = routines.map((r, index) => {
-                const daysStr = (r.days || []).map(d => `<span class="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-200 dark:border-indigo-800">${dayNames[d] || 'Day'}</span>`).join(' ');
-                const activeClass = r.active ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500';
+                const daysStr = (r.days || []).sort().map(d => `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${d === 0 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'} border border-black/5 dark:border-white/10">${dayNames[d]}</span>`).join('');
                 
-                return `<div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm mb-2 animate-fadeIn">
-                    <div>
-                        <p class="font-bold text-sm flex items-center gap-2">${r.name} ${r.active ? '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>' : ''}</p>
-                        <div class="flex flex-wrap gap-1 mt-1.5">${daysStr}</div>
+                return `<div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg mb-2 shadow-sm group hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="w-2 h-2 rounded-full ${r.active ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-gray-300 dark:bg-gray-600'}"></span>
+                            <p class="font-bold text-sm text-gray-800 dark:text-gray-200">${r.name}</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1">${daysStr}</div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button class="toggle-adv-routine-btn p-2 rounded-lg transition-colors ${activeClass}" data-index="${index}" title="${r.active ? 'Deactivate' : 'Activate'}">
+                        <button class="toggle-adv-routine-btn p-2 rounded-lg ${r.active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'} hover:scale-105 transition-transform" data-index="${index}" title="${r.active ? 'Disable' : 'Enable'}">
                             <i data-lucide="${r.active ? 'power' : 'power-off'}" class="w-4 h-4"></i>
                         </button>
-                        <button class="delete-adv-routine-btn p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition-colors" data-index="${index}" title="Delete">
+                        <button class="delete-adv-routine-btn p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 hover:scale-105 transition-transform" data-index="${index}" title="Delete">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -5896,164 +5884,207 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         };
 
         const renderDptPage = () => {
-            // Update filter buttons UI
-            document.querySelectorAll('#dpt-view-filter .filter-btn').forEach(btn => 
-                btn.classList.toggle('active', btn.dataset.view === dptPageViewMode)
-            );
+        // --- 1. SETUP UI & FILTERS ---
+        document.querySelectorAll('#dpt-view-filter .filter-btn').forEach(btn => 
+            btn.classList.toggle('active', btn.dataset.view === dptPageViewMode)
+        );
 
-            const filterDropdown = document.getElementById('dpt-subject-filter');
-            const container = document.getElementById('dpt-list-container');
-            const globalActionsContainer = document.getElementById('dpt-global-actions-container');
-            const searchInput = document.getElementById('dpt-search-input');
-            const filter = searchInput.value.toLowerCase();
-            
-            // Build Subject Options (Preserve selection logic)
-            // Using a simple check to ensure we don't overwrite if value exists and is valid
-            const currentSelection = filterDropdown.value || 'all_subjects';
-            
-            const subjectOptions = `<option value="all_subjects">${_('all_subjects')}</option>` + 
-                (data.subjects || []).filter(s => !DPT_EXCLUDED_SUBJECTS.includes(s.id)).map(s => 
-                    `<option value="${s.id}">${_(s.id)}</option>`
-                ).join('');
-            
-            // Only update innerHTML if it has changed to prevent losing focus/state, 
-            // but for simplicity in this framework, we rebuild and re-select.
-            if (filterDropdown.innerHTML !== subjectOptions) {
-                filterDropdown.innerHTML = subjectOptions;
-                filterDropdown.value = Array.from(filterDropdown.options).some(opt => opt.value === currentSelection) ? currentSelection : 'all_subjects';
+        const filterDropdown = document.getElementById('dpt-subject-filter');
+        const container = document.getElementById('dpt-list-container');
+        const globalActionsContainer = document.getElementById('dpt-global-actions-container');
+        const searchInput = document.getElementById('dpt-search-input');
+        const filter = searchInput.value.toLowerCase();
+        
+        // --- 2. HEADER: GUIDE & TOGGLE (Compact for Mobile) ---
+        const guideHtml = `
+        <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800/50">
+            <details class="group">
+                <summary class="flex justify-between items-center cursor-pointer list-none select-none">
+                    <h3 class="font-bold text-xs md:text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                        <i data-lucide="info" class="w-4 h-4"></i> DPT Guide
+                    </h3>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-blue-500 transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="mt-2 text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed pl-1 pt-1 border-t border-blue-200/50 dark:border-blue-800/50">
+                    <p class="mb-1"><strong>Daily Practice Test (DPT)</strong> से अपनी स्पीड ट्रैक करें।</p>
+                    <ul class="list-disc pl-4 space-y-0.5">
+                        <li>टेस्ट के स्कोर दर्ज करें।</li>
+                        <li>एक्यूरेसी ग्राफ देखें।</li>
+                    </ul>
+                </div>
+            </details>
+        </div>`;
+
+        const toggleHtml = `
+        <div class="mb-3 flex items-center justify-between p-2.5 bg-card-light dark:bg-card-dark rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div class="flex items-center gap-2">
+                <div class="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded text-indigo-600"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i></div>
+                <p class="text-xs font-bold text-gray-700 dark:text-gray-300">Show on Dashboard</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="dpt-dashboard-toggle-page" class="sr-only peer" ${data.settings.dptDashboardActive !== false ? 'checked' : ''}>
+                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-500 peer-checked:bg-indigo-600"></div>
+            </label>
+        </div>`;
+
+        const summaryContainer = document.getElementById('dpt-summary-container');
+        // Temporarily render summary to grab inner HTML
+        renderDptSummary();
+        const currentStatsHtml = summaryContainer.innerHTML;
+        
+        // Clean layout: Guide -> Toggle -> Stats Grid
+        summaryContainer.innerHTML = `
+            ${guideHtml}
+            ${toggleHtml}
+            <div class="grid grid-cols-3 gap-2 mb-4 mt-1 text-[10px] md:text-xs">
+                ${currentStatsHtml.replace(/text-3xl/g, 'text-xl').replace(/p-4/g, 'p-2')}
+            </div>`;
+
+        // --- 3. SUBJECT DROPDOWN POPULATION ---
+        const currentSelection = filterDropdown.value || 'all_subjects';
+        let optionsHtml = `<option value="all_subjects">${_('all_subjects')}</option>`;
+        
+        (data.subjects || []).forEach(s => {
+            if (!DPT_EXCLUDED_SUBJECTS.includes(s.id)) {
+                optionsHtml += `<option value="${s.id}">${_(s.id)}</option>`;
             }
-            
-            const selectedSubjectId = filterDropdown.value;
+        });
+        
+        if (filterDropdown.innerHTML !== optionsHtml) {
+            filterDropdown.innerHTML = optionsHtml;
+            filterDropdown.value = Array.from(filterDropdown.options).some(opt => opt.value === currentSelection) ? currentSelection : 'all_subjects';
+        }
+        
+        const selectedSubjectId = filterDropdown.value;
+        globalActionsContainer.innerHTML = ''; 
 
-            let html = '';
-            globalActionsContainer.innerHTML = ''; 
+        // Filter Logic
+        const subjectsToRender = (data.subjects || []).filter(s => {
+            if (DPT_EXCLUDED_SUBJECTS.includes(s.id)) return false;
+            if (selectedSubjectId !== 'all_subjects' && s.id !== selectedSubjectId) return false;
+            return true;
+        });
 
-            // Filter Subjects based on Dropdown
-            const subjectsToRender = (data.subjects || []).filter(s => {
-                if (DPT_EXCLUDED_SUBJECTS.includes(s.id)) return false;
-                if (selectedSubjectId !== 'all_subjects' && s.id !== selectedSubjectId) return false;
-                return true;
-            });
-
-            if (subjectsToRender.length === 0) {
-                 container.innerHTML = '<p class="text-center p-4">Please select a subject to view and add DPTs.</p>';
-                 renderDptSummary();
-                 return;
-            }
-            
-            // Show Global Actions only if "All Subjects" is selected
+        // --- 4. RENDER LIST (Mobile Responsive) ---
+        let listHtml = '';
+        
+        if (subjectsToRender.length === 0) {
+             listHtml = '<div class="text-center p-6 opacity-50 text-xs border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">Please select a subject or add subjects.</div>';
+        } else {
+            // Global Action Buttons (Mobile Friendly)
             if (selectedSubjectId === 'all_subjects') {
-                globalActionsContainer.innerHTML = `<div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm mb-4 border border-gray-100 dark:border-gray-700">
-                    <h3 class="font-bold mb-3 flex items-center gap-2"><i data-lucide="globe" class="text-primary"></i> Global Actions</h3>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <button id="add-global-dpts-btn" class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20">
-                            <i data-lucide="layers" class="w-4 h-4"></i><span>Global Add DPTs</span>
-                        </button>
-                        <button id="delete-all-dpts-global-btn" class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i><span>Delete All DPTs</span>
-                        </button>
-                    </div>
+                globalActionsContainer.innerHTML = `
+                <div class="mb-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                    <button id="add-global-dpts-btn" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 shadow-sm whitespace-nowrap">
+                        <i data-lucide="plus-square" class="w-3.5 h-3.5"></i> Add to All
+                    </button>
+                    <button id="delete-all-dpts-global-btn" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-100 dark:border-red-800 shadow-sm whitespace-nowrap">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All
+                    </button>
                 </div>`;
             }
 
             subjectsToRender.forEach(subject => {
+                // Pre-filter chapters
                 const chapters = (subject.chapters || []).filter(c => filter ? c.name.toLowerCase().includes(filter) : true);
-                
-                // Show Header if we have chapters OR if specific subject selected
                 if (chapters.length === 0 && filter) return;
 
-                // Header HTML with Actions
+                // Subject Header
                 const subjectHeader = `
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm mb-4 border border-gray-100 dark:border-gray-700">
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                            <h3 class="font-bold text-xl flex items-center gap-2">
-                                <span class="w-1 h-6 bg-primary rounded-full"></span>
-                                ${_(subject.id)}
-                            </h3>
-                            <div class="flex items-center gap-2">
-                                <button class="add-dpt-to-all-chapters-btn flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg btn-neon" data-subject-id="${subject.id}">
-                                    <i data-lucide="plus-circle" class="w-4 h-4"></i><span data-translate="add_dpt_all">${_('add_dpt_all')}</span>
-                                </button>
-                                <button class="delete-all-dpts-subject-btn flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50" data-subject-id="${subject.id}">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i><span>Delete All</span>
-                                </button>
-                            </div>
+                    <div class="mt-5 mb-2 flex items-center justify-between px-1 sticky top-0 bg-gray-50/95 dark:bg-[#020617]/95 backdrop-blur-sm z-10 py-2 border-b border-gray-200 dark:border-gray-800">
+                        <h3 class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate pr-2">${_(subject.id)}</h3>
+                        <div class="flex gap-2 flex-shrink-0">
+                             <button class="add-dpt-to-all-chapters-btn p-1.5 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900" data-subject-id="${subject.id}" title="Add to All Chapters">
+                                <i data-lucide="plus-square" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button class="delete-all-dpts-subject-btn p-1.5 rounded-md bg-gray-200 dark:bg-gray-800 text-red-500 hover:bg-red-100 dark:hover:bg-red-900" data-subject-id="${subject.id}" title="Delete All DPTs">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
                         </div>
                     </div>`;
 
                 let chaptersHtml = chapters.map(chapter => {
                     const dptDataForChapter = data.dpts[subject.id]?.chapters?.[chapter.id] || [];
-                    
                     const testsToDisplay = dptDataForChapter.filter(test => {
                         if (dptPageViewMode === 'completed') return test.status === 'Completed';
                         if (dptPageViewMode === 'pending') return test.status !== 'Completed';
                         return true;
                     });
 
-                    // Skip chapter if no tests match filter (and we are not in search mode)
                     if(testsToDisplay.length === 0 && !filter) return '';
-                    // In search mode, show chapter even if empty so we can add tests? No, logic above filters chapters.
-                    // Just fallback to empty string if no tests.
-                    if(testsToDisplay.length === 0) return '';
+                    if(testsToDisplay.length === 0) return ''; // Hide empty chapters in filtered mode
 
                     const completedCount = dptDataForChapter.filter(t => t.status === 'Completed').length;
                     const totalCount = dptDataForChapter.length;
-                    const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
+                    // Tests Grid (Responsive: 2 cols on mobile, 4 on desktop)
                     const testsHtml = testsToDisplay.map(test => {
                         const isCompleted = test.status === 'Completed';
-                        const statusClass = isCompleted 
-                            ? 'bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 text-green-800 dark:text-green-300' 
-                            : 'bg-white dark:bg-gray-800 border-l-4 border-gray-300 dark:border-gray-600 hover:border-primary';
+                        const statusColor = isCompleted ? 'bg-green-500 text-white border-green-600' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700';
+                        const icon = isCompleted ? 'check' : 'circle';
                         
-                        const dptName = `#${test.id}`;
-                        
-                        return `<button class="dpt-list-item w-full text-left p-3 rounded-r-lg shadow-sm mb-2 transition-all hover:translate-x-1 ${statusClass}" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}">
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold">Test ${dptName}</span>
-                                ${isCompleted ? '<i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>' : '<i data-lucide="circle" class="w-4 h-4 text-gray-400"></i>'}
+                        return `
+                        <button class="dpt-list-item relative flex items-center justify-between p-2.5 rounded-lg border ${isCompleted ? 'border-green-500/30 bg-green-50/50 dark:bg-green-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'} active:scale-95 transition-all" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}">
+                            <div class="flex items-center gap-2">
+                                <div class="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${isCompleted ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}">
+                                    ${test.id}
+                                </div>
+                                <span class="text-xs font-medium ${isCompleted ? 'text-green-700 dark:text-green-300' : 'text-gray-600 dark:text-gray-400'}">Test</span>
                             </div>
+                            ${isCompleted ? '<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-green-500"></i>' : ''}
                         </button>`;
                     }).join('');
                     
-                    return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden mb-3 border border-gray-100 dark:border-gray-700" open>
-                        <summary class="flex items-center justify-between p-4 cursor-pointer list-none hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                            <div>
-                                <h4 class="font-bold flex items-center gap-2">
-                                    <i data-lucide="book" class="w-4 h-4 text-gray-400"></i>
-                                    ${chapter.name}
-                                </h4>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <div class="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                                        <div class="h-1.5 rounded-full bg-primary" style="width: ${percentage}%"></div>
+                    // Chapter Card (Collapsed by default, clean styling)
+                    return `
+                    <details class="group bg-card-light dark:bg-card-dark rounded-xl border border-gray-100 dark:border-gray-800 mb-2 shadow-sm">
+                        <summary class="flex items-center justify-between p-3 cursor-pointer list-none select-none">
+                            <div class="flex items-center gap-3 min-w-0 pr-2">
+                                <div class="p-1.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 flex-shrink-0">
+                                    <i data-lucide="book" class="w-4 h-4"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-xs md:text-sm truncate text-gray-800 dark:text-gray-200">${chapter.name}</h4>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <div class="h-1 w-16 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-green-500" style="width: ${(completedCount/totalCount)*100}%"></div>
+                                        </div>
+                                        <span class="text-[9px] text-gray-400 font-mono">${completedCount}/${totalCount}</span>
                                     </div>
-                                    <p class="text-xs text-text-muted-light">${completedCount}/${totalCount}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <button class="add-dpt-to-chapter-btn flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-100 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/50" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}">
-                                    <i data-lucide="plus" class="w-3 h-3"></i> Add
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button class="add-dpt-to-chapter-btn w-7 h-7 flex items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                                 </button>
-                                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180"></i>
+                                <div class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90"></i>
+                                </div>
                             </div>
                         </summary>
-                        <div class="px-4 pb-4 pt-2 bg-gray-50/50 dark:bg-gray-900/20">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">${testsHtml}</div>
+                        <div class="px-3 pb-3 pt-0 border-t border-dashed border-gray-100 dark:border-gray-800">
+                            <div class="grid grid-cols-2 gap-2 mt-3">${testsHtml}</div>
                         </div>
                     </details>`;
                 }).join('');
 
-                if(chaptersHtml) {
-                    html += subjectHeader + chaptersHtml;
-                } else if(selectedSubjectId !== 'all_subjects' && !filter){
-                     html += subjectHeader + `<div class="p-6 text-center border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl m-4"><p class="text-gray-500">No chapters found. Add chapters in Subjects tab first.</p></div>`;
-                }
+                if(chaptersHtml) listHtml += subjectHeader + chaptersHtml;
             });
-            
-            container.innerHTML = html || '<div class="flex flex-col items-center justify-center py-12 text-gray-400"><i data-lucide="filter" class="w-12 h-12 mb-2 opacity-20"></i><p>No DPTs match the current filter.</p></div>';
-            renderDptSummary();
-            lucide.createIcons();
-        };
+        }
+        
+        container.innerHTML = listHtml;
+        
+        // --- 5. TOGGLE LISTENER (Re-attach) ---
+        const toggleBtn = document.getElementById('dpt-dashboard-toggle-page');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('change', (e) => {
+                data.settings.dptDashboardActive = e.target.checked;
+                saveData(); // Save silently
+            });
+        }
+
+        lucide.createIcons();
+    };
 
         const findNextPendingDptForChapter = (subjectId, chapterId) => {
             const tests = data.dpts[subjectId]?.chapters?.[chapterId];
@@ -6373,34 +6404,28 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     currentItems = parentFolder.children || [];
                     folderName = parentFolder.name;
                 } else {
-                    // Fallback if ID invalid
                     currentUrlFolderId = null;
                 }
             }
 
             // 2. Render Header (Navigation & Breadcrumb)
             const headerDiv = document.createElement('div');
-            headerDiv.className = "flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-[#f8fafc] dark:bg-[#0f172a] z-10 pt-1";
+            headerDiv.className = "flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-transparent z-10 pt-1 backdrop-blur-sm";
             
             let backButtonHtml = '';
             if (currentUrlFolderId) {
-                // Find Grandparent for "Back" Logic logic needs finding parent of current
-                // Simple Back: Just reload parent finding logic or keep stack. 
-                // Robust: Find parent of currentUrlFolderId
                 backButtonHtml = `
                 <button id="url-back-btn" class="flex items-center gap-1 pr-3 py-1 text-sm font-bold text-gray-500 hover:text-primary transition-colors">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
                 </button>`;
             }
 
-            // Header Title Styling
             const titleColor = currentUrlFolderId ? "text-indigo-600 dark:text-indigo-400" : "text-gray-800 dark:text-gray-200";
             headerDiv.innerHTML = `
                 <div class="flex items-center gap-2">
                     ${backButtonHtml}
-                    <h2 class="text-xl font-bold ${titleColor} truncate max-w-[200px]">${folderName}</h2>
+                    <h2 class="text-lg font-bold ${titleColor} truncate max-w-[180px]">${folderName}</h2>
                 </div>
-                <!-- Dynamic Add Button based on level -->
                 <div class="flex gap-2">
                      <button class="add-sub-folder-btn-top p-2 rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 hover:scale-105 transition-transform shadow-sm" title="New Folder">
                         <i data-lucide="folder-plus" class="w-5 h-5"></i>
@@ -6412,63 +6437,59 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             `;
             container.appendChild(headerDiv);
 
-            // 3. Render List (Sortable Area)
+            // 3. Render List (Mobile Optimized)
             const listData = document.createElement('div');
             listData.id = "sortable-url-list";
-            listData.className = "space-y-3 min-h-[200px] pb-20"; // Padding bottom for ease
+            listData.className = "space-y-2 min-h-[200px] pb-20";
 
             if (currentItems.length === 0) {
-                listData.innerHTML = `<div class="text-center p-8 bg-card-light dark:bg-card-dark rounded-xl border border-dashed border-gray-300 dark:border-gray-700"><i data-lucide="folder-open" class="w-12 h-12 mx-auto text-text-muted-light mb-4 opacity-50"></i><h3 class="font-bold text-gray-400">Empty Folder</h3><p class="text-xs text-gray-500">Add content using buttons above.</p></div>`;
+                listData.innerHTML = `<div class="text-center p-8 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-700"><i data-lucide="folder-open" class="w-10 h-10 mx-auto text-gray-300 mb-2"></i><h3 class="font-bold text-gray-400">Empty</h3></div>`;
             } else {
                 currentItems.forEach(item => {
                     const el = document.createElement('div');
-                    // Data ID for Sortable
                     el.dataset.id = item.id;
                     el.className = "url-item relative group select-none"; 
                     
                     if (item.type === 'folder') {
-                        // FOLDER DESIGN (Advanced)
-                        // If Root: Darker Blue. If Sub: Lighter/Different.
+                        // FIXED: Smaller padding and height for Mobile consistency
                         const isRootLevel = (currentUrlFolderId === null);
                         const folderBg = isRootLevel 
-                            ? "bg-gradient-to-r from-slate-100 to-white dark:from-slate-800 dark:to-[#1e293b] border-l-4 border-indigo-500" 
-                            : "bg-gradient-to-r from-blue-50 to-white dark:from-blue-900/20 dark:to-[#1e293b] border-l-4 border-cyan-500";
+                            ? "bg-white dark:bg-gray-900 border-l-4 border-indigo-500" 
+                            : "bg-white dark:bg-gray-900 border-l-4 border-cyan-500";
                         
-                        const iconColor = isRootLevel ? "text-indigo-500 dark:text-indigo-400" : "text-cyan-500 dark:text-cyan-400";
+                        const iconColor = isRootLevel ? "text-indigo-500" : "text-cyan-500";
                         const itemCount = item.children ? item.children.length : 0;
 
                         el.innerHTML = `
-                            <div class="flex items-center justify-between p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer enter-folder-trigger ${folderBg}" data-folder-id="${item.id}">
-                                <div class="flex items-center gap-4 overflow-hidden">
-                                    <div class="p-2 bg-white dark:bg-black/20 rounded-lg shadow-sm">
-                                        <i data-lucide="folder" class="w-6 h-6 ${iconColor} fill-current opacity-80"></i>
+                            <div class="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all cursor-pointer enter-folder-trigger ${folderBg}" data-folder-id="${item.id}">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                                        <i data-lucide="folder" class="w-5 h-5 ${iconColor} fill-current opacity-80"></i>
                                     </div>
                                     <div class="min-w-0">
-                                        <h3 class="font-bold text-base text-gray-800 dark:text-gray-100 truncate">${item.name}</h3>
+                                        <h3 class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate">${item.name}</h3>
                                         <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wider">${itemCount} Items</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                    <button class="edit-folder-btn p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500" data-folder-id="${item.id}"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                                    <button class="delete-folder-btn p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-500" data-folder-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                    <i data-lucide="grip-vertical" class="w-5 h-5 text-gray-300 dark:text-gray-600 cursor-move ml-1"></i>
+                                <div class="flex items-center gap-1">
+                                    <button class="edit-folder-btn p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-400" data-folder-id="${item.id}"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                    <button class="delete-folder-btn p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500" data-folder-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 </div>
                             </div>
                         `;
                     } else {
                         // LINK DESIGN
                         el.innerHTML = `
-                            <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 hover:border-green-200 dark:hover:border-green-900/50 transition-all">
+                            <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                                 <a href="${item.url}" target="_blank" class="flex items-center gap-3 flex-grow min-w-0 group-hover:text-primary transition-colors">
-                                    <div class="p-2 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
+                                    <div class="p-1.5 rounded-md bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
                                         <i data-lucide="link-2" class="w-4 h-4"></i>
                                     </div>
-                                    <span class="font-medium text-sm truncate">${item.name}</span>
+                                    <span class="font-medium text-sm truncate text-gray-700 dark:text-gray-300">${item.name}</span>
                                 </a>
                                 <div class="flex items-center gap-1">
-                                    <button class="edit-link-btn p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400" data-link-id="${item.id}"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                                    <button class="delete-link-btn p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500" data-link-id="${item.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                                    <i data-lucide="grip-vertical" class="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-move ml-1 handle"></i>
+                                    <button class="edit-link-btn p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400" data-link-id="${item.id}"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                                    <button class="delete-link-btn p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500" data-link-id="${item.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
                             </div>
                         `;
@@ -6482,19 +6503,17 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             if (currentItems.length > 0) {
                 new Sortable(listData, {
                     animation: 150,
-                    delay: 200, // Touch and hold delay (200ms)
+                    delay: 200, 
                     delayOnTouchOnly: true,
-                    handle: '.url-item', // Whole item draggable, or use .handle class for specific
+                    handle: '.url-item', 
                     ghostClass: 'bg-blue-50/50',
                     onEnd: function (evt) {
                         const oldIndex = evt.oldIndex;
                         const newIndex = evt.newIndex;
-                        
                         if (oldIndex !== newIndex) {
-                            // Move item in array
                             const movedItem = currentItems.splice(oldIndex, 1)[0];
                             currentItems.splice(newIndex, 0, movedItem);
-                            saveData(); // Save new order
+                            saveData(); 
                         }
                     },
                 });
@@ -6502,30 +6521,24 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             lucide.createIcons();
 
-            // 5. Attach Listeners directly here for simplicity in drill-down logic
-            // Back Button
+            // 5. Attach Listeners
             document.getElementById('url-back-btn')?.addEventListener('click', () => {
-                // Go Up Logic
                 if (currentUrlFolderId) {
                     const result = findItem(data.urls, currentUrlFolderId);
-                    // Find parent of this item
                     const parentRes = findParentOfItem(data.urls, currentUrlFolderId);
                     currentUrlFolderId = parentRes ? parentRes.id : null;
                     renderUrlPage();
                 }
             });
 
-            // Enter Folder Listener
             document.querySelectorAll('.enter-folder-trigger').forEach(el => {
                 el.addEventListener('click', (e) => {
-                    // Ignore if clicked on buttons
-                    if(e.target.closest('button') || e.target.closest('.cursor-move')) return;
+                    if(e.target.closest('button')) return;
                     currentUrlFolderId = el.dataset.folderId;
                     renderUrlPage();
                 });
             });
 
-            // Top Add Buttons
             container.querySelector('.add-sub-folder-btn-top').addEventListener('click', () => {
                 showAddFolderModal(null, currentUrlFolderId);
             });
@@ -6680,23 +6693,32 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function addEventListeners() {
-            // --- 1. GLOBAL DELEGATION (Optimized for Delete & Edit) ---
+            // --- 1. GLOBAL DELEGATION (Optimized & Fixed for Delete) ---
             document.body.addEventListener('click', (e) => {
                 const target = e.target;
 
-                // GLOBAL DELETE LISTENER (Fixes Delete Button in History/Future)
+                // FIX: GLOBAL DELETE LISTENER (Highest Priority)
+                // This catches clicks on the delete button anywhere (Dashboard, List, History)
                 const deleteOtherBtn = target.closest('.delete-other-task-btn');
                 if (deleteOtherBtn) {
-                    e.stopPropagation();
-                    confirmDeleteOtherTask(deleteOtherBtn.dataset.taskId);
+                    e.preventDefault(); // Prevent any default action
+                    e.stopPropagation(); // Stop bubbling to card clicks
+                    const taskId = deleteOtherBtn.dataset.taskId;
+                    if (taskId) {
+                        confirmDeleteOtherTask(taskId);
+                    }
                     return;
                 }
 
-                // GLOBAL EDIT LISTENER
+                // FIX: GLOBAL EDIT LISTENER
                 const editOtherBtn = target.closest('.edit-other-task-btn');
                 if (editOtherBtn) {
+                    e.preventDefault();
                     e.stopPropagation();
-                    showAddOtherTaskModal(editOtherBtn.dataset.taskId);
+                    const taskId = editOtherBtn.dataset.taskId;
+                    if (taskId) {
+                        showAddOtherTaskModal(taskId);
+                    }
                     return;
                 }
 
@@ -6838,24 +6860,48 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 else if (restudyBtn) { e.preventDefault(); e.stopPropagation(); confirmRestudySubject(restudyBtn.dataset.subjectId); }
             });
 
-            // Dashboard Actions
+            // FIX: DASHBOARD ACTIONS (Delete Button & Others)
             const dashboardTasksContainer = document.getElementById('todays-plan-container');
             dashboardTasksContainer.addEventListener('click', e => {
-                const btn = e.target.closest('.task-action-btn'); if (!btn) return;
-                e.stopPropagation(); e.preventDefault();
-                btn.style.transform = "scale(0.9)"; setTimeout(() => btn.style.transform = "scale(1)", 100);
+                // 1. Handle Delete Button for "Other Tasks" specifically here (Highest Priority)
+                const deleteOtherBtn = e.target.closest('.delete-other-task-btn');
+                if (deleteOtherBtn) {
+                    e.preventDefault();
+                    e.stopPropagation(); // Stop click from toggling the checkbox/card
+                    const taskId = deleteOtherBtn.dataset.taskId;
+                    confirmDeleteOtherTask(taskId);
+                    return; 
+                }
+
+                // 2. Handle Other Action Buttons
+                const btn = e.target.closest('.task-action-btn'); 
+                if (!btn) return;
+                
+                e.stopPropagation(); 
+                e.preventDefault();
+                
+                // Button Press Animation
+                btn.style.transform = "scale(0.9)"; 
+                setTimeout(() => btn.style.transform = "scale(1)", 100);
 
                 if (btn.classList.contains('skip-btn')) {
-                    btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>'; lucide.createIcons();
+                    btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-600"></i>'; 
+                    lucide.createIcons();
                     requestAnimationFrame(() => skipChapter(btn.dataset.subjectId, btn.dataset.chapterId));
-                } else if (btn.classList.contains('postpone-btn')) {
+                } 
+                else if (btn.classList.contains('postpone-btn')) {
                     const { taskId, taskType, subjectId, chapterId, revisionDate } = btn.dataset;
                     if (taskType === 'other') postponeOtherTask(taskId);
                     else if (taskType === 'revision') postponeRevision(subjectId, chapterId, revisionDate);
                     else openPostponeModal(subjectId, chapterId);
-                } else if (btn.classList.contains('delete-manual-task-btn')) {
+                } 
+                else if (btn.classList.contains('delete-manual-task-btn')) {
                     const todayStr = getLocalDateString();
-                    if(data.dailyPlan[todayStr]?.manualTasks) { data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== btn.dataset.manualId); saveData(); renderHomePage(); }
+                    if(data.dailyPlan[todayStr]?.manualTasks) { 
+                        data.dailyPlan[todayStr].manualTasks = data.dailyPlan[todayStr].manualTasks.filter(t => t.id !== btn.dataset.manualId); 
+                        saveData(); 
+                        renderHomePage(); 
+                    }
                 }
             });
 
