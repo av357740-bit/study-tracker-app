@@ -2645,47 +2645,46 @@ safeInitialize(data.settings, 'customSubjectRoutine', []); // Ensure routine arr
     let saveTimeout = null;
     const saveData = () => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        // PERFORMANCE FIX: Increased delay to 2000ms to reduce CPU load (Heating Fix)
-        // Using requestIdleCallback if available for smoother background saving
+        
+        // Anti-Heat Save Logic
         saveTimeout = setTimeout(() => {
-            const saveTask = () => {
+            const executeSafeSave = () => {
                 try {
-                    // 1. Data Cleaning before saving
-                    if(data.dailyPlan) {
-                        const thirtyDaysAgo = new Date();
-                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                        const cutoff = thirtyDaysAgo.toISOString().split('T')[0];
-                        Object.keys(data.dailyPlan).forEach(date => {
-                            if(date < cutoff) delete data.dailyPlan[date];
+                    // Optimized Data Purge (Keep History for 30 days only to save space)
+                    if (data.dailyPlan) {
+                        const threshold = new Date();
+                        threshold.setDate(threshold.getDate() - 30);
+                        const dateLimit = threshold.toISOString().split('T')[0];
+                        Object.keys(data.dailyPlan).forEach(d => {
+                            if (d < dateLimit) delete data.dailyPlan[d];
                         });
                     }
 
-                    const dataString = JSON.stringify(data);
+                    const stringifiedData = JSON.stringify(data);
                     
-                    // 2. Storage Limit Guard (Optimized)
-                    if (dataString.length > 4800000) { 
-                        if (!window.storageWarningShown) {
-                            alert("⚠️ Storage Warning: App memory is near full. Please 'Export Backup' soon.");
-                            window.storageWarningShown = true;
-                        }
+                    // Critical Storage Management
+                    if (stringifiedData.length > 4500000) {
+                        console.warn("Storage usage is high.");
+                        // Auto-clean old activity logs to prevent crash
+                        if (data.activityLog.length > 50) data.activityLog = data.activityLog.slice(0, 30);
                     }
 
-                    localStorage.setItem(DB_KEY, dataString);
+                    localStorage.setItem(DB_KEY, stringifiedData);
+                    console.log("Data secured successfully.");
                     
-                } catch (error) {
-                    console.error("Save Failed:", error);
-                    if (error.name === 'QuotaExceededError' || error.code === 22) {
-                        alert("⛔ STORAGE FULL! Please Export Backup immediately.");
+                } catch (err) {
+                    if (err.name === 'QuotaExceededError') {
+                        alert("⛔ चेतावनी: स्टोरेज भर गया है! कृपया 'Import/Export' पेज पर जाकर 'Full Backup' लें और पुरानी हिस्ट्री डिलीट करें।");
                     }
                 }
             };
 
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(saveTask);
+            if (window.requestIdleCallback) {
+                window.requestIdleCallback(executeSafeSave);
             } else {
-                saveTask();
+                executeSafeSave();
             }
-        }, 2000); 
+        }, 1000); // Faster but stable sync
     };
     
     const _ = (key, replacements = {}) => {
@@ -5897,108 +5896,104 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         
         // --- 2. HEADER: GUIDE & TOGGLE (Compact for Mobile) ---
         const guideHtml = `
-        <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800/50">
+        <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800/30">
             <details class="group">
                 <summary class="flex justify-between items-center cursor-pointer list-none select-none">
-                    <h3 class="font-bold text-xs md:text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4"></i> DPT Guide
-                    </h3>
+                    <div class="flex items-center gap-2">
+                        <div class="p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg"><i data-lucide="info" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-300"></i></div>
+                        <h3 class="font-black text-xs uppercase tracking-wider text-blue-800 dark:text-blue-200">DPT Smart Guide</h3>
+                    </div>
                     <i data-lucide="chevron-down" class="w-4 h-4 text-blue-500 transition-transform group-open:rotate-180"></i>
                 </summary>
-                <div class="mt-2 text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed pl-1 pt-1 border-t border-blue-200/50 dark:border-blue-800/50">
-                    <p class="mb-1"><strong>Daily Practice Test (DPT)</strong> से अपनी स्पीड ट्रैक करें।</p>
-                    <ul class="list-disc pl-4 space-y-0.5">
-                        <li>टेस्ट के स्कोर दर्ज करें।</li>
-                        <li>एक्यूरेसी ग्राफ देखें।</li>
-                    </ul>
+                <div class="mt-3 text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed border-t border-blue-200 dark:border-blue-800/50 pt-2">
+                    <p class="mb-2">DPT से अपनी <strong>स्पीड और एक्यूरेसी</strong> ट्रैक करें।</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="p-2 bg-white dark:bg-black/20 rounded-lg border border-blue-100 dark:border-blue-900/30">🎯 स्कोर दर्ज करें</div>
+                        <div class="p-2 bg-white dark:bg-black/20 rounded-lg border border-blue-100 dark:border-blue-900/30">📈 प्रोग्रेस देखें</div>
+                    </div>
                 </div>
             </details>
         </div>`;
 
         const toggleHtml = `
-        <div class="mb-3 flex items-center justify-between p-2.5 bg-card-light dark:bg-card-dark rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div class="flex items-center gap-2">
-                <div class="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded text-indigo-600"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i></div>
-                <p class="text-xs font-bold text-gray-700 dark:text-gray-300">Show on Dashboard</p>
+        <div class="mb-4 flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400"><i data-lucide="layout-dashboard" class="w-4 h-4"></i></div>
+                <div>
+                    <p class="text-xs font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">Show on Dashboard</p>
+                    <p class="text-[9px] text-gray-400">होम पेज पर DPT टास्क दिखाएं</p>
+                </div>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" id="dpt-dashboard-toggle-page" class="sr-only peer" ${data.settings.dptDashboardActive !== false ? 'checked' : ''}>
-                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-500 peer-checked:bg-indigo-600"></div>
+                <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
             </label>
         </div>`;
 
         const summaryContainer = document.getElementById('dpt-summary-container');
-        // Temporarily render summary to grab inner HTML
         renderDptSummary();
         const currentStatsHtml = summaryContainer.innerHTML;
         
-        // Clean layout: Guide -> Toggle -> Stats Grid
         summaryContainer.innerHTML = `
             ${guideHtml}
             ${toggleHtml}
-            <div class="grid grid-cols-3 gap-2 mb-4 mt-1 text-[10px] md:text-xs">
-                ${currentStatsHtml.replace(/text-3xl/g, 'text-xl').replace(/p-4/g, 'p-2')}
+            <div class="grid grid-cols-3 gap-2 mb-2">
+                ${currentStatsHtml.replace(/p-4/g, 'p-2').replace(/text-3xl/g, 'text-lg').replace(/text-sm/g, 'text-[9px] uppercase font-bold tracking-tighter')}
             </div>`;
 
-        // --- 3. SUBJECT DROPDOWN POPULATION ---
+        // --- 3. SUBJECT DROPDOWN ---
         const currentSelection = filterDropdown.value || 'all_subjects';
-        let optionsHtml = `<option value="all_subjects">${_('all_subjects')}</option>`;
-        
+        let optionsHtml = `<option value="all_subjects">📚 ${_('all_subjects')}</option>`;
         (data.subjects || []).forEach(s => {
             if (!DPT_EXCLUDED_SUBJECTS.includes(s.id)) {
                 optionsHtml += `<option value="${s.id}">${_(s.id)}</option>`;
             }
         });
-        
-        if (filterDropdown.innerHTML !== optionsHtml) {
-            filterDropdown.innerHTML = optionsHtml;
-            filterDropdown.value = Array.from(filterDropdown.options).some(opt => opt.value === currentSelection) ? currentSelection : 'all_subjects';
-        }
+        filterDropdown.innerHTML = optionsHtml;
+        filterDropdown.value = currentSelection;
         
         const selectedSubjectId = filterDropdown.value;
         globalActionsContainer.innerHTML = ''; 
 
-        // Filter Logic
         const subjectsToRender = (data.subjects || []).filter(s => {
             if (DPT_EXCLUDED_SUBJECTS.includes(s.id)) return false;
             if (selectedSubjectId !== 'all_subjects' && s.id !== selectedSubjectId) return false;
             return true;
         });
 
-        // --- 4. RENDER LIST (Mobile Responsive) ---
+        // --- 4. RENDER LIST (Mobile Responsive Grid) ---
         let listHtml = '';
-        
         if (subjectsToRender.length === 0) {
-             listHtml = '<div class="text-center p-6 opacity-50 text-xs border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">Please select a subject or add subjects.</div>';
+             listHtml = '<div class="text-center p-10 opacity-50 text-xs border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">No Subjects Found.</div>';
         } else {
-            // Global Action Buttons (Mobile Friendly)
             if (selectedSubjectId === 'all_subjects') {
                 globalActionsContainer.innerHTML = `
-                <div class="mb-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                    <button id="add-global-dpts-btn" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 shadow-sm whitespace-nowrap">
-                        <i data-lucide="plus-square" class="w-3.5 h-3.5"></i> Add to All
+                <div class="mb-4 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                    <button id="add-global-dpts-btn" class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 text-xs font-black rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
+                        <i data-lucide="plus-square" class="w-4 h-4"></i> Add Tests to All
                     </button>
-                    <button id="delete-all-dpts-global-btn" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-100 dark:border-red-800 shadow-sm whitespace-nowrap">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All
+                    <button id="delete-all-dpts-global-btn" class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 text-xs font-black rounded-xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 active:scale-95 transition-all">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> Clear All DPT
                     </button>
                 </div>`;
             }
 
             subjectsToRender.forEach(subject => {
-                // Pre-filter chapters
                 const chapters = (subject.chapters || []).filter(c => filter ? c.name.toLowerCase().includes(filter) : true);
                 if (chapters.length === 0 && filter) return;
 
-                // Subject Header
                 const subjectHeader = `
-                    <div class="mt-5 mb-2 flex items-center justify-between px-1 sticky top-0 bg-gray-50/95 dark:bg-[#020617]/95 backdrop-blur-sm z-10 py-2 border-b border-gray-200 dark:border-gray-800">
-                        <h3 class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate pr-2">${_(subject.id)}</h3>
-                        <div class="flex gap-2 flex-shrink-0">
-                             <button class="add-dpt-to-all-chapters-btn p-1.5 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900" data-subject-id="${subject.id}" title="Add to All Chapters">
-                                <i data-lucide="plus-square" class="w-3.5 h-3.5"></i>
+                    <div class="mt-6 mb-3 flex items-center justify-between px-2 sticky top-0 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md z-20 py-3 border-b-2 border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-2 h-6 bg-primary rounded-full"></span>
+                            <h3 class="font-black text-sm text-gray-900 dark:text-white truncate">${_(subject.id)}</h3>
+                        </div>
+                        <div class="flex gap-1.5 flex-shrink-0">
+                             <button class="add-dpt-to-all-chapters-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 active:bg-indigo-500 active:text-white" data-subject-id="${subject.id}">
+                                <i data-lucide="copy-plus" class="w-4 h-4"></i>
                             </button>
-                            <button class="delete-all-dpts-subject-btn p-1.5 rounded-md bg-gray-200 dark:bg-gray-800 text-red-500 hover:bg-red-100 dark:hover:bg-red-900" data-subject-id="${subject.id}" title="Delete All DPTs">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <button class="delete-all-dpts-subject-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-red-500 active:bg-red-500 active:text-white" data-subject-id="${subject.id}">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </div>`;
@@ -6011,59 +6006,50 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                         return true;
                     });
 
-                    if(testsToDisplay.length === 0 && !filter) return '';
-                    if(testsToDisplay.length === 0) return ''; // Hide empty chapters in filtered mode
+                    if(testsToDisplay.length === 0) return ''; 
 
                     const completedCount = dptDataForChapter.filter(t => t.status === 'Completed').length;
                     const totalCount = dptDataForChapter.length;
 
-                    // Tests Grid (Responsive: 2 cols on mobile, 4 on desktop)
                     const testsHtml = testsToDisplay.map(test => {
                         const isCompleted = test.status === 'Completed';
-                        const statusColor = isCompleted ? 'bg-green-500 text-white border-green-600' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700';
-                        const icon = isCompleted ? 'check' : 'circle';
+                        const bgColor = isCompleted ? 'bg-green-500/10 border-green-500/20 dark:bg-green-500/5' : 'bg-white dark:bg-slate-800 border-gray-100 dark:border-gray-700';
                         
                         return `
-                        <button class="dpt-list-item relative flex items-center justify-between p-2.5 rounded-lg border ${isCompleted ? 'border-green-500/30 bg-green-50/50 dark:bg-green-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'} active:scale-95 transition-all" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}">
-                            <div class="flex items-center gap-2">
-                                <div class="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${isCompleted ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}">
-                                    ${test.id}
-                                </div>
-                                <span class="text-xs font-medium ${isCompleted ? 'text-green-700 dark:text-green-300' : 'text-gray-600 dark:text-gray-400'}">Test</span>
+                        <button class="dpt-list-item flex flex-col items-center justify-center p-3 rounded-2xl border-2 ${bgColor} active:scale-90 transition-all h-20 shadow-sm" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}" data-test-id="${test.id}">
+                            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black mb-1 ${isCompleted ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}">
+                                ${test.id}
                             </div>
-                            ${isCompleted ? '<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-green-500"></i>' : ''}
+                            <span class="text-[10px] font-black uppercase tracking-widest ${isCompleted ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}">${isCompleted ? 'DONE' : 'TEST'}</span>
                         </button>`;
                     }).join('');
                     
-                    // Chapter Card (Collapsed by default, clean styling)
                     return `
-                    <details class="group bg-card-light dark:bg-card-dark rounded-xl border border-gray-100 dark:border-gray-800 mb-2 shadow-sm">
-                        <summary class="flex items-center justify-between p-3 cursor-pointer list-none select-none">
-                            <div class="flex items-center gap-3 min-w-0 pr-2">
-                                <div class="p-1.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 flex-shrink-0">
-                                    <i data-lucide="book" class="w-4 h-4"></i>
+                    <details class="group bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-800 mb-3 shadow-sm overflow-hidden">
+                        <summary class="flex items-center justify-between p-4 cursor-pointer list-none select-none">
+                            <div class="flex items-center gap-4 min-w-0 pr-2">
+                                <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 flex-shrink-0 border border-gray-100 dark:border-gray-700">
+                                    <i data-lucide="book-open" class="w-5 h-5"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <h4 class="font-bold text-xs md:text-sm truncate text-gray-800 dark:text-gray-200">${chapter.name}</h4>
-                                    <div class="flex items-center gap-2 mt-0.5">
-                                        <div class="h-1 w-16 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-green-500" style="width: ${(completedCount/totalCount)*100}%"></div>
+                                    <h4 class="font-bold text-xs md:text-sm truncate text-gray-800 dark:text-gray-100">${chapter.name}</h4>
+                                    <div class="flex items-center gap-2 mt-1.5">
+                                        <div class="h-1.5 w-20 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div class="h-full bg-green-500 rounded-full" style="width: ${(completedCount/totalCount)*100}%"></div>
                                         </div>
-                                        <span class="text-[9px] text-gray-400 font-mono">${completedCount}/${totalCount}</span>
+                                        <span class="text-[10px] font-bold text-gray-400">${completedCount}/${totalCount}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-1 flex-shrink-0">
-                                <button class="add-dpt-to-chapter-btn w-7 h-7 flex items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}">
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <div class="flex items-center gap-2">
+                                <button class="add-dpt-to-chapter-btn w-9 h-9 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 shadow-sm" data-subject-id="${subject.id}" data-chapter-id="${chapter.id}">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
                                 </button>
-                                <div class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90"></i>
-                                </div>
+                                <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 transition-transform group-open:rotate-90"></i>
                             </div>
                         </summary>
-                        <div class="px-3 pb-3 pt-0 border-t border-dashed border-gray-100 dark:border-gray-800">
-                            <div class="grid grid-cols-2 gap-2 mt-3">${testsHtml}</div>
+                        <div class="px-4 pb-4 pt-2 border-t border-dashed border-gray-50 dark:border-gray-800">
+                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-2">${testsHtml}</div>
                         </div>
                     </details>`;
                 }).join('');
@@ -6074,15 +6060,14 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         
         container.innerHTML = listHtml;
         
-        // --- 5. TOGGLE LISTENER (Re-attach) ---
         const toggleBtn = document.getElementById('dpt-dashboard-toggle-page');
         if (toggleBtn) {
             toggleBtn.addEventListener('change', (e) => {
                 data.settings.dptDashboardActive = e.target.checked;
-                saveData(); // Save silently
+                saveData();
+                renderHomePage();
             });
         }
-
         lucide.createIcons();
     };
 
@@ -7485,68 +7470,75 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         }
 
         function saveOtherTask(e) {
-            // Safety check for event
-            if(e) e.preventDefault();
+            if (e) e.preventDefault();
             
             const editId = document.getElementById('edit-other-task-id').value;
             const description = document.getElementById('other-task-description').value.trim();
-            const date = document.getElementById('other-task-date').value;
-            const notes = document.getElementById('other-task-notes').value.trim();
-            const tag = document.getElementById('other-task-tag').value.trim();
-            const isRepeating = document.getElementById('other-task-repeat').checked;
-            const isPriority = document.getElementById('other-task-priority').checked;
+            const dateString = document.getElementById('other-task-date').value;
+            const taskNotes = document.getElementById('other-task-notes').value.trim();
+            const taskTag = document.getElementById('other-task-tag').value.trim();
+            const isTaskRepeating = document.getElementById('other-task-repeat').checked;
+            const isHighPriority = document.getElementById('other-task-priority').checked;
             
-            if (!description || !date) {
-                alert('Please enter Task Description and Date.');
+            if (!description || !dateString) {
+                alert('कृपया टास्क का नाम और तारीख दर्ज करें।');
                 return;
             }
 
-            let repeatDays = [];
-            if (isRepeating) {
-                document.querySelectorAll('.day-selector-btn.active').forEach(btn => {
-                    repeatDays.push(parseInt(btn.dataset.day));
+            let selectedRepeatDays = [];
+            if (isTaskRepeating) {
+                const activeButtons = document.querySelectorAll('.day-selector-btn.active');
+                activeButtons.forEach(btn => {
+                    selectedRepeatDays.push(parseInt(btn.dataset.day));
                 });
-                if (repeatDays.length === 0) {
-                    alert('Please select at least one day for repetition.');
+                if (selectedRepeatDays.length === 0) {
+                    alert('कृपया दोहराने के लिए कम से कम एक दिन चुनें।');
                     return;
                 }
             }
 
+            // High Performance Data Object
             if (editId) {
-                // Edit Logic
-                // Check both Main List and Postponed List
-                let task = data.otherTasks.find(t => t.id === editId);
-                if (!task) task = data.postponedOtherTasks.find(t => t.id === editId);
-
-                if (task) {
-                    task.description = description;
-                    task.date = date;
-                    task.notes = notes;
-                    task.tag = tag;
-                    task.isRepeating = isRepeating;
-                    task.repeatDays = repeatDays;
-                    task.priority = isPriority;
+                let taskToEdit = (data.otherTasks || []).find(t => t.id === editId) || (data.postponedOtherTasks || []).find(t => t.id === editId);
+                if (taskToEdit) {
+                    taskToEdit.description = description;
+                    taskToEdit.date = dateString;
+                    taskToEdit.notes = taskNotes;
+                    taskToEdit.tag = taskTag;
+                    taskToEdit.isRepeating = isTaskRepeating;
+                    taskToEdit.repeatDays = selectedRepeatDays;
+                    taskToEdit.priority = isHighPriority;
                     logActivity('edit-3', `Task updated: "${description}"`);
                 }
             } else {
-                // New Task Logic
-                const newTask = {
-                    id: `other-${Date.now()}-${Math.floor(Math.random()*1000)}`,
-                    description, date, notes, tag,
-                    status: 'Pending', completedDate: null,
-                    isRepeating, repeatDays, lastCompletedDate: null, deletedInstances: [], priority
+                const newTaskObj = {
+                    id: `other-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    description: description,
+                    date: dateString,
+                    notes: taskNotes,
+                    tag: taskTag,
+                    status: 'Pending',
+                    completedDate: null,
+                    isRepeating: isTaskRepeating,
+                    repeatDays: selectedRepeatDays,
+                    lastCompletedDate: null,
+                    deletedInstances: [],
+                    priority: isHighPriority
                 };
-                data.otherTasks.push(newTask);
+                if (!data.otherTasks) data.otherTasks = [];
+                data.otherTasks.push(newTaskObj);
                 logActivity('clipboard-list', `New task added: "${description}"`);
             }
 
+            // Instant Save and UI Update (Lag-Free)
             saveData();
             hideModal('add-other-task-modal');
             
-            // Immediate Refresh
-            renderHomePage();
-            // Force refresh Notices Page if it's active or even if in background to keep sync
-            renderNoticesPage();
+            requestAnimationFrame(() => {
+                renderHomePage();
+                renderNoticesPage();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
         }
 
         function updateOtherTaskStatus(taskId, newStatus) {
