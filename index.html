@@ -1683,15 +1683,25 @@
                     <input type="date" id="exam-form-task-end" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none" required>
                 </div>
             </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Priority Level</label>
+                    <select id="exam-form-task-priority" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none font-bold">
+                        <option value="high" class="text-red-600">🔴 High Priority</option>
+                        <option value="medium" class="text-yellow-600">🟡 Medium</option>
+                        <option value="low" class="text-green-600">🟢 Low</option>
+                        <option value="normal" class="text-blue-600">🔵 Normal</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Expected Exam Date</label>
+                    <input type="date" id="exam-form-task-expected-date" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none">
+                </div>
+            </div>
             <div>
-                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Priority Level</label>
-                <select id="exam-form-task-priority" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none font-bold">
-                    <option value="high" class="text-red-600">🔴 High Priority (Urgent)</option>
-                    <option value="medium" class="text-yellow-600">🟡 Medium Priority</option>
-                    <option value="low" class="text-green-600">🟢 Low Priority</option>
-                    <option value="normal" class="text-blue-600">🔵 Normal</option>
-                </select>
-                <p class="text-[10px] mt-2 text-gray-500 font-medium">Note: यह फॉर्म डैशबोर्ड पर <b>केवल रविवार (Sunday)</b> को दिखाई देगा जब तक आप इसे भर नहीं देते या Last Date खत्म नहीं हो जाती।</p>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Notes (Optional)</label>
+                <textarea id="exam-form-task-notes" rows="2" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Add any details..."></textarea>
+                <p class="text-[10px] mt-2 text-gray-500 font-medium">Note: यह फॉर्म डैशबोर्ड पर <b>केवल रविवार (Sunday)</b> को दिखाई देगा। इसके 'Date' और 'Notes' मेन एग्जाम फॉर्म में अपने आप भर जाएंगे।</p>
             </div>
             <button type="submit" class="w-full p-4 font-bold rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg hover:shadow-rose-500/50 active:scale-95 transition-all text-lg mt-2">Save Exam Form Tracker</button>
         </form>
@@ -5368,6 +5378,8 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         const start = document.getElementById('exam-form-task-start').value;
         const end = document.getElementById('exam-form-task-end').value;
         const priority = document.getElementById('exam-form-task-priority').value;
+        const expectedDate = document.getElementById('exam-form-task-expected-date').value;
+        const notes = document.getElementById('exam-form-task-notes').value.trim();
 
         if(!name || !start || !end) return;
 
@@ -5380,6 +5392,8 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             formStartDate: start,
             formEndDate: end,
             priorityLevel: priority,
+            expectedExamDate: expectedDate,
+            formNotes: notes,
             status: 'Pending'
         });
         
@@ -7230,7 +7244,29 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     
                     // Open Main Exam Modal
                     showAddExamModal();
-                    document.getElementById('exam-name').value = examName;
+                    
+                    // Auto-fill logic from the Form Task Data
+                    const originalTask = (data.otherTasks || []).find(t => t.id === taskId);
+
+                    if (originalTask) {
+                        document.getElementById('exam-name').value = originalTask.description || examName;
+                        
+                        // Map Start Date -> Application Date
+                        if (originalTask.formStartDate) {
+                            document.getElementById('application-date').value = originalTask.formStartDate;
+                        }
+
+                        // Map Expected Date -> Exam Date (New Feature)
+                        if (originalTask.expectedExamDate) {
+                            document.getElementById('exam-date').value = originalTask.expectedExamDate;
+                        }
+
+                        // Map Notes -> Notes (New Feature)
+                        if (originalTask.formNotes) {
+                            document.getElementById('exam-notes').value = originalTask.formNotes;
+                        }
+                    }
+
                     document.getElementById('exam-id-source').value = taskId; // Set hidden source
                     return;
                 }
