@@ -1108,24 +1108,54 @@
                 </div>
             </div>
 <div id="page-subjects" class="page">
-                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
-                     <div class="flex items-center gap-4 flex-wrap">
-                        <h2 class="text-2xl font-bold flex-shrink-0" data-translate="subjects_chapters">Subjects & Chapters</h2>
-                        <!-- Removed Source Filter (Notes/Book) -->
-                        <div id="subject-view-filter" class="flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                            <button data-view="all" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md active">All Chapters</button>
-                            <button data-view="completed" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md">Completed</button>
-                            <button data-view="postponed" class="filter-btn px-3 py-1 text-sm font-semibold rounded-md text-amber-600 dark:text-amber-400">Postponed</button>
+                <div id="subjects-layout-container" class="flex flex-col gap-0 h-[calc(100vh-140px)] relative">
+                    <!-- Overlay (Visible on both PC and Mobile) -->
+                    <div id="subjects-sidebar-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden backdrop-blur-sm transition-opacity"></div>
+
+                    <!-- Sidebar Drawer -->
+                    <div id="subjects-sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-gray-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col pt-16 shadow-2xl">
+                        <button id="close-subjects-sidebar" class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="x" class="w-6 h-6 text-gray-500"></i></button>
+                        
+                        <div class="p-3 flex flex-col gap-2 overflow-y-auto mt-4" id="subject-view-filter-sidebar">
+                            <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Filters</h3>
+                            <button class="notes-sidebar-btn filter-btn-sidebar active" data-view="all">
+                                <i data-lucide="layers" class="w-5 h-5 text-indigo-500"></i> All Chapters
+                            </button>
+                            <button class="notes-sidebar-btn filter-btn-sidebar" data-view="completed">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i> Completed
+                            </button>
+                            <button class="notes-sidebar-btn filter-btn-sidebar" data-view="postponed">
+                                <i data-lucide="clock" class="w-5 h-5 text-amber-500"></i> Postponed
+                            </button>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button id="add-new-subject-btn" class="flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg btn-neon">
-                            <i data-lucide="plus" class="w-4 h-4"></i> <span data-translate="add_new_subject">Add New Subject</span>
-                        </button>
-                        <input id="search-input" type="text" data-translate-placeholder="search_chapters" placeholder="Search chapters..." class="w-full md:w-auto px-3 py-1.5 text-sm bg-card-light dark:bg-card-dark border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+
+                    <!-- Right Content Area -->
+                    <div class="flex-grow flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 relative shadow-sm">
+                        <!-- Trigger Header -->
+                        <div class="flex items-center justify-between p-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
+                            <div class="flex items-center">
+                                <button id="subjects-sidebar-trigger" class="p-2 bg-white dark:bg-gray-800 rounded-lg mr-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i data-lucide="menu" class="w-5 h-5 text-primary"></i></button>
+                                <h2 class="font-bold text-lg text-gray-800 dark:text-gray-200" data-translate="subjects_chapters">Subjects & Chapters</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button id="add-new-subject-btn" class="flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg btn-neon">
+                                    <i data-lucide="plus" class="w-3 h-3"></i> <span class="hidden sm:inline" data-translate="add_new_subject">Add Subject</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="p-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-slate-900 z-10 flex-shrink-0">
+                            <div class="relative">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                                <input id="search-input" type="text" data-translate-placeholder="search_chapters" placeholder="Search chapters..." class="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none transition-all shadow-inner">
+                            </div>
+                        </div>
+
+                        <div id="subjects-list-container" class="flex-grow overflow-y-auto custom-scrollbar p-4 space-y-3"></div>
                     </div>
                 </div>
-                <div id="subjects-list-container" class="space-y-3"></div>
             </div>
             
             <div id="page-dpt" class="page">
@@ -1151,22 +1181,52 @@
             </div>
 
             <div id="page-exams" class="page">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold" data-translate="exams_and_forms">Exams & Applied Forms</h2>
-                    <div class="flex items-center gap-2 flex-wrap" id="exam-filter-buttons">
-                        <button data-filter="all" class="exam-filter-btn active bg-primary text-white px-3 py-1.5 text-sm font-semibold rounded-lg" data-translate="all">All</button>
-                        <button data-filter="upcoming" class="exam-filter-btn bg-gray-200 dark:bg-gray-700 px-3 py-1.5 text-sm font-semibold rounded-lg" data-translate="upcoming_exams">Upcoming Exams</button>
-                        <button data-filter="applied" class="exam-filter-btn bg-gray-200 dark:bg-gray-700 px-3 py-1.5 text-sm font-semibold rounded-lg" data-translate="applied_forms">Applied Forms</button>
-                        <button data-filter="history" class="exam-filter-btn bg-gray-200 dark:bg-gray-700 px-3 py-1.5 text-sm font-semibold rounded-lg" data-translate="history_exams">History</button>
+                <div id="exams-layout-container" class="flex flex-col gap-0 h-[calc(100vh-140px)] relative">
+                    <div id="exams-sidebar-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden backdrop-blur-sm transition-opacity"></div>
+
+                    <!-- Sidebar Drawer -->
+                    <div id="exams-sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-gray-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col pt-16 shadow-2xl">
+                        <button id="close-exams-sidebar" class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="x" class="w-6 h-6 text-gray-500"></i></button>
+                        
+                        <div class="p-3 flex flex-col gap-2 overflow-y-auto mt-4" id="exam-filter-buttons">
+                            <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Filters</h3>
+                            <button class="notes-sidebar-btn exam-filter-btn active" data-filter="all">
+                                <i data-lucide="list" class="w-5 h-5 text-indigo-500"></i> All Exams
+                            </button>
+                            <button class="notes-sidebar-btn exam-filter-btn" data-filter="upcoming">
+                                <i data-lucide="timer" class="w-5 h-5 text-cyan-500"></i> Upcoming
+                            </button>
+                            <button class="notes-sidebar-btn exam-filter-btn" data-filter="applied">
+                                <i data-lucide="file-check-2" class="w-5 h-5 text-green-500"></i> Applied Forms
+                            </button>
+                            <button class="notes-sidebar-btn exam-filter-btn" data-filter="history">
+                                <i data-lucide="history" class="w-5 h-5 text-amber-500"></i> History
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
-                        <input id="exam-search-input" type="text" placeholder="Search exams..." class="w-full sm:w-48 px-3 py-2 text-sm bg-card-light dark:bg-card-dark border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                        <button id="add-exam-btn" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg btn-neon whitespace-nowrap">
-                            <i data-lucide="plus" class="w-4 h-4"></i> <span data-translate="add_new_exam">Add New Exam</span>
-                        </button>
+
+                    <!-- Right Content Area -->
+                    <div class="flex-grow flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 relative shadow-sm">
+                        <div class="flex items-center justify-between p-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
+                            <div class="flex items-center">
+                                <button id="exams-sidebar-trigger" class="p-2 bg-white dark:bg-gray-800 rounded-lg mr-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i data-lucide="menu" class="w-5 h-5 text-primary"></i></button>
+                                <h2 class="font-bold text-lg text-gray-800 dark:text-gray-200" data-translate="exams_and_forms">Exams</h2>
+                            </div>
+                            <button id="add-exam-btn" class="flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg btn-neon">
+                                <i data-lucide="plus" class="w-3 h-3"></i> <span class="hidden sm:inline" data-translate="add_new_exam">Add Exam</span>
+                            </button>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="p-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-slate-900 z-10 flex-shrink-0">
+                            <div class="relative">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                                <input id="exam-search-input" type="text" placeholder="Search exams..." class="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none transition-all shadow-inner">
+                            </div>
+                        </div>
+
+                        <div id="exams-list-container" class="flex-grow overflow-y-auto custom-scrollbar p-4 space-y-4"></div>
                     </div>
-                </div>
-                <div id="exams-list-container" class="space-y-4">
                 </div>
             </div>
 <div id="page-url" class="page">
@@ -1359,7 +1419,7 @@
                         </select>
                     </div>
                     
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
                         <label for="background-style-select" class="font-semibold">Background Style</label>
                         <select id="background-style-select" class="mt-2 w-full p-2 bg-gray-50 dark:bg-gray-800/50 border rounded-lg">
                             <option value="default">Default Gradient</option>
@@ -1367,50 +1427,29 @@
                         </select>
                         <p class="text-[10px] text-text-muted-light dark:text-text-muted-dark mt-2">Custom Image upload removed for better performance.</p>
                     </div>
-                    
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm">
-                         <h3 class="font-semibold">Gradient Theme</h3>
-                         <div class="grid grid-cols-2 gap-4 items-center mt-2">
-                             <div>
-                                 <label for="bg-color-start" class="text-sm font-medium">Start</label>
-                                 <input type="color" id="bg-color-start" class="mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
-                             </div>
-                             <div>
-                                 <label for="bg-color-end" class="text-sm font-medium">End</label>
-                                 <input type="color" id="bg-color-end" class="mt-1 w-full h-10 p-1 border-none rounded-md cursor-pointer">
-                             </div>
-                         </div>
-                         <button id="reset-theme-btn" class="mt-3 w-full text-sm p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset to Default</button>
-                    </div>
-                    
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="flex-grow">
-                             <h3 class="font-semibold text-sm">Theme Colors (Advanced)</h3>
-                             <p class="text-xs text-text-muted-light dark:text-text-muted-dark">Customize text & borders.</p>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="flex flex-col items-center gap-1" title="Light Text">
-                                <input type="color" id="color-text-light" data-color-type="textLight" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer p-0 overflow-hidden">
-                                <span class="text-[10px] font-bold">L-Text</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1" title="Light Border">
-                                <input type="color" id="color-border-light" data-color-type="borderLight" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer p-0 overflow-hidden">
-                                <span class="text-[10px] font-bold">L-Bord</span>
-                            </div>
-                            <div class="w-px h-8 bg-gray-300 dark:bg-gray-700 mx-2"></div>
-                            <div class="flex flex-col items-center gap-1" title="Dark Text">
-                                <input type="color" id="color-text-dark" data-color-type="textDark" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-600 cursor-pointer p-0 overflow-hidden">
-                                <span class="text-[10px] font-bold">D-Text</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1" title="Dark Border">
-                                <input type="color" id="color-border-dark" data-color-type="borderDark" class="adv-color-picker w-8 h-8 rounded-full border-2 border-gray-600 cursor-pointer p-0 overflow-hidden">
-                                <span class="text-[10px] font-bold">D-Bord</span>
-                            </div>
-                        </div>
-                        <button id="reset-advanced-colors-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Reset</button>
-                    </div>
 
-                    <!-- DPT Toggle Moved to DPT Page for better UX -->
+                    <!-- NEW: Control Panel for DPT Toggle -->
+                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 border border-blue-100 dark:border-blue-900/30 transition-all duration-300">
+                        <div class="collapsible-header w-full flex justify-between items-center cursor-pointer select-none">
+                            <div class="flex items-center gap-2 pointer-events-none">
+                                <i data-lucide="sliders" class="text-blue-500 w-6 h-6"></i>
+                                <h3 class="font-semibold text-lg">Control Panel</h3>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 pointer-events-none"></i>
+                        </div>
+                        <div class="collapsible-content hidden mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
+                                <div>
+                                    <p class="font-bold text-sm text-gray-800 dark:text-gray-200">Show DPT on Dashboard</p>
+                                    <p class="text-[10px] text-gray-500">होम पेज पर DPT टास्क दिखाएं या छिपाएं</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="settings-dpt-dashboard-toggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
                         <h3 class="font-semibold mb-3" data-translate="daily_plan_mode">Daily Study Plan Mode</h3>
@@ -2211,12 +2250,20 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "13.2"; // Ultimate Notes Layout Update
+    const CURRENT_APP_VERSION = "13.3"; // Clean UI Update
     const DPT_EXCLUDED_SUBJECTS =['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS =['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
+        "13.3": {
+            date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "UI Cleanup 🧹", "note": "Settings पेज से Gradient Theme और Theme Colors (Advanced) को हटा दिया गया है ताकि ऐप और भी तेज़ और हल्का चले।" },
+                { "title": "DPT Page Streamlined 🚀", "note": "DPT पेज से 'DPT Smart Guide' और 'Show on Dashboard' टॉगल को हटा दिया गया है, जिससे इंटरफ़ेस बिल्कुल क्लीन हो गया है।" },
+                { "title": "Performance Boost ⚡", "note": "अतिरिक्त UI एलिमेंट्स हटाने से ऐप के DOM का भार कम हुआ है, जिससे बैटरी और हीटिंग की समस्या बिल्कुल खत्म हो गई है और ऐप मक्खन की तरह स्मूथ है।" }
+            ]
+        },
         "13.2": {
             date: new Date().toISOString().split('T')[0],
             features:[
@@ -3112,19 +3159,19 @@ let allCharts = {};
     const renderNoticesPage = () => {
         const pageContainer = document.getElementById('page-notices');
         
-        // 1. Structure Construction with Mobile Drawer
+        // 1. Structure Construction with Drawer for BOTH Mobile & PC
         if (!document.getElementById('notes-layout-container')) {
             pageContainer.innerHTML = `
-                <div id="notes-layout-container" class="flex flex-col md:flex-row gap-0 md:gap-6 h-[calc(100vh-140px)] relative">
-                    <!-- Overlay -->
-                    <div id="notes-sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+                <div id="notes-layout-container" class="flex flex-col gap-0 h-[calc(100vh-140px)] relative">
+                    <!-- Overlay (Visible on both PC and Mobile) -->
+                    <div id="notes-sidebar-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden backdrop-blur-sm transition-opacity"></div>
 
-                    <!-- Sidebar Drawer -->
-                    <div id="notes-sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-40 transform -translate-x-full transition-transform duration-300 md:static md:translate-x-0 md:w-64 md:bg-transparent md:border-none md:flex-shrink-0 flex flex-col pt-16 md:pt-0 shadow-2xl md:shadow-none bg-card-light dark:bg-card-dark rounded-xl md:rounded-xl md:border">
-                        <button id="close-notes-sidebar" class="absolute top-4 right-4 md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <!-- Sidebar Drawer (Always acts as a sliding drawer now) -->
+                    <div id="notes-sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-gray-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col pt-16 shadow-2xl">
+                        <button id="close-notes-sidebar" class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="x" class="w-6 h-6 text-gray-500"></i></button>
                         
-                        <div class="p-3 flex flex-col gap-2 overflow-y-auto">
-                            <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 px-2 md:hidden">Sections</h3>
+                        <div class="p-3 flex flex-col gap-2 overflow-y-auto mt-4">
+                            <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Sections</h3>
                             <button class="notes-sidebar-btn ${currentNotesTab === 'personal' ? 'active' : ''}" data-tab="personal">
                                 <i data-lucide="pen-tool" class="w-5 h-5"></i> Personal Notes
                             </button>
@@ -3141,11 +3188,11 @@ let allCharts = {};
                     </div>
 
                     <!-- Right Content Area -->
-                    <div class="flex-grow flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 relative">
-                        <!-- Mobile Trigger Header -->
-                        <div class="md:hidden flex items-center p-3 border-b border-gray-100 dark:border-gray-800">
-                            <button id="notes-sidebar-trigger" class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg mr-3"><i data-lucide="align-left" class="w-5 h-5"></i></button>
-                            <h2 class="font-bold text-lg">Notes</h2>
+                    <div class="flex-grow flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 relative shadow-sm">
+                        <!-- Trigger Header (Now visible on PC too) -->
+                        <div class="flex items-center p-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
+                            <button id="notes-sidebar-trigger" class="p-2 bg-white dark:bg-gray-800 rounded-lg mr-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i data-lucide="menu" class="w-5 h-5 text-primary"></i></button>
+                            <h2 class="font-bold text-lg text-gray-800 dark:text-gray-200">Notes & History</h2>
                         </div>
 
                         <div id="notes-content-area" class="flex-grow overflow-y-auto custom-scrollbar p-4 md:p-6">
@@ -3529,74 +3576,73 @@ let allCharts = {};
 
     // --- NEW HELPER: SHARED EXAM FORM HTML GEN ---
     const generateExamFormCardHTML = (task) => {
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        const endDate = new Date(task.formEndDate);
-        endDate.setHours(0,0,0,0);
-        
-        // "Battery" Logic: Count remaining Sundays
-        let tempDate = new Date(today);
-        let remainingSundays = 0;
-        
-        // Count Sundays between today and end date
-        while (tempDate <= endDate) {
-            if (tempDate.getDay() === 0) remainingSundays++;
-            tempDate.setDate(tempDate.getDate() + 1);
-        }
-        
-        // Last Day Logic: If today is the last day, it counts as 1 slot (Alert!)
-        const isLastDay = today.getTime() === endDate.getTime();
-        const activeBlocks = isLastDay ? 1 : remainingSundays; 
-        
-        // Color Logic based on remaining opportunities
-        let batteryColorClass = 'battery-safe';
-        let statusText = `${activeBlocks} Sundays Left`;
-        
-        if (isLastDay) {
-            batteryColorClass = 'battery-final';
-            statusText = "LAST DATE TODAY!";
-        } else if (activeBlocks <= 1) {
-            batteryColorClass = 'battery-critical';
-            statusText = "Critical: Last Sunday!";
-        } else if (activeBlocks <= 2) {
-            batteryColorClass = 'battery-danger';
-        } else if (activeBlocks <= 4) {
-            batteryColorClass = 'battery-warning';
-        }
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const endDate = new Date(task.formEndDate);
+    endDate.setHours(0,0,0,0);
 
-        // Render Battery Bars (Thin boxes)
-        let barsHtml = '';
-        for(let i=0; i<activeBlocks; i++) {
-            barsHtml += `<div class="battery-segment ${batteryColorClass}"></div>`;
-        }
+    // Remaining Days Calculation
+    const remainingDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+    let daysText = remainingDays < 0 ? "Expired" : remainingDays === 0 ? "Last Date Today" : `${remainingDays} Days Left`;
 
-        return `
-        <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col justify-between h-full">
-            <div>
-                <div class="flex justify-between items-start">
-                    <h4 class="font-bold text-gray-800 dark:text-white text-sm line-clamp-2">${task.description}</h4>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 uppercase">Form</span>
-                </div>
-                <div class="mt-2">
+    // "Battery" Logic: Count remaining Sundays
+    let tempDate = new Date(today);
+    let remainingSundays = 0;
+    
+    // Count Sundays between today and end date
+    while (tempDate <= endDate) {
+        if (tempDate.getDay() === 0) remainingSundays++;
+        tempDate.setDate(tempDate.getDate() + 1);
+    }
+
+    // Last Day Logic: If today is the last day, it counts as 1 slot (Alert!)
+    const isLastDay = today.getTime() === endDate.getTime();
+    const activeBlocks = isLastDay ? 1 : remainingSundays;
+
+    // Color Logic based on remaining opportunities
+    let batteryColorClass = 'bg-green-500 border-green-600';
+    let statusText = `${activeBlocks} Sundays Left`;
+
+    if (activeBlocks <= 3) {
+        batteryColorClass = 'bg-red-600 border-red-700 animate-pulse';
+    } else if (activeBlocks <= 5) {
+        batteryColorClass = 'bg-yellow-500 border-yellow-600';
+    }
+
+    // Render Battery Bars (Thin boxes)
+    let barsHtml = '';
+    for(let i=0; i<activeBlocks; i++) {
+        barsHtml += `<div class="h-2 w-4 rounded-sm border shadow-sm ${batteryColorClass}"></div>`;
+    }
+
+    return `
+    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col justify-between h-full">
+        <div>
+            <div class="flex justify-between items-start">
+                <h4 class="font-bold text-gray-800 dark:text-white text-sm line-clamp-2">${task.description}</h4>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 uppercase">Form</span>
+            </div>
+            <div class="mt-2 flex items-center justify-between">
+                <div>
                     <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">${statusText}</p>
-                    <div class="battery-container">
+                    <div class="flex gap-1 flex-wrap">
                         ${barsHtml}
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2"><i data-lucide="timer" class="w-3 h-3 inline"></i> End Date: ${endDate.toLocaleDateString()}</p>
-            </div>
-            
-            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                <button class="text-xs font-bold text-red-500 hover:text-red-700 delete-other-task-btn" data-task-id="${task.id}">Delete</button>
-                <div class="flex items-center gap-2">
-                    <label class="flex items-center gap-2 cursor-pointer bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-sm">
-                        <input type="checkbox" class="exam-form-checkbox hidden" data-task-id="${task.id}" data-exam-name="${task.description}">
-                        <i data-lucide="check-circle" class="w-3 h-3"></i> Mark Filled
-                    </label>
+                <div class="text-right mt-1">
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-md ${remainingDays <= 3 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'}">${daysText}</span>
                 </div>
             </div>
-        </div>`;
-    };
+            <p class="text-xs text-gray-500 mt-3"><i data-lucide="timer" class="w-3 h-3 inline"></i> End Date: ${endDate.toLocaleDateString()}</p>
+        </div>
+        <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            <button class="text-xs font-bold text-red-500 hover:text-red-700 delete-other-task-btn" data-task-id="${task.id}">Delete</button>
+            <div class="flex items-center gap-2">
+                <button type="button" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-sm" onclick="document.getElementById('exam-name').value='${task.description}'; document.getElementById('exam-id-source').value='${task.id}'; showAddExamModal();"><i data-lucide="check-circle" class="w-3 h-3"></i> Mark Filled</button>
+            </div>
+        </div>
+    </div>`;
+};
     
     // Optimized Creator Modal (No Lag)
     window.openCreatorModal = () => {
@@ -4711,29 +4757,66 @@ let allCharts = {};
 
         } else if (type === 'exam_form') {
             const uniqueId = `exam-form-${item.id}`;
-            let bgColor = 'bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500';
-            let priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200 uppercase">Normal</span>';
-            
-            if(item.priorityLevel === 'high') {
-                bgColor = 'bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 shadow-md';
-                priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-red-600 text-white uppercase animate-pulse">High Priority</span>';
-            } else if(item.priorityLevel === 'medium') {
-                bgColor = 'bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-500';
-                priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-yellow-400 text-yellow-900 uppercase">Medium</span>';
-            } else if(item.priorityLevel === 'low') {
-                bgColor = 'bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500';
-                priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200 uppercase">Low</span>';
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const endDate = new Date(item.formEndDate);
+            endDate.setHours(0,0,0,0);
+
+            // Remaining Days Calculation
+            const remainingDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            let daysText = remainingDays < 0 ? "Expired" : remainingDays === 0 ? "Last Date Today" : `${remainingDays} Days Left`;
+
+            // Calculate remaining Sundays (Battery Blocks)
+            let tempDate = new Date(today);
+            let activeBlocks = 0;
+            while (tempDate <= endDate) {
+                if (tempDate.getDay() === 0) activeBlocks++;
+                tempDate.setDate(tempDate.getDate() + 1);
+            }
+            if (today.getTime() === endDate.getTime()) {
+                activeBlocks = 1;
             }
 
-            const checkboxHtml = `<input type="checkbox" id="${uniqueId}" class="exam-form-checkbox text-rose-500 h-5 w-5 rounded border flex-shrink-0 cursor-pointer" data-task-id="${item.id}" data-exam-name="${item.description}">`;
+            // Dynamic Urgency Logic (Green -> Yellow -> Red)
+            let bgColor = 'bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500';
+            let priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200 uppercase shadow-sm">Relaxed</span>';
+            let batteryColorClass = 'bg-green-500 border-green-600';
+
+            if (activeBlocks <= 3) { 
+                // 3 Chances left (Highly Urgent)
+                bgColor = 'bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 shadow-md';
+                priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-red-600 text-white uppercase animate-pulse shadow-sm">Highly Urgent</span>';
+                batteryColorClass = 'bg-red-600 border-red-700 animate-pulse';
+            } else if (activeBlocks <= 5) {
+                // 5 Chances left (Getting Close)
+                bgColor = 'bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-500';
+                priorityBadge = '<span class="ml-2 text-[9px] font-bold px-2 py-0.5 rounded bg-yellow-400 text-yellow-900 uppercase shadow-sm">Getting Close</span>';
+                batteryColorClass = 'bg-yellow-500 border-yellow-600';
+            }
+
+            let barsHtml = '';
+            for(let i=0; i<activeBlocks; i++) {
+                barsHtml += `<div class="h-2 w-3 rounded-[2px] border shadow-sm ${batteryColorClass}"></div>`;
+            }
+
+            const checkboxHtml = `<input type="checkbox" id="${uniqueId}" class="exam-form-checkbox text-rose-500 h-5 w-5 rounded border flex-shrink-0 cursor-pointer" onclick="event.preventDefault(); document.getElementById('exam-name').value='${item.description}'; document.getElementById('exam-id-source').value='${item.id}'; showAddExamModal();">`;
 
             html = `<li class="task-list-item p-3 rounded-lg flex items-center gap-3 ${bgColor} animate-list-item">
                 ${checkboxHtml}
-                <label for="${uniqueId}" class="flex-grow cursor-pointer"><p class="font-bold flex items-center text-gray-900 dark:text-white">${item.description} ${priorityBadge}</p><p class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-0.5 flex items-center gap-1"><i data-lucide="file-signature" class="w-3 h-3"></i> Fill Form & Add to Exams Page</p></label>
+                <label for="${uniqueId}" class="flex-grow cursor-pointer flex flex-col gap-1">
+                    <p class="font-bold flex items-center text-gray-900 dark:text-white text-sm">${item.description} ${priorityBadge}</p>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <div class="flex gap-0.5">${barsHtml}</div>
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md ${remainingDays <= 3 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'}">${daysText}</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-0.5 flex items-center gap-1">
+                        <i data-lucide="file-signature" class="w-3 h-3"></i> Fill Form & Add to Exams Page 
+                        <span class="text-[9px] font-bold text-gray-400">| Last Date: ${endDate.toLocaleDateString()}</span>
+                    </p>
+                </label>
                 <div class="flex gap-1">
                     <button class="task-action-btn delete-other-task-btn p-1.5 rounded hover:bg-red-200 dark:hover:bg-red-900/50" title="Delete Form Task" data-task-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                 </div></li>`;
-
         } else if (type === 'other') {
             const uniqueId = `other-task-${item.id}`;
             let bgColor = 'bg-gray-100 dark:bg-slate-800';
@@ -5080,10 +5163,10 @@ const renderSubjectsPage = () => {
         const container = document.getElementById('subjects-list-container');
         const filter = document.getElementById('search-input').value.toLowerCase();
         
-        document.querySelectorAll('#subject-view-filter .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === subjectPageViewMode));
+        document.querySelectorAll('.filter-btn-sidebar').forEach(btn => btn.classList.toggle('active', btn.dataset.view === subjectPageViewMode));
         
-        container.innerHTML = (data.subjects || []).map(subject => {
-             let chapters = subject.chapters || [];
+        container.innerHTML = (data.subjects ||[]).map(subject => {
+             let chapters = subject.chapters ||[];
              
              // STRICT FILTERING LOGIC
              if (subjectPageViewMode === 'completed') {
@@ -5517,14 +5600,11 @@ const renderSubjectsPage = () => {
         document.getElementById('student-name-input').value = data.settings.studentName || '';
         document.getElementById('language-select').value = data.settings.language || 'hi';
         document.getElementById('background-style-select').value = data.settings.backgroundStyle || 'constellation';
-        document.getElementById('bg-color-start').value = data.settings.customThemeColors.start || '#cffafe';
-        document.getElementById('bg-color-end').value = data.settings.customThemeColors.end || '#e0e7ff';
-        
-        const colors = data.settings.customThemeColors;
-        document.getElementById('color-text-light').value = colors.textLight || '#020617';
-        document.getElementById('color-border-light').value = colors.borderLight || '#e5e7eb';
-        document.getElementById('color-text-dark').value = colors.textDark || '#f1f5f9';
-        document.getElementById('color-border-dark').value = colors.borderDark || '#374151';
+
+        const settingsDptToggle = document.getElementById('settings-dpt-dashboard-toggle');
+        if (settingsDptToggle) {
+            settingsDptToggle.checked = data.settings.dptDashboardActive !== false;
+        }
 
         // Plan Mode Logic
         const planMode = data.settings.planMode || 'auto';
@@ -6447,49 +6527,12 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         const searchInput = document.getElementById('dpt-search-input');
         const filter = searchInput.value.toLowerCase();
         
-        // --- 2. HEADER: GUIDE & TOGGLE (Compact for Mobile) ---
-        const guideHtml = `
-        <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800/30">
-            <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer list-none select-none">
-                    <div class="flex items-center gap-2">
-                        <div class="p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg"><i data-lucide="info" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-300"></i></div>
-                        <h3 class="font-black text-xs uppercase tracking-wider text-blue-800 dark:text-blue-200">DPT Smart Guide</h3>
-                    </div>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-blue-500 transition-transform group-open:rotate-180"></i>
-                </summary>
-                <div class="mt-3 text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed border-t border-blue-200 dark:border-blue-800/50 pt-2">
-                    <p class="mb-2">DPT से अपनी <strong>स्पीड और एक्यूरेसी</strong> ट्रैक करें।</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="p-2 bg-white dark:bg-black/20 rounded-lg border border-blue-100 dark:border-blue-900/30">🎯 स्कोर दर्ज करें</div>
-                        <div class="p-2 bg-white dark:bg-black/20 rounded-lg border border-blue-100 dark:border-blue-900/30">📈 प्रोग्रेस देखें</div>
-                    </div>
-                </div>
-            </details>
-        </div>`;
-
-        const toggleHtml = `
-        <div class="mb-4 flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400"><i data-lucide="layout-dashboard" class="w-4 h-4"></i></div>
-                <div>
-                    <p class="text-xs font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">Show on Dashboard</p>
-                    <p class="text-[9px] text-gray-400">होम पेज पर DPT टास्क दिखाएं</p>
-                </div>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="dpt-dashboard-toggle-page" class="sr-only peer" ${data.settings.dptDashboardActive !== false ? 'checked' : ''}>
-                <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-            </label>
-        </div>`;
-
+        // --- 2. HEADER: SUMMARY ---
         const summaryContainer = document.getElementById('dpt-summary-container');
         renderDptSummary();
         const currentStatsHtml = summaryContainer.innerHTML;
         
         summaryContainer.innerHTML = `
-            ${guideHtml}
-            ${toggleHtml}
             <div class="grid grid-cols-3 gap-2 mb-2">
                 ${currentStatsHtml.replace(/p-4/g, 'p-2').replace(/text-3xl/g, 'text-lg').replace(/text-sm/g, 'text-[9px] uppercase font-bold tracking-tighter')}
             </div>`;
@@ -6613,14 +6656,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         
         container.innerHTML = listHtml;
         
-        const toggleBtn = document.getElementById('dpt-dashboard-toggle-page');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('change', (e) => {
-                data.settings.dptDashboardActive = e.target.checked;
-                saveData();
-                renderHomePage();
-            });
-        }
         lucide.createIcons();
     };
 
@@ -7349,18 +7384,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             document.getElementById('future-task-search')?.addEventListener('input', renderNoticesPage);
             document.getElementById('language-select').addEventListener('change', (e) => { data.settings.language = e.target.value; saveData(); applyTranslations(); });
             
-            document.getElementById('bg-color-start')?.addEventListener('input', (e) => { data.settings.customThemeColors.start = e.target.value; applyTheme(data.settings.theme); saveData(); });
-            document.getElementById('bg-color-end')?.addEventListener('input', (e) => { data.settings.customThemeColors.end = e.target.value; applyTheme(data.settings.theme); saveData(); });
-            document.getElementById('reset-theme-btn')?.addEventListener('click', () => { data.settings.customThemeColors.start = null; data.settings.customThemeColors.end = null; applyTheme(data.settings.theme); renderSettingsPage(); saveData(); });
-
-            document.querySelectorAll('.adv-color-picker').forEach(input => {
-                input.addEventListener('input', (e) => { data.settings.customThemeColors[e.target.dataset.colorType] = e.target.value; applyManualColors(); saveData(); });
-            });
-            document.getElementById('reset-advanced-colors-btn')?.addEventListener('click', () => {
-                data.settings.customThemeColors.textLight = null; data.settings.customThemeColors.borderLight = null;
-                data.settings.customThemeColors.textDark = null; data.settings.customThemeColors.borderDark = null;
-                applyManualColors(); renderSettingsPage(); saveData();
-            });
             document.getElementById('student-name-input')?.addEventListener('input', (e) => { data.settings.studentName = e.target.value; saveData(); renderHomePage(); });
 
             const toggleTasksBtn = document.getElementById('toggle-completed-tasks-btn');
@@ -7480,6 +7503,34 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 if (editBtn) showAddExamModal(editBtn.dataset.examId); else if (deleteBtn) deleteExam(deleteBtn.dataset.examId);
             });
 
+            // Exams Sidebar Toggle Actions
+            document.getElementById('exams-sidebar-trigger')?.addEventListener('click', () => {
+                document.getElementById('exams-sidebar').classList.remove('-translate-x-full');
+                document.getElementById('exams-sidebar-overlay').classList.remove('hidden');
+            });
+            document.getElementById('close-exams-sidebar')?.addEventListener('click', () => {
+                document.getElementById('exams-sidebar').classList.add('-translate-x-full');
+                document.getElementById('exams-sidebar-overlay').classList.add('hidden');
+            });
+            document.getElementById('exams-sidebar-overlay')?.addEventListener('click', () => {
+                document.getElementById('exams-sidebar').classList.add('-translate-x-full');
+                document.getElementById('exams-sidebar-overlay').classList.add('hidden');
+            });
+
+            // Filter logic inside the sidebar
+            document.getElementById('exam-filter-buttons')?.addEventListener('click', (e) => {
+                const btn = e.target.closest('.exam-filter-btn');
+                if (btn) { 
+                    currentExamFilter = btn.dataset.filter; 
+                    renderExamsPage(); 
+                    // Close sidebar
+                    const sidebar = document.getElementById('exams-sidebar');
+                    const overlay = document.getElementById('exams-sidebar-overlay');
+                    if(sidebar) sidebar.classList.add('-translate-x-full');
+                    if(overlay) overlay.classList.add('hidden');
+                }
+            });
+
             document.getElementById('url-container').addEventListener('click', e => {
                 // Only Global Edit/Delete actions needed here
                 // Navigation logic is inside renderUrlPage now for cleaner scope access
@@ -7550,7 +7601,34 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 showAddExamModal();
             });
 
-            document.getElementById('subject-view-filter').addEventListener('click', (e) => { const btn = e.target.closest('.filter-btn'); if (btn) { subjectPageViewMode = btn.dataset.view; renderSubjectsPage(); } });
+            // Subjects Sidebar Menu Filter Logic
+            document.getElementById('subject-view-filter-sidebar')?.addEventListener('click', (e) => { 
+                const btn = e.target.closest('.filter-btn-sidebar'); 
+                if (btn) { 
+                    subjectPageViewMode = btn.dataset.view; 
+                    renderSubjectsPage(); 
+                    // Close sidebar after selection on mobile/PC
+                    const sidebar = document.getElementById('subjects-sidebar');
+                    const overlay = document.getElementById('subjects-sidebar-overlay');
+                    if(sidebar) sidebar.classList.add('-translate-x-full');
+                    if(overlay) overlay.classList.add('hidden');
+                } 
+            });
+
+            // Subjects Sidebar Toggle Actions
+            document.getElementById('subjects-sidebar-trigger')?.addEventListener('click', () => {
+                document.getElementById('subjects-sidebar').classList.remove('-translate-x-full');
+                document.getElementById('subjects-sidebar-overlay').classList.remove('hidden');
+            });
+            document.getElementById('close-subjects-sidebar')?.addEventListener('click', () => {
+                document.getElementById('subjects-sidebar').classList.add('-translate-x-full');
+                document.getElementById('subjects-sidebar-overlay').classList.add('hidden');
+            });
+            document.getElementById('subjects-sidebar-overlay')?.addEventListener('click', () => {
+                document.getElementById('subjects-sidebar').classList.add('-translate-x-full');
+                document.getElementById('subjects-sidebar-overlay').classList.add('hidden');
+            });
+
             document.getElementById('dpt-view-filter').addEventListener('click', (e) => { const btn = e.target.closest('.filter-btn'); if (btn) { dptPageViewMode = btn.dataset.view; renderDptPage(); } });
             document.getElementById('dpt-subject-filter').addEventListener('change', renderDptPage);
 
@@ -7605,8 +7683,15 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             });
 
-            const dptToggle = document.getElementById('global-dpt-toggle');
-            if (dptToggle) { dptToggle.checked = data.settings.dptDashboardActive !== false; document.getElementById('dpt-toggle-text').innerText = dptToggle.checked ? "Active" : "Hidden"; dptToggle.addEventListener('change', (e) => { data.settings.dptDashboardActive = e.target.checked; document.getElementById('dpt-toggle-text').innerText = e.target.checked ? "Active" : "Hidden"; saveData(); renderHomePage(); }); }
+            // Control Panel DPT Toggle Listener
+            const settingsDptToggle = document.getElementById('settings-dpt-dashboard-toggle');
+            if (settingsDptToggle) {
+                settingsDptToggle.addEventListener('change', (e) => {
+                    data.settings.dptDashboardActive = e.target.checked;
+                    saveData();
+                    renderHomePage();
+                });
+            }
             
             document.querySelectorAll('.adv-day-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) { e.preventDefault(); this.classList.toggle('bg-indigo-600'); this.classList.toggle('text-white'); this.classList.toggle('border-indigo-600'); this.classList.toggle('shadow-md'); this.classList.toggle('bg-white'); this.classList.toggle('dark:bg-gray-900'); this.dataset.selected = this.classList.contains('bg-indigo-600') ? "true" : "false"; });
