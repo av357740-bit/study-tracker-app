@@ -1508,26 +1508,41 @@
                         <p class="text-[10px] text-text-muted-light dark:text-text-muted-dark mt-2">Custom Image upload removed for better performance.</p>
                     </div>
 
-                    <!-- NEW: Control Panel for DPT Toggle -->
+                    <!-- CONTROL PANEL: Dashboard Visibility Toggles -->
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2 border border-blue-100 dark:border-blue-900/30 transition-all duration-300">
                         <div class="collapsible-header w-full flex justify-between items-center cursor-pointer select-none">
                             <div class="flex items-center gap-2 pointer-events-none">
                                 <i data-lucide="sliders" class="text-blue-500 w-6 h-6"></i>
-                                <h3 class="font-semibold text-lg">Control Panel</h3>
+                                <h3 class="font-semibold text-lg text-blue-600 dark:text-blue-400">Control Panel (Dashboard Tabs)</h3>
                             </div>
-                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 pointer-events-none"></i>
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 pointer-events-none text-blue-400"></i>
                         </div>
-                        <div class="collapsible-content hidden mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
-                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
-                                <div>
-                                    <p class="font-bold text-sm text-gray-800 dark:text-gray-200">Show DPT on Dashboard</p>
-                                    <p class="text-[10px] text-gray-500">होम पेज पर DPT टास्क दिखाएं या छिपाएं</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="settings-dpt-dashboard-toggle" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                </label>
+                        <div class="collapsible-content hidden mt-4 border-t border-gray-100 dark:border-gray-700 pt-4 space-y-3">
+                            
+                            <!-- Toggle: DPT -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-700">
+                                <div><p class="font-bold text-sm">Daily Practice Test (DPT)</p><p class="text-[10px] text-gray-500">होम पेज पर DPT सेक्शन दिखाएं/छिपाएं</p></div>
+                                <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="settings-dpt-dashboard-toggle" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div></label>
                             </div>
+
+                            <!-- Toggle: Lectures -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-700">
+                                <div><p class="font-bold text-sm">Lectures Tab</p><p class="text-[10px] text-gray-500">Today's Plan में Lectures का विकल्प दिखाएं</p></div>
+                                <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="settings-lectures-toggle" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div></label>
+                            </div>
+
+                            <!-- Toggle: Fill Form -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-700">
+                                <div><p class="font-bold text-sm">Fill Form Tab</p><p class="text-[10px] text-gray-500">डैशबोर्ड पर एग्जाम फॉर्म भरने वाला टैब दिखाएं</p></div>
+                                <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="settings-fillform-toggle" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-rose-500"></div></label>
+                            </div>
+
+                            <!-- Toggle: Other Tasks -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-700">
+                                <div><p class="font-bold text-sm">Other Tasks Tab</p><p class="text-[10px] text-gray-500">चेकलिस्ट और अन्य कार्य वाला टैब दिखाएं</p></div>
+                                <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="settings-othertasks-toggle" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-sky-600"></div></label>
+                            </div>
+
                         </div>
                     </div>
 
@@ -1630,6 +1645,7 @@
         <button data-page="subjects" class="mobile-nav-btn"><i data-lucide="book-open"></i><span>Subs</span></button>
         <button data-page="dpt" class="mobile-nav-btn"><i data-lucide="clipboard-check"></i><span>DPT</span></button>
         <button data-page="exams" class="mobile-nav-btn"><i data-lucide="briefcase"></i><span>Exam</span></button>
+        <button data-page="calendar" class="mobile-nav-btn"><i data-lucide="calendar"></i><span>Cal</span></button>
         <button data-page="url" class="mobile-nav-btn"><i data-lucide="globe"></i><span>URL</span></button>
         <button data-page="import-export" class="mobile-nav-btn"><i data-lucide="arrow-right-left"></i><span>Imp/Exp</span></button>
         <button data-page="analytics" class="mobile-nav-btn"><i data-lucide="bar-chart-3"></i><span>Stats</span></button>
@@ -2405,6 +2421,37 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
+        "14.6": {
+            date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "Dashboard Customizer 🛠️", "note": "Settings में Control Panel के अंदर अब आप Lectures, Fill Form और Other Tasks टैब्स को अपनी सुविधा के अनुसार छिपा या दिखा सकते हैं।" },
+                { "title": "Cleaner Workspace 🧹", "note": "अनचाहे टैब्स को बंद करने से डैशबोर्ड और भी साफ और तेज़ महसूस होगा।" },
+                { "title": "Smart Tab Fallback 🧠", "note": "यदि कोई टैब छिपा हुआ है, तो सिस्टम बुद्धिमानी से अगले उपलब्ध टैब को ऑटो-सिलेक्ट कर लेगा।" }
+            ]
+        },
+        "14.5": {
+            date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "Other Tasks Tab Sync 🔄", "note": "डैशबोर्ड के 'Other Tasks' टैब को अब मुख्य टुडे प्लान के साथ सिंक कर दिया गया है। अब आपको दोनों जगह एक जैसे ही कार्य दिखेंगे।" },
+                { "title": "Clean Future Queue 🧹", "note": "Notes पेज पर 'Future Task Queue' से पुराने पूरे हो चुके या डिलीट किए गए टास्क हटा दिए गए हैं। अब यहाँ सिर्फ भविष्य के और आज के एक्टिव टास्क ही दिखेंगे।" },
+                { "title": "History Protection 🛡️", "note": "पुराने रिकॉर्ड अब केवल 'History' टैब में सुरक्षित रहेंगे, जिससे फ्यूचर लिस्ट बिल्कुल साफ़-सुथरी रहेगी।" }
+            ]
+        },
+        "14.4": {
+            date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "Sidebar Subject Delete 🗑️", "note": "अब आप Subjects पेज के साइडबार में 'Lectures' लिस्ट के अंदर से भी किसी भी सब्जेक्ट को सीधे डिलीट कर सकते हैं।" },
+                { "title": "Enhanced Navigation 🧭", "note": "साइडबार को और भी स्मूथ बनाया गया है ताकि मोबाइल और PC दोनों में सब्जेक्ट मैनेज करना आसान हो।" },
+                { "title": "Safety Confirmations 🛡️", "note": "सब्जेक्ट डिलीट करने से पहले अब एक प्रॉपर कन्फर्मेशन बॉक्स आएगा ताकि गलती से कोई डेटा न हटे।" }
+            ]
+        },
+        "14.3": {
+            date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "Mobile Calendar Fixed 📱", "note": "मोबाइल व्यू में गायब 'Calendar' बटन को नीचे बॉटम नेविगेशन बार में जोड़ दिया गया है। अब आप मोबाइल से भी पिछला रिकॉर्ड भर सकते हैं।" },
+                { "title": "Navigation Sync 🔄", "note": "मोबाइल मेनू को अब PC साइडबार के क्रम (Order) के साथ सिंक कर दिया गया है ताकि इस्तेमाल में आसानी हो।" }
+            ]
+        },
         "14.2": {
             date: new Date().toISOString().split('T')[0],
             features:[
@@ -2770,7 +2817,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         settings: {
             theme: 'system', // Default is now System
-            dptDashboardActive: true, 
+            dptDashboardActive: true,
+            showLecturesTab: true,
+            showFillFormTab: true,
+            showOtherTasksTab: true,
             planMode: 'auto',
             customCyclePlan: Array(14).fill([]),
             dptPlanMode: 'auto',
@@ -3511,42 +3561,55 @@ let allCharts = {};
         const todayStr = getLocalDateString();
         const searchFilter = (document.getElementById('future-task-search-tab')?.value || '').toLowerCase();
         
-        // STRICT FILTER: Remove EVERYTHING except active pending or future tasks
-        const tasks = (data.otherTasks ||[]).filter(t => {
+        // STRICT FILTER: Only Future or Current Pending. Completely hide history/deleted.
+        const tasks = (data.otherTasks || []).filter(t => {
+            // 1. Never show exam forms in this queue
             if (t.isExamForm) return false; 
             
-            // If already done or deleted, NEVER show in queue
-            if (t.status === 'Completed' || t.status === 'Deleted') return false;
-            
-            // Check for future or today's pending
-            const isActive = t.status === 'Pending';
-            const isFuture = t.date > todayStr;
-            
-            return isActive || isFuture;
+            // 2. Hide if status is anything other than Pending (i.e. hide Completed and Deleted)
+            if (t.status !== 'Pending') return false;
+
+            // 3. For repeating tasks, only show if they aren't marked as deleted for today
+            if (t.isRepeating && t.deletedInstances && t.deletedInstances.includes(todayStr)) return false;
+
+            // 4. Show if the date is today, in the future, OR if it's a missed task (past date but still pending)
+            return true; 
         })
         .filter(t => t.description.toLowerCase().includes(searchFilter))
         .sort((a,b) => new Date(a.date) - new Date(b.date));
 
-        let html = `<div class="flex flex-col gap-4 mb-4">
-            <h2 class="text-2xl font-bold flex items-center gap-2 text-purple-600 dark:text-purple-400"><i data-lucide="calendar-clock"></i> Future Task Queue</h2>
-            <div class="relative">
-                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                <input id="future-task-search-tab" type="text" placeholder="Search active tasks..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all" value="${searchFilter}">
+        let html = `<div class="flex flex-col gap-4 mb-6">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-black text-purple-600 dark:text-purple-400 flex items-center gap-2"><i data-lucide="calendar-clock"></i> Future Queue</h2>
+                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-[10px] font-bold uppercase tracking-widest">${tasks.length} Active Tasks</span>
+            </div>
+            <div class="relative group">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors"></i>
+                <input id="future-task-search-tab" type="text" placeholder="Filter active tasks..." class="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500/50 outline-none transition-all shadow-sm" value="${searchFilter}">
             </div>
         </div>`;
 
         if (tasks.length === 0) {
-            html += `<div class="flex flex-col items-center justify-center py-20 text-gray-400 opacity-40"><i data-lucide="list-checks" class="w-16 h-16 mb-4"></i><p class="font-bold">Queue is Clean!</p></div>`;
+            html += `<div class="flex flex-col items-center justify-center py-20 text-gray-300 dark:text-gray-600"><i data-lucide="zap-off" class="w-16 h-16 mb-4 opacity-30"></i><p class="font-bold text-sm uppercase tracking-wider">Queue is completely empty!</p></div>`;
         } else {
-            html += `<div class="space-y-3">` + tasks.map(t => renderTaskItemHTML({ ...t, type: 'other' })).join('') + `</div>`;
+            html += `<div class="space-y-3 pb-20">` + tasks.map(t => renderTaskItemHTML({ ...t, type: 'other' })).join('') + `</div>`;
         }
         container.innerHTML = html;
         
+        // Re-attach input listener for live search without full reload lag
         setTimeout(() => {
             const input = document.getElementById('future-task-search-tab');
-            input?.focus();
-            input?.addEventListener('input', () => renderNoticesPage());
-        }, 0);
+            if(input) {
+                input.focus();
+                // Cursor to end
+                const val = input.value;
+                input.value = '';
+                input.value = val;
+                input.addEventListener('input', () => {
+                    renderFutureQueueTab(container);
+                });
+            }
+        }, 10);
         lucide.createIcons();
     };
 
@@ -5051,8 +5114,18 @@ let allCharts = {};
 
     // --- DASHBOARD TABS SETUP & RENDER FUNCTIONS ---
     const setupDashboardTabs = () => {
-        const tabs =['todays-task', 'fill-form', 'lectures', 'other-tasks'];
+        const tabs = ['todays-task', 'fill-form', 'lectures', 'other-tasks'];
         
+        // Hide/Show buttons based on settings
+        document.getElementById('tab-lectures').style.display = data.settings.showLecturesTab !== false ? 'flex' : 'none';
+        document.getElementById('tab-fill-form').style.display = data.settings.showFillFormTab !== false ? 'flex' : 'none';
+        document.getElementById('tab-other-tasks').style.display = data.settings.showOtherTasksTab !== false ? 'flex' : 'none';
+
+        // Fallback Logic: If current tab is hidden, switch to Today's Task
+        if (currentDashboardTab === 'lectures' && data.settings.showLecturesTab === false) currentDashboardTab = 'todays-task';
+        if (currentDashboardTab === 'fill-form' && data.settings.showFillFormTab === false) currentDashboardTab = 'todays-task';
+        if (currentDashboardTab === 'other-tasks' && data.settings.showOtherTasksTab === false) currentDashboardTab = 'todays-task';
+
         const updateTabUI = () => {
             tabs.forEach(tab => {
                 const btn = document.getElementById(`tab-${tab}`);
@@ -5073,12 +5146,11 @@ let allCharts = {};
             });
         };
 
-        updateTabUI(); // Run once to set default
+        updateTabUI();
 
         tabs.forEach(tab => {
             const btn = document.getElementById(`tab-${tab}`);
             if (btn) {
-                // Remove old listeners to prevent memory leaks (Performance Boost)
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
                 newBtn.addEventListener('click', () => {
@@ -5113,25 +5185,25 @@ let allCharts = {};
         if(!container) return;
         const todayStr = getLocalDateString();
         
-        const otherTasks = (data.otherTasks ||[]).filter(task => {
-            // Don't show Exam Forms here
+        // SYNCED LOGIC: Exactly what shows in Today's Task list
+        const otherTasks = (data.otherTasks || []).filter(task => {
             if (task.isExamForm) return false;
             
-            // STRICT FILTER: Remove Completed or Deleted tasks
-            if (task.status === 'Completed' || task.status === 'Deleted') return false;
-            
-            // Remove if deleted for today specifically
+            // 1. Exclude if explicitly deleted for today
             if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
 
-            // Only show tasks for Today, Repeating tasks, or Future tasks (Active ones)
-            const isTodayOrFuture = task.date >= todayStr;
-            const isActiveRepeating = task.isRepeating && task.lastCompletedDate !== todayStr;
-
-            return isTodayOrFuture || isActiveRepeating;
+            // 2. Normal logic for today's active tasks
+            if (task.isRepeating) {
+                // Should show if it hasn't been completed today
+                return task.lastCompletedDate !== todayStr;
+            } else {
+                // Show if it's for today AND pending, OR if it's missed (past date) but still pending
+                return task.date <= todayStr && task.status === 'Pending';
+            }
         });
 
         if(otherTasks.length === 0) {
-            container.innerHTML = `<div class="text-center py-8 text-gray-400"><i data-lucide="check-square" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="font-bold">No Active Tasks.</p></div>`;
+            container.innerHTML = `<div class="text-center py-10 text-gray-400/60"><i data-lucide="list-checks" class="w-16 h-16 mx-auto mb-3 opacity-20"></i><p class="font-black text-xs uppercase tracking-widest">No Other Tasks Today</p></div>`;
         } else {
             container.innerHTML = `<ul class="space-y-3">${otherTasks.map(t => renderTaskItemHTML({...t, type: 'other'})).join('')}</ul>`;
         }
@@ -5711,14 +5783,25 @@ let allCharts = {};
         const container = document.getElementById('subjects-list-container');
         const filter = document.getElementById('search-input').value.toLowerCase();
         
-        // 1. POPULATE LECTURES SUBMENU
+        // 1. POPULATE LECTURES SUBMENU (With Delete Option)
         const lecturesSubmenu = document.getElementById('lectures-submenu');
         if (lecturesSubmenu) {
-            lecturesSubmenu.innerHTML = (data.subjects || []).map(s => 
-                `<button class="lecture-subject-btn w-full text-left px-3 py-2 text-[11px] font-bold rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors ${activeLectureSubjectId === s.id && subjectPageViewMode === 'lectures' ? 'text-purple-700 bg-purple-100 dark:bg-purple-900/60 dark:text-purple-300' : 'text-gray-600 dark:text-gray-400'}" data-subject-id="${s.id}">
-                    ${_(s.id)}
-                </button>`
-            ).join('');
+            lecturesSubmenu.innerHTML = (data.subjects || []).map(s => {
+                const isActive = activeLectureSubjectId === s.id && subjectPageViewMode === 'lectures';
+                const activeClass = isActive 
+                    ? 'text-purple-700 bg-purple-100 dark:bg-purple-900/60 dark:text-purple-300' 
+                    : 'text-gray-600 dark:text-gray-400';
+                
+                return `
+                <div class="flex items-center group/item w-full pr-1 mb-0.5">
+                    <button class="lecture-subject-btn flex-grow text-left px-3 py-2 text-[11px] font-bold rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors ${activeClass}" data-subject-id="${s.id}">
+                        ${_(s.id)}
+                    </button>
+                    <button class="sidebar-delete-subject-btn p-1.5 opacity-40 group-hover/item:opacity-100 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-all flex-shrink-0" data-subject-id="${s.id}" title="Delete Subject">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                    </button>
+                </div>`;
+            }).join('');
         }
 
         // 2. UPDATE SIDEBAR ACTIVE STATE
@@ -5780,6 +5863,12 @@ let allCharts = {};
                     </div>
                 </summary>
                 <div class="p-4 border-t border-gray-50 dark:border-gray-800 bg-white/50 dark:bg-black/20">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Chapters</p>
+                        <button class="delete-subject-btn p-1.5 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all" data-subject-id="${subject.id}" title="Delete Subject">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                     ${renderChapterList(filteredChapters)}
                     ${subjectPageViewMode === 'all' ? `<button class="add-chapter-btn w-full flex items-center justify-center p-2.5 text-xs font-bold text-primary bg-sky-50 dark:bg-sky-900/30 rounded-lg hover:bg-sky-100 transition-colors" data-subject-id="${subject.id}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_chapter')}</button>` : ''}
                 </div>
@@ -6156,6 +6245,9 @@ let allCharts = {};
         const settingsDptToggle = document.getElementById('settings-dpt-dashboard-toggle');
         if (settingsDptToggle) {
             settingsDptToggle.checked = data.settings.dptDashboardActive !== false;
+            document.getElementById('settings-lectures-toggle').checked = data.settings.showLecturesTab !== false;
+            document.getElementById('settings-fillform-toggle').checked = data.settings.showFillFormTab !== false;
+            document.getElementById('settings-othertasks-toggle').checked = data.settings.showOtherTasksTab !== false;
         }
 
         // Plan Mode Logic
@@ -8235,6 +8327,15 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     document.getElementById('subjects-sidebar').classList.add('-translate-x-full');
                     document.getElementById('subjects-sidebar-overlay').classList.add('hidden');
                 }
+
+                // 4. NEW: Handle Subject Deletion from SIDEBAR
+                const sidebarDeleteBtn = e.target.closest('.sidebar-delete-subject-btn');
+                if (sidebarDeleteBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const subId = sidebarDeleteBtn.dataset.subjectId;
+                    confirmDeleteSubject(subId);
+                }
             });
 
             // Subjects Sidebar Toggle Actions
@@ -8305,15 +8406,21 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 }
             });
 
-            // Control Panel DPT Toggle Listener
-            const settingsDptToggle = document.getElementById('settings-dpt-dashboard-toggle');
-            if (settingsDptToggle) {
-                settingsDptToggle.addEventListener('change', (e) => {
-                    data.settings.dptDashboardActive = e.target.checked;
-                    saveData();
-                    renderHomePage();
-                });
-            }
+            // Control Panel Toggles Listener
+            const setupControlToggle = (id, settingKey) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', (e) => {
+                        data.settings[settingKey] = e.target.checked;
+                        saveData();
+                        renderHomePage();
+                    });
+                }
+            };
+            setupControlToggle('settings-dpt-dashboard-toggle', 'dptDashboardActive');
+            setupControlToggle('settings-lectures-toggle', 'showLecturesTab');
+            setupControlToggle('settings-fillform-toggle', 'showFillFormTab');
+            setupControlToggle('settings-othertasks-toggle', 'showOtherTasksTab');
             
             document.querySelectorAll('.adv-day-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) { e.preventDefault(); this.classList.toggle('bg-indigo-600'); this.classList.toggle('text-white'); this.classList.toggle('border-indigo-600'); this.classList.toggle('shadow-md'); this.classList.toggle('bg-white'); this.classList.toggle('dark:bg-gray-900'); this.dataset.selected = this.classList.contains('bg-indigo-600') ? "true" : "false"; });
