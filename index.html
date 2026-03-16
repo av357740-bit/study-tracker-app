@@ -585,6 +585,43 @@
         transition: all 0.2s ease;
         border: 1px solid var(--border-light);
     }
+
+    /* Round Checkbox for Lectures */
+    .round-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #8b5cf6;
+        border-radius: 50%;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+        background-color: transparent;
+        flex-shrink: 0;
+    }
+    .round-checkbox:checked {
+        background-color: #8b5cf6;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+    }
+    .round-checkbox:checked::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background-color: white;
+        border-radius: 50%;
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+        0% { transform: translate(-50%, -50%) scale(0); }
+        100% { transform: translate(-50%, -50%) scale(1); }
+    }
     .dark .day-selector-btn {
         border-color: var(--border-dark);
     }
@@ -1024,9 +1061,38 @@
                         </div>
                         <div id="recent-updates-container" class="hidden"></div>
 
+                        <!-- NEW: Dashboard Tabs (Today's Task, Fill Form, Lectures, Other Tasks) -->
+                        <div class="flex flex-wrap items-center gap-2 mb-4 bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl shadow-inner">
+                            <button id="tab-todays-task" class="dashboard-tab-btn flex-1 min-w-[80px] py-2 px-2 text-xs md:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-gray-700 shadow-sm text-primary">
+                                <i data-lucide="clipboard-list" class="w-4 h-4 hidden sm:block"></i><span class="truncate">Today's Task</span>
+                            </button>
+                            <button id="tab-fill-form" class="dashboard-tab-btn flex-1 min-w-[80px] py-2 px-2 text-xs md:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+                                <i data-lucide="file-signature" class="w-4 h-4 hidden sm:block"></i><span class="truncate">Fill Form</span>
+                            </button>
+                            <button id="tab-lectures" class="dashboard-tab-btn flex-1 min-w-[80px] py-2 px-2 text-xs md:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+                                <i data-lucide="video" class="w-4 h-4 hidden sm:block"></i><span class="truncate">Lectures</span>
+                            </button>
+                            <button id="tab-other-tasks" class="dashboard-tab-btn flex-1 min-w-[80px] py-2 px-2 text-xs md:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+                                <i data-lucide="check-square" class="w-4 h-4 hidden sm:block"></i><span class="truncate">Other Tasks</span>
+                            </button>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div id="todays-plan-container-wrapper">
-                                <div id="todays-plan-container" class="dashboard-card bg-sky-50 dark:bg-sky-900/30 border-2 p-4 rounded-xl shadow-sm min-h-[180px]"></div>
+                                <!-- Tab Content Containers -->
+                                <div id="tab-content-todays-task" class="dashboard-tab-content block">
+                                    <div id="todays-plan-container" class="dashboard-card bg-sky-50 dark:bg-sky-900/30 border-2 border-sky-200 dark:border-sky-800 p-4 rounded-xl shadow-sm min-h-[180px]"></div>
+                                </div>
+                                <div id="tab-content-fill-form" class="dashboard-tab-content hidden">
+                                    <div id="fill-form-container" class="dashboard-card bg-rose-50 dark:bg-rose-900/30 border-2 border-rose-200 dark:border-rose-800 p-4 rounded-xl shadow-sm min-h-[180px]"></div>
+                                </div>
+                                <div id="tab-content-lectures" class="dashboard-tab-content hidden">
+                                    <div id="dashboard-lectures-container" class="dashboard-card bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-200 dark:border-indigo-800 p-4 rounded-xl shadow-sm min-h-[180px]"></div>
+                                </div>
+                                <div id="tab-content-other-tasks" class="dashboard-tab-content hidden">
+                                    <div id="dashboard-other-tasks-container" class="dashboard-card bg-gray-50 dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-700 p-4 rounded-xl shadow-sm min-h-[180px]"></div>
+                                </div>
+
                                 <div id="completed-tasks-toggle-container" class="mt-2 text-center" style="display: none;">
                                     <button id="toggle-completed-tasks-btn" class="text-sm font-semibold text-gray-500 dark:text-gray-400 flex items-center justify-center w-full p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                                         <span id="completed-tasks-count"></span> Completed Task(s)
@@ -1127,6 +1193,20 @@
                             <button class="notes-sidebar-btn filter-btn-sidebar" data-view="postponed">
                                 <i data-lucide="clock" class="w-5 h-5 text-amber-500"></i> Postponed
                             </button>
+
+                            <!-- NEW: Lectures Expandable Menu -->
+                            <div class="mt-2 border-t border-gray-100 dark:border-gray-800 pt-2">
+                                <button id="lectures-menu-toggle" class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300 font-bold text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="video" class="w-4 h-4 text-purple-500"></i>
+                                        <span>Lectures</span>
+                                    </div>
+                                    <i data-lucide="chevron-down" id="lectures-menu-icon" class="w-4 h-4 transition-transform"></i>
+                                </button>
+                                <div id="lectures-submenu" class="hidden flex-col gap-1 mt-1 pl-4 border-l-2 border-gray-100 dark:border-gray-800 ml-4">
+                                    <!-- Options will be dynamically injected here by JS -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1594,6 +1674,52 @@
 
 <div id="add-chapter-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden"><div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative"><button id="close-add-chapter-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button><h2 class="text-xl font-bold mb-4" data-translate="add_new_chapter">Add New Chapter</h2><form id="add-chapter-form" class="space-y-4"><input type="hidden" id="add-chapter-subject-id"><!-- Removed source type hidden input --><div><label for="new-chapter-name" class="block text-sm font-medium mb-1" data-translate="chapter_name">Chapter Name</label><input type="text" id="new-chapter-name" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg" required></div><button type="submit" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover" data-translate="add_chapter">Add Chapter</button></form></div></div>
 
+<!-- NEW MODAL FOR ADDING LECTURES -->
+<div id="add-lecture-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-card-light dark:bg-card-dark w-full max-w-md rounded-2xl shadow-xl p-6 relative">
+        <button id="close-add-lecture-modal" class="absolute top-4 right-4 text-text-muted-light hover:text-purple-500 transition-colors"><i data-lucide="x"></i></button>
+        <h2 class="text-xl font-bold mb-4 text-purple-600 dark:text-purple-400 flex items-center gap-2"><i data-lucide="video"></i> Add New Lectures</h2>
+        <form id="add-lecture-form" class="space-y-4">
+            <input type="hidden" id="lecture-subject-id">
+            <div>
+                <label class="block text-sm font-semibold mb-1">Type</label>
+                <input type="text" id="lecture-type" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold" value="Lecture" readonly>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Start Number</label>
+                    <input type="number" id="lecture-start-num" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" required min="1" value="1">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Quantity (Total)</label>
+                    <input type="number" id="lecture-quantity" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" required min="1" value="1">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">Notes (Optional)</label>
+                <input type="text" id="lecture-notes" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" placeholder="e.g. By ABC Sir">
+            </div>
+            <button type="submit" class="w-full p-4 font-bold rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg hover:shadow-purple-500/50 active:scale-95 transition-all text-lg mt-2">Add Lectures</button>
+        </form>
+    </div>
+</div>
+
+<!-- NEW MODAL FOR COMPLETING LECTURE (SAVES CHAPTER NAME) -->
+<div id="complete-lecture-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-xl p-6 relative">
+        <button id="close-complete-lecture-modal" class="absolute top-4 right-4 text-text-muted-light hover:text-green-500 transition-colors"><i data-lucide="x"></i></button>
+        <h2 id="complete-lecture-title" class="text-xl font-bold mb-4 text-green-600 dark:text-green-400">Complete Lecture</h2>
+        <form id="complete-lecture-form" class="space-y-4">
+            <input type="hidden" id="complete-lecture-subject-id">
+            <input type="hidden" id="complete-lecture-id">
+            <div>
+                <label class="block text-sm font-semibold mb-1">Chapter Name</label>
+                <input type="text" id="complete-lecture-chapter-name" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" required placeholder="Enter what you studied...">
+            </div>
+            <button type="submit" class="w-full p-3 font-bold rounded-xl bg-green-500 text-white hover:bg-green-600 active:scale-95 transition-all">Save & Complete</button>
+        </form>
+    </div>
+</div>
 <div id="confirmation-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
     <div class="bg-card-light dark:bg-card-dark w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center border border-gray-200 dark:border-gray-700 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-pink-500"></div>
@@ -2250,14 +2376,23 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "13.3"; // Clean UI Update
+    const CURRENT_APP_VERSION = "14.0"; // Lectures & Tab UI Update
     const DPT_EXCLUDED_SUBJECTS =['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS =['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "13.3": {
+        "14.1": {
             date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "Lectures System 🎥", "note": "Subjects पेज पर नया Lectures फीचर ऐड किया गया है जहाँ आप Bulk में लेक्चर्स ऐड कर सकते हैं और उनका शेड्यूल सेट कर सकते हैं।" },
+                { "title": "Dashboard Tabs 📑", "note": "डैशबोर्ड को 4 टैब्स (Today's Task, Fill Form, Lectures, Other Tasks) में बांटा गया है।" },
+                { "title": "Sunday Magic ✨", "note": "संडे के दिन डिफ़ॉल्ट रूप से 'Fill Form' टैब ओपन होगा, बाकी दिन 'Today's Task'।" },
+                { "title": "Saved Chapters 💾", "note": "लेक्चर कम्पलीट करते समय चैप्टर का नाम डालें, वह डेट और टाइम के साथ सब्जेक्ट पेज में सेव हो जाएगा।" }
+            ]
+        },
+        "13.3": {
+            date: "2025-03-01",
             features:[
                 { "title": "UI Cleanup 🧹", "note": "Settings पेज से Gradient Theme और Theme Colors (Advanced) को हटा दिया गया है ताकि ऐप और भी तेज़ और हल्का चले।" },
                 { "title": "DPT Page Streamlined 🚀", "note": "DPT पेज से 'DPT Smart Guide' और 'Show on Dashboard' टॉगल को हटा दिया गया है, जिससे इंटरफ़ेस बिल्कुल क्लीन हो गया है।" },
@@ -2390,7 +2525,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let undoTimeout = null;
     let currentNotesTab = 'personal'; // Added state for Notes Tab (Personal, Exam Forms, etc.)
     let subjectPageViewMode = 'all'; 
+    let activeLectureSubjectId = null; // Lectures View Track
     let dptPageViewMode = 'pending'; 
+    
+    // SUNDAY MAGIC LOGIC (रविवार को Fill Form टैब डिफ़ॉल्ट ओपन होगा)
+    let currentDashboardTab = new Date().getDay() === 0 ? 'fill-form' : 'todays-task'; 
     
     let dynamicDisplayIntervals = {}; 
     
@@ -2582,21 +2721,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initialState = {
-        subjects: [
-            { id: "physics", name: "Physics", chapters: [], completionCount: 0 },
-            { id: "chemistry", name: "Chemistry", chapters: [], completionCount: 0 },
-            { id: "biology", name: "Biology", chapters: [], completionCount: 0 },
-            { id: "geography", name: "Geography", chapters: [], completionCount: 0 },
-            { id: "polity", name: "Polity", chapters: [], completionCount: 0 },
-            { id: "economics", name: "Economics", chapters: [], completionCount: 0 },
-            { id: "history", name: "History", chapters: [], completionCount: 0 },
-            { id: "reasoning", name: "Reasoning", chapters: [], completionCount: 0 },
-            { id: "math", name: "Math", chapters: [], completionCount: 0 },
-            { id: "hindi", name: "Hindi", chapters: [], completionCount: 0 },
-            { id: "static-gk", name: "Static GK", chapters: [], completionCount: 0 },
-            { id: "संविधान-articles", name: "Constitution (Articles)", chapters: [], completionCount: 0 },
-            { id: "maths-formulas", name: "Maths Formulas & Tables", chapters: [], completionCount: 0 },
-            { id: "fill-form", name: "Form Filling / Misc", chapters: [], completionCount: 0 }
+        subjects:[
+            { id: "physics", name: "Physics", chapters: [], completionCount: 0, lectures: [], lectureSchedule:[], savedLectures: [] },
+            { id: "chemistry", name: "Chemistry", chapters:[], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "biology", name: "Biology", chapters: [], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "geography", name: "Geography", chapters: [], completionCount: 0, lectures:[], lectureSchedule: [], savedLectures:[] },
+            { id: "polity", name: "Polity", chapters: [], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "economics", name: "Economics", chapters: [], completionCount: 0, lectures:[], lectureSchedule: [], savedLectures: [] },
+            { id: "history", name: "History", chapters:[], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "reasoning", name: "Reasoning", chapters: [], completionCount: 0, lectures:[], lectureSchedule: [], savedLectures: [] },
+            { id: "math", name: "Math", chapters:[], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "hindi", name: "Hindi", chapters: [], completionCount: 0, lectures: [], lectureSchedule:[], savedLectures:[] },
+            { id: "static-gk", name: "Static GK", chapters: [], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "संविधान-articles", name: "Constitution (Articles)", chapters:[], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] },
+            { id: "maths-formulas", name: "Maths Formulas & Tables", chapters: [], completionCount: 0, lectures: [], lectureSchedule:[], savedLectures:[] },
+            { id: "fill-form", name: "Form Filling / Misc", chapters: [], completionCount: 0, lectures: [], lectureSchedule: [], savedLectures:[] }
         ],
         settings: {
             theme: 'system', // Default is now System
@@ -2725,17 +2864,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // This block converts old "Book/Notes" structure to new "Unified Chapters" structure
     if (data.subjects) {
         data.subjects.forEach(subject => {
-            // Check if chapters is an object (Old format: { notes: [], book: [] })
+            // Check if chapters is an object (Old format: { notes:[], book:[] })
             if (subject.chapters && !Array.isArray(subject.chapters)) {
                 const notesChapters = subject.chapters.notes || [];
-                const bookChapters = subject.chapters.book || [];
+                const bookChapters = subject.chapters.book ||[];
                 // Merge them into a single array
                 subject.chapters = [...notesChapters, ...bookChapters];
             }
             // Ensure it is initialized as array if undefined
             if (!subject.chapters) {
-                subject.chapters = [];
+                subject.chapters =[];
             }
+            // Ensure Lectures arrays exist to prevent crashes (Migration)
+            if (!subject.lectures) subject.lectures =[];
+            if (!subject.lectureSchedule) subject.lectureSchedule = [];
+            if (!subject.savedLectures) subject.savedLectures =[];
         });
     }
 
@@ -3337,32 +3480,43 @@ let allCharts = {};
         const todayStr = getLocalDateString();
         const searchFilter = (document.getElementById('future-task-search-tab')?.value || '').toLowerCase();
         
-        // STRICT FIX: Remove Completed, Deleted, and Exam Forms completely from Queue
+        // STRICT FILTER: Remove EVERYTHING except active pending or future tasks
         const tasks = (data.otherTasks ||[]).filter(t => {
             if (t.isExamForm) return false; 
+            
+            // If already done or deleted, NEVER show in queue
             if (t.status === 'Completed' || t.status === 'Deleted') return false;
-            if (t.deletedInstances && t.deletedInstances.includes(todayStr)) return false;
-            return t.date > todayStr || t.status === 'Pending';
-        }).filter(t => t.description.toLowerCase().includes(searchFilter))
+            
+            // Check for future or today's pending
+            const isActive = t.status === 'Pending';
+            const isFuture = t.date > todayStr;
+            
+            return isActive || isFuture;
+        })
+        .filter(t => t.description.toLowerCase().includes(searchFilter))
         .sort((a,b) => new Date(a.date) - new Date(b.date));
 
         let html = `<div class="flex flex-col gap-4 mb-4">
             <h2 class="text-2xl font-bold flex items-center gap-2 text-purple-600 dark:text-purple-400"><i data-lucide="calendar-clock"></i> Future Task Queue</h2>
-            <input id="future-task-search-tab" type="text" placeholder="Search tasks..." class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none" value="${searchFilter}">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input id="future-task-search-tab" type="text" placeholder="Search active tasks..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all" value="${searchFilter}">
+            </div>
         </div>`;
 
         if (tasks.length === 0) {
-            html += `<div class="text-center py-10 text-gray-400"><p>No pending tasks in queue.</p></div>`;
+            html += `<div class="flex flex-col items-center justify-center py-20 text-gray-400 opacity-40"><i data-lucide="list-checks" class="w-16 h-16 mb-4"></i><p class="font-bold">Queue is Clean!</p></div>`;
         } else {
-            html += `<div class="space-y-3">` + tasks.map(t => {
-                return renderTaskItemHTML({ ...t, type: 'other' }); 
-            }).join('') + `</div>`;
+            html += `<div class="space-y-3">` + tasks.map(t => renderTaskItemHTML({ ...t, type: 'other' })).join('') + `</div>`;
         }
         container.innerHTML = html;
         
         setTimeout(() => {
-            document.getElementById('future-task-search-tab')?.addEventListener('input', () => renderNoticesPage());
+            const input = document.getElementById('future-task-search-tab');
+            input?.focus();
+            input?.addEventListener('input', () => renderNoticesPage());
         }, 0);
+        lucide.createIcons();
     };
 
     const renderHistoryTab = (container) => {
@@ -4045,6 +4199,14 @@ let allCharts = {};
             try { renderAIInsights(); } catch (e) { console.error("AI Insights Error:", e); }
             try { renderTodaysPlan(); } catch (e) { console.error("Todays Plan Error:", e); }
             try { renderTodaysDpt(); } catch (e) { console.error("Todays DPT Error:", e); }
+            
+            // --- NEW DASHBOARD TABS RENDER CALLS ---
+            try { renderFillFormTab(); } catch(e) { console.error("Fill Form Error:", e); }
+            try { renderDashboardLecturesTab(); } catch(e) { console.error("Lectures Tab Error:", e); }
+            try { renderOtherTasksTab(); } catch(e) { console.error("Other Tasks Tab Error:", e); }
+            try { setupDashboardTabs(); } catch(e) { console.error("Tabs Setup Error:", e); }
+            // ---------------------------------------
+
             try { renderTomorrowsPlan(); } catch (e) { console.error("Tomorrows Plan Error:", e); }
             try { renderYesterdaysActivity(); } catch (e) { console.error("Yesterdays Activity Error:", e); }
             try { renderMissedChapters(); } catch (e) { console.error("Missed Chapters Error:", e); }
@@ -4856,6 +5018,229 @@ let allCharts = {};
         return html;
     };
 
+    // --- DASHBOARD TABS SETUP & RENDER FUNCTIONS ---
+    const setupDashboardTabs = () => {
+        const tabs =['todays-task', 'fill-form', 'lectures', 'other-tasks'];
+        
+        const updateTabUI = () => {
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`tab-${tab}`);
+                const content = document.getElementById(`tab-content-${tab}`);
+                if (!btn || !content) return;
+
+                if (tab === currentDashboardTab) {
+                    btn.classList.add('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-primary');
+                    btn.classList.remove('text-gray-500');
+                    content.classList.remove('hidden');
+                    content.classList.add('block', 'animate-fadeIn');
+                } else {
+                    btn.classList.remove('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-primary');
+                    btn.classList.add('text-gray-500');
+                    content.classList.add('hidden');
+                    content.classList.remove('block', 'animate-fadeIn');
+                }
+            });
+        };
+
+        updateTabUI(); // Run once to set default
+
+        tabs.forEach(tab => {
+            const btn = document.getElementById(`tab-${tab}`);
+            if (btn) {
+                // Remove old listeners to prevent memory leaks (Performance Boost)
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', () => {
+                    currentDashboardTab = tab;
+                    updateTabUI();
+                });
+            }
+        });
+    };
+
+    const renderFillFormTab = () => {
+        const container = document.getElementById('fill-form-container');
+        if(!container) return;
+        const todayStr = getLocalDateString();
+
+        const examForms = (data.otherTasks ||[]).filter(task => {
+            if (!task.isExamForm) return false;
+            if (task.status === 'Completed' || task.status === 'Deleted') return false;
+            if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
+            return true;
+        });
+
+        if(examForms.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-rose-400/70"><i data-lucide="file-x" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p class="font-bold">No Upcoming Forms.</p></div>`;
+        } else {
+            container.innerHTML = `<div class="space-y-3">${examForms.map(t => generateExamFormCardHTML(t)).join('')}</div>`;
+        }
+    };
+
+    const renderOtherTasksTab = () => {
+        const container = document.getElementById('dashboard-other-tasks-container');
+        if(!container) return;
+        const todayStr = getLocalDateString();
+        
+        const otherTasks = (data.otherTasks ||[]).filter(task => {
+            // Don't show Exam Forms here
+            if (task.isExamForm) return false;
+            
+            // STRICT FILTER: Remove Completed or Deleted tasks
+            if (task.status === 'Completed' || task.status === 'Deleted') return false;
+            
+            // Remove if deleted for today specifically
+            if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
+
+            // Only show tasks for Today, Repeating tasks, or Future tasks (Active ones)
+            const isTodayOrFuture = task.date >= todayStr;
+            const isActiveRepeating = task.isRepeating && task.lastCompletedDate !== todayStr;
+
+            return isTodayOrFuture || isActiveRepeating;
+        });
+
+        if(otherTasks.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400"><i data-lucide="check-square" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="font-bold">No Active Tasks.</p></div>`;
+        } else {
+            container.innerHTML = `<ul class="space-y-3">${otherTasks.map(t => renderTaskItemHTML({...t, type: 'other'})).join('')}</ul>`;
+        }
+        lucide.createIcons();
+    };
+
+    const renderDashboardLecturesTab = () => {
+        const container = document.getElementById('dashboard-lectures-container');
+        if(!container) return;
+        
+        const todayStr = getLocalDateString();
+        const todayDayIndex = new Date().getDay(); 
+        let activeLecturesHtml = '';
+        let lecturesFound = 0;
+
+        (data.subjects ||[]).forEach(subject => {
+            // Check Schedule
+            if (subject.lectureSchedule && subject.lectureSchedule.includes(todayDayIndex)) {
+                
+                // CRITICAL FIX: Check if ANY lecture for this subject was already saved today
+                const alreadyDoneToday = (subject.savedLectures || []).some(sl => 
+                    sl.completedAt && sl.completedAt.startsWith(todayStr)
+                );
+
+                // If not done today, and pending lectures exist, show exactly one
+                if (!alreadyDoneToday && subject.lectures && subject.lectures.length > 0) {
+                    const nextLecture = subject.lectures[0]; 
+                    lecturesFound++;
+                    
+                    activeLecturesHtml += `
+                    <div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 mb-3 animate-list-item transform transition-all group hover:border-purple-400">
+                        <input type="checkbox" class="round-checkbox lecture-completion-cb" data-subject-id="${subject.id}" data-lecture-id="${nextLecture.id}">
+                        <div class="flex-grow pl-1">
+                            <p class="font-bold text-gray-800 dark:text-gray-100 text-sm flex items-center gap-2">
+                                ${nextLecture.name} 
+                                <span class="text-[9px] px-2 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 rounded-full uppercase tracking-wider shadow-sm">${_(subject.id)}</span>
+                            </p>
+                            ${nextLecture.notes ? `<p class="text-xs text-gray-500 mt-0.5"><i data-lucide="info" class="w-3 h-3 inline text-purple-400"></i> ${nextLecture.notes}</p>` : ''}
+                        </div>
+                        <i data-lucide="play-circle" class="w-5 h-5 text-gray-300 group-hover:text-purple-500 transition-colors"></i>
+                    </div>`;
+                }
+            }
+        });
+
+        if(lecturesFound === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-indigo-400/70 dark:text-indigo-500/50"><i data-lucide="video-off" class="w-12 h-12 mx-auto mb-3 opacity-40"></i><p class="font-bold">No More Lectures for Today!</p><p class="text-xs mt-1 text-gray-500">Next scheduled lectures will appear automatically.</p></div>`;
+        } else {
+            container.innerHTML = activeLecturesHtml;
+        }
+        lucide.createIcons();
+        
+        document.querySelectorAll('.lecture-completion-cb').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                if(e.target.checked) {
+                    e.target.checked = false;
+                    const subId = e.target.dataset.subjectId;
+                    const lecId = e.target.dataset.lectureId;
+                    document.getElementById('complete-lecture-subject-id').value = subId;
+                    document.getElementById('complete-lecture-id').value = lecId;
+                    document.getElementById('complete-lecture-form').reset();
+                    showModal('complete-lecture-modal');
+                    setTimeout(() => document.getElementById('complete-lecture-chapter-name').focus(), 100);
+                }
+            });
+        });
+    };
+
+    // --- LECTURE FORMS SUBMIT LOGIC ---
+    const handleAddLectureSubmit = (e) => {
+        e.preventDefault();
+        const subjectId = document.getElementById('lecture-subject-id').value;
+        const startNum = parseInt(document.getElementById('lecture-start-num').value);
+        const quantity = parseInt(document.getElementById('lecture-quantity').value);
+        const notes = document.getElementById('lecture-notes').value.trim();
+        const typeStr = document.getElementById('lecture-type').value;
+
+        if (!subjectId || isNaN(startNum) || isNaN(quantity) || quantity < 1) return;
+
+        const subject = getSubjectById(subjectId);
+        if (!subject) return;
+        if (!subject.lectures) subject.lectures =[];
+
+        // Fast Bulk Generation
+        for (let i = 0; i < quantity; i++) {
+            const num = startNum + i;
+            subject.lectures.push({
+                id: `lec-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 5)}`,
+                name: `${typeStr} ${num}`,
+                notes: notes,
+                addedAt: new Date().toISOString()
+            });
+        }
+
+        logActivity('video', `Added ${quantity} Lectures to ${_(subject.id)}`);
+        saveData();
+        hideModal('add-lecture-modal');
+        
+        if (activeLectureSubjectId === subjectId && subjectPageViewMode === 'lectures') {
+            renderSubjectsPage(); 
+        }
+    };
+
+    const handleCompleteLectureSubmit = (e) => {
+        e.preventDefault();
+        const subjectId = document.getElementById('complete-lecture-subject-id').value;
+        const lectureId = document.getElementById('complete-lecture-id').value;
+        const chapterName = document.getElementById('complete-lecture-chapter-name').value.trim();
+
+        if (!chapterName) return;
+
+        const subject = getSubjectById(subjectId);
+        if (!subject) return;
+
+        const lectureIndex = subject.lectures.findIndex(l => l.id === lectureId);
+        if (lectureIndex !== -1) {
+            // Remove from pending and move to Saved
+            const completedLecture = subject.lectures.splice(lectureIndex, 1)[0]; 
+            if (!subject.savedLectures) subject.savedLectures =[];
+            
+            subject.savedLectures.push({
+                id: completedLecture.id,
+                name: completedLecture.name,
+                chapterName: chapterName,
+                completedAt: new Date().toISOString()
+            });
+
+            logActivity('check-circle', `Completed ${completedLecture.name}: ${chapterName}`);
+            saveData();
+            hideModal('complete-lecture-modal');
+            
+            // Ultra-fast UI refresh (No buffering)
+            renderDashboardLecturesTab();
+            if (subjectPageViewMode === 'lectures' && document.getElementById('page-subjects').classList.contains('active')) {
+                renderSubjectsPage();
+            }
+        }
+    };
+    // -----------------------------------------------
+
     const renderTomorrowsPlan = () => {
         const container = document.getElementById('tomorrows-plan-container');
         const tomorrowDate = new Date();
@@ -5161,81 +5546,215 @@ let allCharts = {};
         container.innerHTML = progressHtml + `<div class="grid grid-cols-4 gap-2 mt-2">${allBadgesHtml}</div>`;
         lucide.createIcons();
     };
-const renderSubjectsPage = () => {
+// --- LECTURES SPECIFIC SUBJECT VIEW RENDERER ---
+    const renderSpecificSubjectLectures = (container, filter) => {
+        const subject = getSubjectById(activeLectureSubjectId);
+        if(!subject) return;
+
+        if(!subject.lectures) subject.lectures =[];
+        if(!subject.lectureSchedule) subject.lectureSchedule =[];
+        if(!subject.savedLectures) subject.savedLectures = [];
+
+        const days =['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const scheduleHtml = days.map((day, index) => {
+            const isActive = subject.lectureSchedule.includes(index);
+            const activeClass = isActive 
+                ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md transform scale-110' 
+                : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 hover:border-purple-300';
+            
+            return `
+                <button type="button" 
+                    class="lecture-day-toggle-btn w-10 h-10 md:w-12 md:h-12 rounded-xl border-2 text-[10px] md:text-xs font-black transition-all flex flex-col items-center justify-center gap-0.5 ${activeClass}" 
+                    data-day="${index}">
+                    <span>${day}</span>
+                    <div class="w-1 h-1 rounded-full ${isActive ? 'bg-white' : 'bg-transparent'}"></div>
+                </button>`;
+        }).join('');
+
+        const pendingLectures = subject.lectures.filter(l => l.name.toLowerCase().includes(filter));
+        const savedLectures = subject.savedLectures.filter(l => l.chapterName.toLowerCase().includes(filter) || l.name.toLowerCase().includes(filter)).sort((a,b) => new Date(b.completedAt) - new Date(a.completedAt));
+
+        let pendingHtml = pendingLectures.length === 0 ? '<p class="text-sm text-gray-400 text-center py-4">No pending lectures.</p>' : 
+            pendingLectures.map(l => `
+                <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm mb-2 hover:border-purple-300 transition-colors group">
+                    <div>
+                        <p class="font-bold text-gray-800 dark:text-gray-200 text-sm">${l.name}</p>
+                        ${l.notes ? `<p class="text-[10px] text-gray-500 font-bold uppercase mt-0.5 tracking-wider">${l.notes}</p>` : ''}
+                    </div>
+                    <button class="delete-lecture-btn p-1.5 text-red-500 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-md transition-all transform hover:scale-105" data-lecture-id="${l.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>
+            `).join('');
+
+        let savedHtml = savedLectures.length === 0 ? '<p class="text-sm text-gray-400 text-center py-4">No saved chapters yet.</p>' :
+            savedLectures.map(l => {
+                const dateStr = new Date(l.completedAt).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                return `
+                <div class="flex flex-col p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800/30 mb-2 relative overflow-hidden group hover:shadow-md transition-all">
+                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-green-400"></div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                        <p class="font-bold text-green-800 dark:text-green-300 text-sm">${l.chapterName}</p>
+                    </div>
+                    <div class="flex justify-between items-center pl-6">
+                        <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">${l.name}</p>
+                        <p class="text-[9px] text-gray-500 font-bold bg-white dark:bg-black/20 px-1.5 py-0.5 rounded shadow-sm">${dateStr}</p>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+        container.innerHTML = `
+            <div class="mb-5 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl border border-purple-100 dark:border-purple-800/50 shadow-sm relative overflow-hidden">
+                <i data-lucide="video" class="absolute -right-4 -top-4 w-24 h-24 text-purple-500/10 pointer-events-none"></i>
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4 relative z-10">
+                    <div>
+                        <h2 class="text-xl font-black text-purple-700 dark:text-purple-300">${_(subject.id)} Lectures</h2>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mt-0.5">Manage & Schedule</p>
+                    </div>
+                    <button id="add-new-lectures-btn" class="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-bold rounded-lg shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all active:scale-95 flex items-center justify-center gap-2 w-full md:w-auto">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Add New Lectures
+                    </button>
+                </div>
+                <div class="pt-3 border-t border-purple-200/50 dark:border-purple-800/50 relative z-10">
+                    <div class="flex justify-between items-center bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-3 rounded-lg border border-purple-100/50 dark:border-purple-800/30">
+                        ${scheduleHtml}
+                    </div>
+                    <button id="save-lecture-schedule-btn" class="w-full mt-3 px-4 py-2.5 bg-gray-800 dark:bg-gray-700 text-white text-xs font-bold rounded-lg hover:bg-gray-900 dark:hover:bg-gray-600 transition-all shadow-sm flex items-center justify-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i> Save Schedule
+                    </button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-gray-50 dark:bg-gray-800/20 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                    <h3 class="font-black text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider border-b border-gray-200 dark:border-gray-700 pb-2"><i data-lucide="list-video" class="w-4 h-4 text-blue-500"></i> Pending Lectures</h3>
+                    <div class="space-y-1 h-[400px] overflow-y-auto pr-2 custom-scrollbar">${pendingHtml}</div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800/20 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                    <h3 class="font-black text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider border-b border-gray-200 dark:border-gray-700 pb-2"><i data-lucide="save" class="w-4 h-4 text-green-500"></i> Saved Chapters</h3>
+                    <div class="space-y-1 h-[400px] overflow-y-auto pr-2 custom-scrollbar">${savedHtml}</div>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
+
+        document.getElementById('add-new-lectures-btn').addEventListener('click', () => {
+            document.getElementById('lecture-subject-id').value = subject.id;
+            document.getElementById('add-lecture-form').reset();
+            document.getElementById('lecture-type').value = 'Lecture';
+            document.getElementById('lecture-start-num').value = '1';
+            document.getElementById('lecture-quantity').value = '1';
+            showModal('add-lecture-modal');
+        });
+
+        // Handle Day Toggles
+        container.querySelectorAll('.lecture-day-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const day = parseInt(this.dataset.day);
+                if (subject.lectureSchedule.includes(day)) {
+                    subject.lectureSchedule = subject.lectureSchedule.filter(d => d !== day);
+                } else {
+                    subject.lectureSchedule.push(day);
+                }
+                renderSpecificSubjectLectures(container, filter); // Instant Visual Update
+            });
+        });
+
+        document.getElementById('save-lecture-schedule-btn').addEventListener('click', () => {
+            saveData(); 
+            renderHomePage(); 
+            showUndoToast('✅ Lecture Schedule Updated!', () => {});
+        });
+
+        document.querySelectorAll('.delete-lecture-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.lectureId;
+                showConfirmationModal('Delete Lecture?', 'Are you sure?', () => {
+                    subject.lectures = subject.lectures.filter(l => l.id !== id);
+                    saveData(); renderSpecificSubjectLectures(container, filter);
+                });
+            });
+        });
+    };
+
+    const renderSubjectsPage = () => {
         const container = document.getElementById('subjects-list-container');
         const filter = document.getElementById('search-input').value.toLowerCase();
         
+        // 1. POPULATE LECTURES SUBMENU
+        const lecturesSubmenu = document.getElementById('lectures-submenu');
+        if (lecturesSubmenu) {
+            lecturesSubmenu.innerHTML = (data.subjects || []).map(s => 
+                `<button class="lecture-subject-btn w-full text-left px-3 py-2 text-[11px] font-bold rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors ${activeLectureSubjectId === s.id && subjectPageViewMode === 'lectures' ? 'text-purple-700 bg-purple-100 dark:bg-purple-900/60 dark:text-purple-300' : 'text-gray-600 dark:text-gray-400'}" data-subject-id="${s.id}">
+                    ${_(s.id)}
+                </button>`
+            ).join('');
+        }
+
+        // 2. UPDATE SIDEBAR ACTIVE STATE
         document.querySelectorAll('.filter-btn-sidebar').forEach(btn => btn.classList.toggle('active', btn.dataset.view === subjectPageViewMode));
         
-        container.innerHTML = (data.subjects ||[]).map(subject => {
-             let chapters = subject.chapters ||[];
-             
-             // STRICT FILTERING LOGIC
-             if (subjectPageViewMode === 'completed') {
-                 chapters = chapters.filter(c => c.status === 'Completed');
-             } else if (subjectPageViewMode === 'postponed') {
-                 // Check both internal status AND global postponed list
-                 const globalPostponedIds = (data.postponedChapters || []).filter(p => p.subjectId === subject.id).map(p => p.chapterId);
-                 chapters = chapters.filter(c => {
-                     return (c.status === 'Postpone') || globalPostponedIds.includes(c.id);
-                 });
-             }
+        // 3. IF LECTURES VIEW IS SELECTED, SHOW LECTURE PAGE
+        if (subjectPageViewMode === 'lectures' && activeLectureSubjectId) {
+            renderSpecificSubjectLectures(container, filter);
+            return;
+        }
 
-             const filteredChapters = chapters.filter(c => c.name.toLowerCase().includes(filter));
-             
-             // If searching and no matches in this subject, skip subject (unless subject name matches)
-             if (filter && filteredChapters.length === 0 && !_(subject.id).toLowerCase().includes(filter)) return '';
-             
-             // If not searching and no chapters for this mode, hide subject block (Cleaner UI)
-             if (!filter && filteredChapters.length === 0) return '';
+        // 4. NORMAL CHAPTERS VIEW RENDER
+        container.innerHTML = (data.subjects || []).map(subject => {
+            let chapters = subject.chapters || [];
+            
+            // Apply Sidebar Filters
+            if (subjectPageViewMode === 'completed') {
+                chapters = chapters.filter(c => c.status === 'Completed');
+            } else if (subjectPageViewMode === 'postponed') {
+                const globalPostponedIds = (data.postponedChapters || []).filter(p => p.subjectId === subject.id).map(p => p.chapterId);
+                chapters = chapters.filter(c => (c.status === 'Postpone' || globalPostponedIds.includes(c.id)));
+            }
 
-             const totalChaptersInView = chapters.length;
-             // Calculate totals based on ALL chapters for progress bar, not just filtered view
-             const allSubjectChapters = subject.chapters || [];
-             const totalAll = allSubjectChapters.length;
-             const completedAll = allSubjectChapters.filter(c => c.status === 'Completed').length;
-             const percentage = totalAll > 0 ? Math.round((completedAll / totalAll) * 100) : 0;
-             
-             const renderChapterList = (chaptersToRender) => {
-                 if (chaptersToRender.length === 0) {
-                     return `<p class="text-center text-sm py-2 text-gray-400">No chapters found in this category.</p>`;
-                 }
-                 return `<ul class="space-y-2 mt-4 mb-3">${chaptersToRender.map(c => `<li data-subject-id="${subject.id}" data-chapter-id="${c.id}" class="chapter-item flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md"><span class="font-medium">${c.name}</span><div class="flex items-center gap-2"><span class="text-xs px-2 py-1 rounded-full ${getStatusClass(c.status)}">${_(c.status.toLowerCase().replace(' ','_'))}</span></div></li>`).join('')}</ul>`;
-             };
-             
-             const restudyButton = (percentage === 100) ? `<button class="restudy-subject-btn p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-800/50" data-subject-id="${subject.id}" title="${_('restudy_subject')}"><i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i></button>` : '';
-             const completionCycle = subject.completionCount > 0 ? `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">${_('completion_cycle', {count: subject.completionCount})}</span>` : '';
+            // Apply Search Filter
+            const filteredChapters = chapters.filter(c => c.name.toLowerCase().includes(filter));
+            if (filter && filteredChapters.length === 0 && !_(subject.id).toLowerCase().includes(filter)) return '';
+            if (!filter && filteredChapters.length === 0) return '';
 
-             // Default Collapsed (Removed 'open' attribute)
-             return `<details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden">
-                <summary class="flex items-center justify-between p-4 cursor-pointer">
-                    <div>
+            const totalAll = subject.chapters.length;
+            const completedAll = subject.chapters.filter(c => c.status === 'Completed').length;
+            const percentage = totalAll > 0 ? Math.round((completedAll / totalAll) * 100) : 0;
+            
+            const renderChapterList = (chaptersToRender) => {
+                if (chaptersToRender.length === 0) return `<p class="text-center text-xs py-2 text-gray-400">No chapters found.</p>`;
+                return `<ul class="space-y-2 mt-4 mb-3">${chaptersToRender.map(c => `
+                    <li data-subject-id="${subject.id}" data-chapter-id="${c.id}" class="chapter-item flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                        <span class="font-medium text-sm">${c.name}</span>
+                        <span class="text-[10px] px-2 py-1 rounded-full ${getStatusClass(c.status)}">${_(c.status.toLowerCase().replace(' ','_'))}</span>
+                    </li>`).join('')}</ul>`;
+            };
+
+            const completionCycle = subject.completionCount > 0 ? `<span class="text-[10px] font-bold px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">Cycle ${subject.completionCount}</span>` : '';
+
+            return `
+            <details class="group bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden mb-3 border border-gray-100 dark:border-gray-800">
+                <summary class="flex items-center justify-between p-4 cursor-pointer list-none">
+                    <div class="min-w-0 pr-4">
                         <div class="flex items-center gap-2">
-                           <h3 class="font-bold text-lg">${_(subject.id)}</h3>
+                           <h3 class="font-bold text-sm md:text-base truncate">${_(subject.id)}</h3>
                            ${completionCycle}
                         </div>
-                        <p class="text-sm text-text-muted-light">${_('chapters_done_of', {completed: completedAll, total: totalAll})}</p>
+                        <p class="text-[11px] text-gray-500">${completedAll} / ${totalAll} chapters done</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="h-2.5 rounded-full animated-progress-bar bg-green-500" style="width: ${percentage}%"></div>
+                    <div class="flex items-center gap-3 flex-shrink-0">
+                        <div class="w-16 md:w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="h-2 rounded-full bg-green-500" style="width: ${percentage}%"></div>
                         </div>
-                        ${restudyButton}
-                        <button class="delete-subject-btn p-1.5 rounded-full hover:bg-red-100 dark:hover:bg-red-800/50" data-subject-id="${subject.id}" title="${_('delete_subject')}"><i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i></button>
-                        <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-open:rotate-90"></i>
+                        <i data-lucide="chevron-right" class="w-4 h-4 transition-transform group-open:rotate-90 text-gray-400"></i>
                     </div>
                 </summary>
-                <div class="p-4 border-t">
-                    <div>${renderChapterList(filteredChapters)}
-                    ${subjectPageViewMode === 'all' ? `<div class="mt-2"><button class="add-chapter-btn w-full flex items-center justify-center p-2 text-sm font-semibold text-primary bg-sky-100 dark:bg-sky-900/50 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-900" data-subject-id="${subject.id}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_chapter')}</button></div>` : ''}
-                    </div>
+                <div class="p-4 border-t border-gray-50 dark:border-gray-800 bg-white/50 dark:bg-black/20">
+                    ${renderChapterList(filteredChapters)}
+                    ${subjectPageViewMode === 'all' ? `<button class="add-chapter-btn w-full flex items-center justify-center p-2.5 text-xs font-bold text-primary bg-sky-50 dark:bg-sky-900/30 rounded-lg hover:bg-sky-100 transition-colors" data-subject-id="${subject.id}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>${_('add_chapter')}</button>` : ''}
                 </div>
-             </details>`;
+            </details>`;
         }).join('');
         
-        if (!container.innerHTML.trim()) {
-            container.innerHTML = `<div class="text-center py-10 opacity-60"><p>No subjects found for "${subjectPageViewMode}" view.</p></div>`;
-        }
         lucide.createIcons();
     };
 
@@ -7560,6 +8079,10 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             handleForm('add-subject-form', createSubject);
             handleForm('postpone-chapter-form', savePostponement);
             handleForm('add-exam-form', saveExam);
+
+            // NEW LECTURE FORMS
+            handleForm('add-lecture-form', handleAddLectureSubmit);
+            handleForm('complete-lecture-form', handleCompleteLectureSubmit);
             handleForm('dpt-details-form', submitDptDetails);
             handleForm('add-chapter-dpt-form', handleAddDptToChapter);
             handleForm('add-all-chapters-dpt-form', handleAddDptToAllChapters);
@@ -7603,18 +8126,41 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 showAddExamModal();
             });
 
-            // Subjects Sidebar Menu Filter Logic
-            document.getElementById('subject-view-filter-sidebar')?.addEventListener('click', (e) => { 
-                const btn = e.target.closest('.filter-btn-sidebar'); 
-                if (btn) { 
-                    subjectPageViewMode = btn.dataset.view; 
-                    renderSubjectsPage(); 
-                    // Close sidebar after selection on mobile/PC
-                    const sidebar = document.getElementById('subjects-sidebar');
-                    const overlay = document.getElementById('subjects-sidebar-overlay');
-                    if(sidebar) sidebar.classList.add('-translate-x-full');
-                    if(overlay) overlay.classList.add('hidden');
-                } 
+            // --- NEW REFINED SIDEBAR LOGIC (LECTURES & FILTERS) ---
+            document.getElementById('subject-view-filter-sidebar')?.addEventListener('click', (e) => {
+                const filterBtn = e.target.closest('.filter-btn-sidebar');
+                const lectureToggle = e.target.closest('#lectures-menu-toggle');
+                const lectureSubjectBtn = e.target.closest('.lecture-subject-btn');
+
+                // 1. If All/Completed/Postponed clicked
+                if (filterBtn) {
+                    subjectPageViewMode = filterBtn.dataset.view;
+                    activeLectureSubjectId = null; // Reset lectures
+                    renderSubjectsPage();
+                    // Auto-close sidebar
+                    document.getElementById('subjects-sidebar').classList.add('-translate-x-full');
+                    document.getElementById('subjects-sidebar-overlay').classList.add('hidden');
+                }
+
+                // 2. If "Lectures" main menu clicked (Toggle Submenu)
+                if (lectureToggle) {
+                    const submenu = document.getElementById('lectures-submenu');
+                    const icon = document.getElementById('lectures-menu-icon');
+                    submenu.classList.toggle('hidden');
+                    submenu.classList.toggle('flex');
+                    icon.classList.toggle('rotate-180');
+                    return;
+                }
+
+                // 3. If a specific subject under Lectures clicked
+                if (lectureSubjectBtn) {
+                    subjectPageViewMode = 'lectures';
+                    activeLectureSubjectId = lectureSubjectBtn.dataset.subjectId;
+                    renderSubjectsPage();
+                    // Auto-close sidebar
+                    document.getElementById('subjects-sidebar').classList.add('-translate-x-full');
+                    document.getElementById('subjects-sidebar-overlay').classList.add('hidden');
+                }
             });
 
             // Subjects Sidebar Toggle Actions
