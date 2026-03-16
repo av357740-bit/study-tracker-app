@@ -1949,20 +1949,43 @@
 </div>
 
 <div id="date-completion-modal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop hidden">
-    <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
-        <button id="close-date-completion-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark"><i data-lucide="x"></i></button>
-        <h2 id="date-completion-modal-title" class="text-xl font-bold mb-4">Mark Chapter as Completed</h2>
+    <div class="bg-card-light dark:bg-card-dark w-full max-w-lg rounded-2xl shadow-xl p-6 relative border border-primary/20">
+        <button id="close-date-completion-modal" class="absolute top-4 right-4 text-text-muted-light dark:text-text-muted-dark hover:text-red-500 transition-colors"><i data-lucide="x"></i></button>
+        
+        <h2 id="date-completion-modal-title" class="text-xl font-black mb-4 text-primary">Mark Completion</h2>
+        
+        <!-- NEW: Mode Selector (Chapters vs Lectures) -->
+        <div class="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl mb-5 shadow-inner">
+            <button id="date-mode-chapter-btn" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white dark:bg-gray-700 shadow-sm text-primary" onclick="window.switchDateCompletionMode('chapter')">
+                <i data-lucide="book-open" class="w-3.5 h-3.5 inline mr-1"></i> Chapters
+            </button>
+            <button id="date-mode-lecture-btn" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700" onclick="window.switchDateCompletionMode('lecture')">
+                <i data-lucide="video" class="w-3.5 h-3.5 inline mr-1"></i> Lectures
+            </button>
+        </div>
+
         <div class="space-y-4">
             <div>
-                <label for="date-completion-subject-select" class="block text-sm font-medium mb-1">Select Subject</label>
-                <select id="date-completion-subject-select" class="w-full p-2 bg-gray-100 dark:bg-gray-800 border rounded-lg">
+                <label for="date-completion-subject-select" class="block text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1 ml-1">Select Subject</label>
+                <select id="date-completion-subject-select" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all font-semibold">
                     <option value="">-- Choose a Subject --</option>
                 </select>
             </div>
-            <div id="date-completion-chapter-list" class="max-h-60 overflow-y-auto space-y-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <p class="text-center text-sm text-text-muted-light dark:text-text-muted-dark">Please select a subject first.</p>
+
+            <!-- List Area -->
+            <div id="date-completion-list-container" class="max-h-56 overflow-y-auto space-y-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700 custom-scrollbar">
+                <p class="text-center text-sm text-gray-400 py-6">Please select a subject first.</p>
             </div>
-             <button id="save-date-completion-btn" class="w-full p-3 font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover">Mark as Completed</button>
+
+            <!-- Optional Field for Lecture Completion -->
+            <div id="date-lecture-chapter-name-container" class="hidden animate-fadeIn">
+                <label for="date-lecture-chapter-name" class="block text-[10px] uppercase font-black text-purple-400 tracking-widest mb-1 ml-1">Chapter Studied in Lecture</label>
+                <input type="text" id="date-lecture-chapter-name" placeholder="What did you study in this lecture?" class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-purple-200 dark:border-purple-900 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all">
+            </div>
+
+            <button id="save-date-completion-btn" class="w-full p-4 font-black rounded-xl bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg hover:shadow-primary/30 active:scale-95 transition-all text-sm uppercase tracking-wider mt-2">
+                Mark as Completed
+            </button>
         </div>
     </div>
 </div>
@@ -2382,6 +2405,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
+        "14.2": {
+            date: new Date().toISOString().split('T')[0],
+            features:[
+                { "title": "Past Lecture Entry 🗓️", "note": "अब आप कैलेंडर में जाकर पिछली किसी भी तारीख पर क्लिक करके उस दिन का लेक्चर 'Mark as Completed' कर सकते हैं।" },
+                { "title": "Dual Mode Completion ⚡", "note": "कैलेंडर पॉपअप में अब Chapters और Lectures के दो अलग विकल्प मिलते हैं, जिससे पुरानी प्रोग्रेस भरना आसान हो गया है।" },
+                { "title": "Stability & Lag Fix ❄️", "note": "कैलेंडर के रेंडरिंग इंजन को ऑप्टिमाइज़ किया गया है ताकि मोबाइल और PC पर स्क्रॉलिंग के दौरान हीटिंग न हो।" }
+            ]
+        },
         "14.1": {
             date: new Date().toISOString().split('T')[0],
             features:[
@@ -7912,24 +7943,67 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             const toggleDptBtn = document.getElementById('toggle-completed-dpt-btn');
             if(toggleDptBtn) toggleDptBtn.addEventListener('click', () => { document.getElementById('completed-dpt-list').classList.toggle('hidden'); toggleDptBtn.querySelector('i').classList.toggle('rotate-180'); });
 
-            // Date Completion
+            // Improved Date Completion Listener (Supports both Chapters & Lectures)
             document.getElementById('date-completion-subject-select').addEventListener('change', (e) => {
-                const subjectId = e.target.value; const list = document.getElementById('date-completion-chapter-list');
-                if (!subjectId) { list.innerHTML = `<p class="text-center text-sm text-text-muted-light">Please select a subject first.</p>`; return; }
-                const subject = getSubjectById(subjectId);
-                const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
-                if (availableChapters.length === 0) { list.innerHTML = `<p class="text-center text-sm text-text-muted-light">All chapters completed.</p>`; return; }
-                list.innerHTML = availableChapters.map(c => `<label class="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded cursor-pointer"><input type="checkbox" class="date-comp-chapter-checkbox form-checkbox h-4 w-4 text-primary rounded" value="${c.id}"><span>${c.name}</span></label>`).join('');
+                const subId = e.target.value;
+                const mode = document.getElementById('date-completion-modal').dataset.mode || 'chapter';
+                if (!subId) {
+                    document.getElementById('date-completion-list-container').innerHTML = `<p class="text-center text-sm text-gray-400 py-6">Please select a subject first.</p>`;
+                    return;
+                }
+                populateDateCompletionList(subId, mode);
             });
 
             document.getElementById('save-date-completion-btn').addEventListener('click', () => {
-                const modal = document.getElementById('date-completion-modal'); const completionDate = modal.dataset.date;
+                const modal = document.getElementById('date-completion-modal');
+                const completionDate = modal.dataset.date;
+                const mode = modal.dataset.mode;
                 const subjectId = document.getElementById('date-completion-subject-select').value;
-                const selectedCheckboxes = document.querySelectorAll('.date-comp-chapter-checkbox:checked');
-                if (!subjectId || selectedCheckboxes.length === 0) { alert('Select subject and at least one chapter.'); return; }
-                selectedCheckboxes.forEach(cb => { updateChapterStatus(subjectId, cb.value, 'Completed', false, completionDate); });
-                logActivity('calendar-check-2', `Manually marked ${selectedCheckboxes.length} chapters as completed on ${completionDate}`);
-                saveData(); renderCalendarPage(); hideModal('date-completion-modal');
+
+                if (!subjectId) { alert('Please select a subject.'); return; }
+
+                if (mode === 'chapter') {
+                    const selectedCheckboxes = document.querySelectorAll('.date-comp-item-checkbox:checked');
+                    if (selectedCheckboxes.length === 0) { alert('Select at least one chapter.'); return; }
+                    
+                    selectedCheckboxes.forEach(cb => {
+                        updateChapterStatus(subjectId, cb.value, 'Completed', false, completionDate);
+                    });
+                    
+                    logActivity('calendar-check-2', `Manually marked ${selectedCheckboxes.length} chapters as done on ${completionDate}`);
+                    showUndoToast(`✅ ${selectedCheckboxes.length} Chapters Saved!`, () => {});
+                } else {
+                    // Lecture Completion Logic
+                    const selectedRadio = document.querySelector('input[name="date-comp-lecture-radio"]:checked');
+                    const chapterName = document.getElementById('date-lecture-chapter-name').value.trim();
+                    
+                    if (!selectedRadio) { alert('Please select a lecture.'); return; }
+                    if (!chapterName) { alert('Please enter the chapter name you studied.'); return; }
+                    
+                    const subject = getSubjectById(subjectId);
+                    const lecId = selectedRadio.value;
+                    const lecIndex = subject.lectures.findIndex(l => l.id === lecId);
+
+                    if (lecIndex !== -1) {
+                        const completedLec = subject.lectures.splice(lecIndex, 1)[0];
+                        if (!subject.savedLectures) subject.savedLectures = [];
+                        
+                        subject.savedLectures.push({
+                            id: completedLec.id,
+                            name: completedLec.name,
+                            chapterName: chapterName,
+                            completedAt: completionDate + "T12:00:00.000Z" // Save to that specific past date
+                        });
+                        
+                        logActivity('video', `Completed ${completedLec.name} on ${completionDate}: ${chapterName}`);
+                        showUndoToast(`✅ Lecture saved for ${completionDate}`, () => {});
+                    }
+                }
+
+                saveData();
+                renderCalendarPage();
+                renderHomePage(); // Sync dashboard
+                hideModal('date-completion-modal');
             });
 
             const subjectsContainer = document.getElementById('subjects-list-container');
@@ -8341,15 +8415,82 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         function openDateCompletionModal(dateStr) {
             const modal = document.getElementById('date-completion-modal'); 
             modal.dataset.date = dateStr;
-            document.getElementById('date-completion-modal-title').textContent = `Mark Completion for ${new Date(dateStr).toLocaleDateString()}`;
+            modal.dataset.mode = 'chapter'; // Default mode
+            
+            const locale = data.settings.language === 'hi' ? 'hi-IN' : 'en-GB';
+            document.getElementById('date-completion-modal-title').textContent = `Mark Entry: ${new Date(dateStr).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`;
             
             const subjectSelect = document.getElementById('date-completion-subject-select');
-            // Reset select
             subjectSelect.value = "";
             subjectSelect.innerHTML = `<option value="">-- Choose a Subject --</option>` + (data.subjects || []).map(s => `<option value="${s.id}">${_(s.id)}</option>`).join('');
             
-            document.getElementById('date-completion-chapter-list').innerHTML = `<p class="text-center text-sm text-text-muted-light">Please select a subject first.</p>`;
+            // Reset UI to Chapter Mode
+            window.switchDateCompletionMode('chapter');
+            
             showModal('date-completion-modal');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // Global function to switch between Chapters and Lectures in the modal
+        window.switchDateCompletionMode = (mode) => {
+            const modal = document.getElementById('date-completion-modal');
+            const chBtn = document.getElementById('date-mode-chapter-btn');
+            const lecBtn = document.getElementById('date-mode-lecture-btn');
+            const lecNameContainer = document.getElementById('date-lecture-chapter-name-container');
+            const saveBtn = document.getElementById('save-date-completion-btn');
+
+            modal.dataset.mode = mode;
+
+            if (mode === 'chapter') {
+                chBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white dark:bg-gray-700 shadow-sm text-primary";
+                lecBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700";
+                lecNameContainer.classList.add('hidden');
+                saveBtn.className = "w-full p-4 font-black rounded-xl bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg transition-all text-sm uppercase tracking-wider";
+            } else {
+                lecBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white dark:bg-gray-700 shadow-sm text-purple-500";
+                chBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700";
+                lecNameContainer.classList.remove('hidden');
+                saveBtn.className = "w-full p-4 font-black rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg transition-all text-sm uppercase tracking-wider";
+            }
+            
+            // Refresh list based on new mode if subject is already selected
+            const subId = document.getElementById('date-completion-subject-select').value;
+            if (subId) populateDateCompletionList(subId, mode);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        };
+
+        function populateDateCompletionList(subjectId, mode) {
+            const list = document.getElementById('date-completion-list-container');
+            const subject = getSubjectById(subjectId);
+            if (!subject) return;
+
+            if (mode === 'chapter') {
+                const availableChapters = (subject.chapters || []).filter(c => c.status !== 'Completed');
+                if (availableChapters.length === 0) { 
+                    list.innerHTML = `<p class="text-center text-sm text-gray-400 py-6">All chapters already completed.</p>`; 
+                    return; 
+                }
+                list.innerHTML = availableChapters.map(c => `
+                    <label class="flex items-center gap-3 p-3 hover:bg-white dark:hover:bg-gray-700 rounded-xl cursor-pointer border border-transparent hover:border-primary/20 transition-all group">
+                        <input type="checkbox" class="date-comp-item-checkbox form-checkbox h-5 w-5 text-primary rounded-md" value="${c.id}">
+                        <span class="text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary">${c.name}</span>
+                    </label>`).join('');
+            } else {
+                // Lecture Mode
+                const availableLectures = subject.lectures || [];
+                if (availableLectures.length === 0) {
+                    list.innerHTML = `<p class="text-center text-sm text-gray-400 py-6">No pending lectures for this subject.</p>`;
+                    return;
+                }
+                list.innerHTML = availableLectures.map(l => `
+                    <label class="flex items-center gap-3 p-3 hover:bg-white dark:hover:bg-gray-700 rounded-xl cursor-pointer border border-transparent hover:border-purple-500/20 transition-all group">
+                        <input type="radio" name="date-comp-lecture-radio" class="date-comp-item-radio form-radio h-5 w-5 text-purple-600 rounded-full" value="${l.id}">
+                        <div class="min-w-0">
+                            <span class="text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-purple-500 block truncate">${l.name}</span>
+                            ${l.notes ? `<span class="text-[10px] text-gray-400 font-medium uppercase">${l.notes}</span>` : ''}
+                        </div>
+                    </label>`).join('');
+            }
         }
         
         function showAddSubjectModal() { document.getElementById('add-subject-form').reset(); showModal('add-subject-modal'); }
