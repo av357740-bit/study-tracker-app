@@ -1504,10 +1504,10 @@
                             <i data-lucide="bell-ring"></i> Notification Test Center
                         </label>
                         <div class="flex gap-2">
-                            <button onclick="NotificationManager.send('🔔 टेस्ट सफल!', 'आपका Study Tracker नोटिफिकेशन सिस्टम अब एक्टिव है।')" class="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
+                            <button onclick="window.NotificationManager.send('🔔 टेस्ट सफल!', 'आपका Study Tracker नोटिफिकेशन सिस्टम अब एक्टिव है।', 'test_alert')" class="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
                                 Send Test Notification
                             </button>
-                            <button onclick="window.median.onesignal.register()" class="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-700">
+                            <button onclick="if(window.median && window.median.onesignal){ window.median.onesignal.register(); alert('OneSignal को रिक्वेस्ट भेज दी गई है।'); } else { Notification.requestPermission().then(p => alert('Permission Status: ' + p)); }" class="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-700">
                                 Refresh Permission
                             </button>
                         </div>
@@ -2877,26 +2877,54 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- MEGA NOTIFICATION ENGINE (20+ FEATURES) ---
-    const NotificationManager = {
+    window.NotificationManager = {
         init: function() {
-            if (typeof window.median !== 'undefined') {
+            if (typeof window.median !== 'undefined' && window.median.onesignal) {
                 // OneSignal Registration via Median Bridge
                 window.median.onesignal.register();
                 console.log("OneSignal Engine Started.");
             }
+            
+            // Web Permission Fallback
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+            
             this.scheduleDailySmartAlerts();
         },
 
         send: function(title, message, id = "study_alert") {
-            // Priority: Median Native Notification -> Web Notification
-            if (typeof window.median !== 'undefined' && window.median.notifications) {
-                window.median.notifications.create({
-                    title: title,
-                    message: message,
-                    id: id
-                });
-            } else if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, { body: message });
+            const now = new Date().getTime();
+            
+            // Anti-Spam: Don't send same notification in same hour (except for test)
+            if (id !== "test_alert") {
+                const lastSent = localStorage.getItem('last_notif_' + id);
+                if (lastSent && (now - lastSent) < 3600000) return; 
+            }
+
+            let notificationSent = false;
+
+            // Priority 1: Web Notification API (Works in modern browsers & some WebViews)
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(title, { 
+                        body: message, 
+                        icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                        badge: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                    });
+                    notificationSent = true;
+                } catch(e) {
+                    console.log("Web Notif failed", e);
+                }
+            } 
+            
+            // Fallback for Test Button so user knows it worked
+            if (!notificationSent && id === "test_alert") {
+                alert("🔔 " + title + "\n\n" + message + "\n\n(नोट: सिस्टम नोटिफिकेशन ब्लॉक हैं, इसलिए यह पॉप-अप दिख रहा है। फोन की सेटिंग्स में ऐप नोटिफिकेशन चालू करें।)");
+            }
+
+            if (id !== "test_alert") {
+                localStorage.setItem('last_notif_' + id, now);
             }
         },
 
@@ -2907,51 +2935,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const isSunday = now.getDay() === 0;
 
             // --- 1. DAILY STUDY REMINDERS ---
-            if (hour === 8) this.send("🌅 गुड मॉर्निंग!", "नया दिन, नया लक्ष्य! अपनी पढ़ाई शुरू करने का समय हो गया है।");
-            if (hour === 14) this.send("🌓 दोपहर का चेक-अप", "आधा दिन बीत चुका है। क्या आप अपने आज के टारगेट के ट्रैक पर हैं?");
+            if (hour === 8) this.send("🌅 गुड मॉर्निंग!", "नया दिन, नया लक्ष्य! अपनी पढ़ाई शुरू करने का समय हो गया है।", "morning_8");
+            if (hour === 14) this.send("🌓 दोपहर का चेक-अप", "आधा दिन बीत चुका है। क्या आप अपने आज के टारगेट के ट्रैक पर हैं?", "afternoon_14");
             if (hour === 18) {
-                const pendingCount = (data.otherTasks || []).filter(t => t.status === 'Pending' && t.date <= todayStr).length;
-                if(pendingCount > 0) this.send("📉 पेंडिंग काम!", `शाम हो गई है और आपके ${pendingCount} टास्क अभी बाकी हैं। इन्हें आज ही खत्म करें!`);
+                const pendingCount = (data.otherTasks ||[]).filter(t => t.status === 'Pending' && t.date <= todayStr).length;
+                if(pendingCount > 0) this.send("📉 पेंडिंग काम!", `शाम हो गई है और आपके ${pendingCount} टास्क अभी बाकी हैं। इन्हें आज ही खत्म करें!`, "evening_18");
             }
-            if (hour === 21) this.send("🌛 डे-रिव्यू", "आज आपने जो भी पढ़ा, उसे एक बार मन में दोहराएं और कल की तैयारी करें।");
+            if (hour === 21) this.send("🌛 डे-रिव्यू", "आज आपने जो भी पढ़ा, उसे एक बार मन में दोहराएं और कल की तैयारी करें।", "night_21");
 
             // --- 2. SUNDAY FORM-FILLING SPECIAL (10 AM, 2 PM, 8 PM) ---
             if (isSunday && [10, 14, 20].includes(hour)) {
-                const pendingForms = (data.otherTasks || []).filter(t => t.isExamForm && t.status === 'Pending');
+                const pendingForms = (data.otherTasks ||[]).filter(t => t.isExamForm && t.status === 'Pending');
                 if (pendingForms.length > 0) {
                     const formNames = pendingForms.map(f => f.description).join(', ');
                     const times = { 10: "सुबह", 14: "दोपहर", 20: "रात" };
-                    this.send(`📝 रविवार फॉर्म अलर्ट (${times[hour]})`, `आज फॉर्म भरने का दिन है। पेंडिंग फॉर्म्स: ${formNames}`);
+                    this.send(`📝 रविवार फॉर्म अलर्ट (${times[hour]})`, `आज फॉर्म भरने का दिन है। पेंडिंग फॉर्म्स: ${formNames}`, "sunday_form_" + hour);
                 } else if (hour === 10) {
-                    this.send("✨ हैप्पी संडे!", "आज कोई पेंडिंग फॉर्म नहीं है। अपनी रिविज़न स्ट्रीक पर ध्यान दें!");
+                    this.send("✨ हैप्पी संडे!", "आज कोई पेंडिंग फॉर्म नहीं है। अपनी रिविज़न स्ट्रीक पर ध्यान दें!", "sunday_happy_10");
                 }
             }
 
             // --- 3. EXAM & DEADLINE ALERTS (Run once a day at 9 AM) ---
             if (hour === 9) {
                 // Exam Countdown
-                (data.exams || []).forEach(exam => {
+                (data.exams ||[]).forEach(exam => {
                     if (exam.examDate) {
                         const diff = Math.ceil((new Date(exam.examDate) - now) / 86400000);
                         if (diff <= 7 && diff >= 0) {
                             const msgs = { 7: "1 हफ्ता बचा है", 3: "सिर्फ 3 दिन बाकी!", 1: "कल परीक्षा है!", 0: "आज एग्जाम डे है! फोड़ दो!" };
-                            if (msgs[diff]) this.send(`🚨 ${exam.name}`, msgs[diff]);
+                            if (msgs[diff]) this.send(`🚨 ${exam.name}`, msgs[diff], "exam_alert_" + exam.id);
                         }
                     }
                 });
 
                 // Form Deadlines (Strict)
-                (data.otherTasks || []).forEach(task => {
+                (data.otherTasks ||[]).forEach(task => {
                     if (task.isExamForm && task.formEndDate && task.status !== 'Completed') {
                         const diff = Math.ceil((new Date(task.formEndDate) - now) / 86400000);
-                        if (diff <= 3 && diff > 0) this.send("⏳ फॉर्म डेडलाइन!", `${task.description} भरने के लिए सिर्फ ${diff} दिन बचे हैं!`);
+                        if (diff <= 3 && diff > 0) this.send("⏳ फॉर्म डेडलाइन!", `${task.description} भरने के लिए सिर्फ ${diff} दिन बचे हैं!`, "form_deadline_" + task.id);
                     }
                 });
                 
                 // Revision Needed
-                const revToday = (data.subjects || []).flatMap(s => s.chapters).flatMap(c => c.revisions)
+                const revToday = (data.subjects ||[]).flatMap(s => s.chapters).flatMap(c => c.revisions)
                                  .filter(r => r.status === 'Pending' && r.date === todayStr).length;
-                if (revToday > 0) this.send("🧠 रिविज़न टाइम", `आज आपके ${revToday} चैप्टर्स को रिविज़न की ज़रूरत है।`);
+                if (revToday > 0) this.send("🧠 रिविज़न टाइम", `आज आपके ${revToday} चैप्टर्स को रिविज़न की ज़रूरत है।`, "revision_alert");
             }
 
             // --- 4. SYSTEM CHECKS ---
@@ -2959,18 +2987,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const lastLog = data.activityLog[0];
             if (lastLog && hour === 11) {
                 const daysInactive = (now - new Date(lastLog.timestamp)) / 86400000;
-                if (daysInactive > 2) this.send("👋 हम आपको मिस कर रहे हैं!", "2 दिन से कोई एक्टिविटी नहीं हुई। पढ़ाई की लय न टूटने दें।");
+                if (daysInactive > 2) this.send("👋 हम आपको मिस कर रहे हैं!", "2 दिन से कोई एक्टिविटी नहीं हुई। पढ़ाई की लय न टूटने दें।", "inactivity_alert");
             }
 
             // Streak Celebration
             const streak = this.getStreak();
             if (streak > 0 && streak % 5 === 0 && hour === 19) {
-                this.send("🏆 स्ट्रीक मास्टर!", `बधाई हो! आपने लगातार ${streak} दिन पढ़ाई पूरी की है।`);
+                this.send("🏆 स्ट्रीक मास्टर!", `बधाई हो! आपने लगातार ${streak} दिन पढ़ाई पूरी की है।`, "streak_alert_" + streak);
             }
         },
 
         getStreak: function() {
-            const history = new Set(data.gamification.completedHistory || []);
+            const history = new Set(data.gamification.completedHistory ||[]);
             let streak = 0; let d = new Date();
             while (history.has(d.toISOString().split('T')[0])) { streak++; d.setDate(d.getDate() - 1); }
             return streak;
@@ -3240,7 +3268,7 @@ let allCharts = {};
 
     const init = () => {
         // Init Logic
-        NotificationManager.init(); // Start Notification Engine
+        window.NotificationManager.init(); // Start Notification Engine
         safeInitialize(data.settings, 'theme', 'system');
         safeInitialize(data.settings, 'dptDashboardActive', true);
 
@@ -3288,7 +3316,10 @@ let allCharts = {};
         if ('Notification' in window && Notification.permission !== 'denied') {
             setTimeout(() => Notification.requestPermission(), 5000); 
         }
-        setInterval(checkDateChange, 60000); 
+        setInterval(() => {
+            checkDateChange();
+            if (window.NotificationManager) window.NotificationManager.scheduleDailySmartAlerts();
+        }, 60000); // Check every 1 minute 
     };
 
     const checkDateChange = () => {
@@ -6795,7 +6826,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
                 logActivity('check-circle', `Chapter completed: "${chapter.name}"`);
                 
                 // INSTANT NOTIFICATION ON COMPLETION
-                NotificationManager.send("✅ बहुत बढ़िया!", `आपने "${chapter.name}" पूरा कर लिया है। जारी रखें!`);
+                if(window.NotificationManager) window.NotificationManager.send("✅ बहुत बढ़िया!", `आपने "${chapter.name}" पूरा कर लिया है। जारी रखें!`, "chapter_complete_" + chapterId);
                 
                 checkAllGamification();
                 
