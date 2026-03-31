@@ -29,6 +29,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+<!-- Marked.js for Markdown Parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -813,6 +816,20 @@
         }
     }
 
+    /* Chatbot Markdown Styles */
+    .markdown-body p { margin-bottom: 0.5rem; }
+    .markdown-body p:last-child { margin-bottom: 0; }
+    .markdown-body strong { font-weight: 600; color: inherit; }
+    .markdown-body em { font-style: italic; }
+    .markdown-body ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
+    .markdown-body ol { list-style-type: decimal; padding-left: 1.25rem; margin-bottom: 0.5rem; }
+    .markdown-body li { margin-bottom: 0.25rem; }
+    .markdown-body code { background-color: rgba(0,0,0,0.05); padding: 0.125rem 0.25rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.875em; }
+    .dark .markdown-body code { background-color: rgba(255,255,255,0.1); }
+    .markdown-body pre { background-color: rgba(0,0,0,0.05); padding: 0.5rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.5rem; }
+    .dark .markdown-body pre { background-color: rgba(255,255,255,0.05); }
+    .markdown-body pre code { background-color: transparent; padding: 0; }
+
     /* --- SPLASH SCREEN STYLES (INTRO) --- */
     #app-splash-screen {
         position: fixed;
@@ -1497,21 +1514,6 @@
                             <option value="en">English</option>
                             <option value="hi">हिंदी (Hindi)</option>
                         </select>
-                    </div>
-                    
-                    <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
-                        <label class="font-semibold text-indigo-500 flex items-center gap-2 mb-3">
-                            <i data-lucide="bell-ring"></i> Notification Test Center
-                        </label>
-                        <div class="flex gap-2">
-                            <button onclick="window.NotificationManager.send('🔔 टेस्ट सफल!', 'आपका Study Tracker नोटिफिकेशन सिस्टम अब एक्टिव है।', 'test_alert')" class="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
-                                Send Test Notification
-                            </button>
-                            <button onclick="if(window.median && window.median.onesignal){ window.median.onesignal.register(); alert('OneSignal को रिक्वेस्ट भेज दी गई है।'); } else { Notification.requestPermission().then(p => alert('Permission Status: ' + p)); }" class="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-700">
-                                Refresh Permission
-                            </button>
-                        </div>
-                        <p class="text-[10px] text-gray-500 mt-2">Note: अगर बटन दबाने पर कुछ नहीं होता, तो फोन की Settings में जाकर ऐप के लिए 'Notifications' Allow करें।</p>
                     </div>
                     
                     <div class="p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-sm md:col-span-2">
@@ -2430,22 +2432,14 @@ document.addEventListener('DOMContentLoaded', () => {
         "fill-form": Array.from({length: 104}, (_, i) => ({name: `कार्य ${i+1} (Task ${i+1})`}))
     };
 
-    const CURRENT_APP_VERSION = "15.0"; // Mega Notification Engine
+    const CURRENT_APP_VERSION = "14.0"; // Lectures & Tab UI Update
     const DPT_EXCLUDED_SUBJECTS =['static-gk', 'maths-formulas', 'fill-form', 'संविधान-articles'];
     const REVISION_EXCLUDED_SUBJECTS =['static-gk', 'संविधान-articles', 'maths-formulas', 'fill-form'];
     
     // Updates Logic (Auto-limits to 10 in UI)
     const updateNotes = {
-        "15.0": {
-            date: new Date().toISOString().split('T')[0],
-            features:[
-                { "title": "Mega Notification Engine 🔔", "note": "20+ नए स्मार्ट नोटिफिकेशन! अब ऐप आपको खुद याद दिलाएगा कि कब पढ़ना है, कौन सा फॉर्म भरना है और कौन सा एग्जाम आ रहा है।" },
-                { "title": "OneSignal Integration ⚡", "note": "Median.co और OneSignal के साथ पावरफुल तालमेल, जिससे ऐप बंद होने पर भी अलर्ट मिलेंगे।" },
-                { "title": "Priority Alerts 🔥", "note": "एग्जाम की आखिरी तारीख और रिविज़न मिस होने पर स्पेशल क्रिटिकल नोटिफिकेशन।" }
-            ]
-        },
         "14.6": {
-            date: "2024-03-30",
+            date: new Date().toISOString().split('T')[0],
             features:[
                 { "title": "Dashboard Customizer 🛠️", "note": "Settings में Control Panel के अंदर अब आप Lectures, Fill Form और Other Tasks टैब्स को अपनी सुविधा के अनुसार छिपा या दिखा सकते हैं।" },
                 { "title": "Cleaner Workspace 🧹", "note": "अनचाहे टैब्स को बंद करने से डैशबोर्ड और भी साफ और तेज़ महसूस होगा।" },
@@ -2876,135 +2870,6 @@ document.addEventListener('DOMContentLoaded', () => {
         otherTaskHistory: [] 
     };
 
-    // --- MEGA NOTIFICATION ENGINE (20+ FEATURES) ---
-    window.NotificationManager = {
-        init: function() {
-            if (typeof window.median !== 'undefined' && window.median.onesignal) {
-                // OneSignal Registration via Median Bridge
-                window.median.onesignal.register();
-                console.log("OneSignal Engine Started.");
-            }
-            
-            // Web Permission Fallback
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission();
-            }
-            
-            this.scheduleDailySmartAlerts();
-        },
-
-        send: function(title, message, id = "study_alert") {
-            const now = new Date().getTime();
-            
-            // Anti-Spam: Don't send same notification in same hour (except for test)
-            if (id !== "test_alert") {
-                const lastSent = localStorage.getItem('last_notif_' + id);
-                if (lastSent && (now - lastSent) < 3600000) return; 
-            }
-
-            let notificationSent = false;
-
-            // Priority 1: Web Notification API (Works in modern browsers & some WebViews)
-            if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                    new Notification(title, { 
-                        body: message, 
-                        icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                        badge: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                    });
-                    notificationSent = true;
-                } catch(e) {
-                    console.log("Web Notif failed", e);
-                }
-            } 
-            
-            // Fallback for Test Button so user knows it worked
-            if (!notificationSent && id === "test_alert") {
-                alert("🔔 " + title + "\n\n" + message + "\n\n(नोट: सिस्टम नोटिफिकेशन ब्लॉक हैं, इसलिए यह पॉप-अप दिख रहा है। फोन की सेटिंग्स में ऐप नोटिफिकेशन चालू करें।)");
-            }
-
-            if (id !== "test_alert") {
-                localStorage.setItem('last_notif_' + id, now);
-            }
-        },
-
-        scheduleDailySmartAlerts: function() {
-            const now = new Date();
-            const hour = now.getHours();
-            const todayStr = new Date().toISOString().split('T')[0];
-            const isSunday = now.getDay() === 0;
-
-            // --- 1. DAILY STUDY REMINDERS ---
-            if (hour === 8) this.send("🌅 गुड मॉर्निंग!", "नया दिन, नया लक्ष्य! अपनी पढ़ाई शुरू करने का समय हो गया है।", "morning_8");
-            if (hour === 14) this.send("🌓 दोपहर का चेक-अप", "आधा दिन बीत चुका है। क्या आप अपने आज के टारगेट के ट्रैक पर हैं?", "afternoon_14");
-            if (hour === 18) {
-                const pendingCount = (data.otherTasks ||[]).filter(t => t.status === 'Pending' && t.date <= todayStr).length;
-                if(pendingCount > 0) this.send("📉 पेंडिंग काम!", `शाम हो गई है और आपके ${pendingCount} टास्क अभी बाकी हैं। इन्हें आज ही खत्म करें!`, "evening_18");
-            }
-            if (hour === 21) this.send("🌛 डे-रिव्यू", "आज आपने जो भी पढ़ा, उसे एक बार मन में दोहराएं और कल की तैयारी करें।", "night_21");
-
-            // --- 2. SUNDAY FORM-FILLING SPECIAL (10 AM, 2 PM, 8 PM) ---
-            if (isSunday && [10, 14, 20].includes(hour)) {
-                const pendingForms = (data.otherTasks ||[]).filter(t => t.isExamForm && t.status === 'Pending');
-                if (pendingForms.length > 0) {
-                    const formNames = pendingForms.map(f => f.description).join(', ');
-                    const times = { 10: "सुबह", 14: "दोपहर", 20: "रात" };
-                    this.send(`📝 रविवार फॉर्म अलर्ट (${times[hour]})`, `आज फॉर्म भरने का दिन है। पेंडिंग फॉर्म्स: ${formNames}`, "sunday_form_" + hour);
-                } else if (hour === 10) {
-                    this.send("✨ हैप्पी संडे!", "आज कोई पेंडिंग फॉर्म नहीं है। अपनी रिविज़न स्ट्रीक पर ध्यान दें!", "sunday_happy_10");
-                }
-            }
-
-            // --- 3. EXAM & DEADLINE ALERTS (Run once a day at 9 AM) ---
-            if (hour === 9) {
-                // Exam Countdown
-                (data.exams ||[]).forEach(exam => {
-                    if (exam.examDate) {
-                        const diff = Math.ceil((new Date(exam.examDate) - now) / 86400000);
-                        if (diff <= 7 && diff >= 0) {
-                            const msgs = { 7: "1 हफ्ता बचा है", 3: "सिर्फ 3 दिन बाकी!", 1: "कल परीक्षा है!", 0: "आज एग्जाम डे है! फोड़ दो!" };
-                            if (msgs[diff]) this.send(`🚨 ${exam.name}`, msgs[diff], "exam_alert_" + exam.id);
-                        }
-                    }
-                });
-
-                // Form Deadlines (Strict)
-                (data.otherTasks ||[]).forEach(task => {
-                    if (task.isExamForm && task.formEndDate && task.status !== 'Completed') {
-                        const diff = Math.ceil((new Date(task.formEndDate) - now) / 86400000);
-                        if (diff <= 3 && diff > 0) this.send("⏳ फॉर्म डेडलाइन!", `${task.description} भरने के लिए सिर्फ ${diff} दिन बचे हैं!`, "form_deadline_" + task.id);
-                    }
-                });
-                
-                // Revision Needed
-                const revToday = (data.subjects ||[]).flatMap(s => s.chapters).flatMap(c => c.revisions)
-                                 .filter(r => r.status === 'Pending' && r.date === todayStr).length;
-                if (revToday > 0) this.send("🧠 रिविज़न टाइम", `आज आपके ${revToday} चैप्टर्स को रिविज़न की ज़रूरत है।`, "revision_alert");
-            }
-
-            // --- 4. SYSTEM CHECKS ---
-            // Inactivity Check
-            const lastLog = data.activityLog[0];
-            if (lastLog && hour === 11) {
-                const daysInactive = (now - new Date(lastLog.timestamp)) / 86400000;
-                if (daysInactive > 2) this.send("👋 हम आपको मिस कर रहे हैं!", "2 दिन से कोई एक्टिविटी नहीं हुई। पढ़ाई की लय न टूटने दें।", "inactivity_alert");
-            }
-
-            // Streak Celebration
-            const streak = this.getStreak();
-            if (streak > 0 && streak % 5 === 0 && hour === 19) {
-                this.send("🏆 स्ट्रीक मास्टर!", `बधाई हो! आपने लगातार ${streak} दिन पढ़ाई पूरी की है।`, "streak_alert_" + streak);
-            }
-        },
-
-        getStreak: function() {
-            const history = new Set(data.gamification.completedHistory ||[]);
-            let streak = 0; let d = new Date();
-            while (history.has(d.toISOString().split('T')[0])) { streak++; d.setDate(d.getDate() - 1); }
-            return streak;
-        }
-    };
-
     let data;
     
     try {
@@ -3268,7 +3133,6 @@ let allCharts = {};
 
     const init = () => {
         // Init Logic
-        window.NotificationManager.init(); // Start Notification Engine
         safeInitialize(data.settings, 'theme', 'system');
         safeInitialize(data.settings, 'dptDashboardActive', true);
 
@@ -3316,10 +3180,7 @@ let allCharts = {};
         if ('Notification' in window && Notification.permission !== 'denied') {
             setTimeout(() => Notification.requestPermission(), 5000); 
         }
-        setInterval(() => {
-            checkDateChange();
-            if (window.NotificationManager) window.NotificationManager.scheduleDailySmartAlerts();
-        }, 60000); // Check every 1 minute 
+        setInterval(checkDateChange, 60000); 
     };
 
     const checkDateChange = () => {
@@ -6401,14 +6262,18 @@ let allCharts = {};
         const settingsDptToggle = document.getElementById('settings-dpt-dashboard-toggle');
         if (settingsDptToggle) {
             settingsDptToggle.checked = data.settings.dptDashboardActive !== false;
-            document.getElementById('settings-lectures-toggle').checked = data.settings.showLecturesTab !== false;
-            document.getElementById('settings-fillform-toggle').checked = data.settings.showFillFormTab !== false;
-            document.getElementById('settings-othertasks-toggle').checked = data.settings.showOtherTasksTab !== false;
+            const lecturesToggle = document.getElementById('settings-lectures-toggle');
+            if (lecturesToggle) lecturesToggle.checked = data.settings.showLecturesTab !== false;
+            const fillformToggle = document.getElementById('settings-fillform-toggle');
+            if (fillformToggle) fillformToggle.checked = data.settings.showFillFormTab !== false;
+            const othertasksToggle = document.getElementById('settings-othertasks-toggle');
+            if (othertasksToggle) othertasksToggle.checked = data.settings.showOtherTasksTab !== false;
         }
 
         // Plan Mode Logic
         const planMode = data.settings.planMode || 'auto';
-        document.querySelector(`input[name="plan-mode"][value="${planMode}"]`).checked = true;
+        const planModeInput = document.querySelector(`input[name="plan-mode"][value="${planMode}"]`);
+        if (planModeInput) planModeInput.checked = true;
         const customCycleContainer = document.getElementById('custom-cycle-plan-container');
         
         if (planMode === 'custom_cycle') {
@@ -6422,7 +6287,8 @@ let allCharts = {};
 
         // DPT Plan Mode Logic
         const dptPlanMode = data.settings.dptPlanMode || 'auto';
-        document.querySelector(`input[name="dpt-plan-mode"][value="${dptPlanMode}"]`).checked = true;
+        const dptPlanModeInput = document.querySelector(`input[name="dpt-plan-mode"][value="${dptPlanMode}"]`);
+        if (dptPlanModeInput) dptPlanModeInput.checked = true;
         const customDptContainer = document.getElementById('custom-dpt-plan-container');
         
         if (dptPlanMode === 'custom_cycle') {
@@ -6767,7 +6633,8 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         document.getElementById('chapter-modal-title').textContent = chapter.name;
         document.querySelectorAll('#chapter-status-buttons button').forEach(btn => { btn.classList.toggle('active', btn.dataset.status === chapter.status); });
         document.getElementById('chapter-notes-textarea').value = chapter.notes || '';
-        document.getElementById('chapter-priority-revision-checkbox').checked = chapter.priorityRevision || false;
+        const priorityCb = document.getElementById('chapter-priority-revision-checkbox');
+        if (priorityCb) priorityCb.checked = chapter.priorityRevision || false;
         renderScheduledRevisions(chapter);
         const addRevBtn = document.getElementById('add-manual-revision-btn'); addRevBtn.dataset.chapterId = chapterId; addRevBtn.dataset.subjectId = subjectId;
         const saveBtn = document.getElementById('save-chapter-details-btn'); saveBtn.dataset.subjectId = subjectId; saveBtn.dataset.chapterId = chapterId;
@@ -6824,10 +6691,6 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             if (!isUndo) {
                 if (!data.gamification.completedHistory.includes(chapter.dateCompleted)) { data.gamification.completedHistory.push(chapter.dateCompleted); }
                 logActivity('check-circle', `Chapter completed: "${chapter.name}"`);
-                
-                // INSTANT NOTIFICATION ON COMPLETION
-                if(window.NotificationManager) window.NotificationManager.send("✅ बहुत बढ़िया!", `आपने "${chapter.name}" पूरा कर लिया है। जारी रखें!`, "chapter_complete_" + chapterId);
-                
                 checkAllGamification();
                 
                 lastAction = { type: 'complete', data: { subjectId, chapterId, oldStatus }, undo: () => updateChapterStatus(subjectId, chapterId, oldStatus, true) };
@@ -8620,7 +8483,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             
             document.getElementById('manual-add-subject-select').addEventListener('change', (e) => { const modal = document.getElementById('manual-add-modal'); if(modal.dataset.type === 'dpt') { populateManualItemList(e.target.value, 'dpt'); } });
 
-            document.getElementById('todays-plan-container').addEventListener('change', (e) => { 
+            document.getElementById('todays-plan-container-wrapper').addEventListener('change', (e) => { 
                 const checkbox = e.target; 
                 
                 // --- BRIDGE LOGIC FOR EXAM FORMS ---
@@ -8926,14 +8789,17 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             `).join('');
 
             // Reset inputs
-            selectAllCb.checked = false;
-            document.getElementById('global-dpt-quantity').value = 1;
+            if (selectAllCb) selectAllCb.checked = false;
+            const globalDptQuantity = document.getElementById('global-dpt-quantity');
+            if (globalDptQuantity) globalDptQuantity.value = 1;
 
             // Handle Select All
-            selectAllCb.onclick = (e) => {
-                const checked = e.target.checked;
-                document.querySelectorAll('.global-dpt-subject-cb').forEach(cb => cb.checked = checked);
-            };
+            if (selectAllCb) {
+                selectAllCb.onclick = (e) => {
+                    const checked = e.target.checked;
+                    document.querySelectorAll('.global-dpt-subject-cb').forEach(cb => cb.checked = checked);
+                };
+            }
 
             showModal('add-global-dpt-modal');
         }
@@ -9113,7 +8979,8 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     document.getElementById('other-task-date').value = task.date;
                     document.getElementById('other-task-notes').value = task.notes || '';
                     document.getElementById('other-task-tag').value = task.tag || '';
-                    document.getElementById('other-task-priority').checked = task.priority || false;
+                    const priorityCb = document.getElementById('other-task-priority');
+                    if (priorityCb) priorityCb.checked = task.priority || false;
                     
                     if (task.isRepeating) {
                         repeatCheckbox.checked = true;
@@ -9675,6 +9542,275 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
         // Call tour after init
         initFeatureTour();
     });
+    </script>
+
+    <!-- CHATBOT UI -->
+    <div id="chatbot-container" class="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-[100000] flex flex-col items-end transition-all duration-300">
+        <!-- Chat Window -->
+        <div id="chatbot-window" class="hidden w-[350px] sm:w-[400px] h-[500px] max-h-[70vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden mb-4 transform origin-bottom-right transition-all duration-300 scale-95 opacity-0">
+            <!-- Header -->
+            <div class="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i data-lucide="bot" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Yenchat</h3>
+                        <p class="text-[10px] text-indigo-100">Powered by Pravej Ahmad</p>
+                    </div>
+                </div>
+                <button id="close-chatbot-btn" class="p-1.5 rounded-lg hover:bg-white/20 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <!-- Messages Area -->
+            <div id="chatbot-messages" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-slate-800/50 flex flex-col gap-3 custom-scrollbar">
+                <!-- Welcome Message -->
+                <div class="flex gap-2 max-w-[85%]">
+                    <div class="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0 mt-1">
+                        <i data-lucide="bot" class="w-3 h-3 text-indigo-600 dark:text-indigo-400"></i>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200">
+                        नमस्ते! मैं Yenchat हूँ। मैं आपकी पढ़ाई, रूटीन या किसी भी सवाल में आपकी मदद कर सकता हूँ। बताइए, आज मैं आपकी क्या मदद करूँ?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 shrink-0">
+                <form id="chatbot-form" class="flex items-end gap-2 relative">
+                    <textarea id="chatbot-input" rows="1" class="w-full bg-gray-100 dark:bg-slate-800 border-none rounded-xl py-3 pl-4 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none max-h-32 custom-scrollbar text-gray-800 dark:text-gray-200" placeholder="Ask Yenchat..."></textarea>
+                    <button type="submit" id="chatbot-send-btn" class="absolute right-2 bottom-2 p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Floating Action Button -->
+        <button id="chatbot-fab" class="h-12 px-4 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-purple-500/30 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all duration-300 relative group">
+            <i data-lucide="message-square-text" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+            <span class="font-bold text-sm tracking-wide">Ask AI</span>
+            <!-- Notification Dot -->
+            <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white dark:border-slate-900 rounded-full hidden" id="chatbot-notif-dot"></span>
+        </button>
+    </div>
+
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const fab = document.getElementById('chatbot-fab');
+            const windowEl = document.getElementById('chatbot-window');
+            const closeBtn = document.getElementById('close-chatbot-btn');
+            const form = document.getElementById('chatbot-form');
+            const input = document.getElementById('chatbot-input');
+            const messagesContainer = document.getElementById('chatbot-messages');
+            const notifDot = document.getElementById('chatbot-notif-dot');
+            const sendBtn = document.getElementById('chatbot-send-btn');
+
+            let isOpen = false;
+            let chatSession = null;
+
+            // Initialize Gemini API
+            // Vite replaces process.env.GEMINI_API_KEY during build/dev if configured, 
+            // but standard Vite uses import.meta.env.VITE_GEMINI_API_KEY.
+            // The instructions say: "Always use process.env.GEMINI_API_KEY for the Gemini API."
+            // Since this is inside a module script processed by Vite, we might need to handle it carefully.
+            // We will use the exact syntax requested by the instructions.
+            let ai;
+            try {
+                ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+            } catch (e) {
+                console.error("Failed to initialize Gemini API:", e);
+            }
+
+            const initChat = () => {
+                if (!ai) return;
+                try {
+                    chatSession = ai.chats.create({
+                        model: "gemini-3-flash-preview",
+                        config: {
+                            systemInstruction: "You are Yenchat, a helpful, encouraging, and intelligent AI study assistant for 'Rayen\\'s Digital Study Tracker'. Your goal is to help the student manage their routine, answer study-related questions, explain concepts clearly, and keep them motivated. You communicate in a friendly, concise manner. CRITICAL INSTRUCTION: You MUST ALWAYS reply EXCLUSIVELY in the Hindi language using the Devanagari script (हिंदी देवनागरी लिपि). Do NOT use Hinglish or English words written in Latin script under any circumstances. Translate all English terms to Hindi Devanagari (e.g., 'Dashboard' -> 'डैशबोर्ड', 'Math' -> 'गणित'). If asked about the app, you know it tracks subjects, chapters, DPTs (Daily Practice Tests), exams, and provides analytics. Use standard Markdown for formatting (bold, italics, lists, math formulas).",
+                        }
+                    });
+                } catch (e) {
+                    console.error("Failed to create chat session:", e);
+                }
+            };
+
+            initChat();
+
+            const toggleChat = () => {
+                isOpen = !isOpen;
+                if (isOpen) {
+                    windowEl.classList.remove('hidden');
+                    // Small delay to allow display:block to apply before animating opacity/scale
+                    setTimeout(() => {
+                        windowEl.classList.remove('scale-95', 'opacity-0');
+                        windowEl.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                    notifDot.classList.add('hidden');
+                    input.focus();
+                } else {
+                    windowEl.classList.remove('scale-100', 'opacity-100');
+                    windowEl.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        windowEl.classList.add('hidden');
+                    }, 300); // match duration-300
+                }
+            };
+
+            fab.addEventListener('click', toggleChat);
+            closeBtn.addEventListener('click', toggleChat);
+
+            // Auto-resize textarea
+            input.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                if (this.value.trim() === '') {
+                    this.style.height = 'auto';
+                }
+            });
+
+            // Handle Enter key to send
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            const appendMessage = (text, isUser = false) => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `flex gap-2 max-w-[85%] ${isUser ? 'self-end flex-row-reverse' : ''}`;
+                
+                let avatarHtml = '';
+                if (!isUser) {
+                    avatarHtml = `
+                        <div class="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0 mt-1">
+                            <i data-lucide="bot" class="w-3 h-3 text-indigo-600 dark:text-indigo-400"></i>
+                        </div>
+                    `;
+                }
+
+                const bubbleClass = isUser 
+                    ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-none shadow-sm' 
+                    : 'bg-white dark:bg-slate-800 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 markdown-body';
+
+                // Format text (use marked.js for bot, basic for user)
+                let formattedText = text;
+                if (!isUser && typeof marked !== 'undefined') {
+                    formattedText = marked.parse(text);
+                } else {
+                    formattedText = text.replace(/\n/g, '<br>');
+                }
+
+                msgDiv.innerHTML = `
+                    ${avatarHtml}
+                    <div class="p-3 text-sm ${bubbleClass}">
+                        ${formattedText}
+                    </div>
+                `;
+
+                messagesContainer.appendChild(msgDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            };
+
+            const showTypingIndicator = () => {
+                const msgDiv = document.createElement('div');
+                msgDiv.id = 'typing-indicator';
+                msgDiv.className = 'flex gap-2 max-w-[85%]';
+                msgDiv.innerHTML = `
+                    <div class="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0 mt-1">
+                        <i data-lucide="bot" class="w-3 h-3 text-indigo-600 dark:text-indigo-400"></i>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-1">
+                        <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                `;
+                messagesContainer.appendChild(msgDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            };
+
+            const removeTypingIndicator = () => {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            };
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = input.value.trim();
+                if (!text) return;
+
+                // Disable input while processing
+                input.value = '';
+                input.style.height = 'auto';
+                input.disabled = true;
+                sendBtn.disabled = true;
+
+                appendMessage(text, true);
+                showTypingIndicator();
+
+                try {
+                    if (!chatSession) {
+                        throw new Error("Chat session not initialized. Please check API key.");
+                    }
+                    
+                    // Generate Real-time Context
+                    const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                    let tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
+                    const tmrwStr = new Date(tmrw.getTime() - (tmrw.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                    
+                    let appData = {};
+                    try {
+                        const savedData = localStorage.getItem('pravejStudyTracker');
+                        if (savedData) appData = JSON.parse(savedData);
+                    } catch(e) { console.error("Failed to parse app data for context", e); }
+
+                    const studentName = appData.settings?.studentName || "Student";
+                    const contextMsg = `[SYSTEM CONTEXT UPDATE (Hidden from user): The user is asking a question. Here is the real-time JSON data of their study tracker app right now: ${JSON.stringify(appData)}. 
+Today's date is ${todayStr}. Tomorrow is ${tmrwStr}. 
+Student Name: ${studentName}. Address them by their name.
+Hints for analyzing data: 
+- 'dailyPlan[date]' contains completed lecture IDs for that date. 
+- 'dailyDptPlan[date]' contains completed DPT IDs. 
+- 'otherTasks' has 'date' and 'status' ('Pending'/'Completed'). 
+- 'subjects' contains all chapters and their status ('Pending', 'Completed', 'Revision').
+CRITICAL: When asked about 'Today's Tasks' or 'आज के टास्क', ONLY include 'dailyPlan' (Lectures) and 'otherTasks' (General tasks). DO NOT include 'Fill Form' tasks or 'exam forms' unless the user explicitly asks about Sunday tasks or forms. If asked about Sunday tasks or forms, explicitly list the forms to be filled.
+Analyze this data to answer questions about their tasks, progress, reports, completed tasks, pending tasks, tomorrow's tasks, etc. Do NOT mention this JSON data block or system context in your response, just use it to give accurate, natural, and helpful answers in Hindi Devanagari.]\n\nUser Query: ${text}`;
+
+                    const response = await chatSession.sendMessage({ message: contextMsg });
+                    removeTypingIndicator();
+                    appendMessage(response.text, false);
+                } catch (error) {
+                    console.error("Chatbot Error:", error);
+                    removeTypingIndicator();
+                    let errMsg = "माफ़ करें, अभी कुछ तकनीकी समस्या आ रही है। कृपया थोड़ी देर बाद प्रयास करें।";
+                    if (error.message && (error.message.includes("429") || error.message.includes("RESOURCE_EXHAUSTED") || error.message.includes("quota"))) {
+                        errMsg = "माफ़ करें, अभी कुछ तकनीकी समस्या आ रही है। कृपया 24 घंटे बाद प्रयास करें।";
+                    }
+                    appendMessage(errMsg, false);
+                } finally {
+                    input.disabled = false;
+                    sendBtn.disabled = false;
+                    input.focus();
+                }
+            });
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
     </script>
 </body>
 </html>
