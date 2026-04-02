@@ -10018,13 +10018,13 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             }
 
             // Handle environment variable safely
-            let apiKey = "";
+            let apiKey = "AIzaSyB4nMfZSvfs6XV27gu4v07P1aZa0jR1dK0"; // यहाँ अपनी API Key डालें
             try {
-                if (typeof process !== 'undefined' && process.env) {
-                    apiKey = process.env.GEMINI_API_KEY;
-                }
+                // Cloudflare Pages uses import.meta.env for variables prefixed with VITE_
+                const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+                if (envKey) apiKey = envKey;
             } catch (e) {
-                console.warn("Error accessing process.env.GEMINI_API_KEY");
+                console.warn("Error accessing import.meta.env.VITE_GEMINI_API_KEY");
             }
 
             const appendMessage = (text, isUser = false) => {
