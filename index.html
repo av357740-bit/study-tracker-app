@@ -3962,16 +3962,16 @@ let allCharts = {};
             <!-- 2. FRONT PROFILE PICTURE (Shifted Down) -->
             <div class="relative -mt-20 flex flex-col items-center z-20 px-6">
                 <!-- Profile Ring Container with Glow -->
-                <div class="relative group">
+                <div class="relative group mt-8">
                     <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500"></div>
-                    <div class="w-28 h-28 rounded-full border-[4px] border-white dark:border-[#1e293b] shadow-2xl overflow-hidden bg-[#001f3f] relative z-10">
-                        <img src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg" alt="Rayen Profile" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110">
+                    <div class="w-36 h-36 rounded-full border-[4px] border-white dark:border-[#1e293b] shadow-2xl overflow-hidden bg-[#001f3f] relative z-10 flex items-center justify-center">
+                        <img src="https://i.postimg.cc/RZK1dpNm/photo-2026-04-02-13-45-28.jpg" alt="Rayen Profile" class="w-full h-full object-cover object-center">
                     </div>
                     <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-white dark:border-[#1e293b] rounded-full z-20" title="Online"></div>
                 </div>
                 
                 <div class="text-center mt-4">
-                    <h2 class="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 tracking-tight drop-shadow-sm">Rayen</h2>
+                    <h2 class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 tracking-tight drop-shadow-sm mt-4">Rayen</h2>
                     <div class="flex items-center justify-center gap-2 mt-1">
                         <span class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-bold border border-blue-200 dark:border-blue-800 uppercase tracking-widest shadow-sm">Visionary & Developer</span>
                     </div>
@@ -9895,9 +9895,13 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "b31efdde-afd1-4c60-9ff6-a23eb4a91fc3",
-        });
+        try {
+          await OneSignal.init({
+            appId: "b31efdde-afd1-4c60-9ff6-a23eb4a91fc3",
+          });
+        } catch (e) {
+          console.log("OneSignal Web Push not configured, skipping.");
+        }
       });
     </script>
 
@@ -9995,6 +9999,24 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             
             // Initial Lucide icons
             if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            // Exclusive toggle logic for Lectures and Chapters
+            const lectureToggle = document.getElementById('settings-lectures-toggle');
+            const chapterToggle = document.getElementById('settings-chapters-toggle');
+
+            if (lectureToggle && chapterToggle) {
+                lectureToggle.addEventListener('change', () => {
+                    if (lectureToggle.checked) {
+                        chapterToggle.checked = false;
+                    }
+                });
+
+                chapterToggle.addEventListener('change', () => {
+                    if (chapterToggle.checked) {
+                        lectureToggle.checked = false;
+                    }
+                });
+            }
         });
     </script>
 
