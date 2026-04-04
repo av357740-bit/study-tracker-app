@@ -5437,22 +5437,33 @@ let allCharts = {};
         const todayStr = getLocalDateString();
         
         // SYNCED LOGIC: Exactly what shows in Today's Task list
+        const seenDescriptions = new Set();
         const otherTasks = (data.otherTasks || []).filter(task => {
             if (task.isExamForm) return false;
             
             // 1. Exclude if explicitly deleted for today
             if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
 
+            let shouldShow = false;
             // 2. Normal logic for today's active tasks
             if (task.isRepeating) {
                 const todayDay = new Date(todayStr).getDay();
                 if (task.repeatDays && !task.repeatDays.includes(todayDay)) return false;
                 // Should show if it hasn't been completed today
-                return task.lastCompletedDate !== todayStr;
+                shouldShow = task.lastCompletedDate !== todayStr;
             } else {
-                // Show if it's for today AND pending, OR if it's missed (past date) but still pending
-                return task.date <= todayStr && task.status === 'Pending';
+                // Show ONLY if it's for today AND pending (No past tasks)
+                shouldShow = task.date === todayStr && task.status === 'Pending';
             }
+
+            // Prevent duplicates
+            if (shouldShow) {
+                const descLower = (task.description || '').toLowerCase().trim();
+                if (seenDescriptions.has(descLower)) return false;
+                seenDescriptions.add(descLower);
+                return true;
+            }
+            return false;
         });
 
         if(otherTasks.length === 0) {
@@ -6215,6 +6226,7 @@ let allCharts = {};
             
             <div id="routine-actions" class="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                 <button id="import-routine-btn-new" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm font-bold rounded-lg hover:bg-gray-200">Import JSON</button>
+                <button id="export-routine-json-btn-new" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm font-bold rounded-lg hover:bg-gray-200">Export JSON</button>
                 <button id="export-routine-btn-new" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm font-bold rounded-lg hover:bg-gray-200">Export PDF</button>
             </div>
         `;
@@ -6284,6 +6296,10 @@ let allCharts = {};
         // Export Routine PDF
         const btnExportRoutine = document.getElementById('export-routine-btn-new');
         if(btnExportRoutine) btnExportRoutine.addEventListener('click', () => exportRoutine('pdf'));
+
+        // Export Routine JSON
+        const btnExportRoutineJson = document.getElementById('export-routine-json-btn-new');
+        if(btnExportRoutineJson) btnExportRoutineJson.addEventListener('click', () => exportRoutine('json'));
 
         // Chapters Import (Custom Database)
         const btnImportChapters = document.getElementById('import-all-chapters-btn');
@@ -7088,7 +7104,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
     };
 const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_data'), () => { localStorage.removeItem(DB_KEY); window.location.reload(); });
         
-        const exportData = (dataType) => {
+        const exportData = async (dataType) => {
             let dataToExport, fileName;
             switch(dataType) {
                 case 'full':
@@ -7107,10 +7123,18 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             if(!dataToExport) return;
             const dataStr = JSON.stringify(dataToExport, null, 2);
             const blob = new Blob([dataStr], {type: "application/json"});
+            
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = fileName;
-            a.click(); URL.revokeObjectURL(url);
+            a.style.display = 'none';
+            a.href = url; 
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click(); 
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
         };
         
         const handleFileUpload = (event) => {
@@ -9110,7 +9134,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             }
         }
 
-        function exportRoutine(format) {
+        async function exportRoutine(format) {
             const plan = data.settings.planMode === 'custom_cycle' ? data.settings.customCyclePlan : dailyPattern;
             const dayNames = [ _('sunday'), _('monday'), _('tuesday'), _('wednesday'), _('thursday'), _('friday'), _('saturday')];
             const routineData = {};
@@ -9127,11 +9151,19 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             if (format === 'json') {
                 const dataStr = JSON.stringify(plan, null, 2); 
                 const blob = new Blob([dataStr], { type: "application/json" });
+                const fileName = `study_routine_${getLocalDateString()}.json`;
+                
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url; a.download = `study_routine_${getLocalDateString()}.json`;
+                a.style.display = 'none';
+                a.href = url; 
+                a.download = fileName;
+                document.body.appendChild(a);
                 a.click();
-                URL.revokeObjectURL(url);
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
             } else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
@@ -10115,7 +10147,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             }
 
             // Handle environment variable safely
-            let apiKey = "AIzaSyBZelj5NxgqIewMiovTVNSdOVZbjwDyniA"; // यहाँ अपनी API Key डालें
+            let apiKey = "AIzaSyBZelj5NxgqIewMiovTVNSdOVZbjwDyniA"; // User provided API Key
             try {
                 // Cloudflare Pages uses import.meta.env for variables prefixed with VITE_
                 const envKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -10178,7 +10210,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     chatSession = ai.chats.create({
                         model: "gemini-3-flash-preview",
                         config: {
-                            systemInstruction: "You are Yenchat, a helpful, encouraging, and intelligent AI study assistant for 'Rayen\\'s Digital Study Tracker'. Your developer is Pravej Ahmad, also known as Rayen on social media (YouTube, Telegram, etc.). If anyone asks about the developer, identify him as Pravej Ahmad (Rayen). Pravej Ahmad and Rayen are the same person. Your goal is to help the student manage their routine, answer study-related questions, explain concepts clearly, and keep them motivated. You communicate in a friendly, concise manner. CRITICAL INSTRUCTION: You MUST ALWAYS reply EXCLUSIVELY in the Hindi language using the Devanagari script (हिंदी देवनागरी लिपि). Do NOT use Hinglish or English words written in Latin script under any circumstances. Translate all English terms to Hindi Devanagari (e.g., 'Dashboard' -> 'डैशबोर्ड', 'Math' -> 'गणित'). If asked about the app, you know it tracks subjects, chapters, DPTs (Daily Practice Tests), exams, and provides analytics. Use standard Markdown for formatting (bold, italics, lists, math formulas).",
+                            systemInstruction: "You are Yenchat, a helpful, encouraging, and intelligent AI study assistant for 'Rayen\\'s Digital Study Tracker'. Your developer is Pravej Ahmad, also known as Rayen on social media. Your goal is to help the student manage their routine and answer study-related questions. CRITICAL INSTRUCTIONS:\n1. You MUST ALWAYS reply EXCLUSIVELY in the Hindi language using the Devanagari script (हिंदी देवनागरी लिपि).\n2. VERY IMPORTANT: Keep your answers VERY CONCISE and BRIEF to save API tokens. Do not write long paragraphs. However, ensure the answer is COMPLETE and fully addresses the user's query.\n3. ALWAYS use standard English numerals (1, 2, 3, 4, 5, 6, 7, 8, 9, 0) instead of Devanagari numerals (१, २, ३...) even when writing in Hindi.\n4. Use standard Markdown for formatting (like **bold**, *italics*, bullet points) so it renders cleanly in the UI. Do not use plain text formatting.",
                         }
                     });
                 } catch (e) {
