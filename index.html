@@ -10147,7 +10147,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             }
 
             // Handle environment variable safely
-            let apiKey = "AIzaSyBZelj5NxgqIewMiovTVNSdOVZbjwDyniA"; // User provided API Key
+            let apiKey = ""; 
             try {
                 // Cloudflare Pages uses import.meta.env for variables prefixed with VITE_
                 const envKey = import.meta.env.VITE_GEMINI_API_KEY;
