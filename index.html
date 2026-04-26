@@ -1958,6 +1958,7 @@
         <button id="close-add-exam-form-task-modal" class="absolute top-4 right-4 text-text-muted-light hover:text-primary transition-colors z-20"><i data-lucide="x"></i></button>
         <h2 class="text-xl font-bold mb-4 text-rose-600 dark:text-rose-400 flex items-center gap-2"><i data-lucide="file-signature"></i> Upcoming Exam Form</h2>
         <form id="add-exam-form-task-form" class="space-y-4">
+            <input type="hidden" id="editing-exam-form-id">
             <div>
                 <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Exam / Form Name</label>
                 <input type="text" id="exam-form-task-name" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none" required placeholder="e.g., SSC CGL 2026...">
@@ -1986,6 +1987,13 @@
                     <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Expected Exam Date</label>
                     <input type="date" id="exam-form-task-expected-date" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none">
                 </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Mode *</label>
+                <select id="exam-form-task-mode" class="w-full p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none font-bold" required>
+                    <option value="Online">🟢 Online</option>
+                    <option value="Offline">🔴 Offline</option>
+                </select>
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Notes (Optional)</label>
@@ -3596,23 +3604,34 @@ let allCharts = {};
         }, 50);
     };
 
+    let currentExamSearchTerm = '';
     const renderUpcomingExamFormsTab = (container) => {
         // STRICT FIX: Exclude any form that is Completed, Deleted or marked deleted for today
         const todayStr = getLocalDateString();
-        const forms = (data.otherTasks ||[]).filter(t => {
+        let forms = (data.otherTasks ||[]).filter(t => {
             if (!t.isExamForm) return false;
             if (t.status === 'Completed' || t.status === 'Deleted') return false;
             if (t.deletedInstances && t.deletedInstances.includes(todayStr)) return false;
             return true;
         });
+
+        if (currentExamSearchTerm) {
+            forms = forms.filter(t => (t.description || '').toLowerCase().includes(currentExamSearchTerm.toLowerCase()) || (t.formNotes || '').toLowerCase().includes(currentExamSearchTerm.toLowerCase()));
+        }
         
         let html = `<div class="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
             <h2 class="text-2xl font-bold flex items-center gap-2 text-rose-600 dark:text-rose-400"><i data-lucide="file-signature"></i> Upcoming Exam Forms</h2>
             <button id="add-exam-form-btn-tab" class="px-4 py-2 bg-rose-600 text-white text-sm font-bold rounded-lg shadow hover:bg-rose-700 transition-transform active:scale-95">Add New Form</button>
+        </div>
+        <div class="mb-4">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="upcoming-exams-search-input" value="${currentExamSearchTerm.replace(/"/g, '&quot;')}" class="w-full pl-9 p-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm text-sm" placeholder="Search forms by name or notes...">
+            </div>
         </div>`;
 
         if (forms.length === 0) {
-            html += `<div class="flex flex-col items-center justify-center h-64 text-gray-400"><i data-lucide="file-x" class="w-12 h-12 mb-2 opacity-20"></i><p>No upcoming forms to fill.</p></div>`;
+            html += `<div class="flex flex-col items-center justify-center h-64 text-gray-400"><i data-lucide="file-x" class="w-12 h-12 mb-2 opacity-20"></i><p>No upcoming forms found.</p></div>`;
         } else {
             html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
             forms.forEach(task => {
@@ -3621,11 +3640,25 @@ let allCharts = {};
             html += `</div>`;
         }
         container.innerHTML = html;
+        lucide.createIcons();
         
         setTimeout(() => {
             document.getElementById('add-exam-form-btn-tab')?.addEventListener('click', () => {
                 showModal('add-exam-form-task-modal');
             });
+            
+            const searchInput = document.getElementById('upcoming-exams-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    currentExamSearchTerm = e.target.value;
+                    renderUpcomingExamFormsTab(container);
+                    const newSearchInput = document.getElementById('upcoming-exams-search-input');
+                    if (newSearchInput) {
+                        newSearchInput.focus();
+                        newSearchInput.setSelectionRange(currentExamSearchTerm.length, currentExamSearchTerm.length);
+                    }
+                });
+            }
         }, 0);
     };
 
@@ -3935,12 +3968,29 @@ let allCharts = {};
         barsHtml += `<div class="h-2 w-4 rounded-sm border shadow-sm ${batteryColorClass}"></div>`;
     }
 
+    const mode = task.mode || 'Online';
+    const modeBadge = mode === 'Online' ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 uppercase">🟢 Online</span>' : '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 uppercase">🔴 Offline</span>';
+
+    // Notes HTML
+    let notesHtml = '';
+    if (task.formNotes) {
+        notesHtml = `
+            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 p-2 rounded border border-gray-100 dark:border-gray-700">
+                <div class="line-clamp-2" id="note-text-${task.id}">${task.formNotes}</div>
+                ${task.formNotes.length > 60 ? `<button onclick="document.getElementById('note-text-${task.id}').classList.toggle('line-clamp-2'); this.innerText = this.innerText === 'MORE' ? 'LESS' : 'MORE'" class="text-[9px] text-blue-500 hover:text-blue-700 mt-1 font-bold uppercase tracking-wider">MORE</button>` : ''}
+            </div>
+        `;
+    }
+
     return `
     <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col justify-between h-full">
         <div>
-            <div class="flex justify-between items-start">
+            <div class="flex justify-between items-start gap-2">
                 <h4 class="font-bold text-gray-800 dark:text-white text-sm line-clamp-2">${task.description}</h4>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 uppercase">Form</span>
+                <div class="flex flex-col gap-1 items-end shrink-0">
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 uppercase">Form</span>
+                    ${modeBadge}
+                </div>
             </div>
             <div class="mt-2 flex items-center justify-between">
                 <div>
@@ -3953,10 +4003,14 @@ let allCharts = {};
                     <span class="text-[10px] font-bold px-2 py-1 rounded-md ${remainingDays <= 3 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'}">${daysText}</span>
                 </div>
             </div>
-            <p class="text-xs text-gray-500 mt-3"><i data-lucide="timer" class="w-3 h-3 inline"></i> End Date: ${endDate.toLocaleDateString()}</p>
+            <p class="text-xs text-gray-500 mt-3"><i data-lucide="calendar" class="w-3 h-3 inline"></i> End Date: ${endDate.toLocaleDateString()}</p>
+            ${notesHtml}
         </div>
         <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <button class="text-xs font-bold text-red-500 hover:text-red-700 delete-other-task-btn" data-task-id="${task.id}">Delete</button>
+            <div class="flex gap-2">
+                <button class="p-1.5 rounded bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/40 dark:hover:bg-blue-900/60 text-blue-600 edit-exam-form-btn transition-colors" data-task-id="${task.id}" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button class="p-1.5 rounded bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-600 delete-other-task-btn transition-colors" data-task-id="${task.id}" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
             <div class="flex items-center gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-sm">
                     <input type="checkbox" class="exam-form-checkbox hidden" data-task-id="${task.id}" data-exam-name="${task.description}">
@@ -5037,6 +5091,7 @@ let allCharts = {};
         // BUG FIX: Strictly filter out tasks that are in 'deletedInstances' for today
         const otherTasksForToday = (data.otherTasks || []).filter(task => {
             // 1. Check if explicitly deleted for today
+            if (task.status === 'Deleted' || task.status === 'Completed') return false;
             if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
 
             // 2. Normal logic
@@ -5442,6 +5497,7 @@ let allCharts = {};
             if (task.isExamForm) return false;
             
             // 1. Exclude if explicitly deleted for today
+            if (task.status === 'Deleted' || task.status === 'Completed') return false;
             if (task.deletedInstances && task.deletedInstances.includes(todayStr)) return false;
 
             let shouldShow = false;
@@ -6791,6 +6847,20 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         hideModal('add-exam-modal');
     };
 
+    const openEditExamFormTaskModal = (taskId) => {
+        const task = (data.otherTasks || []).find(t => t.id === taskId);
+        if (!task) return;
+        document.getElementById('exam-form-task-name').value = task.description || '';
+        document.getElementById('exam-form-task-start').value = task.formStartDate || '';
+        document.getElementById('exam-form-task-end').value = task.formEndDate || '';
+        document.getElementById('exam-form-task-priority').value = task.priorityLevel || 'normal';
+        document.getElementById('exam-form-task-expected-date').value = task.expectedExamDate || '';
+        document.getElementById('exam-form-task-notes').value = task.formNotes || '';
+        document.getElementById('exam-form-task-mode').value = task.mode || 'Online';
+        document.getElementById('editing-exam-form-id').value = task.id;
+        showModal('add-exam-form-task-modal');
+    };
+
     const saveExamFormTask = (e) => {
         e.preventDefault();
         const name = document.getElementById('exam-form-task-name').value.trim();
@@ -6799,26 +6869,50 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         const priority = document.getElementById('exam-form-task-priority').value;
         const expectedDate = document.getElementById('exam-form-task-expected-date').value;
         const notes = document.getElementById('exam-form-task-notes').value.trim();
+        const mode = document.getElementById('exam-form-task-mode').value;
+        const editId = document.getElementById('editing-exam-form-id').value;
 
         if(!name || !start || !end) return;
 
         if(!data.otherTasks) data.otherTasks =[];
-        data.otherTasks.push({
-            id: `examform-${Date.now()}`,
-            description: name,
-            date: end, // Use end date for generic sorting
-            isExamForm: true,
-            formStartDate: start,
-            formEndDate: end,
-            priorityLevel: priority,
-            expectedExamDate: expectedDate,
-            formNotes: notes,
-            status: 'Pending'
-        });
         
-        logActivity('file-signature', `New Exam Form Tracker added: "${name}"`);
+        if (editId) {
+            const index = data.otherTasks.findIndex(t => t.id === editId);
+            if (index !== -1) {
+                data.otherTasks[index] = {
+                    ...data.otherTasks[index],
+                    description: name,
+                    date: end,
+                    formStartDate: start,
+                    formEndDate: end,
+                    priorityLevel: priority,
+                    expectedExamDate: expectedDate,
+                    formNotes: notes,
+                    mode: mode
+                };
+                logActivity('edit', `Exam Form Tracker updated: "${name}"`);
+            }
+        } else {
+            data.otherTasks.push({
+                id: `examform-${Date.now()}`,
+                description: name,
+                date: end, // Use end date for generic sorting
+                isExamForm: true,
+                formStartDate: start,
+                formEndDate: end,
+                priorityLevel: priority,
+                expectedExamDate: expectedDate,
+                formNotes: notes,
+                mode: mode,
+                status: 'Pending'
+            });
+            logActivity('file-signature', `New Exam Form Tracker added: "${name}"`);
+        }
+        
         saveData();
         hideModal('add-exam-form-task-modal');
+        document.getElementById('add-exam-form-task-form').reset();
+        document.getElementById('editing-exam-form-id').value = '';
         requestAnimationFrame(() => {
             renderHomePage();
             if(document.getElementById('page-notices')?.classList.contains('active')) renderNoticesPage();
@@ -8225,6 +8319,18 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     const taskId = editOtherBtn.dataset.taskId;
                     if (taskId) {
                         showAddOtherTaskModal(taskId);
+                    }
+                    return;
+                }
+
+                // FIX: EXAM FORM EDIT LISTENER
+                const editExamFormBtn = target.closest('.edit-exam-form-btn');
+                if (editExamFormBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const taskId = editExamFormBtn.dataset.taskId;
+                    if (taskId) {
+                        openEditExamFormTaskModal(taskId);
                     }
                     return;
                 }
