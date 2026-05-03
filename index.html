@@ -1353,9 +1353,14 @@
                                 <button id="exams-sidebar-trigger" class="p-2 bg-white dark:bg-gray-800 rounded-lg mr-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i data-lucide="menu" class="w-5 h-5 text-primary"></i></button>
                                 <h2 class="font-bold text-lg text-gray-800 dark:text-gray-200" data-translate="exams_and_forms">Exams</h2>
                             </div>
-                            <button id="add-exam-btn" class="flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg btn-neon">
-                                <i data-lucide="plus" class="w-3 h-3"></i> <span class="hidden sm:inline" data-translate="add_new_exam">Add Exam</span>
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button id="share-all-exams-btn" class="flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+                                    <i data-lucide="share-2" class="w-3 h-3"></i> <span class="hidden sm:inline">Share All</span>
+                                </button>
+                                <button id="add-exam-btn" class="flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg btn-neon">
+                                    <i data-lucide="plus" class="w-3 h-3"></i> <span class="hidden sm:inline" data-translate="add_new_exam">Add Exam</span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Search -->
@@ -3621,7 +3626,12 @@ let allCharts = {};
         
         let html = `<div class="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
             <h2 class="text-2xl font-bold flex items-center gap-2 text-rose-600 dark:text-rose-400"><i data-lucide="file-signature"></i> Upcoming Exam Forms</h2>
-            <button id="add-exam-form-btn-tab" class="px-4 py-2 bg-rose-600 text-white text-sm font-bold rounded-lg shadow hover:bg-rose-700 transition-transform active:scale-95">Add New Form</button>
+            <div class="flex items-center gap-2">
+                <button id="share-all-exam-forms-btn" class="px-4 py-2 bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300 text-sm font-bold rounded-lg shadow hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors flex items-center gap-1">
+                    <i data-lucide="share-2" class="w-4 h-4"></i> <span class="hidden sm:inline">Share All</span>
+                </button>
+                <button id="add-exam-form-btn-tab" class="px-4 py-2 bg-rose-600 text-white text-sm font-bold rounded-lg shadow hover:bg-rose-700 transition-transform active:scale-95">Add New Form</button>
+            </div>
         </div>
         <div class="mb-4">
             <div class="relative">
@@ -3645,6 +3655,10 @@ let allCharts = {};
         setTimeout(() => {
             document.getElementById('add-exam-form-btn-tab')?.addEventListener('click', () => {
                 showModal('add-exam-form-task-modal');
+            });
+
+            document.getElementById('share-all-exam-forms-btn')?.addEventListener('click', () => {
+                shareAllExamForms();
             });
             
             const searchInput = document.getElementById('upcoming-exams-search-input');
@@ -4008,6 +4022,7 @@ let allCharts = {};
         </div>
         <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div class="flex gap-2">
+                <button class="p-1.5 rounded bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-500 share-exam-form-btn transition-colors" data-task-id="${task.id}" title="Share"><i data-lucide="share-2" class="w-4 h-4"></i></button>
                 <button class="p-1.5 rounded bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/40 dark:hover:bg-blue-900/60 text-blue-600 edit-exam-form-btn transition-colors" data-task-id="${task.id}" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                 <button class="p-1.5 rounded bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-600 delete-other-task-btn transition-colors" data-task-id="${task.id}" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
@@ -4346,6 +4361,8 @@ let allCharts = {};
     const updateNavHighlight = (pageId) => {
         navBtns.forEach(b => { b.classList.toggle('text-primary', b.dataset.page === pageId); b.classList.toggle('bg-sky-100', b.dataset.page === pageId); b.classList.toggle('dark:bg-sky-900/50', b.dataset.page === pageId); });
         document.querySelectorAll('.mobile-nav-btn').forEach(b => { b.classList.toggle('active', b.dataset.page === pageId); });
+        
+        setTimeout(updateChatbotVisibility, 0); // Defer to let classes update
     };
     
     const navigateTo = (pageId) => {
@@ -5379,6 +5396,7 @@ let allCharts = {};
                     </div>
                 </label>
                 <div class="flex gap-1">
+                    <button class="task-action-btn share-exam-form-btn p-1.5 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50" title="Share Form Task" data-task-id="${item.id}"><i data-lucide="share-2" class="w-4 h-4 text-blue-600"></i></button>
                     <button class="task-action-btn delete-other-task-btn p-1.5 rounded hover:bg-red-200 dark:hover:bg-red-900/50" title="Delete Form Task" data-task-id="${item.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                 </div></li>`;
         } else if (type === 'other') {
@@ -6704,6 +6722,15 @@ let allCharts = {};
 const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-700 dark:text-green-300'}[status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300');
     
     // ROBUST MODAL LOGIC (Fixes broken popups)
+    const updateChatbotVisibility = () => {
+        const anyModalOpen = document.querySelectorAll('.modal-backdrop.flex').length > 0;
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const isDashboard = document.getElementById('page-home')?.classList.contains('active');
+        if (chatbotContainer) {
+            chatbotContainer.style.display = (isDashboard && !anyModalOpen) ? 'flex' : 'none';
+        }
+    };
+    
     const showModal = (id) => {
         const el = document.getElementById(id);
         if(el) {
@@ -6711,6 +6738,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             el.classList.add('flex');
             // Ensure z-index is top
             el.style.zIndex = '10000';
+            updateChatbotVisibility();
         }
     };
     const hideModal = (id) => {
@@ -6718,6 +6746,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
         if(el) {
             el.classList.remove('flex');
             el.classList.add('hidden');
+            updateChatbotVisibility();
         }
     };
 
@@ -6781,7 +6810,7 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             let formattedNotes = exam.notes || 'No notes.';
             formattedNotes = formattedNotes.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:underline break-all">$1</a>');
 
-            return `<div class="p-4 rounded-lg bg-card-light dark:bg-card-dark shadow-sm border-l-4 ${borderColorClass} animate-list-item"><div class="flex flex-col md:flex-row justify-between items-start gap-3"><div class="flex-grow"><h3 class="font-bold text-lg">${exam.name}</h3><div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1"><span>${_('applied_on')}: <strong>${appDate}</strong></span><span>${_('exam_date')}: <strong>${exDate}</strong></span>${receiptLink ? `<span>${receiptLink}</span>` : ''}</div><p class="text-sm mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md whitespace-pre-wrap font-sans">${formattedNotes}</p></div><div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto self-stretch"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColors[exam.status]}">${_(('status_'+exam.status).toLowerCase().replace(/\s/g, '_'))}</span><div class="flex gap-1"><button class="edit-exam-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200" data-exam-id="${exam.id}"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button class="delete-exam-btn p-2 rounded-lg bg-red-100 dark:bg-red-900/50 hover:bg-red-200" data-exam-id="${exam.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button></div></div>${daysRemaining !== null && daysRemaining >= 0 ? `<div class="text-right mt-auto"><div class="text-2xl font-bold text-primary">${daysRemaining}</div><p class="text-xs -mt-1">${_('days_remaining')}</p></div>` : ''}</div></div></div>`;
+            return `<div class="p-4 rounded-lg bg-card-light dark:bg-card-dark shadow-sm border-l-4 ${borderColorClass} animate-list-item"><div class="flex flex-col md:flex-row justify-between items-start gap-3"><div class="flex-grow"><h3 class="font-bold text-lg">${exam.name}</h3><div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1"><span>${_('applied_on')}: <strong>${appDate}</strong></span><span>${_('exam_date')}: <strong>${exDate}</strong></span>${receiptLink ? `<span>${receiptLink}</span>` : ''}</div><p class="text-sm mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md whitespace-pre-wrap font-sans">${formattedNotes}</p></div><div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto self-stretch"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColors[exam.status]}">${_(('status_'+exam.status).toLowerCase().replace(/\s/g, '_'))}</span><div class="flex gap-1"><button class="share-exam-btn p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100" data-exam-id="${exam.id}" title="Share Exam"><i data-lucide="share-2" class="w-4 h-4 text-blue-500"></i></button><button class="edit-exam-btn p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200" data-exam-id="${exam.id}"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button class="delete-exam-btn p-2 rounded-lg bg-red-100 dark:bg-red-900/50 hover:bg-red-200" data-exam-id="${exam.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button></div></div>${daysRemaining !== null && daysRemaining >= 0 ? `<div class="text-right mt-auto"><div class="text-2xl font-bold text-primary">${daysRemaining}</div><p class="text-xs -mt-1">${_('days_remaining')}</p></div>` : ''}</div></div></div>`;
         }).join('');
         lucide.createIcons();
     };
@@ -6917,6 +6946,147 @@ const getStatusClass = (status) => ({ 'Completed': 'bg-green-500/20 text-green-7
             renderHomePage();
             if(document.getElementById('page-notices')?.classList.contains('active')) renderNoticesPage();
         });
+    };
+
+    const getSharePrompt = (examText) => {
+        return `task: "भरे हुए फॉर्म्स की लेटेस्ट अपडेट deep रिसर्च" language: "Hindi"
+instruction: > नीचे दिए गए सभी भरे हुए फॉर्म्स के बारे में इंटरनेट से केवल latest, verified और official जानकारी खोजो। हर फॉर्म के लिए बताओ:
+अभी status क्या है
+admit card आया या नहीं
+exam date घोषित हुई या नहीं
+कोई नया notice / correction / postponement / result update है या नहीं
+official source link या source name
+last update date
+next expected step क्या है
+
+खास ध्यान देने वाली बात (CRITICAL):
+- फॉर्म भरने की तारीख (Applied On) या एडवर्टाइजमेंट नंबर को देखकर यह समझो कि यह फॉर्म किस साल (जैसे 2024, 2025, या 2026) का है। 
+- ऐसा न हो कि मैं 2025 का फॉर्म भर चुका हूँ और आप 2026 वाले नए फॉर्म की जानकारी दे दें।
+- अगर परीक्षा पहले ही हो चुकी है और मुझे पता नहीं है, तो वह भी साफ़-साफ़ बताओ कि इस परीक्षा का आयोजन पहले ही हो चुका है।
+- 'Applied On' डेट का ही इस्तेमाल करके सटीक साल और रिक्रूटमेंट साइकिल को समझें और उसी की सटीक जानकारी दें (जैसे MTS 2025 vs 2026)।
+
+rules:
+केवल official website, official notice, और भरोसेमंद source use करो
+पुरानी या अनुमान वाली जानकारी मत दो
+अगर किसी फॉर्म की जानकारी नहीं मिलती तो साफ़ लिखो: "कोई latest official update नहीं मिला"
+response table format में दो
+हर entry अलग-अलग और साफ़ हो
+पहले सभी फॉर्म्स की summary दो, फिर details
+बकायदा अच्छी तरह से व्यवस्थित ढंग से लिखे होनी चाहिए। और इस बात पर ज़ोर देना है की. जितना ज्यादा टाइम लेकर उसको। अच्छे से डीप रिसर्च करके उसके बारे में देर तक। हर तरह से जानकारी ढूंढ कर उसके बाद ही। रिजल्ट्स को देने हैं। अपडेट्स को बताना है ताकि कोई भी. एग्जाम्स वगैरह chhute ना।
+
+Exams to check:
+${examText}`;
+    };
+
+    const getUpcomingExamSharePrompt = (examText) => {
+        return `task: "अपकमिंग एग्जाम फॉर्म और रिक्रूटमेंट की विस्तृत जानकारी खोजें" language: "Hindi"
+instruction: > नीचे दिए गए अपकमिंग एग्जाम्स/फॉर्म्स के बारे में विस्तृत और ऑफिशियल जानकारी स्टेप-बाय-स्टेप खोज कर लाएं। हर रिक्रूटमेंट के लिए ये जानकारियाँ दें:
+1. फॉर्म शुरू होने की तारीख (Starting Date)
+2. फॉर्म भरने की अंतिम तारीख (Last Date)
+3. परीक्षा शुल्क (Exam Fee - category wise)
+4. शैक्षणिक योग्यता (Qualifications required)
+5. आयु सीमा (Age limit - min, max, limit base date)
+6. फॉर्म भरने का मोड (ऑनलाइन या ऑफलाइन)
+7. परीक्षा का मोड (ऑनलाइन CBT या ऑफलाइन OMR)
+8. सिलेक्शन प्रोसेस और चरण (पहले फिजिकल होगा या पहले रिटेन एग्जाम होगा?)
+9. कुल कितने एग्जाम (टियर/स्टेज) होंगे?
+10. पदों की कुल संख्या (Total Vacancies) और अगर संभव हो तो Category-wise Vacancy
+11. Official Website/Notification Link
+
+rules:
+- केवल official website, official notification, और verified sources से ही जानकारी दें।
+- एडवर्टाइजमेंट नंबर या फॉर्म की अंतिम तिथि (End Date) को ध्यान में रखकर ही सही रिक्रूटमेंट (जैसे 2025 या 2026) का पता लगाएँ।
+- जो जानकारी अभी घोषित न हुई हो, उसके लिए "अभी घोषित नहीं" लिखें। गलत अनुमान न लगाएँ।
+- हर एग्जाम की जानकारी अलग सेक्शन में स्पष्ट रूप से दें।
+- बकायदा अच्छी तरह से व्यवस्थित ढंग से लिखे होनी चाहिए और डीप रिसर्च करके सारी जानकारी देनी चाहिए।
+
+Exams to check:
+${examText}`;
+    };
+
+    let isSharing = false;
+
+    const executeShare = async (title, text) => {
+        if (isSharing) return;
+        isSharing = true;
+        
+        const copyToClipboardFallback = async () => {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                }
+                alert("Prompt copied to clipboard! Paste it to AI.\n\n" + title);
+            } catch (err) {
+                console.error("Clipboard error:", err);
+                alert("Could not copy to clipboard. Please copy manually:\n\n" + text);
+            }
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share({ title, text });
+            } else {
+                await copyToClipboardFallback();
+            }
+        } catch (err) {
+            const errMsg = err.message || '';
+            const isAborted = err.name === 'AbortError' || err.name === 'InvalidStateError';
+            const isEarlierShare = errMsg.toLowerCase().includes('earlier share');
+            
+            if (isAborted && !isEarlierShare) {
+                // User just cancelled
+            } else {
+                console.warn("Share API error or stuck:", err);
+                await copyToClipboardFallback();
+            }
+        } finally {
+            setTimeout(() => { isSharing = false; }, 500);
+        }
+    };
+
+    const shareExam = async (examId) => {
+        const exam = data.exams.find(e => e.id === examId);
+        if (!exam) return;
+        const examText = `- ${exam.name} (Applied On: ${exam.applicationDate || 'N/A'})`;
+        const textToShare = getSharePrompt(examText);
+        await executeShare(`Check updates for ${exam.name}`, textToShare);
+    };
+
+    const shareAllExams = async () => {
+        if (!data.exams || data.exams.length === 0) {
+            alert("No applied exams to share!");
+            return;
+        }
+        const examText = data.exams.map(exam => `- ${exam.name} (Applied On: ${exam.applicationDate || 'N/A'})`).join('\n');
+        const textToShare = getSharePrompt(examText);
+        await executeShare('Check updates for all exams', textToShare);
+    };
+
+    const shareExamFormTask = async (taskId) => {
+        const task = (data.otherTasks || []).find(t => t.id === taskId && t.isExamForm);
+        if (!task) return;
+        const examText = `- ${task.description} (End Date: ${new Date(task.formEndDate).toLocaleDateString()})`;
+        const textToShare = getUpcomingExamSharePrompt(examText);
+        await executeShare(`Check updates for ${task.description}`, textToShare);
+    };
+
+    const shareAllExamForms = async () => {
+        const formTasks = (data.otherTasks || []).filter(task => (task.isExamForm && task.status !== 'Completed' && task.status !== 'Deleted'));
+        if (formTasks.length === 0) {
+            alert("No upcoming exam forms to share!");
+            return;
+        }
+        const examText = formTasks.map(task => `- ${task.description} (End Date: ${new Date(task.formEndDate).toLocaleDateString()})`).join('\n');
+        const textToShare = getUpcomingExamSharePrompt(examText);
+        await executeShare('Check updates for all upcoming exam forms', textToShare);
     };
 
     const deleteExam = (examId) => {
@@ -8323,6 +8493,51 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                     return;
                 }
 
+                // SHARE EXAM FORM btn
+                const shareExamFormBtn = target.closest('.share-exam-form-btn');
+                if (shareExamFormBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const taskId = shareExamFormBtn.dataset.taskId;
+                    if (taskId) {
+                        shareExamFormTask(taskId);
+                    }
+                    return;
+                }
+
+                // SHARE EXAM btn globally
+                const shareExamBtn = target.closest('.share-exam-btn');
+                if (shareExamBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (shareExamBtn.dataset.examId) {
+                        shareExam(shareExamBtn.dataset.examId);
+                    }
+                    return;
+                }
+
+                // EDIT EXAM btn globally
+                const editExamBtn = target.closest('.edit-exam-btn');
+                if (editExamBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (editExamBtn.dataset.examId) {
+                        showAddExamModal(editExamBtn.dataset.examId);
+                    }
+                    return;
+                }
+
+                // DELETE EXAM btn globally
+                const deleteExamBtn = target.closest('.delete-exam-btn');
+                if (deleteExamBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (deleteExamBtn.dataset.examId) {
+                        deleteExam(deleteExamBtn.dataset.examId);
+                    }
+                    return;
+                }
+
                 // FIX: EXAM FORM EDIT LISTENER
                 const editExamFormBtn = target.closest('.edit-exam-form-btn');
                 if (editExamFormBtn) {
@@ -8574,6 +8789,9 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                         renderHomePage(); 
                     }
                 }
+                else if (btn.classList.contains('share-exam-form-btn')) {
+                    if (btn.dataset.taskId) shareExamFormTask(btn.dataset.taskId);
+                }
             });
 
             document.querySelectorAll('.day-selector-btn').forEach(btn => {
@@ -8605,10 +8823,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             });
             document.getElementById('save-global-dpt-btn').addEventListener('click', saveGlobalDpt);
 
-            document.getElementById('exams-list-container').addEventListener('click', e => {
-                const editBtn = e.target.closest('.edit-exam-btn'); const deleteBtn = e.target.closest('.delete-exam-btn');
-                if (editBtn) showAddExamModal(editBtn.dataset.examId); else if (deleteBtn) deleteExam(deleteBtn.dataset.examId);
-            });
+            // (Global exam buttons handled above)
 
             // Exams Sidebar Toggle Actions
             document.getElementById('exams-sidebar-trigger')?.addEventListener('click', () => {
@@ -8679,6 +8894,7 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             handleForm('add-other-task-form', saveOtherTask);
 
             document.getElementById('add-new-subject-btn').addEventListener('click', showAddSubjectModal);
+            document.getElementById('share-all-exams-btn').addEventListener('click', shareAllExams);
             document.getElementById('add-exam-btn').addEventListener('click', () => showAddExamModal());
             document.getElementById('add-new-root-folder-btn').addEventListener('click', () => showAddFolderModal());
             document.getElementById('save-manual-add-btn').addEventListener('click', saveManualTask);
@@ -10255,11 +10471,11 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
             // Handle environment variable safely
             let apiKey = ""; 
             try {
-                // Cloudflare Pages uses import.meta.env for variables prefixed with VITE_
-                const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+                // In AI Studio, we exposed it via window.GEMINI_API_KEY in main.tsx
+                const envKey = window.GEMINI_API_KEY;
                 if (envKey) apiKey = envKey;
             } catch (e) {
-                console.warn("Error accessing import.meta.env.VITE_GEMINI_API_KEY");
+                console.warn("Error accessing window.GEMINI_API_KEY");
             }
 
             const appendMessage = (text, isUser = false) => {
@@ -10300,29 +10516,43 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
 
             if (!GoogleGenAI) {
                 setTimeout(() => {
-                    appendMessage("नमस्ते! ऐसा लगता है कि आप इस फाइल को सीधे अपने कंप्यूटर पर खोल रहे हैं।\n\n'Ask AI' फीचर को चलाने के लिए इसे **GitHub/Cloudflare** पर अपलोड करना होगा या एक लोकल सर्वर (जैसे VS Code Live Server) का उपयोग करना होगा। ब्राउज़र सुरक्षा कारणों से सीधे फाइल खोलने पर AI मॉड्यूल लोड नहीं हो पाता।", false);
+                    appendMessage("नमस्ते! ऐसा लगता है कि आप इस फाइल को सीधे अपने कंप्यूटर पर खोल रहे हैं।\n\n'Ask AI' फीचर को चलाने के लिए इसे **GitHub/Cloudflare** पर अपलोड करना होगा या एक लोकल सर्वर (जैसे VS Code Live Server) का उपयोग करना होगा। ब्राउज़र सुरक्षा कारणों से सीधे फाइल खोलने पर AI मॉड्यूल लोड नहीं আসতে पाता।", false);
                 }, 500);
                 return;
             }
 
-            if (!apiKey || apiKey === "undefined" || apiKey === "") {
-                console.warn("GEMINI_API_KEY is missing.");
-                setTimeout(() => {
-                    appendMessage("नमस्ते! मैं येनचैट (Yenchat) हूँ। 'Ask AI' फीचर को चालू करने के लिए आपको एक API Key की आवश्यकता है।\n\n**इसे कैसे ठीक करें:**\n1. [Google AI Studio](https://aistudio.google.com/app/apikey) से अपनी फ्री API Key प्राप्त करें।\n2. यदि आप Cloudflare Pages का उपयोग कर रहे हैं, तो Settings > Environment Variables में `GEMINI_API_KEY` नाम से अपनी की (key) जोड़ें।\n3. उसके बाद ऐप को फिर से 'Build' करें।", false);
-                }, 500);
-            } else {
+            const getApiKey = () => {
+                let currentKey = "";
                 try {
-                    ai = new GoogleGenAI({ apiKey: apiKey });
+                    currentKey = window.GEMINI_API_KEY || "";
+                } catch(e) {}
+                return currentKey;
+            };
+
+            const initChatSession = () => {
+                if (chatSession) return true;
+                const currentApiKey = getApiKey();
+                if (!currentApiKey || currentApiKey === "undefined" || currentApiKey === "") {
+                    return false;
+                }
+                
+                try {
+                    ai = new GoogleGenAI({ apiKey: currentApiKey });
                     chatSession = ai.chats.create({
-                        model: "gemini-3-flash-preview",
+                        model: "gemini-2.5-flash",
                         config: {
                             systemInstruction: "You are Yenchat, a helpful, encouraging, and intelligent AI study assistant for 'Rayen\\'s Digital Study Tracker'. Your developer is Pravej Ahmad, also known as Rayen on social media. Your goal is to help the student manage their routine and answer study-related questions. CRITICAL INSTRUCTIONS:\n1. You MUST ALWAYS reply EXCLUSIVELY in the Hindi language using the Devanagari script (हिंदी देवनागरी लिपि).\n2. VERY IMPORTANT: Keep your answers VERY CONCISE and BRIEF to save API tokens. Do not write long paragraphs. However, ensure the answer is COMPLETE and fully addresses the user's query.\n3. ALWAYS use standard English numerals (1, 2, 3, 4, 5, 6, 7, 8, 9, 0) instead of Devanagari numerals (१, २, ३...) even when writing in Hindi.\n4. Use standard Markdown for formatting (like **bold**, *italics*, bullet points) so it renders cleanly in the UI. Do not use plain text formatting.",
                         }
                     });
+                    return true;
                 } catch (e) {
                     console.error("Failed to initialize Gemini API:", e);
+                    return false;
                 }
-            }
+            };
+            
+            // Try to initialize early if the key is available
+            setTimeout(initChatSession, 100);
 
             // Auto-resize textarea
             input.addEventListener('input', function() {
@@ -10367,6 +10597,15 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 e.preventDefault();
                 const text = input.value.trim();
                 if (!text) return;
+                
+                // Retry initialization if missing
+                if (!chatSession) {
+                    const success = initChatSession();
+                    if (!success) {
+                        appendMessage("माफ़ करें, 'Ask AI' फीचर को चालू करने के लिए आपको एक API Key की आवश्यकता है। कृपया [Google AI Studio](https://aistudio.google.com/app/apikey) से अपनी फ्री API Key प्राप्त करें और `GEMINI_API_KEY` को एनवायरनमेंट में जोड़ें।", false);
+                        return;
+                    }
+                }
 
                 input.value = '';
                 input.style.height = 'auto';
@@ -10377,10 +10616,6 @@ const resetApp = () => showConfirmationModal(_('reset_app')+'?', _('reset_all_da
                 showTypingIndicator();
 
                 try {
-                    if (!chatSession) {
-                        throw new Error("Chat session not initialized. Please check API key and environment.");
-                    }
-                    
                     const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
                     let tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
                     const tmrwStr = new Date(tmrw.getTime() - (tmrw.getTimezoneOffset() * 60000)).toISOString().split('T')[0];

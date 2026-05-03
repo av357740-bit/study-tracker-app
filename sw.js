@@ -1,6 +1,6 @@
  // A simple service worker for PWA functionality
 
-const CACHE_NAME = 'pravej-study-tracker-v1';
+const CACHE_NAME = 'pravej-study-tracker-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,6 +9,7 @@ const urlsToCache = [
 
 // Install a service worker
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force activate new service worker
   // Perform install steps
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -19,23 +20,30 @@ self.addEventListener('install', event => {
   );
 });
 
-// Cache and return requests
+// Cache and return requests with Network First Strategy
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
+    fetch(event.request)
+      .then(function(networkResponse) {
+        // Optimization: clone the response and cache it
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, responseToCache);
+          });
         }
-        return fetch(event.request);
-      }
-    )
+        return networkResponse;
+      })
+      .catch(function() {
+        // If network fails, try cache
+        return caches.match(event.request);
+      })
   );
 });
 
 // Update a service worker
 self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -48,4 +56,4 @@ self.addEventListener('activate', event => {
       );
     })
   );
-});```
+});

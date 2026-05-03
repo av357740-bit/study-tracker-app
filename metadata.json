@@ -1,5 +1,6 @@
 {
-  "name": "",
+  "name": "ST",
   "description": "",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": []
 }
